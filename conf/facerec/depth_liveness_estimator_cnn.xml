@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<depth_liveness_impl_name>cnn</depth_liveness_impl_name>
+
+<depth_liveness_cnn>share/facerec/depth_liveness/depth_liveness.bin</depth_liveness_cnn>
+
+<liveness_threshold>0.97</liveness_threshold>
+
+<min_median_mm>250.0</min_median_mm>
+<max_median_mm>2000.0</max_median_mm>
+
+<min_valid_depth_proportion>0.75</min_valid_depth_proportion>
+
+</opencv_storage>

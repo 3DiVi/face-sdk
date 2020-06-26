@@ -86,7 +86,7 @@ public:
 			Vector of captured face samples.
 
 		\warning 
-			Gray-scale images are not supported by the objects created with some configuration files (see \ref capturers).
+			Gray-scale images are not supported by the objects created with some configuration files (see <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/development/face_capturing.md#capturer-class-reference">Capturer Class Reference</a>).
 
 		\~Russian
 		\brief
@@ -99,7 +99,7 @@ public:
 			Вектор найденных лиц.
 
 		\warning
-			Черно-белые изображения не поддерживаются объектами, созданными с некоторыми конфигурационными файлами (см. \ref capturers).
+			Черно-белые изображения не поддерживаются объектами, созданными с некоторыми конфигурационными файлами (см. <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/development/face_capturing.md#capturer-class-reference">Класс Capturer</a>).
 	*/
 	std::vector<RawSample::Ptr> capture(const RawImage image);
 
@@ -119,7 +119,7 @@ public:
 			Vector of captured face samples.
 
 		\warning 
-			Gray-scale images are not supported by the objects created with some configuration files (see \ref capturers)
+			Gray-scale images are not supported by the objects created with some configuration files (see <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/development/face_capturing.md#capturer-class-reference">Capturer Class Reference</a>)
 
 		\~Russian
 		\brief
@@ -136,7 +136,7 @@ public:
 			Вектор найденных лиц.
 
 		\warning
-			Черно-белые изображения не поддерживаются объектами, созданными с некоторыми конфигурационными файлами (см. \ref capturers).
+			Черно-белые изображения не поддерживаются объектами, созданными с некоторыми конфигурационными файлами (см. <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/development/face_capturing.md#capturer-class-reference">Класс Capturer</a>).
 	*/
 	std::vector<RawSample::Ptr> capture(const unsigned char *data, int data_size);
 

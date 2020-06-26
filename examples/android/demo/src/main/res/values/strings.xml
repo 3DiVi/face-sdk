@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!-- common -->
+    <string name="app_name">Face SDK Demo</string>
+
+
+    <!-- main activity -->
+    <string name="quit_button_text">quit</string>
+    <string name="options_button_text">options</string>
+    <string name="settings_button_text">choose camera</string>
+
+
+    <!-- settings activity -->
+    <string name="camera0_radio_button">camera 0</string>
+    <string name="camera1_radio_button">camera 1</string>
+    <string name="camera2_radio_button">camera 2</string>
+
+
+	<!-- options activity -->
+    <string name="rectangle_check_box_text">rectangle</string>
+    <string name="angles_check_box_text">angles</string>
+    <string name="quality_check_box_text">quality</string>
+    <string name="liveness_check_box_text">liveness</string>
+    <string name="age_and_gender_check_box_text">age and gender</string>
+    <string name="points_check_box_text">points</string>
+    <string name="face_quality_check_box_text">face quality</string>
+    <string name="angles_vectors_check_box_text">angles vectors</string>
+    <string name="emotions_check_box_text">emotions</string>
+
+    <string name="none_radio_button">none</string>
+    <string name="base_cut_radio_button">base cut</string>
+    <string name="full_cut_radio_button">full cut</string>
+    <string name="token_cut_radio_button">token cut</string>
+
+    <!-- permissions layout -->
+    <string name="explain_CAMERA">
+        This demo require camera access.
+    </string>
+    <string name="explain_EXTERNAL_STORAGE">
+        Face SDK require read-write access to the storage.
+    </string>
+    <string name="explain_READ_PHONE_STATE">
+        On newer androids Face SDK hardware signature computation may fail without this permission.
+    </string>
+
+</resources>

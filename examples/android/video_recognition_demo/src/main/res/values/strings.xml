@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!-- common -->
+    <string name="app_name">Face SDK Video Recognition Demo</string>
+
+
+    <!-- main activity -->
+    <string name="new_person_button_text">add new person</string>
+    <string name="settings_button_text">settings</string>
+    <string name="quit_button_text">quit</string>
+
+    <!-- settings activity -->
+    <string name="camera0_radio_button">camera 0</string>
+    <string name="camera1_radio_button">camera 1</string>
+    <string name="camera2_radio_button">camera 2</string>
+
+    <!-- permissions layout -->
+    <string name="explain_CAMERA">
+        This demo require camera access.
+    </string>
+    <string name="explain_EXTERNAL_STORAGE">
+        Face SDK require read-write access to the storage.
+    </string>
+    <string name="explain_READ_PHONE_STATE">
+        On newer androids Face SDK hardware signature computation may fail without this permission.
+    </string>
+
+</resources>

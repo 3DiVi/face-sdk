@@ -1,0 +1,2 @@
+include ':demo'
+include ':video_recognition_demo'

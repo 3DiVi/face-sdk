@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<capturer_impl_name>manual_capturer</capturer_impl_name>
+
+<fitter_type>doublelbf</fitter_type>
+
+<lbf_fitter1_file>share/lbffacefitter/lbf_fitter.data</lbf_fitter1_file>
+
+<lbf_fitter2_file>share/lbffacefitter/lbf_fitter_29.data</lbf_fitter2_file>
+
+<downscale_rawsamples_to_preferred_size>1</downscale_rawsamples_to_preferred_size>
+
+</opencv_storage>

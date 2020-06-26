@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<capturer_impl_name>fld_capturer</capturer_impl_name>
+
+<capturer_type>frontal</capturer_type>
+
+<detector_type>static_face</detector_type>
+
+
+<image_width>250</image_width>
+<image_height>250</image_height>
+
+<rect_x>68</rect_x>
+<rect_y>68</rect_y>
+
+<rect_width>113</rect_width>
+<rect_height>113</rect_height>
+
+<fitter_type>esr</fitter_type>
+
+<esr_file>share/esr/classic.esr</esr_file>
+
+
+<downscale_rawsamples_to_preferred_size>1</downscale_rawsamples_to_preferred_size>
+
+</opencv_storage>

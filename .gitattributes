@@ -1,0 +1,11 @@
+ios_arm_64.tar.xz filter=lfs diff=lfs merge=lfs -text
+linux_aarch64.tar.xz filter=lfs diff=lfs merge=lfs -text
+linux_armhf_32.tar.xz filter=lfs diff=lfs merge=lfs -text
+linux_x86_64.tar.xz filter=lfs diff=lfs merge=lfs -text
+windows_x86_64.zip filter=lfs diff=lfs merge=lfs -text
+android_arm_32.tar.xz filter=lfs diff=lfs merge=lfs -text
+android_arm_64.tar.xz filter=lfs diff=lfs merge=lfs -text
+linux_x86_32.tar.xz filter=lfs diff=lfs merge=lfs -text
+windows_x86_32.zip filter=lfs diff=lfs merge=lfs -text
+linux_astra_1.11_x86_64.tar.xz filter=lfs diff=lfs merge=lfs -text
+share/** filter=lfs diff=lfs merge=lfs -text

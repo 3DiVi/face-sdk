@@ -18,6 +18,9 @@ public:
 	template<typename T>
 	T get(const std::string name);
 
+	template<typename T>
+	std::vector<T> get_all(const std::string name);
+
 	// return all unused before arguments
 	std::vector<std::string> get();
 
@@ -95,6 +98,30 @@ T ConsoleArgumentsParser::get(const std::string name)
 	return convert<T>(name, args[value_id].second);
 }
 
+
+template<typename T>
+inline
+std::vector<T> ConsoleArgumentsParser::get_all(const std::string name)
+{
+	std::vector<T> result;
+
+	for(;;)
+	{
+		const int value_id = search(name);
+
+		if(value_id < 0)
+			break;
+
+		result.push_back(convert<T>(name, args[value_id].second));
+	}
+
+	if(result.empty())
+	{
+		std::cout << " warning: " << name << " option (" << type_name<T>() << ") not found \n" << std::endl;
+	}
+
+	return result;
+}
 
 template<> inline std::string ConsoleArgumentsParser::type_name<std::string>() { return "string  "; }
 template<> inline std::string ConsoleArgumentsParser::type_name<int>()         { return "int     "; }

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<capturer_impl_name>manual_capturer</capturer_impl_name>
+
+<fitter_type>fda</fitter_type>
+
+<fda_file>share/fda/fda0017.3500.enc</fda_file>
+
+<downscale_rawsamples_to_preferred_size>1</downscale_rawsamples_to_preferred_size>
+
+</opencv_storage>

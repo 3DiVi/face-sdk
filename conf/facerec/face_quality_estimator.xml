@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<face_quality_impl_name>the_one</face_quality_impl_name>
+
+<fqm_fda>share/face_quality/fda_fqm.bin</fqm_fda>
+<fqm_esr>share/face_quality/fqm.bin</fqm_esr>
+<fqm_lbf>share/face_quality/lbf_29fqm.bin</fqm_lbf>
+
+</opencv_storage>

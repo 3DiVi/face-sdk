@@ -1,0 +1,5 @@
+[lfs]
+    url = https://gitlab.com/3divi_public/facesdk_lfs.git/info/lfs
+[remote "origin"]
+    lfsurl = https://gitlab.com/3divi_public/facesdk_lfs.git
+

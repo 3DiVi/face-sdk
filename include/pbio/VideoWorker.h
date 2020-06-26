@@ -705,6 +705,7 @@ public:
 			void* const userdata);
 
 	/**
+        \~English
 		\brief
 			Callback function type for a TemplateCreated event.
 			\warning
@@ -2350,7 +2351,62 @@ public:
 		const double value);
 //! @endcond
 
+
+// add callbacks for functor objects (lambda, for example)
+public:
+
+	template<typename T>
+	int addTrackingCallbackU(T* functor)
+	{
+		return addTrackingCallbackU(
+			callCallbackFunctor<T, TrackingCallbackData>,
+			(void*)functor);
+	}
+
+	template<typename T>
+	int addTemplateCreatedCallbackU(T* functor)
+	{
+		return addTemplateCreatedCallbackU(
+			callCallbackFunctor<T, TemplateCreatedCallbackData>,
+			(void*)functor);
+	}
+
+	template<typename T>
+	int addMatchFoundCallbackU(T* functor)
+	{
+		return addMatchFoundCallbackU(
+			callCallbackFunctor<T, MatchFoundCallbackData>,
+			(void*)functor);
+	}
+
+	template<typename T>
+	int addStiPersonOutdatedCallbackU(T* functor)
+	{
+		return addStiPersonOutdatedCallbackU(
+			callCallbackFunctor<T, StiPersonOutdatedCallbackData>,
+			(void*)functor);
+	}
+
+	template<typename T>
+	int addTrackingLostCallbackU(T* functor)
+	{
+		return addTrackingLostCallbackU(
+			callCallbackFunctor<T, TrackingLostCallbackData>,
+			(void*)functor);
+	}
+
 private:
+
+	template<typename T, typename DT>
+	static
+	void callCallbackFunctor(
+		const DT &data,
+		void* const userdata)
+	{
+		(*reinterpret_cast<T*>(userdata))(data);
+	}
+
+
 
 	static
 	void STrackingCallback(

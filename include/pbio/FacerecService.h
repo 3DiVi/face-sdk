@@ -387,9 +387,6 @@ public:
 		const bool matching = true,
 		const bool processing_less_memory_consumption = false) const;
 
-
-
-
 	/**
 		\~English
 		\brief
@@ -398,7 +395,7 @@ public:
 			When \member_reference{VideoWorker} is created with <i>matching_thread=0</i> and <i>processing_thread=0</i>,
 			then the standard Capturer license is used. <br>Depending on the settings, \member_reference{VideoWorker} uses either the 
 			<i>VideoClient</i> license (face tracking on video streams) or the <i>VideoClientExt</i> license (face tracking, template
-			creation and matching with the database) (see \ref license_explain for details).
+			creation and matching with the database) (see <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/components.md">Components</a> for details).
 
 		\param[in]  params
 			Parameters of the VideoWorker constructor.
@@ -413,7 +410,7 @@ public:
 			Если при создании \member_reference{VideoWorker} указаны параметры <i>matching_thread=0</i> и
 			<i>processing_thread=0</i>, то потребляется обычная лицензия Capturer. <br>В зависимости от настроек,
 			\member_reference{VideoWorker} потребляет лицензию <i>VideoClient</i> (детекция лиц на видеопотоках)
-			либо <i>VideoClientExt</i> (детекция лиц на видеопотоках, создание шаблонов и сравнение с базой) (см. \ref license_explain).
+			либо <i>VideoClientExt</i> (детекция лиц на видеопотоках, создание шаблонов и сравнение с базой) (см. <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/components.md">Компоненты</a>).
 
 		\param[in]  params
 			Параметры конструктора VideoWorker.
@@ -426,10 +423,8 @@ public:
 
 
 	/**
-		\copybrief createVideoWorker
-
 		\~English
-
+        \brief
 		\param[in]  video_worker_config
 			The VideoWorker configuration file with optionally overridden parameters.
 
@@ -449,7 +444,7 @@ public:
 			Created VideoWorker object.
 
 		\~Russian
-
+        \brief
 		\param[in]  video_worker_config
 			Конфигурационный файл VideoWorker с опционально переопределенными параметрами.
 
