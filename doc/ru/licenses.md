@@ -43,7 +43,7 @@
 * Выберите файл лицензии, сгенерированный на лицензионном портале компанией 3DiVi (см. изображение ниже). 
 
 <p align="center">
-<img width="700" src="doc/img/off_lic_fsdk.png"><br>
+<img width="700" src="/doc/img/off_lic_fsdk.png"><br>
 <b>Выбор файла лицензии из списка созданных лицензий</b><br>
 </p>
 
@@ -51,14 +51,14 @@
 * Нажмите на кнопку *Upload file*.
 
 <p align="center">
-<img width="600" src="doc/img/off_lic_file.png"><br>
+<img width="600" src="/doc/img/off_lic_file.png"><br>
 <b>Загрузка файла лицензии на Лицензионном портале Face SDK</b><br>
 </p>
 
 * После этого появится окно "Activate FaceSDK license". Нажмите на кнопку *Upload*, чтобы загрузить файл `3divi_face_sdk.lic` из папки *bin*.
 
 <p align="center">
-<img width="300" src="doc/img/off_lic_upload.png"><br>
+<img width="300" src="/doc/img/off_lic_upload.png"><br>
 <b>Активация файла лицензии</b><br>
 </p>
 

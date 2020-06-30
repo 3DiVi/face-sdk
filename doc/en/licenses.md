@@ -42,7 +42,7 @@ To activate the license on the Face SDK Licensing Portal, please follow the step
 * Select the license file generated in the licensing portal by 3DiVi (see the image below). 
 
 <p align="center">
-<img width="700" src="doc/img/off_lic_fsdk.png"><br>
+<img width="700" src="/doc/img/off_lic_fsdk.png"><br>
 <b>Selecting the license file from the list of created licenses</b><br>
 </p>
 
@@ -50,14 +50,14 @@ To activate the license on the Face SDK Licensing Portal, please follow the step
 * Click the *Upload file* button.
 
 <p align="center">
-<img width="600" src="doc/img/off_lic_file.png"><br>
+<img width="600" src="/doc/img/off_lic_file.png"><br>
 <b>Uploading the license file to the Face SDK Licensing Portal</b><br>
 </p>
 
 * After that, you'll see the window "Activate FaceSDK license". Click the *Upload* button to upload the `3divi_face_sdk.lic` file that was created in the *bin* folder.
 
 <p align="center">
-<img width="300" src="doc/img/off_lic_upload.png"><br>
+<img width="300" src="/doc/img/off_lic_upload.png"><br>
 <b>Activating the license file</b><br>
 </p>
 
