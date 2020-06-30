@@ -8,6 +8,7 @@
 * [Распознавание лиц на видеопотоке](face_recognition_in_a_video_stream.md)
 * [Определение принадлежности лица живому человеку (3D Liveness)](liveness_detection.md)
 * [Разработка приложений для iOS](developing_apps_for_ios.md)
+* [Детекция лиц в масках](detection_of_faces_in_masks.md)
 
 Готовые проекты Вы можете найти в дистрибутиве Face SDK: путь до соответствующего проекта указан в начале каждого туториала.
 

@@ -16,6 +16,8 @@ Learn how to recognize faces in a video stream in our tutorial [Face Recognition
 
 ## Tracking Faces
 
+_**Note:** Learn how to detect masked faces [in our tutorial](/doc/en/tutorials/detection_of_faces_in_masks.md)._
+
 `VideoWorker` can be created with `FacerecService.createVideoWorker`.
 
 ### C ++ Example

@@ -31,11 +31,38 @@ The network settings used for license updates are stored in the `net_params.xml`
 
 ### Offline Licenses
 
-* Unpack the archive with the distribution in any directory on your device (see [Getting Started](../../README.md#getting-started)).
-* Run the *get_license* utility from the *bin* folder on a target PC.
-* Send the generated `3divi_face_sdk.lic` file to the software provider (3DiVi Company): send an email to your personal manager or contact us using a feedback form at the [3DiVi website](https://face.3divi.com/contact_us).
-* The software provider will send you a signed license file.
-* Put the license file to the directory *license* and rename the file to `3divi_face_sdk.lic` if needed.
+To activate the license on the Face SDK Licensing Portal, please follow the steps below:
+
+* Unpack the archive with the distribution package in any directory on your device (see [Getting Started](../../README.md#getting-started)).
+* Generate/get the `3divi_face_sdk.lic` file that will contain the information about your hardware required for licensing: 
+    * [Windows/Linux] Run the *get_license* utility from the *bin* folder on a target PC/device. As a result, the `3divi_face_sdk.lic` file will be created in the *bin* folder. 
+	* [Android] Call the `FacerecService.getLicenseState` function and get the `LicenseState.hardware_reg` field (see an example of getting a *Hardware ID* in [Android Demo](/examples/android/demo/src/main/java/com/vdt/face_recognition/demo/MainActivity.java)). Send your *Hardware ID* to your personal manager. Your manager will send you the `3divi_face_sdk.lic` file.
+* Log in to [the Face SDK Licensing Portal](https://cognitive.3divi.com/app/face/login/). If you don't remember your password, you can reset it [here](https://cognitive.3divi.com/app/face/forgot-password/).
+* Click *Face SDK* in the menu on the left.
+* Select the license file generated in the licensing portal by 3DiVi (see the image below). 
+
+<p align="center">
+<img width="700" src="doc/img/off_lic_fsdk.png"><br>
+<b>Selecting the license file from the list of created licenses</b><br>
+</p>
+
+* Click on the license name. A new window with detailed information about the license file will appear. 
+* Click the *Upload file* button.
+
+<p align="center">
+<img width="600" src="doc/img/off_lic_file.png"><br>
+<b>Uploading the license file to the Face SDK Licensing Portal</b><br>
+</p>
+
+* After that, you'll see the window "Activate FaceSDK license". Click the *Upload* button to upload the `3divi_face_sdk.lic` file that was created in the *bin* folder.
+
+<p align="center">
+<img width="300" src="doc/img/off_lic_upload.png"><br>
+<b>Activating the license file</b><br>
+</p>
+
+* Click the *Generate* button to generate the final license file locked to your hardware. 
+* Copy the license file to the *license* directory and rename it to `3divi_face_sdk.lic` if needed.
 
 ## License Locking
 
@@ -49,25 +76,7 @@ Depending on the locking type, some licenses allow you to use Face SDK only on s
  
 ### Locking to a Hardware ID
 
-Locking to a *Hardware ID* allows you to use the *Face SDK* only on a specific device. The license is locked to a device during activation. Online licenses are automatically locked when the library is launched for the first time. If you're using an offline license, you have to get a *Hardware ID* on a target device before activation.
-
-#### Windows/Linux
-
-To get the license locked to a *Hardware ID*:
-1. Go to the *bin* folder and run the *get_license* utility. As a result, the `3divi_face_sdk.lic` file will be created in the *bin* directory.
-2. Log in to the [Face SDK Licensing Portal](https://cognitive.3divi.com/app/face/). Select a license on Dashboard. Upload `3divi_face_sdk.lic` to the license activation form (click the *Upload* button) and click *Generate* to generate the license file.
-
-<p align="center">
-<img width="800" src="/doc/img/license_generate.png"><br>
-</p>
-
-3. Download the license file `3divi_face_sdk.lic` and move it to the *license* folder.
-
-#### Android
-
-To get the license locked to a *Hardware ID*:
-1. Call the `FacerecService.getLicenseState` function and get the `LicenseState.hardware_reg` field (see an example of getting a *Hardware ID* in [Android Demo](/examples/android/demo/src/main/java/com/vdt/face_recognition/demo/MainActivity.java)).
-2. Send your *Hardware ID* to your personal manager. Your manager will send you the file that you have to upload to the license activation form (see steps 2-3 in the [Windows/Linux](#windowslinux) section).
+Locking to a *Hardware ID* allows you to use the *Face SDK* only on a specific device. The license is locked to a device during activation. Online licenses are automatically locked when the library is launched for the first time. If you're using an offline license, you have to get a *Hardware ID* on a target device before activation. See how to lock your offline license to a Hardware ID in [Offline Lisenses](#offline-licenses).
 
 You can transfer the online licenses locked to a *Hardware ID* to other devices, however, the license can only be used on one device at a time. To transfer the license, download the license file `3divi_face_sdk.lic` from your [personal Face SDK account](https://cognitive.3divi.com/) once again and move it to the *license* folder on the new device. **Do not copy the license file from the previous device** because in this case an error will occur during re-activation of the license.
 
