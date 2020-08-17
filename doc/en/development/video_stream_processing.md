@@ -111,10 +111,11 @@ Currently, there are three configuration files with the tracking method from `co
 * `video_worker_lbf.xml` with the *singlelbf* points set
 * `video_worker_fda.xml` with the *fda* points set
 
-and two configuration files with the tracking method from `fda_tracker_capturer.xml`:
+and three configuration files with the tracking method from `fda_tracker_capturer.xml`:
 
 * `video_worker_fdatracker.xml` with the *fda* points set
 * `video_worker_fdatracker_fake_detector.xml` with the *fda* points set
+* `video_worker_fdatracker_blf_fda.xml` with the *fda* set of points
 
 (see [Anthropometric Points](face_capturing.md#anthropometric-points), [Capturer Class Reference](face_capturing.md#capturer-class-reference)).
 

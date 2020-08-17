@@ -44,11 +44,11 @@ int main(int argc, char const *argv[])
 		const pbio::FacerecService::Ptr service = pbio::FacerecService::createService(dll_path, conf_dir_path);
 
 		// create capturer
-		const pbio::Capturer::Ptr capturer = service->createCapturer("common_capturer4.xml");
+		const pbio::Capturer::Ptr capturer = service->createCapturer("common_capturer4_fda.xml");
 
 
 		// create quality estimator
-		const pbio::QualityEstimator::Ptr quality_estimator = service->createQualityEstimator("quality_estimator.xml");
+		const pbio::QualityEstimator::Ptr quality_estimator = service->createQualityEstimator("quality_estimator_iso.xml");
 
 		// create age and gender estimator
 		const pbio::AgeGenderEstimator::Ptr age_gender_estimator = service->createAgeGenderEstimator("age_gender_estimator.xml");

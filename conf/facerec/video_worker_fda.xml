@@ -29,6 +29,10 @@
 <max_frames_number_to_synch_depth>150</max_frames_number_to_synch_depth>
 <max_frames_queue_size>3</max_frames_queue_size>
 
+<ir_data_flag>0</ir_data_flag>
+<ir_liveness_config>conf/facerec/ir_liveness_estimator_cnn.xml</ir_liveness_config>
+<max_frames_number_to_synch_ir>150</max_frames_number_to_synch_ir>
+
 <fda_file>share/fda/fda0017.3500.enc</fda_file>
 <face_quality_model>share/face_quality/fda_fqm.bin</face_quality_model>
 

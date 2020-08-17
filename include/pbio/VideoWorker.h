@@ -35,6 +35,8 @@
 #include "Template.h"
 #include "DepthLivenessEstimator.h"
 #include "DepthMapRaw.h"
+#include "IRLivenessEstimator.h"
+#include "IRFrameRaw.h"
 #include "StructStorageFields.h"
 #include "SampleCheckStatus.h"
 #include "Config.h"
@@ -134,20 +136,20 @@ public:
 		def_param_field_693bcd72(Params, int                         , emotions_estimation_threads_count);
 
 		/**
-			\~English \brief Set the flag enabling \ref vw_sti "short time identification". \return *this
-			\~Russian \brief Задать флаг, включающий \ref vw_sti "кратковременную индетификацию". \return *this
+			\~English \brief Set the flag enabling <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/en/development/video_stream_processing.md#short-time-identification">"short time identification"</a>. \return *this
+			\~Russian \brief Задать флаг, включающий <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременную идентификацию"</a>. \return *this
 		*/
 		def_param_field_693bcd72(Params, bool                        , short_time_identification_enabled);
 
 		/**
-			\~English \brief Set the recognition distance threshold for \ref vw_sti "short time identification". \return *this
-			\~Russian \brief Задать порог распознавания для \ref vw_sti "кратковременной идентификации". \return *this
+			\~English \brief Set the recognition distance threshold for <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/en/development/video_stream_processing.md#short-time-identification">"short time identification"</a>. \return *this
+			\~Russian \brief Задать порог распознавания для <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременной идентификации"</a>. \return *this
 		*/
 		def_param_field_693bcd72(Params, float                       , short_time_identification_distance_threshold);
 
 		/**
-			\~English \brief Set outdate_time in seconds for \ref vw_sti "short time identification". \return *this
-			\~Russian \brief Задать в секундах длину временного интервала для \ref vw_sti "кратковременной идентификации". \return *this
+			\~English \brief Set outdate_time in seconds for <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/en/development/video_stream_processing.md#short-time-identification">"short time identification"</a>. \return *this
+			\~Russian \brief Задать в секундах длину временного интервала для <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременной идентификации"</a>. \return *this
 		*/
 		def_param_field_693bcd72(Params, float                       , short_time_identification_outdate_time_seconds);
 	};
@@ -323,7 +325,7 @@ public:
 				Since this is tracking, some samples may be false,
 				so we mark the samples with the "weak" flag
 				if they haven’t passed one of the rechecks (see: samples_good_face_size,
-				samples_good_angles, samples_depth_liveness_confirmed,
+				samples_good_angles, samples_depth_liveness_confirmed, samples_ir_liveness_confirmed,
 				samples_detector_confirmed, samples_good_light_and_blur).
 				"Weak" samples are not used for recognition
 				(samples_weak.size() == samples.size())
@@ -332,7 +334,7 @@ public:
 				Так как это трекинг, то некоторые сэмплы могут быть ошибочными,
 				поэтому мы помечаем сэмплы флагом "weak", если они не прошли
 				одну из дополнительных проверок (см: samples_good_face_size,
-				samples_good_angles, samples_depth_liveness_confirmed,
+				samples_good_angles, samples_depth_liveness_confirmed, samples_ir_liveness_confirmed,
 				samples_detector_confirmed, samples_good_light_and_blur).
 				"weak" сэмплы не используются для распознавания
 				(samples_weak.size() == samples.size())
@@ -418,6 +420,22 @@ public:
 				(samples_depth_liveness_confirmed.size() == samples.size())
 		*/
 		std::vector<DepthLivenessEstimator::Liveness> samples_depth_liveness_confirmed;
+
+		/**
+			\~English
+			\brief
+				The result of checking the sample with IRLivenessEstimator,
+				IR frames are required, see VideoWorker::addIRFrame.
+				See IRLivenessEstimator::Liveness for details.
+				(samples_ir_liveness_confirmed.size() == samples.size())
+			\~Russian
+			\brief
+				Результат проверки сэмпла посредством IRLivenessEstimator,
+				требуются инфракрасные кадры, см. VideoWorker::addIRFrame.
+				См. также IRLivenessEstimator::Liveness.
+				(samples_ir_liveness_confirmed.size() == samples.size())
+		*/
+		std::vector<IRLivenessEstimator::Liveness> samples_ir_liveness_confirmed;
 
 		/**
 			\~English
@@ -1630,6 +1648,43 @@ public:
 	/**
 		\~English
 		\brief
+			Add a new IR frame for a specific stream.
+			Thread-safe.
+
+		\param[in]  ir_frame
+			IR frame (IRFrameRaw) that contains IR data.
+
+		\param[in]  stream_id
+			Integer id of the video stream
+			(0 <= stream_id < streams_count).
+			
+		\param[in] timestamp_microsec
+			Timestamp of a frame in microseconds.
+
+		\~Russian
+		\brief
+			Подать кадр определенного видеопотока c инфракрасными данными.
+			Потокобезопасный.
+
+		\param[in] ir_frame
+			Инфракрасный кадр (IRFrameRaw).
+
+		\param[in]  stream_id
+			Целочисленный идентификатор видеопотока
+			(0 <= stream_id < streams_count).
+
+		\param[in] timestamp_microsec
+			Временная метка кадра в микросекундах
+
+	*/
+	void addIRFrame(
+		const IRFrameRaw &ir_frame,
+		const int stream_id,
+		const uint64_t timestamp_microsec);
+
+	/**
+		\~English
+		\brief
 			Reset tracker state for a specified video stream.
 			Thread-safe.
 
@@ -2662,6 +2717,33 @@ void VideoWorker::addDepthFrame(
 }
 
 inline
+void VideoWorker::addIRFrame(
+	const IRFrameRaw &ir_frame,
+	const int stream_id,
+	const uint64_t timestamp_microsec)
+{
+	void* exception = NULL;
+
+	_dll_handle->VideoWorker_addIRFrame(
+		_impl,
+		ir_frame.ir_frame_rows,
+		ir_frame.ir_frame_cols,
+		ir_frame.ir_frame_2_image_offset_x,
+		ir_frame.ir_frame_2_image_offset_y,
+		ir_frame.ir_frame_2_image_scale_x,
+		ir_frame.ir_frame_2_image_scale_y,
+		ir_frame.ir_horizontal_fov,
+		ir_frame.ir_vertical_fov,
+		ir_frame.ir_frame_data,
+		ir_frame.ir_data_stride_in_bytes,
+		stream_id,
+		timestamp_microsec,
+		&exception);
+
+	checkException(exception, *_dll_handle);
+}
+
+inline
 void VideoWorker::resetTrackerOnStream(const int stream_id)
 {
 	void* exception = NULL;
@@ -3086,6 +3168,13 @@ void VideoWorker::STrackingCallback(
 
 		checkException(exception, *this_vw._dll_handle);
 
+		int32_t const* const samples_ir_liveness_confirmed = static_cast<int32_t const* const>(
+			this_vw._dll_handle->StructStorage_get_pointer(
+				callback_data,
+				pbio::StructStorageFields::video_worker_ir_liveness_confirmed_samples_t,
+				&exception));
+
+		checkException(exception, *this_vw._dll_handle);
 
 
 		int32_t const* const samples_track_age_gender_set = static_cast<int32_t const* const>(
@@ -3159,6 +3248,7 @@ void VideoWorker::STrackingCallback(
 		data.samples_good_face_size.resize(samples_count);
 		data.samples_detector_confirmed.resize(samples_count);
 		data.samples_depth_liveness_confirmed.resize(samples_count);
+		data.samples_ir_liveness_confirmed.resize(samples_count);
 		data.samples_track_age_gender_set.resize(samples_count);
 		data.samples_track_age_gender.resize(samples_count);
 		data.samples_track_emotions_set.resize(samples_count);
@@ -3179,6 +3269,7 @@ void VideoWorker::STrackingCallback(
 
 			data.samples_depth_liveness_confirmed[i] = (DepthLivenessEstimator::Liveness)samples_depth_liveness_confirmed[i];
 
+			data.samples_ir_liveness_confirmed[i]    = (IRLivenessEstimator::Liveness)samples_ir_liveness_confirmed[i];
 
 			data.samples_track_age_gender_set[i]          = samples_track_age_gender_set[i];
 

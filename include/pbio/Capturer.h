@@ -86,7 +86,7 @@ public:
 			Vector of captured face samples.
 
 		\warning 
-			Gray-scale images are not supported by the objects created with some configuration files (see <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/development/face_capturing.md#capturer-class-reference">Capturer Class Reference</a>).
+			Gray-scale images are not supported by the objects created with some configuration files (see <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/en/development/face_capturing.md#capturer-class-reference">Capturer Class Reference</a>).
 
 		\~Russian
 		\brief
@@ -99,7 +99,7 @@ public:
 			Вектор найденных лиц.
 
 		\warning
-			Черно-белые изображения не поддерживаются объектами, созданными с некоторыми конфигурационными файлами (см. <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/development/face_capturing.md#capturer-class-reference">Класс Capturer</a>).
+			Черно-белые изображения не поддерживаются объектами, созданными с некоторыми конфигурационными файлами (см. <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/ru/development/face_capturing.md#класс-capturer">Класс Capturer</a>).
 	*/
 	std::vector<RawSample::Ptr> capture(const RawImage image);
 
@@ -119,7 +119,7 @@ public:
 			Vector of captured face samples.
 
 		\warning 
-			Gray-scale images are not supported by the objects created with some configuration files (see <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/development/face_capturing.md#capturer-class-reference">Capturer Class Reference</a>)
+			Gray-scale images are not supported by the objects created with some configuration files (see <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/en/development/face_capturing.md#capturer-class-reference">Capturer Class Reference</a>)
 
 		\~Russian
 		\brief
@@ -136,7 +136,7 @@ public:
 			Вектор найденных лиц.
 
 		\warning
-			Черно-белые изображения не поддерживаются объектами, созданными с некоторыми конфигурационными файлами (см. <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/development/face_capturing.md#capturer-class-reference">Класс Capturer</a>).
+			Черно-белые изображения не поддерживаются объектами, созданными с некоторыми конфигурационными файлами (см. <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/ru/development/face_capturing.md#класс-capturer">Класс Capturer</a>).
 	*/
 	std::vector<RawSample::Ptr> capture(const unsigned char *data, int data_size);
 
@@ -567,11 +567,12 @@ RawSample::Ptr Capturer::manualCapture(
 {
 	void* exception = NULL;
 
-	std::vector<float> points_data(points.size() * 2);
+	std::vector<float> points_data(points.size() * 3);
 	for(size_t i = 0; i < points.size(); ++i)
 	{
-		points_data[i * 2 + 0] = points[i].x;
-		points_data[i * 2 + 1] = points[i].y;
+		points_data[i * 3 + 0] = points[i].x;
+		points_data[i * 3 + 1] = points[i].y;
+		points_data[i * 3 + 2] = points[i].z;
 	}
 
 	const RawImage::CapiData cdata = image.makeCapiData();
@@ -632,11 +633,12 @@ RawSample::Ptr Capturer::manualCapture(
 {
 	void* exception = NULL;
 
-	std::vector<float> points_data(points.size() * 2);
+	std::vector<float> points_data(points.size() * 3);
 	for(size_t i = 0; i < points.size(); ++i)
 	{
-		points_data[i * 2 + 0] = points[i].x;
-		points_data[i * 2 + 1] = points[i].y;
+		points_data[i * 3 + 0] = points[i].x;
+		points_data[i * 3 + 1] = points[i].y;
+		points_data[i * 3 + 2] = points[i].z;
 	}
 
 	void* const result_impl = _dll_handle->Capturer_manualCapture_encoded_image_points_vector(

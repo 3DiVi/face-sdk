@@ -58,6 +58,7 @@ struct StructStorageFields
 		video_worker_samples_track_emotions_count_t           = 33,
 		video_worker_samples_track_emotions_confidence_t      = 34,
 		video_worker_samples_track_emotions_emotion_t         = 35,
+		video_worker_ir_liveness_confirmed_samples_t          = 36,
 
 		// license state
 		license_state_android_app_id_t                        = -3,

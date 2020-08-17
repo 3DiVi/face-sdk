@@ -18,26 +18,33 @@
 #define CV_AA cv::LINE_AA
 #endif
 
+#include "../console_arguments_parser/ConsoleArgumentsParser.h"
+
 int main(int argc, char** argv)
 {
 	try
 	{
 		std::cout << "Face tracking demo." << std::endl;
-		if(argc != 3)
-		{
-			std::cout << "Usage: '" << argv[0] << " <dll_path> <conf_dir_path>'" << std::endl;
-			std::cout << "Example: '" << argv[0] << " ../lib/libfacerec.so ../conf/facerec'" << std::endl;
-			return 0;
-		}
 
-		const std::string dll_path = argv[1];
-		const std::string conf_dir_path = argv[2];
+		#if defined(_WIN32)
+			const std::string default_dll_path = "facerec.dll";
+		#else
+			const std::string default_dll_path = "../lib/libfacerec.so";
+		#endif
+
+		// parse named params
+		ConsoleArgumentsParser parser(argc, argv);
+
+		const std::string dll_path                = parser.get<std::string>("--dll_path                      ", default_dll_path);
+		const std::string conf_dir_path           = parser.get<std::string>("--config_dir                    ", "../conf/facerec");
+		const std::string license_dir             = parser.get<std::string>("--license_dir                   ", "../license");
+		const std::string video_capturer_config   = parser.get<std::string>("--video_capturer_config         ", "common_video_capturer.xml");
 
 		// create facerec service
-		const pbio::FacerecService::Ptr service = pbio::FacerecService::createService(dll_path, conf_dir_path);
+		const pbio::FacerecService::Ptr service = pbio::FacerecService::createService(dll_path, conf_dir_path, license_dir);
 
 		// create capturer
-		const pbio::Capturer::Ptr capturer = service->createCapturer("common_video_capturer.xml");
+		const pbio::Capturer::Ptr capturer = service->createCapturer(video_capturer_config);
 
 		// for each tracked face store liveness estimator
 		std::map<int, pbio::LivenessEstimator::Ptr> track_id_2_le;

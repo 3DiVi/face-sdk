@@ -33,6 +33,7 @@ class Recognizer;
 class VideoWorker;
 class EmotionsEstimator;
 class DepthLivenessEstimator;
+class IRLivenessEstimator;
 
 /** \~English
 	\brief Interface object that stores a captured face sample.
@@ -772,6 +773,7 @@ private:
 	friend class VideoWorker;
 	friend class EmotionsEstimator;
 	friend class DepthLivenessEstimator;
+	friend class IRLivenessEstimator;
 	friend class object_with_ref_counter<RawSample>;
 };
 
@@ -831,12 +833,13 @@ std::vector<RawSample::Point> RawSample::getLandmarks() const
 
 	checkException(exception, *_dll_handle);
 
-	std::vector<Point> points(coordinates.size() / 2);
+	std::vector<Point> points(coordinates.size() / 3);
 
 	for(size_t i = 0; i < points.size(); ++i)
 	{
-		points[i].x = coordinates[i * 2 + 0];
-		points[i].y = coordinates[i * 2 + 1];
+		points[i].x = coordinates[i * 3 + 0];
+		points[i].y = coordinates[i * 3 + 1];
+		points[i].z = coordinates[i * 3 + 2];
 	}
 
 	return points;

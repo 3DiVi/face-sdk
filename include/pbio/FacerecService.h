@@ -28,6 +28,7 @@
 #include "Capturer.h"
 #include "ComplexObject.h"
 #include "DepthLivenessEstimator.h"
+#include "IRLivenessEstimator.h"
 #include "EmotionsEstimator.h"
 #include "Error.h"
 #include "ExceptionCheck.h"
@@ -392,10 +393,10 @@ public:
 		\brief
 			Creates a VideoWorker object.
 			Thread-safe.<br>
-			When \member_reference{VideoWorker} is created with <i>matching_thread=0</i> and <i>processing_thread=0</i>,
-			then the standard Capturer license is used. <br>Depending on the settings, \member_reference{VideoWorker} uses either the 
+			When VideoWorker is created with <i>matching_thread=0</i> and <i>processing_thread=0</i>,
+			then the standard Capturer license is used. <br>Depending on the settings, VideoWorker uses either the 
 			<i>VideoClient</i> license (face tracking on video streams) or the <i>VideoClientExt</i> license (face tracking, template
-			creation and matching with the database) (see <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/components.md">Components</a> for details).
+			creation and matching with the database) (see <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/en/components.md">Components</a> for details).
 
 		\param[in]  params
 			Parameters of the VideoWorker constructor.
@@ -407,10 +408,10 @@ public:
 		\brief
 			Создать объект VideoWorker.
 			Потокобезопасный.<br>
-			Если при создании \member_reference{VideoWorker} указаны параметры <i>matching_thread=0</i> и
+			Если при создании VideoWorker указаны параметры <i>matching_thread=0</i> и
 			<i>processing_thread=0</i>, то потребляется обычная лицензия Capturer. <br>В зависимости от настроек,
-			\member_reference{VideoWorker} потребляет лицензию <i>VideoClient</i> (детекция лиц на видеопотоках)
-			либо <i>VideoClientExt</i> (детекция лиц на видеопотоках, создание шаблонов и сравнение с базой) (см. <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/components.md">Компоненты</a>).
+			VideoWorker потребляет лицензию <i>VideoClient</i> (детекция лиц на видеопотоках)
+			либо <i>VideoClientExt</i> (детекция лиц на видеопотоках, создание шаблонов и сравнение с базой) (см. <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/ru/components.md">Компоненты</a>).
 
 		\param[in]  params
 			Параметры конструктора VideoWorker.
@@ -761,6 +762,60 @@ public:
 	/**
 		\~English
 		\brief
+			Creates an IRLivenessEstimator object.
+			Thread-safe.
+
+		\param[in]  ini_file
+			Name of the configuration file.
+
+		\return
+			Created IRLivenessEstimator object.
+
+		\~Russian
+		\brief
+			Создать объект IRLivenessEstimator.
+			Потокобезопасный.
+
+		\param[in]  ini_file
+			Имя конфигурационного файла.
+
+		\return
+			Созданный объект IRLivenessEstimator.
+	*/
+	IRLivenessEstimator::Ptr createIRLivenessEstimator(
+		const std::string ini_file) const;
+
+
+	/**
+		\~English
+		\brief
+			Creates an IRLivenessEstimator object.
+			Thread-safe.
+
+		\param[in]  config
+			Сonfiguration file with optionally overridden parameters.
+
+		\return
+			Created IRLivenessEstimator object.
+
+		\~Russian
+		\brief
+			Создать объект IRLivenessEstimator.
+			Потокобезопасный.
+
+		\param[in]  config
+			Конфигурационный файл с опционально переопределенными параметрами.
+
+		\return
+			Созданный объект IRLivenessEstimator.
+	*/
+	IRLivenessEstimator::Ptr createIRLivenessEstimator(
+		const pbio::FacerecService::Config config) const;
+
+
+	/**
+		\~English
+		\brief
 			Get the license state.
 			Thread-safe.
 
@@ -918,6 +973,7 @@ public:
 			Data buffer to store converted result, with size image.width * image.height bytes if
 			downscale_x2, or 4 * image.width * image.height bytes otherwise.
 
+        \~Russian
 		\brief
 			Конвертировать входное изображение в формат android.graphics.Bitmap.Config.ARGB_8888.
 			Формат входного изображения должен быть YUV_NV21 или YUV_NV12.
@@ -1458,6 +1514,54 @@ DepthLivenessEstimator::Ptr FacerecService::createDepthLivenessEstimator(
 	return DepthLivenessEstimator::Ptr::make(_dll_handle, the_impl);
 }
 
+inline
+IRLivenessEstimator::Ptr FacerecService::createIRLivenessEstimator(
+	const std::string ini_file) const
+{
+	const std::string file_path = _facerec_conf_dir + ini_file;
+
+	void* exception = NULL;
+
+	pbio::facerec::IRLivenessEstimatorImpl* const the_impl =
+		_dll_handle->FacerecService_createIRLivenessEstimatorE(
+			_impl,
+			file_path.c_str(),
+			0,     // overridden keys size
+			NULL,  // overridden keys
+			NULL,  // overriden values
+			&exception);
+
+	checkException(exception, *_dll_handle);
+
+	return IRLivenessEstimator::Ptr::make(_dll_handle, the_impl);
+}
+
+inline
+IRLivenessEstimator::Ptr FacerecService::createIRLivenessEstimator(
+	const pbio::FacerecService::Config config) const
+{
+	const std::string file_path = _facerec_conf_dir + config.config_filepath;
+
+	std::vector<char const*> overridden_keys;
+	std::vector<double> overridden_values;
+
+	config.prepare(overridden_keys, overridden_values);
+
+	void* exception = NULL;
+
+	pbio::facerec::IRLivenessEstimatorImpl* const the_impl =
+		_dll_handle->FacerecService_createIRLivenessEstimatorE(
+			_impl,
+			file_path.c_str(),
+			overridden_keys.size(),
+			overridden_keys.empty() ? NULL : &(overridden_keys[0]),
+			overridden_values.empty() ? NULL : &(overridden_values[0]),
+			&exception);
+
+	checkException(exception, *_dll_handle);
+
+	return IRLivenessEstimator::Ptr::make(_dll_handle, the_impl);
+}
 
 inline
 FacerecService::LicenseState FacerecService::getLicenseState() const

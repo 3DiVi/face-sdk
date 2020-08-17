@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<capturer_impl_name>fld_capturer</capturer_impl_name>
+
+<capturer_type>frontal</capturer_type>
+
+<detector_type>blf</detector_type>
+
+<num_threads>1</num_threads>
+
+<score_threshold>0.5</score_threshold>
+<nms_iou_threshold>0.3</nms_iou_threshold>
+<coarse_score_threshold>0.1</coarse_score_threshold>
+
+<blf_id>blf-front</blf_id>
+<blf_detector_file>share/facedetectors/blf/front_model.enc</blf_detector_file>
+
+
+<fitter_type>fda</fitter_type>
+<fda_file>share/fda/fda0017.3500.enc</fda_file>
+
+<downscale_rawsamples_to_preferred_size>1</downscale_rawsamples_to_preferred_size>
+
+</opencv_storage>

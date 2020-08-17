@@ -67,10 +67,10 @@ public class Demo{
 
 		this.service = service;
 
-		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer.xml");
+		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer_mesh.xml");
 		capturer_conf.overrideParameter("downscale_rawsamples_to_preferred_size", 0);
 		capturer = service.createCapturer(capturer_conf);
-		qualityEstimator = service.createQualityEstimator("quality_estimator.xml");
+		qualityEstimator = service.createQualityEstimator("quality_estimator_iso.xml");
 		ageGenderEstimator = service.createAgeGenderEstimator("age_gender_estimator.xml");
 		emotionsEstimator = service.createEmotionsEstimator("emotions_estimator.xml");
 		faceQualityEstimator = service.createFaceQualityEstimator("face_quality_estimator.xml");
@@ -85,7 +85,7 @@ public class Demo{
 			capturer.dispose();
 		}
 
-		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer.xml");
+		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer_mesh.xml");
 		capturer_conf.overrideParameter("downscale_rawsamples_to_preferred_size", 0);
 		capturer = service.createCapturer(capturer_conf);
 	}

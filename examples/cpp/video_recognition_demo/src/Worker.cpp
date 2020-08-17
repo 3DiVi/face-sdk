@@ -577,6 +577,9 @@ cv::Mat Worker::Draw(
 			if(points.size() == 47)  // esr
 				radius *= 1.9f;
 
+			if(points.size() == 470)  // mesh
+				radius *= 2.f;
+
 			// choose color
 			const cv::Scalar color =
 				face.match_database_index < 0 ?

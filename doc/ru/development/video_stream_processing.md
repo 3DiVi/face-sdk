@@ -110,9 +110,10 @@ VideoWorker video_worker = service.createVideoWorker(
 * `video_worker_lbf.xml` с набором точек *singlelbf*
 * `video_worker_fda.xml` с набором точек *fda*
 
-и два конфигурационных файла, использующие алгоритм трекинга из `fda_tracker_capturer.xml`:
+и три конфигурационных файла, использующие алгоритм трекинга из `fda_tracker_capturer.xml`:
 * `video_worker_fdatracker.xml` с набором точек *fda*
 * `video_worker_fdatracker_fake_detector.xml` с набором точек *fda*  
+* `video_worker_fdatracker_blf_fda.xml` с набором точек *fda*
 
 (см. [Антропометрические точки](face_capturing.md#антропометрические-точки), [Класс Capturer](face_capturing.md#класс-capturer))
 

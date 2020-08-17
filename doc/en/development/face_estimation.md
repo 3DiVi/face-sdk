@@ -21,7 +21,13 @@ At the moment, there are two quality estimation interfaces: `QualityEstimator` a
 
 ### QualityEstimator
 
-To create the `QualityEstimator` object, call the `FacerecService.createQualityEstimator` method by passing the configuration file. Currently, there is only one configuration file, which is *quality_estimator.xml*. With `QualityEstimator` you can estimate the quality of a captured face using `QualityEstimator.estimateQuality`. The result is the `QualityEstimator.Quality` structure that contains estimated flare, lighting, noise, and sharpness level. See the example of using the `QualityEstimator` in [demo.cpp](../../../examples/cpp/demo/demo.cpp).
+To create the `QualityEstimator` object, call the `FacerecService.createQualityEstimator` method by passing the configuration file. Currently, two configuration files are available:
+* `quality_estimator.xml` – first implementation of the *QualityEstimator* quality estimation interface 
+* `quality_estimator_iso.xml` (recommended) – improved version of the *QualityEstimator* quality estimation interface, provides higher accuracy of quality estimation 
+
+With `QualityEstimator` you can estimate the quality of a captured face using `QualityEstimator.estimateQuality`. The result is the `QualityEstimator.Quality` structure that contains estimated flare, lighting, noise, and sharpness level. 
+
+See the example of using the `QualityEstimator` in [demo.cpp](../../../examples/cpp/demo/demo.cpp).
 
 ### FaceQualityEstimator
 
@@ -29,7 +35,7 @@ To create the `FaceQualityEstimator` object, call the `FacerecService.createFace
 
 ## Liveness
 
-The main purpose of liveness estimation is to prevent spoofing attacks (using a photo of a person instead of a real face). Currently, you can estimate liveness in one of two ways - [by processing a depth map](#depthlivenessestimator) or [by processing an RGB image](#livenessestimator) from your camera.
+The main purpose of liveness estimation is to prevent spoofing attacks (using a photo of a person instead of a real face). Currently, you can estimate liveness in one of three ways - [by processing a depth map](#depthlivenessestimator), [by processing an IR image](#irlivenessestimator) or [by processing an RGB image](#livenessestimator) from your camera.
 
 Learn how to estimate liveness of a face in our tutorial [Liveness Detection](../tutorials/liveness_detection.md).
 
@@ -47,6 +53,15 @@ To get an estimated result, you can call the `pbio.DepthLivenessEstimator.estima
   * `DepthLivenessEstimator.NOT_ENOUGH_DATA` – too many missing depth values on the depth map.
   * `DepthLivenessEstimator.REAL` – the observed face belongs to a living person.
   * `DepthLivenessEstimator.FAKE` – the observed face is taken from a photo.
+
+### IRLivenessEstimator 
+
+To estimate liveness using an infrared image from a camera, you should create the `IRLivenessEstimator` object using the `FacerecService.createIRLivenessEstimator` method. Currently, only one configuration file is available – *ir_liveness_estimator_cnn.xml* (implementation based on neural networks). To use this algorithm, you have to get color frames from the camera in addition to the IR frames.
+
+To get an estimated result, you can call the `IRLivenessEstimator.estimateLiveness` method. You will get one of the following results:
+* `IRLivenessEstimator.Liveness.NOT_ENOUGH_DATA` – too many missing values in the IR image.
+* `IRLivenessEstimator.Liveness.REAL` – the observed face belongs to a living person.
+* `IRLivenessEstimator.Liveness.FAKE` – the observed face is taken from a photo.
 
 ### LivenessEstimator
 

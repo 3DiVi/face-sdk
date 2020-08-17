@@ -12,6 +12,7 @@ class AgeGenderEstimatorImpl;
 class CameraCalibratorImpl;
 class CapturerImpl;
 class DepthLivenessEstimatorImpl;
+class IRLivenessEstimatorImpl;
 class EmotionsEstimatorImpl;
 class FaceQualityEstimatorImpl;
 class LivenessEstimatorImpl;
@@ -381,6 +382,43 @@ namespace capi {
 			depth_unit_in_millimeters, \
 			depth_data, \
 			depth_data_stride_in_bytes, \
+			stream_id, \
+			timestamp_microsec, \
+			out_exception \
+		), \
+		) \
+	\
+	decl( \
+		void, \
+		VideoWorker_addIRFrame, \
+		( \
+			void* video_worker, \
+			const int32_t ir_frame_rows, \
+			const int32_t ir_frame_cols, \
+			const float ir_frame_2_image_offset_x, \
+			const float ir_frame_2_image_offset_y, \
+			const float ir_frame_2_image_scale_x, \
+			const float ir_frame_2_image_scale_y, \
+			const float ir_horizontal_fov, \
+			const float ir_vertical_fov, \
+			uint16_t const* const ir_frame_data, \
+			int32_t ir_data_stride_in_bytes, \
+			int32_t stream_id, \
+			const uint64_t timestamp_microsec, \
+			void** out_exception \
+		), \
+		( \
+			video_worker, \
+			ir_frame_rows, \
+			ir_frame_cols, \
+			ir_frame_2_image_offset_x, \
+			ir_frame_2_image_offset_y, \
+			ir_frame_2_image_scale_x, \
+			ir_frame_2_image_scale_y, \
+			ir_horizontal_fov, \
+			ir_vertical_fov, \
+			ir_frame_data, \
+			ir_data_stride_in_bytes, \
 			stream_id, \
 			timestamp_microsec, \
 			out_exception \
@@ -787,6 +825,41 @@ namespace capi {
 			depth_unit_in_millimeters, \
 			depth_data, \
 			depth_data_stride_in_bytes, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
+		int32_t, \
+		IRLivenessEstimator_estimateLiveness, \
+		( \
+			void* ir_liveness_estimator, \
+			pbio::facerec::RawSampleImpl const* raw_sample, \
+			int32_t ir_frame_rows, \
+			int32_t ir_frame_cols, \
+			float ir_frame_2_image_offset_x, \
+			float ir_frame_2_image_offset_y, \
+			float ir_frame_2_image_scale_x, \
+			float ir_frame_2_image_scale_y, \
+			float ir_horizontal_fov, \
+			float ir_vertical_fov, \
+			uint16_t const* ir_frame_data, \
+			int32_t ir_data_stride_in_bytes, \
+			void** out_exception \
+		), \
+		( \
+			ir_liveness_estimator, \
+			raw_sample, \
+			ir_frame_rows, \
+			ir_frame_cols, \
+			ir_frame_2_image_offset_x, \
+			ir_frame_2_image_offset_y, \
+			ir_frame_2_image_scale_x, \
+			ir_frame_2_image_scale_y, \
+			ir_horizontal_fov, \
+			ir_vertical_fov, \
+			ir_frame_data, \
+			ir_data_stride_in_bytes, \
 			out_exception \
 		), \
 		return ) \
@@ -2586,6 +2659,27 @@ namespace capi {
 	decl( \
 		pbio::facerec::DepthLivenessEstimatorImpl*, \
 		FacerecService_createDepthLivenessEstimatorE, \
+		( \
+			void* service, \
+			const char* ini_file, \
+			const int32_t overridden_count, \
+			char const* const* const overridden_keys, \
+			double const* const overridden_values, \
+			void** out_exception \
+		), \
+		( \
+			service, \
+			ini_file, \
+			overridden_count, \
+			overridden_keys, \
+			overridden_values, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
+		pbio::facerec::IRLivenessEstimatorImpl*, \
+		FacerecService_createIRLivenessEstimatorE, \
 		( \
 			void* service, \
 			const char* ini_file, \

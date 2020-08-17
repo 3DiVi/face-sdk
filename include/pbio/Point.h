@@ -5,9 +5,9 @@
 namespace pbio
 {
 	/** \~English
-		\brief 2D point.
+		\brief 3D point.
 		\~Russian
-		\brief 2D-точка.
+		\brief 3D-точка.
 	*/
 	struct Point
 	{
@@ -23,7 +23,13 @@ namespace pbio
 			\~Russian
 			\brief Координата Y.
 		*/ 
-		float y;  
+		float y;
+		/** \~English
+			\brief Z coordinate.
+			\~Russian
+			\brief Координата Z.
+		*/
+		float z;
 	};
 
 }  // pbio namespace

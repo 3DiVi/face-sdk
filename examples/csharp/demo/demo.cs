@@ -60,7 +60,7 @@ class Worker
 		_tracker = _service.createCapturer(
 			(new FacerecService.Config(capturer_conf))
 				.overrideParameter("downscale_rawsamples_to_preferred_size", 0));
-		_quality_estimator = _service.createQualityEstimator("quality_estimator.xml");
+		_quality_estimator = _service.createQualityEstimator("quality_estimator_iso.xml");
 		_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator.xml");
 		_emotions_estimator = _service.createEmotionsEstimator("emotions_estimator.xml");
 		_face_quality_estimator = _service.createFaceQualityEstimator("face_quality_estimator.xml");

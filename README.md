@@ -9,10 +9,10 @@
 **3DiVi Face SDK** is a set of software components (code libraries) for building face recognition solutions of any complexity – from a simple app to portals like Azure Face API or AWS Rekognition.
 
 Face SDK supports the following features:
-* [Face Capturing](doc/en/development/face_capturing.md) – face detection and tracking on images and video
-* [Face Identification](doc/en/development/face_identification.md) – face recognition on images and video
-* [Face Estimation](doc/en/development/face_estimation.md)  – face estimation (gender, age, emotions, liveness) on images and video
-* [Video Stream Processing](doc/en/development/video_stream_processing.md)  – face detection, tracking and recognition in video streams
+* [Face detection and tracking](doc/en/development/face_capturing.md) on images and videos
+* [Face recognition](doc/en/development/face_identification.md) on images and videos
+* [Face estimation](doc/en/development/face_estimation.md)(gender, age, emotions, liveness) on images and videos
+* [Video stream processing](doc/en/development/video_stream_processing.md)  – face detection, tracking and recognition in video streams
 
 # Supported platforms and API
 
@@ -25,10 +25,9 @@ Currently, the following platforms and architectures are supported:
 
 Face SDK provides the following APIs:
 
-* C++ API (for Windows, Linux, Android)
+* C++ API (for Windows, Linux, Android, iOS)
 * Java wrapper (for Windows, Linux, Android)
 * C# wrapper (for Windows, Linux)
-* Objective-C wrapper (for iOS)
 
 # Introduction to Face SDK
 
@@ -42,6 +41,8 @@ Face SDK provides the following APIs:
 # Face SDK Trial 
 
 To get started with Face SDK, download free [Face SDK Trial](https://face.3divi.com/products/face_sdk/face_sdk_trial).  
+
+_**Note**_: The Trial license is not supported on iOS. Please contact us at face@3divi.com to get the free trial for iOS._
 
 To remove trial limitations, you need to purchase *Face SDK license* and *Developer Pack* that is a great tool for developers interested in integrating SDK into their project with less efforts and less expense. For a small flat fee you get a sufficient number of development licenses, free test licenses, and also an Advanced Support which includes a priority chat channel with our senior developers. You can license any set of [Components](doc/en/components.md) depending on your use case.  
 
@@ -78,6 +79,27 @@ When extracting the archive, specify the path to the Face SDK root – the folde
 * [Memory Management](doc/en/development/memory_management.md) – memory management in C++/C#/Java
 * [Guidelines for Cameras](doc/en/guidelines_for_cameras.md) – camera positioning and shooting, recommended cameras
 * [Face SDK Cross-Platform API. Latest Doxygen Output](http://download.3divi.com/facesdk/0d88ba7c-9a5d-45cd-897a-406fb1fca2d4/latest_docs/english/annotated.html) 
+
+# How can I propose changes to Face SDK? 
+
+If you've noticed a bug in our software or you'd like to propose a new feature to Face SDK, you can create an issue and our developers will take a look at your request. To do this: 
+1. Go to the **Issues** tab and click **New issue**. 
+2. Name your issue and describe it in detail.
+3. When you're finished, click **Submit new issue**.
+
+We're always looking forward to your feedback! 
+
+[Learn more about issues on GitHub](https://docs.github.com/en/github/managing-your-work-on-github/creating-an-issue). 
+
+# How can I propose changes to Face SDK documentation?
+
+1. Fork this repository by clicking **Fork** in the top right corner of the page. 
+2. In a forked repository, make changes to a file and click **Commit changes**. 
+3. After making all changes, you'll see the message *"This branch is ... commits ahead of 3DiVi:master."* at the top of the forked repository. Click **Compare** to view the changes (don't forget to select the repositories and branches). 
+4. If everything is correct and you're ready to propose changes, click **Create pull request**. 
+5. Name your pull request and describe your changes. Then, click **Create Pull Request** once again. 
+
+[Learn more about pull requests on GitHub](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).  
 
 # Open Source Licenses
 
