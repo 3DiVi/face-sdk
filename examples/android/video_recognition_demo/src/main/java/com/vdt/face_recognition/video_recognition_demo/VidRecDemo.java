@@ -47,7 +47,6 @@ public class VidRecDemo implements TheCameraPainter{
 
 	private static String TAG = "VidRecDemo";
 	private static final String SETTINGS_NAME = "SETTINGS";
-	private static final String DATABASE_DIR = "/sdcard/face_recognition/database/";
 
 	private MainActivity activity;
 	private ImageView mainImageView = null;
@@ -57,6 +56,9 @@ public class VidRecDemo implements TheCameraPainter{
 	private Capturer capturer = null;
 	private VideoWorker videoWorker = null;
 	private Database db =  null;
+
+	//This thread used for background async initialization of some Face SDK components for speedup.
+	private Thread init_thread;
 
 	private String method_recognizer;
 	private float threshold;
@@ -74,71 +76,96 @@ public class VidRecDemo implements TheCameraPainter{
 
 
 	public VidRecDemo(
-		MainActivity activity)
+			final MainActivity activity)
 	{
 		this.activity = activity;
 
-		final FacerecService service = MainActivity.getService();
+		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
 
-		// create Capturer
-		FacerecService.Config capturer_conf = service.new Config("common_capturer4_singleface.xml");
-		capturer = service.createCapturer(capturer_conf);
-
+		Log.v(TAG, "Start VidRecDemo" );
 		SharedPreferences shared_settings = activity.getSharedPreferences(SETTINGS_NAME, 0);
 
 		// get recognizer settings
 		int method_index = shared_settings.getInt("method index", 0);
 		switch (method_index){
 			case 0:
-				method_recognizer = shared_settings.getString("rec_method0", null);
-				threshold = Float.parseFloat(shared_settings.getString("threshold0", null));
+				method_recognizer = shared_settings.getString("rec_method0", "method9v30_recognizer.xml" );
+				threshold = Float.parseFloat(shared_settings.getString("threshold0", "6800"));
 				break;
-			case 1:
-				method_recognizer = shared_settings.getString("rec_method1", null);
-				threshold = Float.parseFloat(shared_settings.getString("threshold1", null));
+			default:
+				method_recognizer = shared_settings.getString("rec_method1", "method8v7_recognizer.xml" );
+				threshold = Float.parseFloat(shared_settings.getString("threshold1", "7000" ));
 				break;
 		}
 
+		final FacerecService service = MainActivity.getService();
+		Log.v(TAG, "Loaded settings" );
+
+		Log.v(TAG, "Starting init thread" );
+		init_thread = new Thread(new Runnable() {
+			public void run() {
+				synchronized (init_thread){
+					// create Capturer
+					FacerecService.Config capturer_conf = service.new Config("common_capturer4_fda_singleface.xml");
+					capturer = service.createCapturer(capturer_conf);
+					Log.v(TAG, "init thread: created capturer1" );
+
+					// create manual_capturer and recognizer
+					FacerecService.Config manual_capturer_conf = service.new Config("manual_capturer_fda.xml");
+					final Recognizer recognizer = service.createRecognizer(method_recognizer, false, false, false);
+					Log.v(TAG, "init thread: created recognizer " + method_recognizer );
+
+					final Capturer manual_capturer = service.createCapturer(manual_capturer_conf);
+					Log.v(TAG, "init thread: created capturer2" );
+
+					// create database
+					db = new Database( activity, activity.getApplicationInfo().dataDir + "/fsdk/database", recognizer, manual_capturer, capturer, threshold);
+					Log.v(TAG, "init thread: created db" );
+
+					// free resources
+					recognizer.dispose();
+					manual_capturer.dispose();
+					Log.v(TAG, "init thread: done" );
+				}
+			}
+		});
+
+		init_thread.start();
+
+
+
 		//create videoWorker
+		Log.v(TAG, "creating worker");
 		videoWorker = service.createVideoWorker(
-			new VideoWorker.Params()
-				.video_worker_config(
-					service.new Config("video_worker_fdatracker.xml")
-						.overrideParameter("search_k", 10)
-						.overrideParameter("downscale_rawsamples_to_preferred_size", 0)
-					)
-				.recognizer_ini_file(method_recognizer)
-				.streams_count(1)
-				.processing_threads_count(1)
-				.matching_threads_count(1)
-				// .age_gender_estimation_threads_count(1)
-				// .emotions_estimation_threads_count(1)
-				.short_time_identification_enabled(true)
-				.short_time_identification_distance_threshold(threshold)
-				.short_time_identification_outdate_time_seconds(5)
-			);
+				new VideoWorker.Params()
+						.video_worker_config(
+								service.new Config("video_worker_fdatracker.xml")
+										.overrideParameter("search_k", 10)
+										.overrideParameter("recognizer_processing_less_memory_consumption", 0)
+										.overrideParameter("downscale_rawsamples_to_preferred_size", 0)
+						)
+						.recognizer_ini_file(method_recognizer)
+						.streams_count(1)
+						.processing_threads_count(1)
+						.matching_threads_count(1)
+						// .age_gender_estimation_threads_count(1)
+						// .emotions_estimation_threads_count(1)
+						.short_time_identification_enabled(true)
+						.short_time_identification_distance_threshold(threshold)
+						.short_time_identification_outdate_time_seconds(5)
+		);
 
 		//add callbacks
 		tracking_callback_id = videoWorker.addTrackingCallbackU(new TrackingCallbacker());
 		tracking_lost_callback_id = videoWorker.addTrackingLostCallbackU(new TrackingLostCallbacker());
 		match_found_callback_id = videoWorker.addMatchFoundCallbackU(new MatchFoundCallbacker());
 		sti_person_outdated_callback_id = videoWorker.addStiPersonOutdatedCallbackU(new StiPersonOutdatedCallbacker());
+		Log.v(TAG, "creating worker done" );
 
-		// create manual_capturer and recognizer
-		FacerecService.Config manual_capturer_conf = service.new Config("manual_capturer.xml");
-		final Recognizer recognizer = service.createRecognizer(method_recognizer, true, false, false);
-		final Capturer manual_capturer = service.createCapturer(manual_capturer_conf);
-
-		// create database
-		db = new Database(activity, DATABASE_DIR, recognizer, manual_capturer, capturer, threshold);
-		videoWorker.setDatabase(db.vw_elements, Recognizer.SearchAccelerationType.SEARCH_ACCELERATION_1);
-
-		// free resources
-		recognizer.dispose();
-		manual_capturer.dispose();
-
-		// clearImageViews(0);
-		// clearDrawingData();
+		synchronized ( init_thread ){
+			videoWorker.setDatabase(db.vw_elements, Recognizer.SearchAccelerationType.SEARCH_ACCELERATION_1);
+		}
+		Log.v(TAG, "setting worker db done" );
 	}
 
 

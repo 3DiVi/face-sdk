@@ -8,7 +8,7 @@ In this section, you can find the tutorials that can help you to put into practi
 * [Face Recognition in a Video Stream](face_recognition_in_a_video_stream.md)
 * [Liveness Detection](liveness_detection.md)
 * [Developing Apps for iOS](developing_apps_for_ios.md)
-* [Detection of Masked Faces](detection_of_faces_in_masks.md)
+* [Detection and Recognition of Masked Faces](detection_and_recognition_of_masked_faces.md)
 
 You can find the finished tutorial projects in the Face SDK distribution package: a path to a corresponding project is mentioned in the beginning of each tutorial. 
 

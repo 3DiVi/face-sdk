@@ -46,8 +46,6 @@ public class MainActivity extends Activity
 	private VidRecDemo vr_demo = null;
 	private TheCamera camera = null;
 
-	String online_licence_dir = null;
-
 	private String[] permissions_str = new String[] {
 		Manifest.permission.CAMERA,
 		Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -66,17 +64,6 @@ public class MainActivity extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
-		// if directory with online licence exists
-		// then use it
-		// otherwise use default offline licence
-		String buf = "/sdcard/face_recognition/online_license";
-		if ((new File(buf)).exists()) {
-			online_licence_dir = buf;
-		}
-		else {
-			online_licence_dir = "";
-		}
 
 		init_settings();
 
@@ -115,10 +102,23 @@ public class MainActivity extends Activity
 
 		service = FacerecService.createService(
 			getApplicationInfo().nativeLibraryDir + "/libfacerec.so",
-			"/sdcard/face_recognition/conf/facerec",
-			online_licence_dir);
+			getApplicationInfo().dataDir + "/fsdk/conf/facerec",
+			getApplicationInfo().dataDir + "/fsdk/license");
 
-		FacerecService.LicenseState license_state = service.getLicenseState();
+		FacerecService.LicenseState license_state;
+		try
+		{
+			license_state = service.getLicenseState();
+		}
+		catch(Exception e)
+		{
+			// just ignore any exception here
+			//  this is workaround of rare error caused by incorret
+			//  previous shutdown of the application
+			Log.i(TAG, "workaround catch '" + e.getMessage() + "'");
+			license_state = service.getLicenseState();
+		}
+
 		Log.i(TAG, "license_state.online            = " + Boolean.toString(license_state.online));
 		Log.i(TAG, "license_state.android_app_id    = " + license_state.android_app_id);
 		Log.i(TAG, "license_state.ios_app_id        = " + license_state.ios_app_id);
@@ -223,21 +223,31 @@ public class MainActivity extends Activity
 		shared_settings = getSharedPreferences(SETTINGS_NAME, 0);
 		SharedPreferences.Editor editor = shared_settings.edit();
 
+		final SharedPreferences shared_settings = getSharedPreferences(SETTINGS_NAME, 0);
+
 		// init settings with default values, if keys is not represented yet
 		editor.putInt 		("camera id", shared_settings.getInt("camera", 1));
 		editor.putString 	("resolution", shared_settings.getString("resolution", "640x480"));
-		editor.putString	("rec_method1", shared_settings.getString("rec_method0", "method9v30_recognizer.xml"));
-		editor.putString	("rec_method0", shared_settings.getString("rec_method1", "method6v7_recognizer.xml"));
-		editor.putString	("threshold1", shared_settings.getString("threshold0", "6800"));
-		editor.putString	("threshold0", shared_settings.getString("threshold1", "7000"));
+
+		//fastest recognizer
+		editor.putString	("rec_method0", shared_settings.getString("rec_method0", "method9v30_recognizer.xml"));
+		//fastest recognizer for mask wearing
+		//editor.putString	("rec_method0", shared_settings.getString("rec_method0", "method9v30mask_recognizer.xml"));
+		//recognizer for fastest loading
+		editor.putString	("rec_method1", shared_settings.getString("rec_method1", "method8v7_recognizer.xml"));
+		//recognizer for better indetification quality
+		//editor.putString	("rec_method1", shared_settings.getString("rec_method1", "method6v7_recognizer.xml"));
+
+		editor.putString	("threshold0", shared_settings.getString("threshold0", "6800"));
+		editor.putString	("threshold1", shared_settings.getString("threshold1", "7000"));
 		editor.putInt 		("method index", shared_settings.getInt("method index", 0));
+
 
 		// init runtime variables
 		editor.putBoolean	("recognizer_updated", false);
 		editor.putBoolean	("capturer_updated", false);
 
 		editor.commit();
-
 	}
 
 

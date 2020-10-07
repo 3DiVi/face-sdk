@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<License>
+	<name>3DiVi Face SDK License</name>
+	<cc>Face SDK Demo License (c)3DiVi.com</cc>
+	<note>For Demo and Testing Only!</note>
+	<version>3.4.0.0</version>
+	<VideoClientExt>1</VideoClientExt>
+	<processor8v7>2</processor8v7>
+	<processor6v7>2</processor6v7>
+	<processor9v30>2</processor9v30>
+	<processor9v30mask>2</processor9v30mask>
+	<matcher8v7>1</matcher8v7>
+	<matcher6v7>1</matcher6v7>
+	<matcher9v30>1</matcher9v30>
+	<matcher9v30mask>1</matcher9v30mask>
+	<templatesindex8v7>100</templatesindex8v7>
+	<templatesindex6v7>100</templatesindex6v7>
+	<templatesindex9v30>100</templatesindex9v30>
+	<templatesindex9v30mask>100</templatesindex9v30mask>
+	<quality_estimator>1</quality_estimator>
+	<face_quality_estimator>1</face_quality_estimator>
+	<capturer1>1</capturer1>
+	<capturer2>1</capturer2>
+	<capturer4>1</capturer4>
+	<manual_capturer>1</manual_capturer>
+	<cvc_capturer>1</cvc_capturer>
+	<video_capturer>1</video_capturer>
+	<profile_capturer>1</profile_capturer>
+	<static_capturer>1</static_capturer>
+	<depth_liveness_estimator>1</depth_liveness_estimator>
+	<ir_liveness_estimator>1</ir_liveness_estimator>
+	<Reg>0</Reg>
+	<android_app_id>62afa60849efabf4f39e8e81d765431a2c6fa6d244ea86caf278c2b4d6984d23-com.vdt.face_recognition.video_recognition_demo</android_app_id>
+	<Hardware>0f77c6ae59a1db75969fadef1937c151cb5a4c98db81735cb64cf3626109610d</Hardware>
+	<Signature>&#10;-----BEGIN SIGNATURE-----&#10;mQwRLhnGG2gnb2nlOnGyzC6AUOCaDoSANuKYYr2UPblxydrDONfpqXSOIiSN5iZM&#10;dyyO0T3Uq0DWguTdrifNAPV60SV6W6EK146ULHx1Nx/MMU4ibDLVj6KWaOG++NYw&#10;KDjG9HzeF5h0PV0Vf0WqvL9Dce2Mz+AbHsPRrAaQlANRpg/qkgKVuMeJiHGpk1ai&#10;2GGlbzbSw8SnBh/fgHxLOijXG3ZNgIlBg7EmTfz9IuaLZkGo057r0bAQMbRtpepw&#10;V+r6fmvuchikbeYSJ34PfSsxgCXUvJznlO3Lzg7rhQhXFXKiTfOrOEN5HPgN/bjI&#10;JNHUQtiYqr5cHQlY1oUfbA==&#10;-----END SIGNATURE-----&#10;</Signature>
+</License>

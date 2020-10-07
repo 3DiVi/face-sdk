@@ -52,8 +52,7 @@ public class MainActivity extends Activity
 	private boolean [] flags;
 	private int faceCutTypeId;
 
-	String online_licence_dir = null;
-
+	
 
 
 
@@ -77,16 +76,6 @@ public class MainActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 
-		// if directory with online licence exists
-		// then use it
-		// otherwise use default offline licence
-		String buf = "/sdcard/face_recognition/online_license";
-		if ((new File(buf)).exists()) {
-			online_licence_dir = buf;
-		}
-		else {
-			online_licence_dir = "";
-		}
 
 
 		// view persmissions status
@@ -124,10 +113,22 @@ public class MainActivity extends Activity
 
 		FacerecService service = FacerecService.createService(
 			getApplicationInfo().nativeLibraryDir + "/libfacerec.so",
-			"/sdcard/face_recognition/conf/facerec",
-			online_licence_dir);
+			getApplicationInfo().dataDir + "/fsdk/conf/facerec",
+			getApplicationInfo().dataDir + "/fsdk/license");
 
-		FacerecService.LicenseState license_state = service.getLicenseState();
+		FacerecService.LicenseState license_state;
+		try
+		{
+			license_state = service.getLicenseState();
+		}
+		catch(Exception e)
+		{
+			// just ignore any exception here
+			//  this is workaround of rare error caused by incorret
+			//  previous shutdown of the application
+			Log.i(TAG, "workaround catch '" + e.getMessage() + "'");
+			license_state = service.getLicenseState();
+		}
 		Log.i(TAG, "license_state.online            = " + Boolean.toString(license_state.online));
 		Log.i(TAG, "license_state.android_app_id    = " + license_state.android_app_id);
 		Log.i(TAG, "license_state.ios_app_id        = " + license_state.ios_app_id);

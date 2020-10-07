@@ -30,7 +30,7 @@ In some cases, the latest SDK version may contain updates not for all groups of 
 
 **Identification methods by use cases depending on Face SDK version**
 
-|  Use case/SDK version    |    SDK-2.0   |   SDK-2.1   |   SDK-2.2   |   SDK-2.3   |   SDK-2.5  |   SDK-3.0   |   SDK-3.1   |   SDK-3.3        |  SDK-3.3        |
+|  Use case/SDK version    |    SDK-2.0   |   SDK-2.1   |   SDK-2.2   |   SDK-2.3   |   SDK-2.5  |   SDK-3.0   |   SDK-3.1   |   SDK-3.3        |  SDK-3.4        |
 | -------------------------- | -------- | ------- | ------- | ------- | ------ | ------- | ------- | ------------ | ------------ |
 | Expert systems         | method7      | method7     |   method7v2   |   method7v3   | method7v6    |  method7v6    |    method7v7  |method9v300<br>method9v1000|method9v300<br>method9v1000<br>method9v300mask<br>method9v1000mask|
 | Identification in a video stream | method6v2      | method6v3     |   method6v4   |   method6v5   | method6v6    | method6v6     |    method6v7  | method6v7          | method6v7             |
@@ -69,6 +69,8 @@ The following configuration files can be used for recognition of masked faces:
 
 These methods provide better identification quality of masked faces.
 For example, the standard 9v1000 method provides TAR=0.72 for masked faces, and the optimized 9v1000mask method provides TAR=0.85 at FAR=1E-6
+
+_**Note**: Learn how to detect and recognize masked faces in our [tutorial](../tutorials/detection_and_recognition_of_masked_faces.md)._
 
 Using the `Recognizer` object you can:
 

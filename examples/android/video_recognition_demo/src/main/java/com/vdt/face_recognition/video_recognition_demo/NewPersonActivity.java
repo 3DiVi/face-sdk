@@ -24,11 +24,13 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.vdt.face_recognition.sdk.Capturer;
+import com.vdt.face_recognition.sdk.Recognizer;
 import com.vdt.face_recognition.sdk.FaceQualityEstimator;
 import com.vdt.face_recognition.sdk.FacerecService;
 import com.vdt.face_recognition.sdk.Point;
 import com.vdt.face_recognition.sdk.RawImage;
 import com.vdt.face_recognition.sdk.RawSample;
+import com.vdt.face_recognition.sdk.Template;
 import com.vdt.face_recognition.sdk.utils.Converter_YUV_NV_2_ARGB;
 
 import com.vdt.face_recognition.video_recognition_demo.TheCamera;
@@ -39,10 +41,10 @@ public class NewPersonActivity extends Activity implements TheCameraPainter{
 
 	private static final String TAG = "NewPerson";
 	private static final String SETTINGS_NAME = "SETTINGS";
-	private static final String DATABASE_DIR = "/sdcard/face_recognition/database/";
 
 	private TheCamera camera = null;
 	private Capturer capturer = null;
+	private Recognizer recognizer = null;
 	private FaceQualityEstimator faceQualityEstimator = null;
 
 	private ImageView mainImageView = null;
@@ -56,6 +58,7 @@ public class NewPersonActivity extends Activity implements TheCameraPainter{
 	private Bitmap bestFaceCut = null;
 	private float bestFaceQuality = -Float.MAX_VALUE;
 	private Vector<Point> bestFacePoints = null;
+	private Template bestFaceTemplate = null;
 
 	private String points_postfix = ".detected_points.txt";
 
@@ -72,6 +75,20 @@ public class NewPersonActivity extends Activity implements TheCameraPainter{
 		bestFaceImageView 		= (ImageView) findViewById(R.id.bestFaceImageView);
 
 		final FacerecService service = MainActivity.getService();
+
+		final SharedPreferences shared_settings = getSharedPreferences(SETTINGS_NAME, 0);
+		//init Recognizer
+		int method_index = shared_settings.getInt("method index", 0);
+		String method_recognizer = null;
+		switch (method_index){
+			case 0:
+				method_recognizer = shared_settings.getString("rec_method0", null);
+				break;
+			case 1:
+				method_recognizer = shared_settings.getString("rec_method1", null);
+				break;
+		}
+		recognizer = service.createRecognizer(method_recognizer, true, false, false);
 
 		//init capturer
 		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer.xml");
@@ -96,6 +113,8 @@ public class NewPersonActivity extends Activity implements TheCameraPainter{
 				}
 
 				try{
+					final String DATABASE_DIR = getApplicationInfo().dataDir + "/fsdk/database/";
+
 					//directory new person
 					File new_person_dir = new File(DATABASE_DIR,name);
 
@@ -143,6 +162,11 @@ public class NewPersonActivity extends Activity implements TheCameraPainter{
 					FileOutputStream out = new FileOutputStream(new_photo_filename);
 					bestImage.compress(Bitmap.CompressFormat.JPEG, 100, out);
 
+					if( bestFaceTemplate != null ){
+						final String template_filename = new_photo_file.getAbsolutePath()  + ".template_" + recognizer.getMethodName();
+						FileOutputStream template_file = new FileOutputStream(template_filename);
+						bestFaceTemplate.save(template_file);
+					}
 				}catch(IOException e){
 					e.printStackTrace();
 				}
@@ -217,8 +241,8 @@ public class NewPersonActivity extends Activity implements TheCameraPainter{
 			bestFacePoints = sample.getLandmarks();
 			bestImage = immut_bitmap.copy(immut_bitmap.getConfig(), true);
 			bestFaceImageView.setImageBitmap(bestFaceCut);
+			bestFaceTemplate = recognizer.processing(sample);
 		}
-
 	}
 
 

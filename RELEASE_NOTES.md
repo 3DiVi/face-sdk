@@ -1,5 +1,13 @@
 # Release Notes
 
+## 3.4.1 (07 Oct 2020)
+
+### Bug Fixes and Improvements
+
+* Updated the tutorial project for iOS
+* Fixed demo for Android 11: added the use of scoped storage
+
+
 ## 3.4.0 (10 Aug 2020)
 
 ### What's new

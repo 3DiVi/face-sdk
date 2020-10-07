@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -30,6 +31,8 @@ import com.vdt.face_recognition.sdk.Recognizer;
 import com.vdt.face_recognition.sdk.Template;
 import com.vdt.face_recognition.sdk.VideoWorker;
 
+import static android.os.ParcelFileDescriptor.MODE_WORLD_READABLE;
+
 
 public class Database{
 
@@ -43,6 +46,21 @@ public class Database{
 	public Vector<Bitmap> thumbnails = new Vector<Bitmap>();
 	public Vector<String> names = new Vector<String>();
 
+	private boolean isImage( String filename ){
+		final String[] okFileExtensions = new String[] {
+				"jpg",
+				"png",
+				"gif",
+				"bmp",
+				"jpeg"
+		};
+		for (String extension: okFileExtensions) {
+			if (filename.toLowerCase().endsWith(extension)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public Database(
 		final MainActivity activity,
@@ -96,21 +114,13 @@ public class Database{
 			for (File file : dir.listFiles()){
 
 				final String filename = file.getName();
-				if(filename.equals("name.txt"))
-				{
+
+				if( !isImage(filename) )
 					continue;
-				}
-				int filename_len = filename.length();
-				if(filename_len > 20)
-				{
-					if(filename.substring(filename_len - 20, filename_len).equals(".detected_points.txt"))
-					{
-						continue;
-					}
-				}
 
 				// get sample via manualCaptures or capture
 				final File points_file = new File(file.getAbsolutePath() + ".detected_points.txt");
+				final File template_file = new File(file.getAbsolutePath() + ".template_" + recognizer.getMethodName() );
 				RawSample sample;
 				byte[] byte_image;
 				try {
@@ -187,7 +197,19 @@ public class Database{
 					}
 				}
 
-				final Template templ = recognizer.processing(sample);
+				Template templ = null;
+ 				if(!template_file.exists()){
+					showErrorMessage("Can not open " + template_file.getName() + "\nPlease clear the Database(" + db_dir +  ") and register users again!");
+					continue;
+				} else {
+					try {
+						FileInputStream stream = new FileInputStream(template_file);
+						templ = recognizer.loadTemplate(stream);
+					} catch( FileNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
+
 
 				//prepare data for VideoWorker
 				VideoWorker.DatabaseElement vw_elem = new VideoWorker.DatabaseElement(

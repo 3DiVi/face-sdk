@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId "com.vdt.face_recognition.video_recognition_demo"
         minSdkVersion 14
-        targetSdkVersion 28 // API 29 and higher is not supported currently
+        targetSdkVersion 29
     }
 
     buildTypes {
@@ -28,4 +28,37 @@ android {
         }
     }
 
+
+//Insert unique string into asest to avoid copy assets to data folder every time on load app.
+//Checking this unique string in UnpackAssetsActivity
+    task computeAssetsHash() {
+        doLast {
+            mkdir("$projectDir/src/main/assets/")
+            new File(  "$projectDir/src/main/assets/", "assets-hash.txt").text = 
+                """Buildtime: ${new Date().format("YYYY:MM:dd:HH:mm:ss", TimeZone.getTimeZone("GMT"))}"""
+        }
+    }
+
+
+    task copyFiles(type: Copy) {
+        description = 'Copy files'
+        from("$projectDir/../../.."){
+            include (
+                "conf/**",
+                "share/fda/**",
+                "share/facedetectors/config_lbf/**",
+                "share/quality/**",
+                "share/quality_iso/**",
+                "share/face_quality/**",
+                "share/facerec/recognizers/method9v30/**",
+                "share/facerec/recognizers/method9v30mask/**",
+                "share/facerec/recognizers/method8v7/**",
+                "share/facerec/recognizers/method6v7/**",
+                "license/**"
+            )
+        }
+        into "$projectDir/src/main/assets/"
+    }
+
+    preBuild.dependsOn computeAssetsHash, copyFiles
 }
