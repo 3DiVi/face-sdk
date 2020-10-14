@@ -16,7 +16,7 @@
 
 ## Детекция лиц
 
-_**Примечание:** Узнайте, как детектировать лица в масках, [в нашем туториале](/doc/ru/tutorials/detection_of_faces_in_masks.md)._
+_**Примечание:** Узнайте, как детектировать лица в масках, [в нашем туториале](/doc/ru/tutorials/detection_and_recognition_of_masked_faces.md)._
 
 Объект `VideoWorker` может быть создан с помощью метода `FacerecService.createVideoWorker`.
 

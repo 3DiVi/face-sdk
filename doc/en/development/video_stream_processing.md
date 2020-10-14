@@ -16,7 +16,7 @@ Learn how to recognize faces in a video stream in our tutorial [Face Recognition
 
 ## Tracking Faces
 
-_**Note:** Learn how to detect masked faces [in our tutorial](/doc/en/tutorials/detection_of_faces_in_masks.md)._
+_**Note:** Learn how to detect masked faces [in our tutorial](/doc/en/tutorials/detection_and_recognition_of_masked_faces.md)._
 
 `VideoWorker` can be created with `FacerecService.createVideoWorker`.
 
