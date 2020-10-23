@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<age_gender_impl_name>the_two</age_gender_impl_name>
+
+<analysisa>share/age_second/age_model.enc</analysisa>
+<analysisg>share/faceanalysis/analysis_g.bin</analysisg>
+<age_second_impl>age_model_second</age_second_impl>
+
+
+</opencv_storage>

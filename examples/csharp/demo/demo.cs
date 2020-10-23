@@ -62,6 +62,7 @@ class Worker
 				.overrideParameter("downscale_rawsamples_to_preferred_size", 0));
 		_quality_estimator = _service.createQualityEstimator("quality_estimator_iso.xml");
 		_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator.xml");
+		//_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator_v2.xml");
 		_emotions_estimator = _service.createEmotionsEstimator("emotions_estimator.xml");
 		_face_quality_estimator = _service.createFaceQualityEstimator("face_quality_estimator.xml");
 

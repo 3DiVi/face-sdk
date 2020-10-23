@@ -40,7 +40,7 @@ Face SDK provides the following APIs:
 
 # Face SDK Trial 
 
-To get started with Face SDK, download free [Face SDK Trial](https://face.3divi.com/products/face_sdk/face_sdk_trial).  
+To get started with Face SDK, download free [Face SDK Trial license](https://face.3divi.com/products/face_sdk/face_sdk_trial).  
 
 _**Note**_: The Trial license is not supported on iOS. Please contact us at face@3divi.com to get the free trial for iOS._
 
@@ -50,7 +50,7 @@ Contact us at face@3divi.com if you have any questions.
 
 # Getting Started
 
-1. Get free [Face SDK Trial](https://face.3divi.com/products/face_sdk/face_sdk_trial) or [purchase the Face SDK license](https://face.3divi.com/pricing).
+1. Get free [Face SDK Trial license](https://face.3divi.com/products/face_sdk/face_sdk_trial) or [purchase the Face SDK license](https://face.3divi.com/pricing).
 2. Clone or download this repository.
 3. Download the Face SDK runtime using Git LFS:
 ```
@@ -75,6 +75,7 @@ When extracting the archive, specify the path to the Face SDK root – the folde
 * [Face Capturing](doc/en/development/face_capturing.md) – custom face tracking, getting information about faces, anthropometric points, face cropping 
 * [Face Estimation](doc/en/development/face_estimation.md) – custom estimation of age, gender, emotion, and liveness (2D/3D)
 * [Face Identification](doc/en/development/face_identification.md) – custom face identification, identification methods
+* [GPU Usage](doc/en/development/gpu_usage.md) – instructions on GPU usage for acceleration of Face SDK modules on Linux x86 64-bit and Android
 * [Error Handling](doc/en/development/error_handling.md) – error handling in C++/C#/Java
 * [Memory Management](doc/en/development/memory_management.md) – memory management in C++/C#/Java
 * [Guidelines for Cameras](doc/en/guidelines_for_cameras.md) – camera positioning and shooting, recommended cameras

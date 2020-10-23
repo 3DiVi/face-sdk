@@ -52,6 +52,7 @@ int main(int argc, char const *argv[])
 
 		// create age and gender estimator
 		const pbio::AgeGenderEstimator::Ptr age_gender_estimator = service->createAgeGenderEstimator("age_gender_estimator.xml");
+		//const pbio::AgeGenderEstimator::Ptr age_gender_estimator = service->createAgeGenderEstimator("age_gender_estimator_v2.xml");
 
 		// create emotions estimator
 		const pbio::EmotionsEstimator::Ptr emotions_estimator = service->createEmotionsEstimator("emotions_estimator.xml");

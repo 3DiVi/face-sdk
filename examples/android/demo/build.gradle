@@ -50,6 +50,7 @@ android {
                 "share/quality_iso/**",
                 "share/face_quality/**",
                 "share/faceanalysis/**",
+                "share/age_second/**",
                 "license/**"
             )
         }

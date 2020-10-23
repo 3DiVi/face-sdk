@@ -10,6 +10,10 @@
 <part2>share/facerec/recognizers/method9v30/method9v30_2.bin</part2>
 <part3>share/facerec/recognizers/method9v30/method9v30_3.bin</part3>
 
+<use_mobile_gpu>1</use_mobile_gpu>
+<use_cuda>0</use_cuda>
+<gpu_index>0</gpu_index>
+
 <roc>
 0.400000005960
 0.000000000000

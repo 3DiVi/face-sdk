@@ -55,6 +55,7 @@ List of used abbreviations:
 * Accelerated search time is given for `k=1`. As for larger values of `k`, the time will increase up to the search time without acceleration.
 * Accelerated search is implemented only for the recognition methods 6.5, 6.6, 6.7, 7.3, 7.6, 7.7, 8.6, 8.7, 9.30, 9.300, 9.1000.
 * To achieve this speed, the templates in the index must be located in the order of creation (by using the `Recognizer.processing` or `Recognizer.loadTemplate` method).
+* To achieve higher speed, you can use GPU (see [GPU Usage](development/gpu_usage.md)). 
 
 ### Memory Characteristics
 

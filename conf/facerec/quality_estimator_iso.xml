@@ -5,5 +5,6 @@
 
 <qm_fne>share/quality_iso/NoiseEstimateNet.bin</qm_fne>
 <qm_ill>share/quality_iso/illuminationNet.bin</qm_ill>
+<use_mobile_gpu>0</use_mobile_gpu>
 
 </opencv_storage>

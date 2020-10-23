@@ -5,6 +5,8 @@
 
 <model_path>share/ir_liveness/model.enc</model_path>
 
+<use_mobile_gpu>0</use_mobile_gpu>
+
 <ir_liveness_impl>ir_liveness_model</ir_liveness_impl>
 
 <class_threshold>0.6113</class_threshold>

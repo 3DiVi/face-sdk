@@ -11,8 +11,8 @@
 
 <fda_max_bad_count_wait>5</fda_max_bad_count_wait>
 <fda_max_weak_count_wait>30</fda_max_weak_count_wait>
-<fda_good_threshold>0.3</fda_good_threshold>
-<fda_continue_tracking_threshold>0.1</fda_continue_tracking_threshold>
+<fda_good_threshold>0.7</fda_good_threshold>
+<fda_continue_tracking_threshold>0.5</fda_continue_tracking_threshold>
 
 
 <base_angle>0</base_angle>
@@ -29,11 +29,12 @@
 
 <detector_sub_type>blf</detector_sub_type>
 <num_threads>1</num_threads>
-<score_threshold>0.65</score_threshold>
-<nms_iou_threshold>0.3</nms_iou_threshold>
-<coarse_score_threshold>0.1</coarse_score_threshold>
+<score_threshold>0.67</score_threshold>
+<nms_iou_threshold>0.5</nms_iou_threshold>
+<coarse_score_threshold>0.3</coarse_score_threshold>
 <blf_id>blf-back</blf_id>
 <blf_detector_file>share/facedetectors/blf/back_model.enc</blf_detector_file>
+<use_mobile_gpu>1</use_mobile_gpu>
 
 
 <depth_data_flag>0</depth_data_flag>

@@ -9,7 +9,13 @@
 
 _**Примечание:** Определение пола и возраста лиц на видеопотоке рассматривается в пункте [Определение пола, возраста и эмоций](video_stream_processing.md#определение-пола-возраста-и-эмоций) раздела [Обработка видеопотока](video_stream_processing.md)._
 
-Для оценки пола и возраста необходимо создать объект `AgeGenderEstimator`, вызвав метод `FacerecService.createAgeGenderEstimator`, передав конфигурационный файл. На данный момент имеется только один файл конфигурации – `age_gender_estimator.xml`. С помощью `AgeGenderEstimator` вы можете определить пол и возраст лица, вызвав метод `AgeGenderEstimator.estimateAgeGender`. Результатом будет структура `AgeGenderEstimator.AgeGender`, содержащая число возраста (в годах), возрастную группу (`AgeGenderEstimator.Age`) и пол (`AgeGenderEstimator.Gender`). 
+Для оценки пола и возраста необходимо создать объект `AgeGenderEstimator`, вызвав метод `FacerecService.createAgeGenderEstimator`, передав конфигурационный файл. 
+
+На данный момент имеются два файла конфигурации: 
+* `age_gender_estimator.xml` - первоначальная реализация интерфейса оценки пола и возраста *AgeGenderEstimator*
+* `age_gender_estimator_v2.xml` - улучшенная версия интерфейса оценки пола и возраста *AgeGenderEstimator*, обеспечивает большую точность оценок при условии соблюдения [рекомендаций по съемке](../guidelines_for_cameras.md)
+
+С помощью `AgeGenderEstimator` вы можете определить пол и возраст лица, вызвав метод `AgeGenderEstimator.estimateAgeGender`. Результатом будет структура `AgeGenderEstimator.AgeGender`, содержащая число возраста (в годах), возрастную группу (`AgeGenderEstimator.Age`) и пол (`AgeGenderEstimator.Gender`). 
 
 Пример использования *AgeGenderEstimator* см. в [demo.cpp](../../../examples/cpp/demo/demo.cpp). Также вы можете узнать, как определять пол, возраст и эмоции в [нашем туториале](../tutorials/estimating_age_gender_and_emotions.md).
 

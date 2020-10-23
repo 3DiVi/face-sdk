@@ -12,6 +12,7 @@
 <num_threads>1</num_threads>
 <score_threshold>0.95</score_threshold>
 <rfd_detector_file>share/rfd/m_106.enc</rfd_detector_file>
+<use_mobile_gpu>0</use_mobile_gpu>
 
 <fitter_type>fda</fitter_type>
 <fda_file>share/fda/fda0017.3500.enc</fda_file>

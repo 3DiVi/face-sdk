@@ -9,7 +9,13 @@
 
 _**Note:** If you need to estimate age and gender on a video stream, see [Estimation of age, gender, and emotions](video_stream_processing.md#estimation-of-age-gender-and-emotions) in the section [Video Stream Processing](video_stream_processing.md)._
 
-For age and gender estimation, create the `AgeGenderEstimator` class by calling the `FacerecService.createAgeGenderEstimator` method, providing the configuration file. Currently, there is only one config file available, which is *age_gender_estimator.xml*. With `AgeGenderEstimator` you can estimate age and gender of a captured face using `AgeGenderEstimator.estimateAgeGender`. The result is the `AgeGenderEstimator.AgeGender` struct containing the number of ages (in years), age group (`AgeGenderEstimator.Age`) and gender (`AgeGenderEstimator.Gender`). See the example of using the `AgeGenderEstimator` in [demo.cpp](../../../examples/cpp/demo/demo.cpp). 
+For age and gender estimation, create the `AgeGenderEstimator` class by calling the `FacerecService.createAgeGenderEstimator` method, providing the configuration file. 
+
+Currently, two configuration files are available: 
+* `age_gender_estimator.xml` - first implementation of the *AgeGenderEstimator* interface
+* `age_gender_estimator_v2.xml` - improved version of the *AgeGenderEstimator* interface, which provides higher accuracy of age and gender estimation given that you follow [Guidelines for Cameras](../guidelines_for_cameras.md)
+
+With `AgeGenderEstimator` you can estimate age and gender of a captured face using `AgeGenderEstimator.estimateAgeGender`. The result is the `AgeGenderEstimator.AgeGender` struct containing the number of ages (in years), age group (`AgeGenderEstimator.Age`) and gender (`AgeGenderEstimator.Gender`). See the example of using the `AgeGenderEstimator` in [demo.cpp](../../../examples/cpp/demo/demo.cpp). 
 
 Learn how to estimate Age & Gender in an image in our tutorial [Estimating Age, Gender, and Emotions](../tutorials/estimating_age_gender_and_emotions.md).
 

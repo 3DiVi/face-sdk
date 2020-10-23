@@ -15,6 +15,7 @@
 
 <blf_id>blf-front</blf_id>
 <blf_detector_file>share/facedetectors/blf/front_model.enc</blf_detector_file>
+<use_mobile_gpu>0</use_mobile_gpu>
 
 
 <fitter_type>fda</fitter_type>

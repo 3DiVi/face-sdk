@@ -72,6 +72,7 @@ public class Demo{
 		capturer = service.createCapturer(capturer_conf);
 		qualityEstimator = service.createQualityEstimator("quality_estimator_iso.xml");
 		ageGenderEstimator = service.createAgeGenderEstimator("age_gender_estimator.xml");
+		//ageGenderEstimator = service.createAgeGenderEstimator("age_gender_estimator_v2.xml");
 		emotionsEstimator = service.createEmotionsEstimator("emotions_estimator.xml");
 		faceQualityEstimator = service.createFaceQualityEstimator("face_quality_estimator.xml");
 	}
