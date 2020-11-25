@@ -34,6 +34,7 @@ class VideoWorker;
 class EmotionsEstimator;
 class DepthLivenessEstimator;
 class IRLivenessEstimator;
+class Liveness2DEstimator;
 
 /** \~English
 	\brief Interface object that stores a captured face sample.
@@ -774,6 +775,7 @@ private:
 	friend class EmotionsEstimator;
 	friend class DepthLivenessEstimator;
 	friend class IRLivenessEstimator;
+	friend class Liveness2DEstimator;
 	friend class object_with_ref_counter<RawSample>;
 };
 

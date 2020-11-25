@@ -92,9 +92,32 @@ VideoWorker video_worker = service.createVideoWorker(
 ```
 </details>
 
+### Python Example 
+
+<details>
+  <summary>Click to expand</summary>
+  
+```python
+video_worker_config = Config("video_worker_lbf.xml")
+video_worker_config.override_parameter("search_k", 3)
+
+video_worker_params = video_worker.Params()
+video_worker_params.video_worker_config = video_worker_config
+video_worker_params.recognizer_ini_file = recognizer_config
+video_worker_params.streams_count = streams_count
+video_worker_params.processing_threads_count = processing_threads_count
+video_worker_params.matching_threads_count = matching_threads_count
+video_worker_params.age_gender_estimation_threads_count = age_gender_estimation_threads_count
+video_worker_params.emotions_estimation_threads_count = emotions_estimation_threads_count
+
+video_worker = service.create_video_worker(video_worker_params)
+```
+</details>
+
 Where:
 
 * `video_worker_config` – path to the configuration file for `VideoWorker` or `FacerecService.Config` object
+* `video_worker_params` – parameters of the `VideoWorker` constructor
 * `recognizer_config` – the configuration file for the recognizer used (see [Face Identification](face_identification.md))
 * `streams_count` – the number of video streams; a tracking stream is created for each stream
 * `processing_threads_count` – the number of threads for template creation. These threads are common to all video streams and they distribute resources evenly across all video streams regardless of their workload (except for the video streams without faces in the frame)

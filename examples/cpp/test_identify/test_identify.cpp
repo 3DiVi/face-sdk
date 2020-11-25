@@ -107,7 +107,7 @@ int main(int argc, char const *argv[])
 
 		time_c = get_time_point();
 		// create capturer
-		const pbio::Capturer::Ptr capturer = service->createCapturer( "common_capturer4_fda.xml" );
+		const pbio::Capturer::Ptr capturer = service->createCapturer( "common_capturer_blf_fda_back.xml" );
 		std::cout << "createCapturer time: " << milliseconds_from( time_c ) << " ms" << std::endl;
 
 		time_c = get_time_point();

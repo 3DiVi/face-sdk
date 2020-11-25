@@ -18,7 +18,7 @@ See the detailed info in [Face Identification](development/face_identification.m
 **Video Engine Standard (VES)** is a macro component (component bundle) of Face SDK, which provides basic processing of video stream in 1 channel (for example, real-time video data from 1 camera). *VES* processes video in cycles. Each cycle includes:
   * detection and tracking of faces in a frame
   * selecting the best shot and encoding the selected face (computing the Face biometric template)
-  * estimation of age, gender, and emotions
+  * estimation of age, gender, and emotions (separately licensed component)
 
 *VES* receives the sequence of video frames as input data. It means that a video stream should be decompressed. *VES* by default includes the following components: *Face Detector*, *Encoder*, one load balancer (to manage the sequence of input video frames). For complex tasks of real-time video processing in high-load systems, the internal composition of *VES* can be extended: you can add additional components to improve performance. As compared to *VideoEngine Extended*, *VES* does not support face matching feature.  
 **Licensing**: by Data Channel (photo or video).  
@@ -29,8 +29,8 @@ See the detailed info in [Video Stream Processing](development/video_stream_proc
 **Video Engine Extended (VEE)** is a macro component (component bundle) of Face SDK, which provides basic video stream processing in 1 channel (for example, real-time video stream from 1 camera) and makes the data sequence for further search (in the watchlist or in the database). *VEE* processes video in cycles. Each cycle includes:
  * detection and tracking of faces in a frame
  * selecting the best shot and encoding the selected face (computing the Face biometric template)
- * comparing the template with the database
- * estimation of age, gender, and emotions
+ * comparing the template with the database (separately licensed component)
+ * estimation of age, gender, and emotions (separately licensed component)
 
 *VEE* receives the sequence of video frames as input data. It means that a video stream should be decompressed. *VEE* by default includes the following components: *Face Detector*, *Encoder*, and *MatcherDB(N)* where *N* is the size of the search index, which is typically equal to the number of faces (biometric templates) in the database. *VEE* also includes two internal load balancers: the first one is designed to manage the sequence of input video frames, the second one is designed to manage the sequence of biometric database search queries based on the face template. For complex tasks of real-time data stream processing in high-load systems, the internal composition of *VEE* can be extended: you can add additional components to improve performance.  
 **Licensing**: by Data Channel (photo or video) and size of the search index of *MatcherDB*.  

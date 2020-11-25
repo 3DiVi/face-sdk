@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!-- common -->
+	<string name="app_name">Telpo 3d-ir liv rec</string>
+
+	<!-- permissions layout -->
+	<string name="explain_CAMERA">
+		This demo require camera access.
+	</string>
+	<string name="explain_EXTERNAL_STORAGE">
+		Face SDK require read-write access to the storage.
+	</string>
+	<string name="explain_READ_PHONE_STATE">
+		On newer androids Face SDK hardware signature computation may fail without this permission.
+	</string>
+
+</resources>

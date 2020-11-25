@@ -92,9 +92,13 @@ public class VidRecDemo implements TheCameraPainter{
 				method_recognizer = shared_settings.getString("rec_method0", "method9v30_recognizer.xml" );
 				threshold = Float.parseFloat(shared_settings.getString("threshold0", "6800"));
 				break;
+			case 1:
+				method_recognizer = shared_settings.getString("rec_method1", "method9v30mask_recognizer.xml" );
+				threshold = Float.parseFloat(shared_settings.getString("threshold1", "3600"));
+				break;
 			default:
-				method_recognizer = shared_settings.getString("rec_method1", "method8v7_recognizer.xml" );
-				threshold = Float.parseFloat(shared_settings.getString("threshold1", "7000" ));
+				method_recognizer = shared_settings.getString("rec_method2", "method8v7_recognizer.xml" );
+				threshold = Float.parseFloat(shared_settings.getString("threshold2", "7000" ));
 				break;
 		}
 
@@ -106,7 +110,7 @@ public class VidRecDemo implements TheCameraPainter{
 			public void run() {
 				synchronized (init_thread){
 					// create Capturer
-					FacerecService.Config capturer_conf = service.new Config("common_capturer4_fda_singleface.xml");
+					FacerecService.Config capturer_conf = service.new Config("common_capturer_blf_fda_front.xml");
 					capturer = service.createCapturer(capturer_conf);
 					Log.v(TAG, "init thread: created capturer1" );
 
@@ -139,7 +143,7 @@ public class VidRecDemo implements TheCameraPainter{
 		videoWorker = service.createVideoWorker(
 				new VideoWorker.Params()
 						.video_worker_config(
-								service.new Config("video_worker_fdatracker.xml")
+								service.new Config("video_worker_fdatracker_blf_fda_front.xml")
 										.overrideParameter("search_k", 10)
 										.overrideParameter("recognizer_processing_less_memory_consumption", 0)
 										.overrideParameter("downscale_rawsamples_to_preferred_size", 0)

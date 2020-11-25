@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 		const std::string dll_path                = parser.get<std::string>("--dll_path                      ", default_dll_path);
 		const std::string conf_dir_path           = parser.get<std::string>("--config_dir                    ", "../conf/facerec");
 		const std::string license_dir             = parser.get<std::string>("--license_dir                   ", "../license");
-		const std::string video_capturer_config   = parser.get<std::string>("--video_capturer_config         ", "common_video_capturer.xml");
+		const std::string video_capturer_config   = parser.get<std::string>("--video_capturer_config         ", "fda_tracker_capturer_blf.xml");
 
 		// create facerec service
 		const pbio::FacerecService::Ptr service = pbio::FacerecService::createService(dll_path, conf_dir_path, license_dir);
@@ -46,8 +46,9 @@ int main(int argc, char** argv)
 		// create capturer
 		const pbio::Capturer::Ptr capturer = service->createCapturer(video_capturer_config);
 
-		// for each tracked face store liveness estimator
-		std::map<int, pbio::LivenessEstimator::Ptr> track_id_2_le;
+		// create liveness2D estimator
+		std::string liveness2d_config = "liveness_2d_estimator.xml";
+		const pbio::Liveness2DEstimator::Ptr liveness_2d_estimator = service->createLiveness2DEstimator(liveness2d_config);
 
 		// open webcam via OpenCV
 		cv::VideoCapture camera(0);
@@ -73,25 +74,17 @@ int main(int argc, char** argv)
 			std::vector<std::string> liveness_res(samples.size(), "*");
 			for(size_t i = 0; i < samples.size(); ++i)
 			{
-				const int track_id = samples[i]->getID();
-				if(!track_id_2_le[track_id])
-				{
-					track_id_2_le[track_id] = service->createLivenessEstimator();
-				}
-
-				track_id_2_le[track_id]->addSample(*samples[i]);
-
-				const pbio::LivenessEstimator::Liveness verdict = track_id_2_le[track_id]->estimateLiveness();
+				const pbio::Liveness2DEstimator::Liveness verdict = liveness_2d_estimator->estimateLiveness(*samples[i]);
 
 				switch(verdict)
 				{
-					case pbio::LivenessEstimator::NOT_ENOUGH_DATA:
+					case pbio::Liveness2DEstimator::NOT_ENOUGH_DATA:
 						liveness_res[i] = "?";
 						break;
-					case pbio::LivenessEstimator::FAKE:
+					case pbio::Liveness2DEstimator::FAKE:
 						liveness_res[i] = "fake";
 						break;
-					case pbio::LivenessEstimator::REAL:
+					case pbio::Liveness2DEstimator::REAL:
 						liveness_res[i] = "real";
 						break;
 				}

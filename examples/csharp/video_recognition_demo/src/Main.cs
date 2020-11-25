@@ -123,7 +123,18 @@ class VideoRecognitionDemo
 					config_dir,
 					license_dir);
 
-			FacerecService.Config vw_config = new FacerecService.Config("video_worker_fdatracker.xml");
+			// create database
+			Recognizer recognizer = service.createRecognizer(method_config, true, false, false);
+			Capturer capturer = service.createCapturer("common_capturer4_lbf_singleface.xml");
+			Database database = new Database(
+				database_dir,
+				recognizer,
+				capturer,
+				recognition_distance_threshold);
+			recognizer.Dispose();
+			capturer.Dispose();
+
+			FacerecService.Config vw_config = new FacerecService.Config("video_worker_fdatracker_blf_fda.xml");
 			// vw_config.overrideParameter("single_match_mode", 1);
 			vw_config.overrideParameter("search_k", 10);
 			vw_config.overrideParameter("not_found_match_found_callback", 1);
@@ -138,17 +149,6 @@ class VideoRecognitionDemo
 					sources.Count,   // streams_count
 					sources.Count,   // processing_threads_count
 					sources.Count);  // matching_threads_count
-
-			// create database
-			Recognizer recognizer = service.createRecognizer(method_config, true, false, false);
-			Capturer capturer = service.createCapturer("common_capturer4_lbf_singleface.xml");
-			Database database = new Database(
-				database_dir,
-				recognizer,
-				capturer,
-				recognition_distance_threshold);
-			recognizer.Dispose();
-			capturer.Dispose();
 
 			// set database
 			video_worker.setDatabase(database.vwElements, Recognizer.SearchAccelerationType.SEARCH_ACCELERATION_1);

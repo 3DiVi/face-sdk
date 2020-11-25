@@ -98,10 +98,6 @@
 
 
 <enable_liveness_2d>1</enable_liveness_2d>
-<liveness_2d_data>share/facerec/liveness2d/l2d.data</liveness_2d_data>
-<liveness_2d_impl>l-0018</liveness_2d_impl>
-<liveness_2d_iof_threshold>0.5</liveness_2d_iof_threshold>
-<liveness_2d_score_threshold>0.5</liveness_2d_score_threshold>
-<liveness_2d_num_threads>4</liveness_2d_num_threads>
+<liveness_2d_config>conf/facerec/liveness_2d_estimator.xml</liveness_2d_config>
 
 </opencv_storage>

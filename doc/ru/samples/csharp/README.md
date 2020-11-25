@@ -1,5 +1,10 @@
 # C# сэмплы
 
+Каталог *bin/csharp_demo* содержит следующие папки с исполняемыми файлами сэмплов:
+
+* [demo](demo.md) – пример трекинга лиц и оценки лица
+* [video_recognition_demo](video_recognition_demo.md) – пример использования `pbio.VideoWorker`
+
 Для сборки и запуска C# сэмплов требуются следующие зависимости:
 
 * [Платформа .NET Core](https://docs.microsoft.com/en-us/dotnet/core/get-started) (рекомендуемая версия: 2.1)

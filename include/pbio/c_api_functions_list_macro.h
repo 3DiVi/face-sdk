@@ -13,6 +13,7 @@ class CameraCalibratorImpl;
 class CapturerImpl;
 class DepthLivenessEstimatorImpl;
 class IRLivenessEstimatorImpl;
+class Liveness2DEstimatorImpl;
 class EmotionsEstimatorImpl;
 class FaceQualityEstimatorImpl;
 class LivenessEstimatorImpl;
@@ -860,6 +861,21 @@ namespace capi {
 			ir_vertical_fov, \
 			ir_frame_data, \
 			ir_data_stride_in_bytes, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
+		int32_t, \
+		Liveness2DEstimator_estimateLiveness, \
+		( \
+			void* liveness_2d_estimator, \
+			pbio::facerec::RawSampleImpl const* raw_sample, \
+			void** out_exception \
+		), \
+		( \
+			liveness_2d_estimator, \
+			raw_sample, \
 			out_exception \
 		), \
 		return ) \
@@ -2699,6 +2715,27 @@ namespace capi {
 		return ) \
 	\
 	decl( \
+		pbio::facerec::Liveness2DEstimatorImpl*, \
+		FacerecService_createLiveness2DEstimatorE, \
+		( \
+			void* service, \
+			const char* ini_file, \
+			const int32_t overridden_count, \
+			char const* const* const overridden_keys, \
+			double const* const overridden_values, \
+			void** out_exception \
+		), \
+		( \
+			service, \
+			ini_file, \
+			overridden_count, \
+			overridden_keys, \
+			overridden_values, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
 		void*, \
 		FacerecService_constructor2, \
 		( \
@@ -2729,6 +2766,42 @@ namespace capi {
 			ae_ptr, \
 			conf_dir, \
 			license_dir, \
+			dll_path, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
+		void*, \
+		FacerecService_constructor4, \
+		( \
+			char const* conf_dir, \
+			char const* license_body, \
+			char const* dll_path, \
+			void** out_exception \
+		), \
+		( \
+			conf_dir, \
+			license_body, \
+			dll_path, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
+		void*, \
+		FacerecService_constructor5, \
+		( \
+			void* ae_ptr, \
+			char const* conf_dir, \
+			char const* license_body, \
+			char const* dll_path, \
+			void** out_exception \
+		), \
+		( \
+			ae_ptr, \
+			conf_dir, \
+			license_body, \
 			dll_path, \
 			out_exception \
 		), \

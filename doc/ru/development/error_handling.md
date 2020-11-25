@@ -57,3 +57,22 @@ catch (Error e)
 // Output must be:
 // facerec exception caught: 'Assertion 'file_storage.isOpened()' failed (error creating Capturer: ini file not opened), error code: 0x6b1ae8c5. wrap code: 0x7c7b4c95.'
 ```
+
+## Python 
+
+При возникновении ошибки выбрасывается исключение класса `Error`, производного от класса `Exception`. Его свойство `Error.message` возвращает строку с описанием ошибки, а метод `Error.code` возвращает hex код исключения.
+
+Пример:
+```python
+...
+from face_sdk_3divi import Error
+
+try:
+    service.create_capturer(Config("not_exist.xml"))
+except Error as e:
+    print("facerec exception caught: '{}'".format(e))
+
+
+# Output must be:
+# facerec exception caught: '0x2e5d42a1: Assertion 'file_storage.isOpened()' failed (error creating Capturer: ini file not opened. System error description: No such file or directory), error code: 0x2e5d42a1. wrap code: 0x0d33c4f6.'
+```

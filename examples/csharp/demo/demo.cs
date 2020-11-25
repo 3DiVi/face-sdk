@@ -34,6 +34,9 @@ class Worker
 	// one face quality estimator
 	FaceQualityEstimator _face_quality_estimator;
 
+	// one face liveness estimator
+	Liveness2DEstimator _liveness_2d_estimator;
+
 	// flags for enable / disable drawing and comuting of the features
 	public const int flags_count = 12;
 
@@ -50,9 +53,6 @@ class Worker
 	bool _flag_cutting_token;
 	bool _flag_points;
 
-	// one liveness estimator per face
-	Dictionary<int, LivenessEstimator> id2le = new Dictionary<int, LivenessEstimator>();
-
 
 	public Worker(string facerec_conf_dir, string capturer_conf, string license_dir)
 	{
@@ -65,6 +65,7 @@ class Worker
 		//_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator_v2.xml");
 		_emotions_estimator = _service.createEmotionsEstimator("emotions_estimator.xml");
 		_face_quality_estimator = _service.createFaceQualityEstimator("face_quality_estimator.xml");
+		_liveness_2d_estimator =  _service.createLiveness2DEstimator("liveness_2d_estimator.xml");
 
 		_flag_positions = true;
 		_flag_angles = true;
@@ -436,27 +437,14 @@ class Worker
 			// draw liveness text
 			if( _flag_liveness )
 			{
-				// here we get/create the liveness estimator that work with this face
-				int id = sample.getID();
-				if(!id2le.ContainsKey(id))
-				{
-					id2le[id] = _service.createLivenessEstimator();
-				}
-
-				LivenessEstimator le = id2le[id];
-
-				// add information to the estimator
-				le.addSample(sample);
-
-				// get result
-				LivenessEstimator.Liveness liveness = le.estimateLiveness();
+				Liveness2DEstimator.Liveness liveness_2d_result = _liveness_2d_estimator.estimateLiveness(sample);
 
 				puttext(
 					draw_image,
 					"liveness: " + (
-						liveness == LivenessEstimator.Liveness.REAL ? "real" :
-						liveness == LivenessEstimator.Liveness.FAKE ? "fake" :
-						liveness == LivenessEstimator.Liveness.NOT_ENOUGH_DATA ? "not enough data" : "??"),
+						liveness_2d_result == Liveness2DEstimator.Liveness.REAL ? "real" :
+						liveness_2d_result == Liveness2DEstimator.Liveness.FAKE ? "fake" :
+						liveness_2d_result == Liveness2DEstimator.Liveness.NOT_ENOUGH_DATA ? "not enough data" : "??"),
 					text_point);
 
 				text_point.Y += text_line_height;
@@ -577,6 +565,7 @@ class Worker
 		_age_geder_estimator.Dispose();
 		_emotions_estimator.Dispose();
 		_face_quality_estimator.Dispose();
+		_liveness_2d_estimator.Dispose();
 	}
 };
 
@@ -585,7 +574,7 @@ class Options
 	[Option("config_dir", Default = "../../../conf/facerec", HelpText = "Path to config directory.")]
 	public string config_dir { get; set; }
 
-	[Option("capturer_config", Default = "fda_tracker_capturer.xml", HelpText = "Capturer config file.")]
+	[Option("capturer_config", Default = "fda_tracker_capturer_blf.xml", HelpText = "Capturer config file.")]
 	public string capturer_config { get; set; }
 
 	[Option("license_dir", Default = null, HelpText = "Path to license directory [optional].")]

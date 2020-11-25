@@ -53,3 +53,18 @@ if (capturer.IsDisposed)
 capturer.capture(image); // exception, object is disposed
 // this line never be reached
 ```
+
+## Python
+
+Destructors are called when an object gets destroyed. Python has a garbage collector that handles memory management automatically. 
+
+Example:
+```python
+...
+capturer = service.create_capturer("common_capturer.xml")
+...
+del capturer  # release internal objects
+
+capturer.capture(image)  # exception, object is disposed
+# this line never be reached
+```

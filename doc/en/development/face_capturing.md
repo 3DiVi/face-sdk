@@ -31,6 +31,7 @@ There is also another option of face detection combined with face tracking in a 
 Currently, the following detectors are available:
 * LBF - the standard detector
 * BLF - a new detector that is faster than LBF and provides more accurate detection of masked faces
+* REFA - a new detector that is slower than LBF and BLF but provides the highest quality of detection. Recommended for expert systems. 
 
 When a detector is created, you can use it to detect / track faces. There are two ways to pass an image to the detector:
 * pass the data of the **decoded** image to the method `Capturer.capture`(`RawImage image`), using the `RawImage` class (see [Samples](../samples))
@@ -109,7 +110,8 @@ Example 1:
 
 **C++**: ```pbio::Capturer::Ptr capturer = service->createCapturer("common_capturer4.xml");```  
 **C#**: ```Capturer capturer = service.createCapturer("common_capturer4_lbf.xml");```  
-**Java**: ```final Capturer capturer = service.createCapturer(service.new Config("common_capturer4_lbf.xml"));```  
+**Java**: ```final Capturer capturer = service.createCapturer(service.new Config("common_capturer4_lbf.xml"));```   
+**Python**: ```capturer = service.create_capturer(Config("common_capturer4_lbf.xml"))```   
 
 Example 2: 
 
@@ -135,6 +137,14 @@ Capturer capturer = service.createCapturer(capturerConfig);
 FacerecService.Config capturerConfig = service.new Config("common_capturer4_lbf.xml");
 capturerConfig.overrideParameter("min_size", 200);
 final Capturer capturer = service.createCapturer(capturerConfig);
+```
+
+**Python**
+
+```python
+capturer_config = Config("common_capturer4_lbf.xml")
+capturer_config.override_parameter("min_size", 200)
+capturer = service.createCapturer(capturer_config)
 ```
 
 Example 3:
@@ -211,6 +221,7 @@ capturer.setParameter("max_size", 400);
 |common_capturer_blf_fda_front.xml|blf|fda|[-70;70][-90;90][-70;70]|Detection of large face images (the face should take up most of the frame size). Suitable for detection of masked faces.|
 |common_capturer_blf_fda_back.xml|blf|fda|[-70;70][-90;90][-70;70]|Detection of several faces or small face images. Suitable for detection of masked faces.|
 |common_capturer_blf_fda_auto.xml|blf|fda|[-70;70][-90;90][-70;70]|Detection of large and small face images (the parameters `resolution_width` and `min_face_size` should be specified in the configuration file). Suitable for detection of masked faces.|
+|common_capturer_refa_fda_a.xml|refa|fda|[-70;70][-90;90][-70;70]|Face detector recommended for use in expert systems. Provides face detection with the largest coverage of rotation angles and maximum quality (including masked faces).|
 |common_video_capturer_fda.xml|lbf|fda|[-30;30][-60;60][-60;60]|Frontal face video tracker (RGB only).|
 |common_video_capturer_lbf.xml|lbf|singlelbf|[-30;30][-60;60][-60;60]|Frontal face video tracker (RGB only).|
 |common_video_capturer_mesh.xml|lbf|mesh|[-30;30][-60;60][-60;60]|Frontal face video tracker (RGB only). Allows you to get a 3D face mask.|
@@ -219,16 +230,110 @@ capturer.setParameter("max_size", 400);
 |fda_tracker_capturer_mesh.xml|lbf|fda|[-30;30][-60;60][-60;60]|Frontal face video tracker. Allows you to get a 3D face mask.|
 |fda_tracker_capturer_fake_detector.xml|lbf|fda|[-30;30][-60;60][-60;60]|Detection speed is higher because only fitter is used (no detector). Suitable only if a face takes up most of the image size.|
 |fda_tracker_capturer_blf.xml|blf|fda|[-30;30][-60;60][-60;60]|Frontal face video tracker. Suitable for detection of masked faces.|
+|fda_tracker_capturer_refa_a.xml|refa|fda|[-70;70][-90;90][-70;70]|Frontal face video tracker. Recommended for use in expert systems. Provides face detection with the largest coverage of rotation angles and maximum quality (including masked faces).|
 |manual_capturer_fda.xml|lbf|fda|[-30;30][-60;60][-60;60]|Eye points should be manually specified. The remaining points are calculated based on the eye points.|
 |manual_capturer_mesh.xml|lbf|mesh|[-30;30][-60;60][-60;60]|Eye points should be manually specified. The remaining points are calculated based on the eye points. Allows you to get a 3D face mask.|
+|video_worker_fdatracker_refa_fda.xml|refa|fda|[-70;70][-90;90][-70;70]|Face detector recommended for use in expert systems. Provides face detection with the largest coverage of rotation angles and maximum quality (including masked faces).|
 
-### Capturers Timing Characteristics (for 1 GHz 1 Core)
+### Capturers Timing Characteristics for Core i7 4.5 GHz
 
-<table border="1" style="border-collapse:collapse;center">
-<tr>                <th rowspan=2> config file                                         </th>    <th colspan=6>capture time (ms) </th> </tr>
-<tr>                                                                                            <th>640x480, 1 face</th> <th>640x480, 4 faces</th> <th>1280x720, 1 face</th> <th>1280x720, 4 faces</th> <th>1920x1080, 1 face</th> <th>1920x1080, 4 faces</th>  </tr>
-<tr align="center"> <td align="left"> common_capturer4_fda.xml                              </td>    <td>55            </td> <td>140             </td> <td>150             </td> <td>260              </td> <td>300             </td> <td>530              </td>  </tr>
-<tr align="center"> <td align="left"> common_video_capturer_fda.xml                             </td>    <td>40            </td> <td>80             </td> <td>40             </td> <td>80              </td> <td>50             </td> <td>90              </td>  </tr>
+<table>
+<thead>
+  <tr>
+    <th rowspan="2">config file</th>
+    <th colspan="6">capture time (ms)</th>
+  </tr>
+  <tr>
+    <td>640x480, 1 face</td>
+    <td>640x480, 4 faces</td>
+    <td>1280x720, 1 face</td>
+    <td>1280x720, 4 faces</td>
+    <td>1920x1080, 1 face</td>
+    <td>1920x1080, 4 faces</td>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>common_capturer4_fda.xml</td>
+    <td>13</td>
+    <td>25</td>
+    <td>34</td>
+    <td>49</td>
+    <td>81</td>
+    <td>103</td>
+  </tr>
+  <tr>
+    <td>common_capturer4_fda_with_angles.xml</td>
+    <td>282</td>
+    <td>387</td>
+    <td>260</td>
+    <td>356</td>
+    <td>273</td>
+    <td>370</td>
+  </tr>
+  <tr>
+    <td>common_capturer4_mesh.xml</td>
+    <td>18</td>
+    <td>47</td>
+    <td>39</td>
+    <td>72</td>
+    <td>87</td>
+    <td>735</td>
+  </tr>
+  <tr>
+    <td>common_capturer4_mesh_with_angles.xml</td>
+    <td>291</td>
+    <td>415</td>
+    <td>268</td>
+    <td>383</td>
+    <td>281</td>
+    <td>398</td>
+  </tr>
+  <tr>
+    <td>common_capturer_blf_fda_auto.xml</td>
+    <td>6-30</td>
+    <td>12-36</td>
+    <td>8-32</td>
+    <td>14-38</td>
+    <td>19-44</td>
+    <td>26-51</td>
+  </tr>
+  <tr>
+    <td>common_capturer_blf_fda_back.xml</td>
+    <td>30</td>
+    <td>36</td>
+    <td>32</td>
+    <td>38</td>
+    <td>44</td>
+    <td>51</td>
+  </tr>
+  <tr>
+    <td>common_capturer_blf_fda_front.xml</td>
+    <td>6</td>
+    <td>12</td>
+    <td>8</td>
+    <td>14</td>
+    <td>19</td>
+    <td>26</td>
+  </tr>
+  <tr>
+    <td>common_capturer4_fda_singleface.xml</td>
+    <td>16</td>
+    <td>-</td>
+    <td>51</td>
+    <td>-</td>
+    <td>123</td>
+    <td>-</td>
+  </tr>
+  <tr>
+    <td>common_capturer4_mesh_singleface.xml</td>
+    <td>23</td>
+    <td>-</td>
+    <td>58</td>
+    <td>-</td>
+    <td>129</td>
+    <td>-</td>
+  </tr>
 </table>
 
 _**Note:** Actual capture time may vary depending on the image content._

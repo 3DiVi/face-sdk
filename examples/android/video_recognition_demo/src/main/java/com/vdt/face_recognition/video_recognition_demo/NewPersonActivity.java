@@ -87,11 +87,15 @@ public class NewPersonActivity extends Activity implements TheCameraPainter{
 			case 1:
 				method_recognizer = shared_settings.getString("rec_method1", null);
 				break;
+			case 2:
+				method_recognizer = shared_settings.getString("rec_method2", null);
+				break;
+
 		}
 		recognizer = service.createRecognizer(method_recognizer, true, false, false);
 
 		//init capturer
-		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer.xml");
+		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer_blf_front.xml");
 		capturer_conf.overrideParameter("downscale_rawsamples_to_preferred_size", 0);
 		capturer = service.createCapturer(capturer_conf);
 		//create face quality estimator
@@ -109,6 +113,11 @@ public class NewPersonActivity extends Activity implements TheCameraPainter{
 				String name = nameEditText.getText().toString();
 				if(name.equals("")){
 					Toast.makeText(getApplicationContext(), "Add name", Toast.LENGTH_SHORT).show();
+					return;
+				}
+
+				if( bestImage == null ){
+					Toast.makeText(getApplicationContext(), "Face not detected!", Toast.LENGTH_SHORT).show();
 					return;
 				}
 
@@ -242,6 +251,7 @@ public class NewPersonActivity extends Activity implements TheCameraPainter{
 			bestImage = immut_bitmap.copy(immut_bitmap.getConfig(), true);
 			bestFaceImageView.setImageBitmap(bestFaceCut);
 			bestFaceTemplate = recognizer.processing(sample);
+			findViewById(R.id.add_layout).setVisibility(View.VISIBLE);
 		}
 	}
 

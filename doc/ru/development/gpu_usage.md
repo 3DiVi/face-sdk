@@ -4,6 +4,7 @@
 
 На данный момент GPU может быть использован для ускорения на следующих платформах: 
 
+* Windows x86 64-bit 
 * Linux x86 64-bit
 * Android
 
@@ -15,11 +16,13 @@
 
 * распознаватели (recognizers) (9v30, 9v300, 9v1000, 9v30mask, 9v300mask, 9v1000mask) (см. [Идентификация лиц](face_identification.md))
 
-Для работы с GPU Вам необходимо установить следующие драйверы:
-
-* Nvidia GPU Driver >= 410.48
-* [CUDA Toolkit 10.0](https://developer.nvidia.com/cuda-toolkit-archive)
-* [cuDNN 7](https://developer.nvidia.com/rdp/cudnn-archive#a-collapse765-90)
+* Требуемое ПО: 
+   * Nvidia GPU Driver >= 410.48
+   * [CUDA Toolkit 10.1](https://developer.nvidia.com/cuda-toolkit-archive)
+   * [cuDNN 7](https://developer.nvidia.com/rdp/cudnn-archive#a-collapse765-90)
+   * [Для Windows] [Microsoft Visual C++ Redistributable for Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
+* Требования к оборудованию: 
+   * графический процессор (GPU) с поддержкой CUDA (NVIDIA GTX 1050 Ti и выше)
 
 Также есть возможность применять предсобранные docker-контейнеры с поддержкой CUDA, например,  *nvidia/cuda:10.0-cudnn7-devel-ubuntu16.04* (некоторые виды лицензий при этом могут быть недоступны).
 
@@ -37,7 +40,7 @@
 | 9v300 | 7 мс | 260 мс | 
 | 9v30 | 3 мс | 30 мс | 
 
-_**Примечание**: при проведении замеров скорости использовалась видеокарта NVIDIA GeForce GTX 1080 Ti._ 
+_**Примечание**: при проведении замеров скорости использовалась видеокарта NVIDIA GeForce GTX 1080 Ti и процессор Intel Core i7._ 
 
 ### Устранение неполадок 
 

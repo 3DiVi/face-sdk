@@ -65,7 +65,7 @@ int main(int argc, char const *argv[])
 		const std::string database_list_filepath         = parser.get<std::string>("--database_list_filepath        ");
 		const std::string method_config                  = parser.get<std::string>("--method_config                 ");
 		const std::string fullscreen                     = parser.get<std::string>("--fullscreen                    ", "yes");
-		const std::string vw_config_file                 = parser.get<std::string>("--vw_config_file                ", "video_worker_fdatracker.xml");
+		const std::string vw_config_file                 = parser.get<std::string>("--vw_config_file                ", "video_worker_fdatracker_blf_fda.xml");
 		const float       frame_fps_limit                = parser.get<float      >("--frame_fps_limit               ", 25);
 		const float       recognition_distance_threshold = parser.get<float      >("--recognition_distance_threshold");
 
@@ -117,6 +117,13 @@ int main(int argc, char const *argv[])
 				config_dir,
 				license_dir);
 
+		// create database
+		const Database database(
+			database_list_filepath,
+			*service->createRecognizer(method_config, true, false),
+			*service->createCapturer("common_capturer4_fda_singleface.xml"),
+			recognition_distance_threshold);
+
 		// create one VideoWorker
 		const pbio::VideoWorker::Ptr video_worker =
 			service->createVideoWorker(
@@ -146,13 +153,6 @@ int main(int argc, char const *argv[])
 					.age_gender_estimation_threads_count(sources.size())
 					.emotions_estimation_threads_count(sources.size())
 			);
-
-		// create database
-		const Database database(
-			database_list_filepath,
-			*service->createRecognizer(method_config, true, false),
-			*service->createCapturer("common_capturer4_fda_singleface.xml"),
-			recognition_distance_threshold);
 
 		// set database
 		video_worker->setDatabase(database.vw_elements);

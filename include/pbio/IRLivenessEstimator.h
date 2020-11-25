@@ -89,23 +89,23 @@ public:
 		\param[in]  sample
 			Face sample.
 
-		\param[in]  depth_map
-			Depth map.
+		\param[in]  ir_frame
+			IR frame.
 
 		\return
-			Estimated liveness.
+			Estimated liveness (see IRLivenessEstimator.Liveness for details).
 
 		\~Russian
 		\brief
 			Определить принадлежность лица реальному человеку.
-			Карта глубины должна быть синхронизирована и отрегистрирована
+			Инфракрасный кадр должен быть синхронизирован и отрегистрирован
 			в соответствии с исходным изображением, на котором было обнаружено лицо.
 
 		\param[in]  sample
 			Образец лица.
 
-		\param[in]  depth_map
-			Карта глубины.
+		\param[in]  ir_frame
+			Инфракрасный кадр.
 
 		\return
 			Результат (см. IRLivenessEstimator::Liveness).

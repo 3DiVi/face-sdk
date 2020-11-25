@@ -47,6 +47,7 @@ android {
                 "conf/**",
                 "share/fda/**",
                 "share/facedetectors/config_lbf/**",
+                "share/facedetectors/blf/**",
                 "share/quality/**",
                 "share/quality_iso/**",
                 "share/face_quality/**",
@@ -56,6 +57,7 @@ android {
                 "share/facerec/recognizers/method6v7/**",
                 "license/**"
             )
+            exclude ('share/facerec/recognizers/**/*gpu')
         }
         into "$projectDir/src/main/assets/"
     }

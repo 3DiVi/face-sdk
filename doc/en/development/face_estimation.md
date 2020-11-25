@@ -69,16 +69,24 @@ To get an estimated result, you can call the `IRLivenessEstimator.estimateLivene
 * `IRLivenessEstimator.Liveness.REAL` – the observed face belongs to a living person.
 * `IRLivenessEstimator.Liveness.FAKE` – the observed face is taken from a photo.
 
-### LivenessEstimator
+### Liveness2DEstimator
 
-To estimate liveness with an RGB map, you should create the `LivenessEstimator` object using the `FacerecService.createLivenessEstimator` method. To do that, you need to create one `LivenessEstimator` object per each unique track id and provide the tracked `RawSample` object to the corresponding `LivenessEstimator` object using the `LivenessEstimator.addSample` method.
+To estimate liveness with an RGB map, you should create the `Liveness2DEstimator` object using the `FacerecService.createLiveness2DEstimator` method. Currently, only one configuration file is available – `liveness_2d_estimator.xml`.
 
-To get an estimated result, you can call the `LivenessEstimator.estimateLiveness` method. As a result you will have one of the following:
-  * `LivenessEstimator.NOT_ENOUGH_DATA` – not enough samples or face movements to make a decision.
-  * `LivenessEstimator.REAL` – the observed face belongs to a living person.
-  * `LivenessEstimator.FAKE` – the observed face is taken from a photo.
+To get an estimated result, you can call the `Liveness2DEstimator.estimateLiveness` method, passing the `RawSample` object. As a result you will have one of the following:
+  * `Liveness2DEstimator.NOT_ENOUGH_DATA` – not enough samples or face movements to make a decision.
+  * `Liveness2DEstimator.REAL` – the observed face belongs to a living person.
+  * `Liveness2DEstimator.FAKE` – the observed face is taken from a photo.
 
-See an example of using `LivenessEstimator` in [demo.cpp](../../../examples/cpp/demo/demo.cpp).
+See an example of using `Liveness2DEstimator` in [demo.cpp](../../../examples/cpp/demo/demo.cpp).
+
+_**Note**: the `LivenessEstimator` object in Face SDK C++/C#/Java API is deprecated._
+
+#### Quality metrics
+
+| Dataset | TAR@FAR=1e-2 |
+| ------------ | ------------ |
+|CASIA Face Anti-spoofing|0.99|
 
 ## Emotions
 

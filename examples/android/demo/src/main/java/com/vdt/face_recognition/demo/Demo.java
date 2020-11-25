@@ -72,7 +72,6 @@ public class Demo{
 		capturer = service.createCapturer(capturer_conf);
 		qualityEstimator = service.createQualityEstimator("quality_estimator_iso.xml");
 		ageGenderEstimator = service.createAgeGenderEstimator("age_gender_estimator.xml");
-		//ageGenderEstimator = service.createAgeGenderEstimator("age_gender_estimator_v2.xml");
 		emotionsEstimator = service.createEmotionsEstimator("emotions_estimator.xml");
 		faceQualityEstimator = service.createFaceQualityEstimator("face_quality_estimator.xml");
 	}
@@ -81,7 +80,7 @@ public class Demo{
 	public void updateCapturer(){
 		// force free resources
 		// otherwise licence error may occur
-		// when create sdk object in next time 
+		// when create sdk object in next time
 		if (capturer != null) {
 			capturer.dispose();
 		}
@@ -138,7 +137,7 @@ public class Demo{
 			RawSample.Angles angles = sample.getAngles();
 			text += "Angles: \n\tyaw:\t" + angles.yaw +
 								"\n\tpitch:\t" + angles.pitch +
-								"\n\troll:\t" + angles.roll + 
+								"\n\troll:\t" + angles.roll +
 								"\n";
 		}
 
@@ -146,9 +145,9 @@ public class Demo{
 		if (flag_quality){
 			QualityEstimator.Quality quality = qualityEstimator.estimateQuality(sample);
 			text += "Quality: \n\tlighting:\t" + quality.lighting +
-								"\n\tnoise:\t" + quality.noise + 
-								"\n\tsharpness:\t" + quality.sharpness + 
-								"\n\tflare:\t" + quality.flare + 
+								"\n\tnoise:\t" + quality.noise +
+								"\n\tsharpness:\t" + quality.sharpness +
+								"\n\tflare:\t" + quality.flare +
 								"\n";
 		}
 

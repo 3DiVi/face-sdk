@@ -232,14 +232,16 @@ public class MainActivity extends Activity
 		//fastest recognizer
 		editor.putString	("rec_method0", shared_settings.getString("rec_method0", "method9v30_recognizer.xml"));
 		//fastest recognizer for mask wearing
-		//editor.putString	("rec_method0", shared_settings.getString("rec_method0", "method9v30mask_recognizer.xml"));
+		editor.putString	("rec_method1", shared_settings.getString("rec_method1", "method9v30mask_recognizer.xml"));
 		//recognizer for fastest loading
-		editor.putString	("rec_method1", shared_settings.getString("rec_method1", "method8v7_recognizer.xml"));
+		editor.putString	("rec_method2", shared_settings.getString("rec_method2", "method8v7_recognizer.xml"));
 		//recognizer for better indetification quality
 		//editor.putString	("rec_method1", shared_settings.getString("rec_method1", "method6v7_recognizer.xml"));
 
 		editor.putString	("threshold0", shared_settings.getString("threshold0", "6800"));
-		editor.putString	("threshold1", shared_settings.getString("threshold1", "7000"));
+		editor.putString	("threshold1", shared_settings.getString("threshold1", "3600"));
+		editor.putString	("threshold2", shared_settings.getString("threshold2", "7000"));
+		//editor.putString	("threshold1", shared_settings.getString("threshold1", "7220"));
 		editor.putInt 		("method index", shared_settings.getInt("method index", 0));
 
 

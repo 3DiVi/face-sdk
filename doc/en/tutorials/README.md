@@ -14,7 +14,7 @@ You can find the finished tutorial projects in the Face SDK distribution package
 
 To create a project based on a tutorial from this section, you'll need: 
 
-* **Face SDK**. In the section [Getting Started](../../../README.md#getting-started), you can find the instructions on how to download and unpack the distribution package. You can use the [version with a trial license](../../../README.md#face-sdk-trial).
+* **Face SDK**. In the section [Getting Started](/README.md#getting-started), you can find the instructions on how to download and unpack the distribution package. You can use the [version with a trial license](/README.md#face-sdk-trial).
 * **Qt 5.11 or higher**. You can [download the Qt distribution package](https://doc.qt.io/qt-5/windows.html) and [see the Qt installation instructions](https://doc.qt.io/qt-5/gettingstarted.html#) at the [official Qt website](https://www.qt.io/).   
 
 These tutorials expect that you have a reasonable understanding of the C++ programming language.

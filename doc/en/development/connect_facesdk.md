@@ -41,6 +41,10 @@ To use *facerec* in a project, add reference to `FacerecCSharpWrapper.dll` in a 
 
 To use the *libfacerec* library, call the `FacerecService.createService` method, which dynamically loads the library.
 
+The `FacerecService.createService` method has an overloading signature and can be called:
+* by passing the path to the directory with the license (from which the `3divi_face_sdk.lic` license is loaded)
+* by passing the license in the form of a special structure: `FacerecService.License`
+
 _**Warning:** You can call `FacerecService.createService` only once, otherwise, you may encounter a crash._
 
 ### C++ example
@@ -157,3 +161,50 @@ public class Example
 }
 ```
 </details>
+
+### Python example
+
+<details>
+  <summary>Click to expand</summary>
+  
+```python
+from face_sdk_3divi import Config, FacerecService, Error
+
+
+if __name__ == '__main__':
+    try:
+        face_sdk_root_dir = "path/to/face_sdk"
+        service = FacerecService.create_service(face_sdk_root_dir + "/lib/libfacerec.so",     face_sdk_root_dir + "/conf/facerec")
+        recognizer = service.create_recognizer("method7v7_recognizer.xml", True, True, False)
+        capturer_config = Config("common_capturer4_fda.xml")
+        capturer = service.create_capturer(capturer_config)
+
+        # ...
+    except Error as e:
+        print(e)
+```  
+</details>
+
+### Examples of calling the createService method with a preloaded (stored in a string variable) license
+
+#### C++
+
+```cpp
+std::string license_body = "<?xml version="1.0" encoding="utf-8"?><License>........"; // contents of your license
+auto license = pbio::FacerecService::License(license_body);
+const pbio::FacerecService::Ptr service = pbio::FacerecService::createService("../bin/facerec.dll", "../conf/facerec/", license);
+```
+
+#### C#
+
+```cs
+string license_body = "<?xml version="1.0" encoding="utf-8"?><License>........"; // contents of your license
+FacerecService  service = FacerecService.createService(faceSDKRootDir + "/conf/facerec", new FacerecService.License(license_body));
+```
+
+#### Java 
+
+```java
+String license_body = "<?xml version="1.0" encoding="utf-8"?><License>........"; // contents of your license
+final FacerecService service = FacerecService.createService(faceSDKRootDir + "/lib/libfacerec.so", faceSDKRootDir + "/conf/facerec", new FacerecService.License(license_body));
+```

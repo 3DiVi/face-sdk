@@ -61,8 +61,10 @@ private:
 	bool _flag_cutting_token;
 	bool _flag_points;
 
-	// one liveness estimator per face
-	std::map<int, pbio::LivenessEstimator::Ptr> id2le;
+	// liveness estimator
+	pbio::Liveness2DEstimator::Ptr liveness2d;
+	const std::string liveness_config = "liveness_2d_estimator.xml";
+	std::vector<pbio::Liveness2DEstimator::Liveness> liveness2Dresults;
 
 	bool& flag(int i);
 	std::string flag_name(int i) const;
@@ -82,7 +84,7 @@ int main(int argc, char const *argv[])
 		std::cout << "usage: " << argv[0] <<
 			" [--dll_path ../lib/facerec]"
 			" [--config_dir ../conf/facerec]"
-			" [--capturer_conf fda_tracker_capturer.xml]"
+			" [--capturer_conf fda_tracker_capturer_blf.xml]"
 			" [--license_dir ../license]"
 			<< std::endl;
 
@@ -96,7 +98,7 @@ int main(int argc, char const *argv[])
 
 		const std::string dll_path           = parser.get<std::string>("--dll_path      ", default_dll_path);
 		const std::string config_dir         = parser.get<std::string>("--config_dir    ", "../conf/facerec");
-		const std::string capturer_conf      = parser.get<std::string>("--capturer_conf ", "fda_tracker_capturer.xml");
+		const std::string capturer_conf      = parser.get<std::string>("--capturer_conf ", "fda_tracker_capturer_blf_front.xml");
 		const std::string license_dir        = parser.get<std::string>("--license_dir   ", "");
 
 
@@ -553,25 +555,24 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 		{
 			// here we get/create the liveness estimator that work with this face
 			const int id = sample.getID();
-			if(!id2le[id])
+			if(!liveness2d)
 			{
-				id2le[id] = _service->createLivenessEstimator();
+				liveness2d = _service->createLiveness2DEstimator(liveness_config);
 			}
-
-			pbio::LivenessEstimator &le = *id2le[id];
-
-			// add information to the estimator
-			le.addSample(sample);
-
-			// get result
-			pbio::LivenessEstimator::Liveness liveness = le.estimateLiveness();
+			pbio::Liveness2DEstimator::Liveness verdict;
+			if (liveness2Dresults.size() >= id + 1)
+				verdict = liveness2Dresults[id];
+			else {
+				verdict = liveness2d->estimateLiveness(sample);
+				liveness2Dresults.push_back(verdict);
+			}
 
 			puttext(
 				draw_image,
 				std::string("liveness: ") + (
-					liveness == pbio::LivenessEstimator::REAL ? "real" :
-					liveness == pbio::LivenessEstimator::FAKE ? "fake" :
-					liveness == pbio::LivenessEstimator::NOT_ENOUGH_DATA ? "not enough data" : "??"),
+				verdict == pbio::Liveness2DEstimator::REAL ? "real" :
+				verdict == pbio::Liveness2DEstimator::FAKE ? "fake" :
+				verdict == pbio::Liveness2DEstimator::NOT_ENOUGH_DATA ? "not enough data" : "??"),
 				text_point);
 
 			text_point.y += text_line_height;

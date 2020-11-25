@@ -22,7 +22,7 @@ The second number indicates the method version. Older versions were released lat
 The first number (starting from 9) indicates the method version. The higher the version, the better the quality.  
 The second number indicates the approximate template creation time in milliseconds on a modern x86 processor with a frequency of ~3GHz. The slower the method, the better its quality.  
 
-* **x.1000 and x.300** - these methods provide the best quality but they're also the slowest ones. Use case: face identification in server systems on large databases (more than 1 million faces).
+* **x.1000 and x.300** - these methods provide the best quality but they're also the slowest ones.* Use case: face identification in server systems on large databases (more than 1 million faces).
 * **x.100** - these methods are faster compared to the x.1000 and x.300 methods. Use case: real-time face identification in a video stream on desktop/server platforms (x86). These methods can also be used to identify faces in a video stream on modern mobile platforms (arm) with at least 4 cores and a core frequency of at least 1.6GHz.
 * **x.30** - the fastest methods. Use case: face identification in a video stream on mobile platforms (arm).
 
@@ -35,6 +35,8 @@ In some cases, the latest SDK version may contain updates not for all groups of 
 | Expert systems         | method7      | method7     |   method7v2   |   method7v3   | method7v6    |  method7v6    |    method7v7  |method9v300<br>method9v1000|method9v300<br>method9v1000<br>method9v300mask<br>method9v1000mask|
 | Identification in a video stream | method6v2      | method6v3     |   method6v4   |   method6v5   | method6v6    | method6v6     |    method6v7  | method6v7          | method6v7             |
 | Mobile platforms        |          |         |         |         |        | method8v6     |    method8v7  | method9v30         | method9v30<br>method9v30mask |
+
+\* - You can speed up the methods using the AVX2 instruction set (available only on Linux x86 64-bit). If you want to use the AVX2 instruction set, move the contents of the `lib/tensorflow_avx2` directory to the `lib` directory.
 
 To identify faces, create the `Recognizer` object by calling the `FacerecService.createRecognizer` method with the specified configuration file.
 

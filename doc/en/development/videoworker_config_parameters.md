@@ -3,7 +3,7 @@
 Here is the list of parameters from the configuration file that can be changed with the `FacerecService.Config.overrideParameter` method:
 
 * `max_processed_width` and `max_processed_height` – to limit the size of the image that is submitted to the internal detector of new faces.
-* `min_size` and `max_size` – minimum and maximum face size for detection (the size is defined for the image already downscaled under `max_processed_width` and `max_processed_height`).
+* `min_size` and `max_size` – minimum and maximum face size for detection (the size is defined for the image already downscaled under `max_processed_width` and `max_processed_height`). You can specify relative values for the REFA detector, then the absolute values will be values relative to the image width.
 * `min_neighbors` – an integer detector parameter. Please note that large values require greater detection confidence. You can change this parameter based on the situation, for example, increase the value if a large number of false detections are observed, and decrease the value if a large number of faces are not detected. Do not change this setting if you are not sure.
 * `min_detection_period` – a real number that means the minimum time (in seconds) between two runs of the internal detector. A zero value means ‘no restrictions’. It is used to reduce the processor load. Large values increase the latency in detecting new faces.
 * `max_detection_period` – an integer that means the max time (in frames) between two runs of the internal detector. A zero value means ‘no restrictions’. For example, if you are processing a video offline, you can set the value to `1` so as not to miss a single person.

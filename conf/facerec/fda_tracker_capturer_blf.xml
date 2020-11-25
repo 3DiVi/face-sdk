@@ -16,8 +16,8 @@
 
 <fda_max_bad_count_wait>5</fda_max_bad_count_wait>
 <fda_max_weak_count_wait>30</fda_max_weak_count_wait>
-<fda_good_threshold>0.3</fda_good_threshold>
-<fda_continue_tracking_threshold>0.1</fda_continue_tracking_threshold>
+<fda_good_threshold>0.7</fda_good_threshold>
+<fda_continue_tracking_threshold>0.5</fda_continue_tracking_threshold>
 
 <base_angle>0</base_angle>
 

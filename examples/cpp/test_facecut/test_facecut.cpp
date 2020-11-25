@@ -44,7 +44,7 @@ int main(int argc, char const *argv[])
 		const pbio::FacerecService::Ptr service = pbio::FacerecService::createService(dll_path, conf_dir_path);
 
 		// create capturer
-		const pbio::Capturer::Ptr capturer = service->createCapturer("common_capturer4_fda.xml");
+		const pbio::Capturer::Ptr capturer = service->createCapturer("common_capturer_blf_fda_back.xml");
 
 
 		// create quality estimator

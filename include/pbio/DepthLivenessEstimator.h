@@ -93,7 +93,7 @@ public:
 			Depth map.
 
 		\return
-			Estimated liveness.
+			Estimated liveness (see DepthLivenessEstimator.Liveness for details).
 
 		\~Russian
 		\brief

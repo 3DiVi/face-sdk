@@ -1,12 +1,29 @@
 # Release Notes
 
+## v3.6.0 (25 Nov 2020)
+
+### What's new
+
+* Added Python API (Windows, Linux)
+* Added a new detector providing the highest quality of detection – refa (recommended for expert systems)
+* Added GPU usage support on Windows x86 64-bit
+* Added a video recognition demo for Telpo Face Recognition Terminals TPS980
+* Added a new primitive for evaluating Liveness based on RGB images – `Liveness2DEstimator` (previously available in `VideoWorker`)
+
+### Bug Fixes and Improvements
+
+* Added support for the AVX2 instruction set (only for Linux x86 64-bit) that can be used to speed up the template creation in 9.x identification methods (on expert systems). [See more info in the section Performance Parameters](/doc/en/performance_parameters.md#timing-characteristics-for-core-i7-45-ghz).
+
+
 ## v3.5.0 (21 Oct 2020)
 
 ### What's new
+
 * Beta version of [GPU support](doc/en/development/gpu_usage.md) for linux-x86-64 and Android
 * Added a new module for estimation of age and gender: `age_gender_estimator_v2.xml`. This is a pre-release of a new model.
 
-### Bug Fixes and Improvements 
+### Bug Fixes and Improvements
+
 * Improved the speed and quality of the 2D Liveness module
 * Improved the methods for quality estimation: `quality_estimator_iso.xml`, `quality_estimator.xml`
 

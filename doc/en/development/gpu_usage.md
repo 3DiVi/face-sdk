@@ -3,6 +3,7 @@
 Since face recognition requires a lot of processing power, the GPU acceleration for the Face SDK modules is now available for running deep learning algorithms.
 
 You can use GPU acceleration on:
+* Windows x86 64-bit 
 * Linux x86 64-bit
 * Android
 
@@ -14,11 +15,13 @@ Currently, the GPU acceleration is available for the following modules (single G
 
 * recognizers (9v30, 9v300, 9v1000, 9v30mask, 9v300mask, 9v1000mask) (see [Face Identification](face_identification.md))
 
-You need to install the following drivers for the GPU usage:
-
-* Nvidia GPU Driver >= 410.48
-* [CUDA Toolkit 10.0](https://developer.nvidia.com/cuda-toolkit-archive)
-* [cuDNN 7](https://developer.nvidia.com/rdp/cudnn-archive#a-collapse765-90)
+* Software requirements:
+   * Nvidia GPU Driver >= 410.48
+   * [CUDA Toolkit 10.1](https://developer.nvidia.com/cuda-toolkit-archive)
+   * [cuDNN 7](https://developer.nvidia.com/rdp/cudnn-archive#a-collapse765-90)
+   * [For Windows] [Microsoft Visual C++ Redistributable for Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
+* Hardware requirements: 
+   * CUDA compatible GPU (NVIDIA GTX 1050 Ti or better)
 
 You can also use pre-built docker containers with CUDA support, such as *nvidia/cuda:10.0-cudnn7-devel-ubuntu16.04* (please note that some licenses can be unavailable in this case).
 
@@ -37,7 +40,7 @@ The table below shows the speed measurements for the Face SDK modules using CPU 
 | 9v30   | 3ms    | 30ms  |
 
 
-_**Note**: the NVIDIA GeForce GTX 1080 Ti was used for the speed test._
+_**Note**: the NVIDIA GeForce GTX 1080 Ti and Intel Core i7 were used for the speed test._
 
 ### Troubleshooting
 

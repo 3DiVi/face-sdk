@@ -91,10 +91,33 @@ VideoWorker video_worker = service.createVideoWorker(
     );
 ```
 </details>
+
+### Python пример 
+
+<details>
+  <summary>Нажмите, чтобы развернуть</summary>
+  
+```python
+video_worker_config = Config("video_worker_lbf.xml")
+video_worker_config.override_parameter("search_k", 3)
+
+video_worker_params = video_worker.Params()
+video_worker_params.video_worker_config = video_worker_config
+video_worker_params.recognizer_ini_file = recognizer_config
+video_worker_params.streams_count = streams_count
+video_worker_params.processing_threads_count = processing_threads_count
+video_worker_params.matching_threads_count = matching_threads_count
+video_worker_params.age_gender_estimation_threads_count = age_gender_estimation_threads_count
+video_worker_params.emotions_estimation_threads_count = emotions_estimation_threads_count
+
+video_worker = service.create_video_worker(video_worker_params)
+```
+</details>
     
 Где:
 
 * `video_worker_config` – путь до конфигурационного файла для `VideoWorker` или объект `FacerecService.Config`.
+* `video_worker_params` – параметры конструктора `VideoWorker`.
 * `recognizer_config` – конфигурационный файл для используемого распознавателя (см. [Идентификация лиц](face_identification.md)).
 * `streams_count` – количество видеопотоков, для каждого из которых будет создан поток трекинга.
 * `processing_threads_count` – количество потоков для создания шаблонов. Эти потоки общие для всех видеопотоков и распределяют ресурсы равномерно по все видеопотокам независимо от их загруженности (за исключение видеопотоков без лиц в кадре).

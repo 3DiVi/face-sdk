@@ -29,6 +29,7 @@
 #include "ComplexObject.h"
 #include "DepthLivenessEstimator.h"
 #include "IRLivenessEstimator.h"
+#include "Liveness2DEstimator.h"
 #include "EmotionsEstimator.h"
 #include "Error.h"
 #include "ExceptionCheck.h"
@@ -63,6 +64,21 @@ public:
 	typedef LightSmartPtr<FacerecService>::tPtr Ptr;
 
 	typedef pbio::Config Config;
+
+    /**
+        \~English \brief Storing the license as a string variable.
+        \~Russian \brief Хранение лицензии в виде строковой переменной.
+    */
+	struct License
+	{
+		/**
+			\~English \brief Сontent of a license.
+			\~Russian \brief Содержимое лицензии.
+		*/
+		const std::string license_body;
+
+		License(std::string license_body) :	license_body(license_body) { }
+	};
 
 	/** \~English
 		\brief License status.
@@ -170,6 +186,44 @@ public:
 		std::string facerec_conf_dir,
 		const std::string license_dir = std::string());
 
+	/**
+		\~English
+		\brief
+			Initializes the facerec lib with license content (can be called only once).
+
+		\param[in]  dll_path
+			An absolute or a relative path to libfacerec.so on Linux or facerec.dll on Windows.
+
+		\param[in]  facerec_conf_dir
+			An absolute or a relative path to the directory with config files (the 'face_sdk/conf/facerec/' directory).
+
+		\param[in]  license
+			Сontent of a license (see pbio::FacerecService::License)
+
+		\return
+			Created FacerecService object.
+
+		\~Russian
+		\brief
+				Инициализировать работу с библиотекой libfacerec на основе содержимого лицензии (нельзя вызывать более одного раза).
+
+		\param[in]  dll_path
+			Абсолютный или относительный путь до файла билиотеки - libfacerec.so на Linux или facerec.dll на Windows.
+
+		\param[in]  facerec_conf_dir
+			Абсолютный или относительный путь до каталога с конфигурационными файлами (каталог 'face_sdk/conf/facerec/' в дистрибутиве).
+
+		\param[in]  license
+			Содержимое лицензии (см. pbio::FacerecService::License)
+
+		\return
+			Созданный объект FacerecService.
+	*/
+	static FacerecService::Ptr createService(
+		const std::string dll_path,
+		std::string facerec_conf_dir,
+		const pbio::FacerecService::License license);
+
 //! @cond IGNORED
 
 	// internal usage only
@@ -177,7 +231,8 @@ public:
 		void* const ae_ptr,
 		const std::string dll_path,
 		std::string facerec_conf_dir,
-		const std::string license_dir);
+		const std::string license,
+		const bool is_license_dir);
 
 //! @endcond
 
@@ -816,6 +871,60 @@ public:
 	/**
 		\~English
 		\brief
+			Creates an Liveness2DEstimator object.
+			Thread-safe.
+
+		\param[in]  ini_file
+			Name of the configuration file.
+
+		\return
+			Created Liveness2DEstimator object.
+
+		\~Russian
+		\brief
+			Создать объект Liveness2DEstimator.
+			Потокобезопасный.
+
+		\param[in]  ini_file
+			Имя конфигурационного файла.
+
+		\return
+			Созданный объект Liveness2DEstimator.
+	*/
+	Liveness2DEstimator::Ptr createLiveness2DEstimator(
+		const std::string ini_file) const;
+
+
+	/**
+		\~English
+		\brief
+			Creates an Liveness2DEstimator object.
+			Thread-safe.
+
+		\param[in]  config
+			Сonfiguration file with optionally overridden parameters.
+
+		\return
+			Created Liveness2DEstimator object.
+
+		\~Russian
+		\brief
+			Создать объект Liveness2DEstimator.
+			Потокобезопасный.
+
+		\param[in]  config
+			Конфигурационный файл с опционально переопределенными параметрами.
+
+		\return
+			Созданный объект Liveness2DEstimator.
+	*/
+	Liveness2DEstimator::Ptr createLiveness2DEstimator(
+		const pbio::FacerecService::Config config) const;
+
+
+	/**
+		\~English
+		\brief
 			Get the license state.
 			Thread-safe.
 
@@ -1032,7 +1141,17 @@ FacerecService::Ptr FacerecService::createService(
 	std::string facerec_conf_dir,
 	const std::string license_dir)
 {
-	return createService(NULL, dll_path, facerec_conf_dir, license_dir);
+	return createService(NULL, dll_path, facerec_conf_dir, license_dir, true);
+}
+
+// static
+inline
+FacerecService::Ptr FacerecService::createService(
+	const std::string dll_path,
+	std::string facerec_conf_dir,
+	const pbio::FacerecService::License license)
+{
+	return createService(NULL, dll_path, facerec_conf_dir, license.license_body, false);
 }
 
 // static
@@ -1041,7 +1160,8 @@ FacerecService::Ptr FacerecService::createService(
 	void* const ae_ptr,
 	const std::string dll_path,
 	std::string facerec_conf_dir,
-	const std::string license_dir)
+	const std::string license,
+	const bool is_license_dir)
 {
 
 #ifdef __STATIC_LIBFACEREC_BUILD__
@@ -1063,14 +1183,27 @@ FacerecService::Ptr FacerecService::createService(
 
 	void* exception = NULL;
 
-	void* const the_impl = dll_handle->FacerecService_constructor3(
-		ae_ptr,
-		facerec_conf_dir.c_str(),
-		license_dir.empty() ?
-			NULL :
-			license_dir.c_str(),
-		dll_path.c_str(),
-		&exception);
+	void* the_impl;
+
+	if (is_license_dir)
+	{
+		the_impl = dll_handle->FacerecService_constructor3(
+			ae_ptr,
+			facerec_conf_dir.c_str(),
+			license.empty() ?
+				NULL :
+				license.c_str(),
+			dll_path.c_str(),
+			&exception);
+	}else
+	{
+		the_impl = dll_handle->FacerecService_constructor5(
+			ae_ptr,
+			facerec_conf_dir.c_str(),
+			license.c_str(),
+			dll_path.c_str(),
+			&exception);
+	}
 
 	checkException(exception, *dll_handle);
 
@@ -1561,6 +1694,55 @@ IRLivenessEstimator::Ptr FacerecService::createIRLivenessEstimator(
 	checkException(exception, *_dll_handle);
 
 	return IRLivenessEstimator::Ptr::make(_dll_handle, the_impl);
+}
+
+inline
+Liveness2DEstimator::Ptr FacerecService::createLiveness2DEstimator(
+	const std::string ini_file) const
+{
+	const std::string file_path = _facerec_conf_dir + ini_file;
+
+	void* exception = NULL;
+
+	pbio::facerec::Liveness2DEstimatorImpl* const the_impl =
+		_dll_handle->FacerecService_createLiveness2DEstimatorE(
+			_impl,
+			file_path.c_str(),
+			0,     // overridden keys size
+			NULL,  // overridden keys
+			NULL,  // overriden values
+			&exception);
+
+	checkException(exception, *_dll_handle);
+
+	return Liveness2DEstimator::Ptr::make(_dll_handle, the_impl);
+}
+
+inline
+Liveness2DEstimator::Ptr FacerecService::createLiveness2DEstimator(
+	const pbio::FacerecService::Config config) const
+{
+	const std::string file_path = _facerec_conf_dir + config.config_filepath;
+
+	std::vector<char const*> overridden_keys;
+	std::vector<double> overridden_values;
+
+	config.prepare(overridden_keys, overridden_values);
+
+	void* exception = NULL;
+
+	pbio::facerec::Liveness2DEstimatorImpl* const the_impl =
+		_dll_handle->FacerecService_createLiveness2DEstimatorE(
+			_impl,
+			file_path.c_str(),
+			overridden_keys.size(),
+			overridden_keys.empty() ? NULL : &(overridden_keys[0]),
+			overridden_values.empty() ? NULL : &(overridden_values[0]),
+			&exception);
+
+	checkException(exception, *_dll_handle);
+
+	return Liveness2DEstimator::Ptr::make(_dll_handle, the_impl);
 }
 
 inline

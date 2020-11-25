@@ -33,7 +33,7 @@ The network settings used for license updates are stored in the `net_params.xml`
 
 To activate the license on the Face SDK Licensing Portal, please follow the steps below:
 
-* Unpack the archive with the distribution package in any directory on your device (see [Getting Started](../../README.md#getting-started)).
+* Unpack the archive with the distribution package in any directory on your device (see [Getting Started](/README.md#getting-started)).
 * Generate/get the `3divi_face_sdk.lic` file that will contain the information about your hardware required for licensing: 
     * [Windows/Linux] Run the *get_license* utility from the *bin* folder on a target PC/device. As a result, the `3divi_face_sdk.lic` file will be created in the *bin* folder. 
 	* [Android] Call the `FacerecService.getLicenseState` function and get the `LicenseState.hardware_reg` field (see an example of getting a *Hardware ID* in [Android Demo](/examples/android/demo/src/main/java/com/vdt/face_recognition/demo/MainActivity.java)). Send your *Hardware ID* to your personal manager. Your manager will send you the `3divi_face_sdk.lic` file.

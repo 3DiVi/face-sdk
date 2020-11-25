@@ -2,10 +2,10 @@
 
 The *bin* directory contains the following executable files of the demo programs:
 
-* `video_recognition_demo` – an example of using the `pbio::VideoWorker` object
-* `demo` – an example of face tracking and all types of face estimation
-* `test_calibration` – an example of camera calibration
-* `test_filecap` – an example of face capturing, saving and sample loading
-* `test_facecut` – an example of face capturing and cropping, as well as estimation of the face image quality, gender and age
-* `test_identify` – an example of creating, saving, loading and matching of templates
-* `test_videocap` – an example of face tracking and liveness estimation
+* [video_recognition_demo](video_recognition_demo.md) – an example of using the `pbio::VideoWorker` object
+* [demo](demo.md) – an example of face tracking and face estimation
+* [test_calibration](test_calibration.md) – an example of camera calibration
+* [test_filecap](test_filecap.md) – an example of face capturing, saving and sample loading
+* [test_facecut](test_facecut.md)– an example of face capturing and cropping, as well as estimation of the face image quality, gender and age
+* [test_identify](test_identify.md) – an example of creating, saving, loading and matching of templates
+* [test_videocap](test_videocap.md) – an example of face tracking and liveness estimation

@@ -48,8 +48,8 @@ public class SettingsActivity extends Activity{
 
 	private int camera_id;
 	private String resolution;
-	private String [] recognizer_methods = new String [2];
-	private String [] thresholds = new String [2];
+	private String [] recognizer_methods = new String [3];
+	private String [] thresholds = new String [3];
 	private int recognizer_method_index;
 
 
@@ -76,8 +76,10 @@ public class SettingsActivity extends Activity{
 		recognizer_method_index = shared_settings.getInt	("method index", 0);
 		recognizer_methods[0] 	= shared_settings.getString	("rec_method0", null);
 		recognizer_methods[1] 	= shared_settings.getString	("rec_method1", null);
+		recognizer_methods[2]	= shared_settings.getString	("rec_method2", null);
 		thresholds[0] 			= shared_settings.getString	("threshold0", null);
 		thresholds[1] 			= shared_settings.getString	("threshold1", null);
+		thresholds[2] 			= shared_settings.getString	("threshold2", null);
 
 		List<TheCamera.TheCameraInfo> availableCameras = TheCamera.getAvailableCameras();
 		if (availableCameras.size() == 0) {
@@ -169,6 +171,10 @@ public class SettingsActivity extends Activity{
 					case 1:
 						editor.putString("threshold1", threshold_editText.getText().toString());
 						break;
+					case 2:
+						editor.putString("threshold2", threshold_editText.getText().toString());
+						break;
+
 				}
 
 				//check updates

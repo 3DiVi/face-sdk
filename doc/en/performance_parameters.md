@@ -44,12 +44,16 @@ List of used abbreviations:
 <tr align="center"> <th align="center"> 7.7    </th>    <td> 170 (180*) </td>  <td> 1.22</td> <td> 131  </td> <td> 1310</td>  <td> 0.25</td> <td> 12.1 </td> <td> 126 </td>  <td>0.04   </td>  </tr>
 <tr align="center"> <th align="center"> 8.6    </th>    <td>  20 (20*)  </td>  <td> 1.22</td> <td> 131  </td> <td> 1310</td>  <td> 0.25</td> <td> 12.1 </td> <td> 126 </td>  <td>0.04   </td>  </tr>
 <tr align="center"> <th align="center"> 8.7    </th>    <td>  20 (20*)  </td>  <td> 1.22</td> <td> 131  </td> <td> 1310</td>  <td> 0.25</td> <td> 12.1 </td> <td> 126 </td>  <td>0.04   </td>  </tr>
-<tr align="center"> <th align="center"> 9.30   </th>    <td>  30        </td>  <td> 0.60</td> <td> 64.2 </td> <td> 643 </td>  <td> 0.18</td> <td> 12.0 </td> <td> 117 </td>  <td>0.04   </td>  </tr>
-<tr align="center"> <th align="center"> 9.300  </th>    <td> 260        </td>  <td> 0.60</td> <td> 64.2 </td> <td> 643 </td>  <td> 0.18</td> <td> 12.0 </td> <td> 117 </td>  <td>0.04   </td>  </tr>
-<tr align="center"> <th align="center"> 9.1000 </th>    <td> 730        </td>  <td> 0.60</td> <td> 64.2 </td> <td> 643 </td>  <td> 0.18</td> <td> 12.0 </td> <td> 117 </td>  <td>0.04   </td>  </tr>
+<tr align="center"> <th align="center"> 9.30   </th>    <td>  30       </td>  <td> 0.60</td> <td> 64.2 </td> <td> 643 </td>  <td> 0.18</td> <td> 12.0 </td> <td> 117 </td>  <td>0.04   </td>  </tr>
+<tr align="center"> <th align="center"> 9.300  </th>    <td> 260 (125**)       </td>  <td> 0.60</td> <td> 64.2 </td> <td> 643 </td>  <td> 0.18</td> <td> 12.0 </td> <td> 117 </td>  <td>0.04   </td>  </tr>
+<tr align="center"> <th align="center"> 9.1000 </th>    <td> 730 (305**)        </td>  <td> 0.60</td> <td> 64.2 </td> <td> 643 </td>  <td> 0.18</td> <td> 12.0 </td> <td> 117 </td>  <td>0.04   </td>  </tr>
+<tr align="center"> <th align="center"> 9.30mask   </th>    <td>  20       </td>  <td> 0.60</td> <td> 64.2 </td> <td> 643 </td>  <td> 0.18</td> <td> 12.0 </td> <td> 117 </td>  <td>0.04   </td>  </tr>
+<tr align="center"> <th align="center"> 9.300mask  </th>    <td> 160 (79**)       </td>  <td> 0.60</td> <td> 64.2 </td> <td> 643 </td>  <td> 0.18</td> <td> 12.0 </td> <td> 117 </td>  <td>0.04   </td>  </tr>
+<tr align="center"> <th align="center"> 9.1000mask </th>    <td> 290 (144**)        </td>  <td> 0.60</td> <td> 64.2 </td> <td> 643 </td>  <td> 0.18</td> <td> 12.0 </td> <td> 117 </td>  <td>0.04   </td>  </tr>
 </table>
 
-\* – template creation time when `processing_less_memory_consumption` was set to `true` in the `FacerecService.createRecognizer` call for recognizer creation  
+\* – template creation time when `processing_less_memory_consumption` was set to `true` in the `FacerecService.createRecognizer` call for recognizer creation.     
+\** – template creation time with the use of the AVX2 instruction set (see [Face identification](development/face_identification.md)).   
 
 **Note:**
 * Accelerated search time is given for `k=1`. As for larger values of `k`, the time will increase up to the search time without acceleration.

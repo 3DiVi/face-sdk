@@ -51,3 +51,18 @@ if (capturer.IsDisposed)
 capturer.capture(image); // exception, object is disposed
 // this line never be reached
 ```
+
+## Python 
+
+Для освобождения памяти от внутренних объектов используются деструкторы. Сборщик мусора автоматически освобождает память, когда это необходимо. 
+
+Example:
+```python
+...
+capturer = service.create_capturer("common_capturer.xml")
+...
+del capturer  # release internal objects
+
+capturer.capture(image)  # exception, object is disposed
+# this line never be reached
+```

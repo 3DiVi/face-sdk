@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<capturer_impl_name>fld_capturer</capturer_impl_name>
+
+<capturer_type>frontal</capturer_type>
+
+
+<detector_type>refa</detector_type>
+<min_size>0.045</min_size>
+<max_size>3</max_size>
+<num_threads>8</num_threads>
+<score_threshold>0.89</score_threshold>
+<nms_iou_threshold>0.4</nms_iou_threshold>
+<coarse_score_threshold>0.5</coarse_score_threshold>
+
+<refa_id>refa-a</refa_id>
+<refa_filepath>share/refa/refa-a.enc</refa_filepath>
+
+
+<fitter_type>fda</fitter_type>
+<fda_file>share/fda/fda0017.3500.enc</fda_file>
+<downscale_rawsamples_to_preferred_size>1</downscale_rawsamples_to_preferred_size>
+
+</opencv_storage>
