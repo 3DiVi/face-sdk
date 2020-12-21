@@ -6,6 +6,12 @@
 
 Готовый демо-проект вы можете найти в дистрибутиве Face SDK: [examples/tutorials/detection_and_tracking_with_video_worker](/examples/tutorials/detection_and_tracking_with_video_worker)
 
+Содержание туториала: 
+
+* [Создаем проект Qt](#создаем-проект-qt)
+* [Выводим изображение с камеры](#выводим-изображение-с-камеры)
+* [Детектим и отслеживаем лица на видео](#детектим-и-отслеживаем-лица-на-видео)
+
 <p align="center">
 <img width="600" src="../../img/first_1.png"><br>
 </p>

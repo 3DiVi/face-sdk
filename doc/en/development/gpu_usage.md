@@ -25,9 +25,9 @@ Currently, the GPU acceleration is available for the following modules (single G
 
 You can also use pre-built docker containers with CUDA support, such as *nvidia/cuda:10.0-cudnn7-devel-ubuntu16.04* (please note that some licenses can be unavailable in this case).
 
-To run models on GPU, you need to edit the configuration file of one of the supported recognizers: set `use_cuda` to `1`. The GPU acceleration is performed on one of the available GPUs. The GPU index can be set as follows:
+To run models on GPU, you need to edit the configuration file of one of the supported recognizers: set `use_cuda` to `1`. The GPU acceleration is performed on one of the available GPUs (by default on the GPU with index `0`). The GPU index can be changed as follows:
 * via the `gpu_index` parameter in the configuration file 
-* via the `CUDA_VISIBLE_DEVICES` environment variable
+* via the `CUDA_VISIBLE_DEVICES` environment variable (see more info about [CUDA Environment Variables](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#env-vars))
 
 ### Timing characteristics
 
@@ -46,8 +46,7 @@ _**Note**: the NVIDIA GeForce GTX 1080 Ti and Intel Core i7 were used for the sp
 
 | Error | Solution |
 | ----- | -------- |
-| `libtensorflow.so.2: cannot open shared object file: No such file or directory`  | You need to set the environment variable `LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/path/to/lib`, where `path/to/lib` is the path to the *lib* directory from the `face_sdk` build, or move this file to `../lib` relative to the application you're running (since the run-time search path is set in `libfacerec.so`). |
-| `libusb-0.1.so.4: cannot open shared object file: No such file or directory` | Install the `libusb-0.1-4` package on the system by running the command: `apt-get install libusb-0.1-4` |
+| `libtensorflow.so.2: cannot open shared object file: No such file or directory`  | You need to set the environment variable `LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/path/to/lib`, where `path/to/lib` is the path to the *lib* directory from the Face SDK, or move this file to `../lib` relative to the application you're running (since the run-time search path is set in `libfacerec.so`). |
 | Slow initialization | Increasing the default JIT cache size: `export CUDA_CACHE_MAXSIZE=2147483647` (see [JIT Caching](https://developer.nvidia.com/blog/cuda-pro-tip-understand-fat-binaries-jit-caching/)) |
 
 ## Android [beta]

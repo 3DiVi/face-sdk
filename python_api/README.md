@@ -9,3 +9,9 @@ Go to the python_api directory and run `pip3 install .`
 
 ## Platforms
 You can use `face_sdk_3divi` package on Linux, Windows platforms
+
+## Troubleshooting
+
+| Error | Solution |
+| ----- | -------- |
+| `OSError: libtensorflow.so.2: cannot open shared object file: No such file or directory` | You need to set the environment variable `LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/path/to/lib`, where `path/to/lib` is the path to the *lib* directory from the Face SDK  |

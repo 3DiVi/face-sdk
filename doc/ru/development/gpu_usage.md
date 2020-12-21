@@ -26,9 +26,9 @@
 
 Также есть возможность применять предсобранные docker-контейнеры с поддержкой CUDA, например,  *nvidia/cuda:10.0-cudnn7-devel-ubuntu16.04* (некоторые виды лицензий при этом могут быть недоступны).
 
-Для запуска моделей на GPU требуется отредактировать конфигурационный файл поддерживаемого распознавателя, изменив поле `use_cuda` с `0` на `1`. Ускорение при этом происходит за счет одного из доступных GPU. Индекс GPU можно задать следующим образом:  
+Для запуска моделей на GPU требуется отредактировать конфигурационный файл поддерживаемого распознавателя, изменив поле `use_cuda` с `0` на `1`. Ускорение при этом происходит за счет одного из доступных GPU (по умолчанию – на GPU с индексом `0`). Индекс GPU можно изменить следующим образом:  
 * через параметр конфигурационного файла `gpu_index`  
-* через переменную окружения `CUDA_VISIBLE_DEVICES`
+* через переменную окружения `CUDA_VISIBLE_DEVICES` (см. более подробную информацию о [переменных окружения CUDA](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#env-vars))
 
 ### Временные характеристики 
 
@@ -46,8 +46,7 @@ _**Примечание**: при проведении замеров скоро
 
 | Ошибка  | Решение |
 | ------- | ------- |
-| `libtensorflow.so.2: cannot open shared object file: No such file or directory`  | Требуется задать переменную окружения `LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/path/to/lib`, где `path/to/lib` – путь к директории *lib* из сборки *face_sdk*, либо переместить этот файл по пути `../lib` относительно запускаемого приложения (т.к. в `libfacerec.so` задан `run-time search path`). |
-| `libusb-0.1.so.4: cannot open shared object file: No such file or directory`  | Требуется установить  пакет `libusb-0.1-4` в систему, выполнив команду: `apt-get install libusb-0.1-4` |
+| `libtensorflow.so.2: cannot open shared object file: No such file or directory`  | Требуется задать переменную окружения `LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/path/to/lib`, где `path/to/lib` – путь к директории *lib* из дистрибутива Face SDK, либо переместить этот файл по пути `../lib` относительно запускаемого приложения (т.к. в `libfacerec.so` задан `run-time search path`). |
 | Медленная инициализация | Увеличьте размер JIT кэша: `export CUDA_CACHE_MAXSIZE=2147483647` (подробнее - [JIT Caching](https://developer.nvidia.com/blog/cuda-pro-tip-understand-fat-binaries-jit-caching/)) |
 
 ## Android [beta]

@@ -1,0 +1,31 @@
+.wrapper {
+	padding: 8px;
+}
+
+.video__wrapper {
+	position: relative;
+}
+
+#video {
+	transform: scaleX(-1);
+	width: auto;
+	height: auto;
+}
+
+#canvasOutput {
+	position: absolute;
+	top: 38px;
+	left: 0;
+}
+
+.progress_bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.bestshot {
+	min-width: 300px;
+	width: auto;
+	height: auto;
+}

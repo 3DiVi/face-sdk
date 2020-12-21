@@ -1,4 +1,5 @@
 import cv2
+import sys
 
 from face_sdk_3divi.modules import raw_image
 from .image_and_depth_source import ImageAndDepthSource, ImageAndDepth
@@ -28,7 +29,11 @@ class OpenCVSource(ImageAndDepthSource):
 
             # open webcam
             print(f"opening stream '{cam_id}'")
-            self.capturer = cv2.VideoCapture(cam_id, cv2.CAP_DSHOW)
+            if sys.platform == "linux":
+                self.capturer = cv2.VideoCapture(cam_id)
+            else:
+                self.capturer = cv2.VideoCapture(cam_id, cv2.CAP_DSHOW)
+
             assert self.capturer.isOpened(), "webcam not opened"
 
             # set resolution

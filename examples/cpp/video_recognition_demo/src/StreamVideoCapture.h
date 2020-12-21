@@ -36,7 +36,7 @@ private:
 
 	void stopGrabThread();
 
-	static const int grab_sleep = 10;  // ms
+	static const int grab_sleep = 40;  // ms
 	static const int max_grab_duration = 1000;  // ms
 
 	const std::string stream_url;

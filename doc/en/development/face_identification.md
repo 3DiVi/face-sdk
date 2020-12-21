@@ -36,7 +36,7 @@ In some cases, the latest SDK version may contain updates not for all groups of 
 | Identification in a video stream | method6v2      | method6v3     |   method6v4   |   method6v5   | method6v6    | method6v6     |    method6v7  | method6v7          | method6v7             |
 | Mobile platforms        |          |         |         |         |        | method8v6     |    method8v7  | method9v30         | method9v30<br>method9v30mask |
 
-\* - You can speed up the methods using the AVX2 instruction set (available only on Linux x86 64-bit). If you want to use the AVX2 instruction set, move the contents of the `lib/tensorflow_avx2` directory to the `lib` directory.
+\* - You can speed up the methods using the AVX2 instruction set (available only on Linux x86 64-bit). If you want to use the AVX2 instruction set, move the contents of the `lib/tensorflow_avx2` directory to the `lib` directory. You can check the available instructions by running the command `grep flags /proc/cpuinfo`
 
 To identify faces, create the `Recognizer` object by calling the `FacerecService.createRecognizer` method with the specified configuration file.
 

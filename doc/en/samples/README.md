@@ -1,8 +1,8 @@
 # Samples
 
-* Face SDK includes a set of programs that show how to work with C++, Java, C#, and Python API.  
+* Face SDK includes a set of programs that show how to work with C++, Java, C#, Python, and Javascript API.  
 * The pre-built samples are located in the *bin* (C++, C#, Python) and *apk* (Java for Android) directories.  
-* The source code is in the *examples* directory (C++, C#, Java, Python).
+* The source code is in the [examples](/examples) directory (C++, C#, Java, Python, Javascript).
 
 ## Windows/Linux
 

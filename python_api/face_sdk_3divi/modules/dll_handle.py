@@ -188,7 +188,7 @@ class DllHandle:
         return func(*args, **kwargs)
 
     def RawSample_getType(self, *args, **kwargs):
-        func = self.__dll_handle['{}VideoWorker_setThisVW'.format(self.__namespace)]
+        func = self.__dll_handle['{}RawSample_getType'.format(self.__namespace)]
         func.restype = c_int32
 
         return func(*args, **kwargs)
@@ -231,12 +231,6 @@ class DllHandle:
 
     def RawSample_cutFaceImage(self, *args, **kwargs):
         func = self.__dll_handle['{}RawSample_cutFaceImage'.format(self.__namespace)]
-        func.restype = c_void_p
-
-        return func(*args, **kwargs)
-
-    def RawSample_save(self, *args, **kwargs):
-        func = self.__dll_handle['{}RawSample_save'.format(self.__namespace)]
         func.restype = c_void_p
 
         return func(*args, **kwargs)

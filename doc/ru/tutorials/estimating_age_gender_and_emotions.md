@@ -4,6 +4,11 @@
 
 Готовый демо-проект вы можете найти в дистрибутиве Face SDK: [examples/tutorials/age_gender_and_emotions](../../../examples/tutorials/age_gender_and_emotions)
 
+Содержание туториала: 
+
+* [Определяем пол и возраст](#определяем-пол-и-возраст)
+* [Определяем эмоции](#определяем-эмоции)
+
 <p align="center">
 <img width="600" src="../../img/third_2.png"><br>
 </p>

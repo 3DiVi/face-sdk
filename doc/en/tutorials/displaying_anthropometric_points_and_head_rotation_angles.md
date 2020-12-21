@@ -2,6 +2,11 @@
 
 In this tutorial, you'll learn how to display anthropometric points and head rotation angles after a person's face has been found on a video or image. This tutorial is based on the tutorial [Face Detection and Tracking in a Video Stream](face_detection_and_tracking_in_a_video_stream.md) and the corresponding project. 
 
+Contents of this tutorial: 
+
+* [Displaying Anthropometric Points](#displaying-anthropometric-points)
+* [Displaying Head Rotation Angles](#displaying-head-rotation-angles)
+
 <p align="center">
 <img width="600" src="../../img/second_1.jpeg"><br>
 </p>

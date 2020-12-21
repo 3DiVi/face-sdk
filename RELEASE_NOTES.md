@@ -1,5 +1,16 @@
 # Release Notes
 
+## v3.7.0 (21 Dec 2020)
+
+### What's new
+
+* Added the ULD detector
+* Added a beta version of the Face SDK VideoEngine JS plugin and demo
+
+### Bug Fixes and Improvements
+
+* Fixed fake detections when processing video from multiple streams
+
 ## v3.6.0 (25 Nov 2020)
 
 ### What's new

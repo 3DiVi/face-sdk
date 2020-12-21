@@ -9,7 +9,7 @@
 <detector_type>refa</detector_type>
 <min_size>0.045</min_size>
 <max_size>3</max_size>
-<num_threads>8</num_threads>
+<num_threads>1</num_threads>
 <score_threshold>0.89</score_threshold>
 <nms_iou_threshold>0.4</nms_iou_threshold>
 <coarse_score_threshold>0.5</coarse_score_threshold>

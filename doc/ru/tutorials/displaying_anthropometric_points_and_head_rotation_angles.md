@@ -4,6 +4,11 @@
 
 Готовый демо-проект вы можете найти в дистрибутиве Face SDK: [examples/tutorials/detection_and_tracking_with_video_worker](../../../examples/tutorials/detection_and_tracking_with_video_worker)
 
+Содержание туториала: 
+
+* [Отображаем антропометрические точки](#отображаем-антропометрические-точки)
+* [Отображаем углы поворота головы](#отображаем-углы-поворота-головы)
+
 <p align="center">
 <img width="600" src="../../img/second_1.jpeg"><br>
 </p>

@@ -15,6 +15,14 @@ Besides Face SDK and Qt, you'll need:
 
 You can find the tutorial project in Face SDK: [examples/tutorials/depth_liveness_in_face_recognition](../../../examples/tutorials/depth_liveness_in_face_recognition)
 
+Contents of this tutorial: 
+
+* [Importing OpenNI2 and RealSense2 Libraries](#importing-openni2-and-realsense2-libraries)
+* [Retrieving a Depth Map using OpenNI2 API or RealSense2 API](#retrieving-a-depth-map-using-openni2-api-or-realsense2-api)
+* [Connecting the Depth Sensor for Frame Processing](#connecting-the-depth-sensor-for-frame-processing)
+* [Processing the Depth Map with VideoWorker](#processing-the-depth-map-with-videoworker)
+* [Visualizing RGB and Depth Maps. Displaying 3D Liveness Information](#visualizing-rgb-and-depth-maps-displaying-3d-liveness-information)
+
 <p align="center">
 <img width="1000" src="../../img/fifth_1.png"><br>
 </p>
@@ -97,7 +105,7 @@ _**Note:** For Windows, you have to install RealSense2 and specify the path to t
 ...
 ```
 
-## Retrieving a Depth Map using OpenNI2 API / RealSense2 API 
+## Retrieving a Depth Map using OpenNI2 API or RealSense2 API 
 
 1. At this stage, we need to retrieve a depth frame from an RGBD sensor using OpenNI2 API or RealSense2 API, depending on the camera used. We won't elaborate on retrieving the depth frames. Instead, we'll use the headers from one of the Face SDK samples ([video_recognition_demo](../samples/cpp/video_recognition_demo.md)). In the profile of the project, specify the path to the folder *examples/cpp/video_recognition_demo/src* from Face SDK.
 

@@ -6,6 +6,12 @@ Besides Face SDK and Qt, you'll need **a camera connected to your PC** (for exam
 
 You can find the tutorial project in Face SDK: [examples/tutorials/detection_and_tracking_with_video_worker](/examples/tutorials/detection_and_tracking_with_video_worker)
 
+Contents of this tutorial: 
+
+* [Creating a Qt Project](#creating-a-qt-project)
+* [Displaying the Image from Camera](#displaying-the-image-from-camera)
+* [Detecting and Tracking Faces in Video Stream](#detecting-and-tracking-faces-in-video-stream)
+
 <p align="center">
 <img width="600" src="../../img/first_1.png"><br>
 </p>

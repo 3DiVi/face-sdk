@@ -7,7 +7,10 @@ Required dependencies
 To use Face SDK, you have to install the following dependencies:
 
 * [Windows] `sense4.dll`. This library is located in the *bin* folder in Face SDK and should be located next to `facerec.dll` if you change the default location
+* [Windows] `tensorflow.dll`. This library is located in the *bin* folder of the Face SDK distribution package. It must be located in the directory from which the application is launched or you must add the path to the directory with this library to the `PATH` system variable
+* [Windows] [Microsoft Visual C++ Redistributable for Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
 * [Linux] `libusb-0.1.so.4`
+* [Linux] `libtensorflow.so.2`. This library is located in the *lib* folder in Face SDK
 
 ### C++ 
 
