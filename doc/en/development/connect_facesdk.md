@@ -7,10 +7,10 @@ Required dependencies
 To use Face SDK, you have to install the following dependencies:
 
 * [Windows] `sense4.dll`. This library is located in the *bin* folder in Face SDK and should be located next to `facerec.dll` if you change the default location
-* [Windows] `tensorflow.dll`. This library is located in the *bin* folder of the Face SDK distribution package. It must be located in the directory from which the application is launched or you must add the path to the directory with this library to the `PATH` system variable
-* [Windows] [Microsoft Visual C++ Redistributable for Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
+* [Windows 64-bit] `tensorflow.dll`. This library is located in the *bin* folder of the Face SDK distribution package. It must be located in the directory from which the application is launched or you must add the path to the directory with this library to the `PATH` system variable
+* [Windows 64-bit] [Microsoft Visual C++ Redistributable for Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)
 * [Linux] `libusb-0.1.so.4`
-* [Linux] `libtensorflow.so.2`. This library is located in the *lib* folder in Face SDK
+* [Linux 64-bit] `libtensorflow.so.2`. This library is located in the *lib* folder in Face SDK
 
 ### C++ 
 
@@ -23,7 +23,9 @@ All *libfacerec* declarations are divided in two headers:
 * [`facerec/import.h`](../../../include/facerec/import.h) – should be included only once (for example, in `main.cpp`)
 * [`facerec/libfacerec.h`](../../../include/facerec/libfacerec.h) – should be included in each file that uses library
 
-The *libfacerec* library does not have any actual third-party dependencies, since all used third-party libraries (see [Open Source Licenses](../../open_source_licenses)) are linked statically. Therefore, any version of these libraries should work for examples, in which OpenCV or boost is used.
+The *libfacerec* library does not have any actual third-party dependencies*, since all used third-party libraries (see [Open Source Licenses](../../open_source_licenses)) are linked statically. Therefore, any version of these libraries should work for examples, in which OpenCV or boost is used.
+
+\* – except for the *linux x86_64* and *windows_x86_64* distribution packages. At the moment, they have a dependency on `libtensorflow.so.2` and` tensorflow.dll`, respectively.
 
 #### Library Version
 
