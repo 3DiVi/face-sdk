@@ -1,5 +1,11 @@
 # Release Notes
 
+## 3.4.2 (18 Jan 2021)
+
+### Bug Fixes and Improvements
+
+* Fixed fake detections when processing video from multiple streams
+
 ## 3.4.1 (07 Oct 2020)
 
 ### Bug Fixes and Improvements
