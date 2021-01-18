@@ -1,5 +1,27 @@
 # Release Notes
 
+## 3.6.1 (18 Jan 2021)
+
+### Bug Fixes and Improvements
+
+* Fixed fake detections when processing video from multiple streams
+* Fixed the reading error from 3divi_face_sdk.lic when using a USB token
+
+
+## 3.5.1 (18 Jan 2021)
+
+### Bug Fixes and Improvements
+
+* Fixed fake detections when processing video from multiple streams
+
+
+## 3.4.2 (18 Jan 2021)
+
+### Bug Fixes and Improvements
+
+* Fixed fake detections when processing video from multiple streams
+
+
 ## v3.6.0 (25 Nov 2020)
 
 ### What's new
