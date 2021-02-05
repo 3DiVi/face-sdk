@@ -1,12 +1,12 @@
 # Samples
 
-* Face SDK includes a set of programs that show how to work with C++, Java, C#, Python, and Javascript API.  
-* The pre-built samples are located in the *bin* (C++, C#, Python) and *apk* (Java for Android) directories.  
+* Face SDK includes a set of programs that show how to work with C++, Java, C#, Python, Javascript API, [Unity](/doc/en/samples/unity/README.md).  
+* The pre-built samples are located in the *bin* (C++, C#, Python, Unity) and *apk* (Java for Android) directories.  
 * The source code is in the [examples](/examples) directory (C++, C#, Java, Python, Javascript).
 
 ## Windows/Linux
 
-To run the samples ([C++](cpp),  [C#](csharp) and [Python](python)) on a PC, download and extract the Face SDK distribution package as described in [Getting Started](/README.md#getting-started). Before running a sample, make sure that you connected a camera (for example, a webcam) to your PC.
+To run the samples ([C++](cpp), [C#](csharp), [Python](python)) on a PC, download and extract the Face SDK distribution package as described in [Getting Started](/README.md#getting-started). Before running a sample, make sure that you connected a camera (for example, a webcam) to your PC.
 
 ## Android (Java)
 

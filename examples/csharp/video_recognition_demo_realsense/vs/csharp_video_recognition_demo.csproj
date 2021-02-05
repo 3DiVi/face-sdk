@@ -36,7 +36,10 @@
     </Reference>
     <Reference Include="Intel.RealSense">
       <HintPath>..\..\..\..\bin\Intel.RealSense.dll</HintPath>
-      <HintPath>..\..\..\..\bin\Intel.Realsense.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="realsense2">
+      <HintPath>..\..\..\..\bin\realsense2.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CommandLine">
@@ -83,6 +86,11 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y $(SolutionDir)..\..\..\..\bin\realsense2.dll $(SolutionDir)bin\Release
+xcopy /y $(SolutionDir)..\..\..\..\bin\realsense2.dll $(SolutionDir)bin\Debug
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

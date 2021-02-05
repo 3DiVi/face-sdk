@@ -28,6 +28,7 @@ public class OptionsActivity extends Activity
 	private boolean flag_face_quality = false;
 	private boolean flag_angles_vectors = false;
 	private boolean flag_emotions = false;
+	private boolean flag_face_mask = false;
 
 	private int faceCutTypeId = 0;
 
@@ -47,6 +48,7 @@ public class OptionsActivity extends Activity
 		CheckBox cb_face_quality = (CheckBox) findViewById(R.id.face_quality);
 		CheckBox cb_angles_vectors = (CheckBox) findViewById(R.id.angles_vectors);
 		CheckBox cb_emotions = (CheckBox) findViewById(R.id.emotions);
+		CheckBox cb_face_mask = (CheckBox) findViewById(R.id.face_mask);
 
 		Intent getFlagsIntent = getIntent();
 		boolean [] flags = getFlagsIntent.getBooleanArrayExtra("flags");
@@ -65,6 +67,7 @@ public class OptionsActivity extends Activity
 		cb_face_quality.setChecked(flags[6]);
 		cb_angles_vectors.setChecked(flags[7]);
 		cb_emotions.setChecked(flags[8]);
+		cb_face_mask.setChecked(flags[9]);
 
 		flag_rectangle = flags[0];
 		flag_angles = flags[1];
@@ -75,6 +78,7 @@ public class OptionsActivity extends Activity
 		flag_face_quality = flags[6];
 		flag_angles_vectors = flags[7];
 		flag_emotions = flags[8];
+		flag_face_mask = flags[9];
 
 
 		//ok - button
@@ -93,7 +97,9 @@ public class OptionsActivity extends Activity
             		flag_points,
             		flag_face_quality,
             		flag_angles_vectors,
-            		flag_emotions};
+            		flag_emotions,
+            		flag_face_mask
+            	};
             	setValuesIntent.putExtra( "flags", flags);
 
             	RadioButton cur_rb = (RadioButton) findViewById(radioGroup.getCheckedRadioButtonId());
@@ -191,6 +197,13 @@ public class OptionsActivity extends Activity
 	            	flag_emotions = true;
 	            else
 	            	flag_emotions = false;
+	            break;
+
+	        case R.id.face_mask:
+	            if (checked)
+	            	flag_face_mask = true;
+	            else
+	            	flag_face_mask = false;
 	            break;
 
     	}

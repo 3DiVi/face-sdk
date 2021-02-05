@@ -22,6 +22,9 @@
 <score_threshold>0.4</score_threshold>
 <mask_score_threshold>1.0</mask_score_threshold>
 
+<use_cuda>0</use_cuda>
+<gpu_index>0</gpu_index>
+
 
 <fda_max_bad_count_wait>5</fda_max_bad_count_wait>
 <fda_max_weak_count_wait>30</fda_max_weak_count_wait>

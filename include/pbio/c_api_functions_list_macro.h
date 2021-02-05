@@ -14,6 +14,7 @@ class CapturerImpl;
 class DepthLivenessEstimatorImpl;
 class IRLivenessEstimatorImpl;
 class Liveness2DEstimatorImpl;
+class FaceAttributesEstimatorImpl;
 class EmotionsEstimatorImpl;
 class FaceQualityEstimatorImpl;
 class LivenessEstimatorImpl;
@@ -866,16 +867,40 @@ namespace capi {
 		return ) \
 	\
 	decl( \
-		int32_t, \
+		void, \
 		Liveness2DEstimator_estimateLiveness, \
 		( \
 			void* liveness_2d_estimator, \
 			pbio::facerec::RawSampleImpl const* raw_sample, \
+			int32_t* verdict, \
+			float* score, \
 			void** out_exception \
 		), \
 		( \
 			liveness_2d_estimator, \
 			raw_sample, \
+			verdict, \
+			score, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		FaceAttributesEstimator_estimate, \
+		( \
+			void* face_attributes_estimator, \
+			pbio::facerec::RawSampleImpl const* raw_sample, \
+			int32_t *verdict, \
+			float *score, \
+			void** out_exception \
+		), \
+		( \
+			face_attributes_estimator, \
+			raw_sample, \
+			verdict, \
+			score, \
 			out_exception \
 		), \
 		return ) \
@@ -2551,6 +2576,9 @@ namespace capi {
 		( \
 			void* service, \
 			const char* ini_file, \
+			const int32_t overridden_count, \
+			char const* const* const overridden_keys, \
+			double const* const overridden_values, \
 			const int32_t processing, \
 			const int32_t matching, \
 			const int32_t processing_less_memory_consumption, \
@@ -2559,6 +2587,9 @@ namespace capi {
 		( \
 			service, \
 			ini_file, \
+			overridden_count, \
+			overridden_keys, \
+			overridden_values, \
 			processing, \
 			matching, \
 			processing_less_memory_consumption, \
@@ -2621,6 +2652,9 @@ namespace capi {
 			char const* const* const vw_overridden_keys, \
 			double const* const vw_overridden_values, \
 			const char* recognizer_ini_file, \
+			const int32_t rec_overridden_count, \
+			char const* const* const rec_overridden_keys, \
+			double const* const rec_overridden_values, \
 			const int32_t streams_count, \
 			const int32_t processing_threads_count, \
 			const int32_t matching_threads_count, \
@@ -2643,6 +2677,9 @@ namespace capi {
 			vw_overridden_keys, \
 			vw_overridden_values, \
 			recognizer_ini_file, \
+			rec_overridden_count, \
+			rec_overridden_keys, \
+			rec_overridden_values, \
 			streams_count, \
 			processing_threads_count, \
 			matching_threads_count, \
@@ -2734,6 +2771,42 @@ namespace capi {
 			out_exception \
 		), \
 		return ) \
+	\
+	decl( \
+		pbio::facerec::FaceAttributesEstimatorImpl*, \
+		FacerecService_createFaceAttributesEstimator, \
+		( \
+			void* service, \
+			const char* ini_file, \
+			const int32_t overridden_count, \
+			char const* const* const overridden_keys, \
+			double const* const overridden_values, \
+			void** out_exception \
+		), \
+		( \
+			service, \
+			ini_file, \
+			overridden_count, \
+			overridden_keys, \
+			overridden_values, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
+		void, \
+		get_version, \
+		( \
+			void* version_stream, \
+			pbio::facerec::capi::binary_stream_write_func_type binary_stream_write_func, \
+			void** out_exception \
+		), \
+		( \
+			version_stream, \
+			binary_stream_write_func, \
+			out_exception \
+		), \
+		) \
 	\
 	decl( \
 		void*, \

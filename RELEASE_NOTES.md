@@ -1,32 +1,26 @@
 # Release Notes
 
+## 3.8.0 (28 Jan 2021) 
+
+### What's new
+
+* Added display of the used FaceSDK library version
+* Added GPU support on Android for liveness_2d_estimator.xml
+* Added GPU support on Jetson (JetPack 4.3/4.4)
+* Added the FaceMask Unity sample on Windows and Android
+* Added the possibility to estimate the presence of a mask on the face
+* Added a new version of RGB Passive Liveness (liveness_2d_estimator_v2.xml)
+
+### Bug Fixes and Improvements
+
+* Added display of the score parameter for Liveness2DEstimator
+* Added base_angle support for the ULD, BLD, REFA detectors in FDATracker
+
 ## 3.7.1 (18 Jan 2021)
 
 ### Bug Fixes and Improvements
 
 * Fixed the reading error from 3divi_face_sdk.lic when using a USB token
-
-
-## 3.6.1 (18 Jan 2021)
-
-### Bug Fixes and Improvements
-
-* Fixed fake detections when processing video from multiple streams
-* Fixed the reading error from 3divi_face_sdk.lic when using a USB token
-
-
-## 3.5.1 (18 Jan 2021)
-
-### Bug Fixes and Improvements
-
-* Fixed fake detections when processing video from multiple streams
-
-
-## 3.4.2 (18 Jan 2021)
-
-### Bug Fixes and Improvements
-
-* Fixed fake detections when processing video from multiple streams
 
 
 ## v3.7.0 (21 Dec 2020)

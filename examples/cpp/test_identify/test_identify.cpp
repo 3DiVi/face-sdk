@@ -62,24 +62,30 @@ void verify_mode(const pbio::Capturer::Ptr capturer, const pbio::Recognizer::Ptr
 
 void print_usage(const std::string program_name)
 {
+#ifdef __linux__
+	const std::string dll_path = " ../lib/libfacerec.so";
+#else
+	const std::string dll_path = " ./facerec.dll";
+#endif
+
 	std::cout << "\nUsage:\n" << " enrollment mode:\n " << program_name
 			<< " <dll_path> <conf_dir_path> <recognizer_config> "
-					"enroll <enroll_directory> <list_file> <file_to_save_templates> \n"
+					"enroll <enroll_directory> <list_file> <file_to_save_templates> <use_cuda>\n"
 					" identifying mode:\n " << program_name << " <dll_path> <conf_dir_path> <recognizer_config> "
 					"identify <image_file> <file_to_load_templates> \n"
 					" verify mode:\n " << program_name << " <dll_path> <conf_dir_path> <recognizer_config> "
 					"verify <image_file1> <image_file2> \n" << std::endl;
 
 	std::cout << "\nExample enrollment (run from bin folder): " << program_name
-			<< " ../lib/libfacerec.so ../conf/facerec method9v1000_recognizer.xml "
-					"enroll set1 set1/list.txt templates.bin" << std::endl;
+			<< dll_path + " ../conf/facerec method9v1000_recognizer.xml "
+					"enroll set1 set1/list.txt templates.bin 0" << std::endl;
 
 	std::cout << "\nExample identifying (run from bin folder): " << program_name
-			<< " ../lib/libfacerec.so ../conf/facerec method9v1000_recognizer.xml "
+			<< dll_path + " ../conf/facerec method9v1000_recognizer.xml "
 					"identify set2/01100.jpg templates.bin" << std::endl;
 
 	std::cout << "\nExample verify (run from bin folder): " << program_name
-			<< " ../lib/libfacerec.so ../conf/facerec method9v1000_recognizer.xml "
+			<< dll_path + " ../conf/facerec method9v1000_recognizer.xml "
 					"verify set2/01100.jpg set2/01101.jpg" << std::endl;
 }
 
@@ -96,6 +102,11 @@ int main(int argc, char const *argv[])
 		const std::string dll_path = argv[1];
 		const std::string conf_dir_path = argv[2];
 		const std::string recognizer_config = argv[3];
+		const std::string mode = argv[4];
+
+		int use_cuda = 0;
+		if ( mode == "enroll" && argc == 9)
+			use_cuda = std::atoi(argv[8]);
 
 		time_point time_c;
 		const time_point init_c = get_time_point();
@@ -105,6 +116,8 @@ int main(int argc, char const *argv[])
 		const pbio::FacerecService::Ptr service = pbio::FacerecService::createService( dll_path, conf_dir_path );
 		std::cout << "createService time: " << milliseconds_from( time_c ) << " ms" << std::endl;
 
+		std::cout << "Library version: " << service->getVersion() << std::endl << std::endl;
+
 		time_c = get_time_point();
 		// create capturer
 		const pbio::Capturer::Ptr capturer = service->createCapturer( "common_capturer_blf_fda_back.xml" );
@@ -112,16 +125,16 @@ int main(int argc, char const *argv[])
 
 		time_c = get_time_point();
 		// create recognizer
-		const pbio::Recognizer::Ptr recognizer = service->createRecognizer( recognizer_config );
+		const pbio::Recognizer::Ptr recognizer = service->createRecognizer(
+				pbio::Config(recognizer_config)
+				.overrideParameter("use_cuda", use_cuda) );
 		std::cout << "createRecognizer time: " << milliseconds_from( time_c ) << " ms" << std::endl;
 
 		std::cout << "\ntotal initilazition time: " << milliseconds_from( init_c ) << " ms\n" << std::endl;
 
-		const std::string mode = argv[4];
-
 		if( mode == "enroll" )
 		{
-			if( argc != 8 )
+			if( argc != 9 && argc != 8 )
 			{
 				print_usage( argv[0] );
 				return 0;

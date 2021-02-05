@@ -34,7 +34,7 @@ Face SDK включает в себя следующие API:
 
 * [Компоненты](doc/ru/components.md) – важная информация о компонентах Face SDK
 * [Сценарии использования](/doc/ru/use_cases.md) – схемы, показывающие возможные сценарии использования и связь между компонентами
-* [Сэмплы](doc/ru/samples) – программы на языках C++/C#/Java/Python/Javascript, демонстрирующие функции Face SDK
+* [Сэмплы](doc/ru/samples) – программы на языках C++/C#/Java/Python/Javascript и Unity-сэмпл, демонстрирующие функции Face SDK
 * [Туториалы](doc/ru/tutorials) – пошаговые туториалы по разработке проектов с трекингом и распознаванием лиц, а также определением пола, возраста и эмоций лица
 * [Лицензии](doc/ru/licenses.md) – информация о разных типах лицензий, активации и привязке лицензий 
 * [Параметры производительности](doc/ru/performance_parameters.md) – загрузка ЦП и использование памяти, качество идентификации (FAR/FRR) 
@@ -84,7 +84,8 @@ $ git lfs pull
 * [Обработка ошибок](/doc/ru/development/error_handling.md) – обработка ошибок в C++/C#/Java/Python
 * [Управление памятью](/doc/ru/development/memory_management.md) – управление памятью в C++/C#/Java/Python 
 * [Рекомендации по камерам](/doc/ru/guidelines_for_cameras.md) – размещение камер и съемка, рекомендуемые характеристики камер
-* [Межплатформенное Face SDK API. Последняя версия в формате Doxygen](http://download.3divi.com/facesdk/0d88ba7c-9a5d-45cd-897a-406fb1fca2d4/latest_docs/russian/annotated.html)
+* [Межплатформенное Face SDK API. Последняя версия в формате Doxygen](http://download.3divi.com/facesdk/archives/latest/docs/russian/annotated.html)
+* [Диагностика и устранение неполадок](/doc/ru/development/troubleshooting.md) – коды ошибок, сообщения об ошибках и возможные решения
 
 # Как я могу предложить изменения в Face SDK? 
 

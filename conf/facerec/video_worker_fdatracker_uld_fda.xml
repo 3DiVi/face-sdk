@@ -39,6 +39,9 @@
 <score_threshold>0.7</score_threshold>
 <mask_score_threshold>1.0</mask_score_threshold>
 
+<use_cuda>0</use_cuda>
+<gpu_index>0</gpu_index>
+
 
 <depth_data_flag>0</depth_data_flag>
 <depth_liveness_config>conf/facerec/depth_liveness_estimator_cnn.xml</depth_liveness_config>

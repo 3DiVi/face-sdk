@@ -36,6 +36,9 @@
 <blf_detector_file>share/facedetectors/blf/back_model.enc</blf_detector_file>
 <use_mobile_gpu>1</use_mobile_gpu>
 
+<use_cuda>0</use_cuda>
+<gpu_index>0</gpu_index>
+
 
 <depth_data_flag>0</depth_data_flag>
 <depth_liveness_config>conf/facerec/depth_liveness_estimator_cnn.xml</depth_liveness_config>

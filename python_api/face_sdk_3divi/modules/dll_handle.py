@@ -162,7 +162,7 @@ class DllHandle:
 
     def Liveness2DEstimator_estimateLiveness(self, *args, **kwargs):
         func = self.__dll_handle['{}Liveness2DEstimator_estimateLiveness'.format(self.__namespace)]
-        func.restype = c_int32
+        func.restype = c_void_p
 
         return func(*args, **kwargs)
 
@@ -404,6 +404,9 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
+    def VideoWorker_getMethodName(self, *args, **kwargs):
+         self.__dll_handle['{}VideoWorker_getMethodName'.format(self.__namespace)](*args, **kwargs)
+
     def VideoWorker_getStreamsCount(self, *args, **kwargs):
         func = self.__dll_handle['{}VideoWorker_getStreamsCount'.format(self.__namespace)]
         func.restype = c_int32
@@ -412,6 +415,9 @@ class DllHandle:
 
     def VideoWorker_errStreamWriteFunc(self, *args, **kwargs):
         self.__dll_handle['{}VideoWorker_errStreamWriteFunc'.format(self.__namespace)](*args, **kwargs)
+
+    def get_version(self, *args, **kwargs):
+         self.__dll_handle['{}get_version'.format(self.__namespace)](*args, **kwargs)
 
     def FacerecService_constructor2(self, *args, **kwargs):
         func = self.__dll_handle['{}FacerecService_constructor2'.format(self.__namespace)]

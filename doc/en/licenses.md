@@ -90,6 +90,14 @@ To get the app id, call the function `FacerecService.getLicenseState` in an app 
 
 A USB token is a device that can be used instead of a standard license file. Just like a license file, a USB token stores the information about purchased Face SDK components. However, a USB token is not linked to hardware signature. All you need to do is to plug your USB token into your device. A USB token is copy-protected. One USB token can be used by one process, therefore, you have to purchase one more USB token if you want to run one more process.
 
+The utility `update_hwkey`, which is included in the Face SDK distribution, can be used for working with the USB token. It allows you to read and update the license on a USB token, as well as change its mode of operation for compatibility with Linux/Windows.
+
+Available commands:
+* *update* (command `./update_hwkey update 3divi_face_sdk.lic`) - update the license on the USB token
+* *read* (command `./update_hwkey read 3divi_face_sdk.lic`) - save the license from the USB token to the *3divi_face_sdk.lic* file
+* *setHID* (command `./update_hwkey setHID`) - switch the key to Windows compatibility mode (the key in this mode will not be available on Linux)
+* *setUSB* (command `./update_hwkey setUSB`) - switch the key to Linux compatibility mode
+
 To license Face SDK with a USB token instead of a license file, select one of the options below:
 
 * specify `0x436e9514-hardware-key-serial-<key>` in the `license_dir` parameter of the function `FacerecService.createService`

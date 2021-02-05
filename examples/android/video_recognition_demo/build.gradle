@@ -57,7 +57,7 @@ android {
                 "share/facerec/recognizers/method6v7/**",
                 "license/**"
             )
-            exclude ('share/facerec/recognizers/**/*gpu')
+            exclude ('share/facerec/recognizers/**/*dt')
         }
         into "$projectDir/src/main/assets/"
     }

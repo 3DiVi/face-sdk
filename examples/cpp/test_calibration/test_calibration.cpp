@@ -468,6 +468,8 @@ int main(int argc, char const *argv[])
 		const pbio::FacerecService::Ptr service =
 			pbio::FacerecService::createService( facerec_lib_path, facerec_config_path );
 
+		std::cout << "Library version: " << service->getVersion() << std::endl << std::endl;
+
 		cv::Ptr<cv::VideoCapture> source =
 			openSource(
 				source_str,

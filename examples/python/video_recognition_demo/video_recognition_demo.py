@@ -45,6 +45,8 @@ def main():
 
         service = FacerecService.create_service(args.dll_path, args.config_dir)
 
+        print("Library version: ", service.get_version(), "\n")
+
         recognizer = service.create_recognizer(args.method_config, True, True)
 
         capturer_config = Config("common_capturer4_fda_singleface.xml")

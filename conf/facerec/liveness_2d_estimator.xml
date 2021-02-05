@@ -6,6 +6,6 @@
 <liveness_2d_impl>l-0018</liveness_2d_impl>
 <liveness_2d_iou_threshold>0.5</liveness_2d_iou_threshold>
 <liveness_2d_score_threshold>0.5</liveness_2d_score_threshold>
-<liveness_2d_num_threads>4</liveness_2d_num_threads>
+<num_threads>4</num_threads>
 
 </opencv_storage>

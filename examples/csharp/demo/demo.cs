@@ -37,8 +37,11 @@ class Worker
 	// one face liveness estimator
 	Liveness2DEstimator _liveness_2d_estimator;
 
+	// one face attributes estimator
+	FaceAttributesEstimator _face_mask_estimator;
+
 	// flags for enable / disable drawing and comuting of the features
-	public const int flags_count = 12;
+	public const int flags_count = 13;
 
 	bool _flag_positions;
 	bool _flag_angles;
@@ -52,11 +55,13 @@ class Worker
 	bool _flag_cutting_full;
 	bool _flag_cutting_token;
 	bool _flag_points;
+	bool _flag_masked_face;
 
 
 	public Worker(string facerec_conf_dir, string capturer_conf, string license_dir)
 	{
 		_service = FacerecService.createService(facerec_conf_dir, license_dir);
+		Console.WriteLine("Library version: {0}\n", _service.getVersion());
 		_tracker = _service.createCapturer(
 			(new FacerecService.Config(capturer_conf))
 				.overrideParameter("downscale_rawsamples_to_preferred_size", 0));
@@ -65,7 +70,8 @@ class Worker
 		//_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator_v2.xml");
 		_emotions_estimator = _service.createEmotionsEstimator("emotions_estimator.xml");
 		_face_quality_estimator = _service.createFaceQualityEstimator("face_quality_estimator.xml");
-		_liveness_2d_estimator =  _service.createLiveness2DEstimator("liveness_2d_estimator.xml");
+		_liveness_2d_estimator =  _service.createLiveness2DEstimator("liveness_2d_estimator_v2.xml");
+		_face_mask_estimator = _service.createFaceAttributesEstimator("face_mask_estimator.xml");
 
 		_flag_positions = true;
 		_flag_angles = true;
@@ -79,6 +85,7 @@ class Worker
 		_flag_cutting_full = false;
 		_flag_cutting_token = false;
 		_flag_points = true;
+		_flag_masked_face = false;
 
 		Worker.Instance = this;
 	}
@@ -99,6 +106,7 @@ class Worker
 			case  9: return _flag_face_quality;
 			case 10: return _flag_angles_vectors;
 			case 11: return _flag_emotions;
+			case 12: return _flag_masked_face;
 		}
 
 		return _flag_points;
@@ -120,6 +128,7 @@ class Worker
 			case  9: _flag_face_quality   = value; return;
 			case 10: _flag_angles_vectors = value; return;
 			case 11: _flag_emotions       = value; return;
+			case 12: _flag_masked_face    = value; return;
 		}
 	}
 
@@ -139,6 +148,7 @@ class Worker
 			case 9: return "face quality";
 			case 10: return "angles vectors";
 			case 11: return "emotions";
+			case 12: return "face mask";
 		}
 
 		return "";
@@ -437,14 +447,15 @@ class Worker
 			// draw liveness text
 			if( _flag_liveness )
 			{
-				Liveness2DEstimator.Liveness liveness_2d_result = _liveness_2d_estimator.estimateLiveness(sample);
+				Liveness2DEstimator.LivenessAndScore liveness_2d_result = _liveness_2d_estimator.estimate(sample);
+				string score_str = Math.Round(liveness_2d_result.score, 3).ToString();
 
 				puttext(
 					draw_image,
 					"liveness: " + (
-						liveness_2d_result == Liveness2DEstimator.Liveness.REAL ? "real" :
-						liveness_2d_result == Liveness2DEstimator.Liveness.FAKE ? "fake" :
-						liveness_2d_result == Liveness2DEstimator.Liveness.NOT_ENOUGH_DATA ? "not enough data" : "??"),
+						liveness_2d_result.liveness == Liveness2DEstimator.Liveness.REAL ? score_str + " - real"  :
+						liveness_2d_result.liveness == Liveness2DEstimator.Liveness.FAKE ? score_str + " - fake" :
+						liveness_2d_result.liveness == Liveness2DEstimator.Liveness.NOT_ENOUGH_DATA ? "not enough data" : "??"),
 					text_point);
 
 				text_point.Y += text_line_height;
@@ -458,6 +469,18 @@ class Worker
 
 				string ss = "face quality: " + quality.ToString();
 				puttext(draw_image, ss, text_point);
+				text_point.Y += text_line_height;
+				text_point.Y += text_line_height / 3;
+			}
+
+			// draw face attribute (masked_face)
+			if(_flag_masked_face) {
+				FaceAttributesEstimator.Attribute attr = _face_mask_estimator.estimate(sample);
+				string score_str = Math.Round(attr.score, 3).ToString();
+				puttext(
+					draw_image,
+					"masked: " + (attr.verdict ? "true - " : "false - ") + score_str,
+					text_point);
 				text_point.Y += text_line_height;
 				text_point.Y += text_line_height / 3;
 			}
@@ -566,6 +589,7 @@ class Worker
 		_emotions_estimator.Dispose();
 		_face_quality_estimator.Dispose();
 		_liveness_2d_estimator.Dispose();
+		_face_mask_estimator.Dispose();
 	}
 };
 

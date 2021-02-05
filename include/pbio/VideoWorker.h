@@ -106,6 +106,12 @@ public:
 		def_param_field_693bcd72(Params, std::string                 , recognizer_ini_file);
 
 		/**
+			\~English \brief Set the Recognizer configuration file with optionally overridden parameters. \return *this
+			\~Russian \brief Задать конфигурационный файл Recognizer с опционально переопределенными параметрами. \return *this
+		*/
+		def_param_field_693bcd72(Params, pbio::Config                , recognizer_config);
+
+		/**
 			\~English \brief Set the number of video streams. \return *this
 			\~Russian \brief Задать количество видеопотоков. \return *this
 		*/
@@ -3931,6 +3937,7 @@ inline
 VideoWorker::Params::Params()
 : _video_worker_config(std::string())
 , _recognizer_ini_file()
+, _recognizer_config(std::string())
 , _streams_count(0)
 , _processing_threads_count(0)
 , _matching_threads_count(0)

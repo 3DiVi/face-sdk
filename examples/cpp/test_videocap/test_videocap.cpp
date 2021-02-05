@@ -43,11 +43,13 @@ int main(int argc, char** argv)
 		// create facerec service
 		const pbio::FacerecService::Ptr service = pbio::FacerecService::createService(dll_path, conf_dir_path, license_dir);
 
+		std::cout << "Library version: " << service->getVersion() << std::endl << std::endl;
+
 		// create capturer
 		const pbio::Capturer::Ptr capturer = service->createCapturer(video_capturer_config);
 
 		// create liveness2D estimator
-		std::string liveness2d_config = "liveness_2d_estimator.xml";
+		std::string liveness2d_config = "liveness_2d_estimator_v2.xml";
 		const pbio::Liveness2DEstimator::Ptr liveness_2d_estimator = service->createLiveness2DEstimator(liveness2d_config);
 
 		// open webcam via OpenCV
@@ -74,18 +76,21 @@ int main(int argc, char** argv)
 			std::vector<std::string> liveness_res(samples.size(), "*");
 			for(size_t i = 0; i < samples.size(); ++i)
 			{
-				const pbio::Liveness2DEstimator::Liveness verdict = liveness_2d_estimator->estimateLiveness(*samples[i]);
+				const pbio::Liveness2DEstimator::LivenessAndScore liveness_2d_result = liveness_2d_estimator->estimate(*samples[i]);
 
-				switch(verdict)
+				std::stringstream ss;
+				ss << std::fixed << std::setprecision(3) << liveness_2d_result.score;
+				std::string score_str = ss.str();
+				switch(liveness_2d_result.liveness)
 				{
 					case pbio::Liveness2DEstimator::NOT_ENOUGH_DATA:
 						liveness_res[i] = "?";
 						break;
 					case pbio::Liveness2DEstimator::FAKE:
-						liveness_res[i] = "fake";
+						liveness_res[i] = score_str + " - fake";
 						break;
 					case pbio::Liveness2DEstimator::REAL:
-						liveness_res[i] = "real";
+						liveness_res[i] = score_str + " - real";
 						break;
 				}
 			}
@@ -118,8 +123,8 @@ int main(int argc, char** argv)
 					draw,
 					liveness_res[i],
 					cv::Point2i(rect.x, rect.y),
-					cv::FONT_HERSHEY_SCRIPT_SIMPLEX,
-					1.5,
+					cv::FONT_HERSHEY_DUPLEX,
+					0.8,
 					cv::Scalar(0, 0, 255),
 					2,
 					CV_AA);

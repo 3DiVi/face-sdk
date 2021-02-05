@@ -29,10 +29,12 @@ The *libfacerec* library does not have any actual third-party dependencies*, sin
 
 #### Library Version
 
-Following preprocessor constants specify the current library version:
+You can get the current library version by calling the `get_version` method from the created `FacerecService` object. This will return a string in the format of `x.yy.zz`, where `x` is the major version, `yy` is the minor version, and `zz` is the patch version.
 
-* `LIBFACEREC_VERSION` – string representation, e.g. "1.2.34", where 1 is the major version, 2 is the minor version, 34 is the patch version
-* `LIBFACEREC_VERSION_HEX` – 3-byte HEX representation that is useful in numeric comparisons, e.g. 0x010234
+In C++, the version can be additionally obtained from the preprocessor constants:
+
+* `LIBFACEREC_VERSION` – string representation, similar to `FacerecService.get_version()`
+* `LIBFACEREC_VERSION_HEX` – 3-byte HEX representation that is useful in numeric comparisons, e.g. `0x010234`
 
 ### Java
 

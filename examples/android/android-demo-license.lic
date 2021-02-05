@@ -13,8 +13,9 @@
 	<video_capturer>1</video_capturer>
 	<age_gender_estimator>1</age_gender_estimator>
 	<emotions_estimator>1</emotions_estimator>
+	<liveness_2d_estimator>1</liveness_2d_estimator>
 	<Reg>0</Reg>
 	<android_app_id>62afa60849efabf4f39e8e81d765431a2c6fa6d244ea86caf278c2b4d6984d23-com.vdt.face_recognition.demo</android_app_id>
 	<Hardware>0f77c6ae59a1db75969fadef1937c151cb5a4c98db81735cb64cf3626109610d</Hardware>
-	<Signature>&#10;-----BEGIN SIGNATURE-----&#10;EIhEz609yRiPJ5DBkCUacSiUSbE5FlzMDXGTaNpknJIm2FCM3VN5XrSKKdzSURCw&#10;iGg9SEghm5JzI/3BNPcyvZDEICZcEmho5rbnPJGmekNEDM6G1RJ/TfWMDgQUhZU8&#10;39RUldxqExWmoRA1hQsoAdoFenlAbf0ck7kMbraKaqFOimCAjdUIK79F2pXccprN&#10;LXrSJjafeScZ6c5VLijfBd5PxTQpOP3xn0lp2xmGxl5fREgHlHp1dPu37Hew+Mow&#10;/t2mg8V/GDktmsNciM59IHGptdQ4b3DU7lz89Wl8h2FZiaampuiAxFSnvcQIjM+o&#10;2Mj8cNXh5RF6aBq0/lDF3A==&#10;-----END SIGNATURE-----&#10;</Signature>
+	<Signature>&#10;-----BEGIN SIGNATURE-----&#10;DcfeKi5cywMUcqOqRDi3/YTeLlVMlYrP5JjKBudIOYBfPnkRVUym6ZFtNSWyt2d8&#10;eSNOQkPb+tS8SeuA46VCXr3WJqT+wWHdGzwfon1xTP53S0wP+JI0mnOZjHXnrttP&#10;+bNTDkiegGfNruce5YcgF6zw76IRy+71/mP//Lvwa1jGNjj87UxIxInextPZJh7G&#10;VcEB8KHTtWhkCW8DLb3EQTKvqTOeh+iO0RQWQApRnysYNpMbRLmnwOqAPpN09rnU&#10;o9/BNQfplJZuAH55THuoR28hDXysDU5jP4P3MaItwMmGD75s5InzaOcOPDDcI0k+&#10;hcPYq0Uwq0A7dchsBIlNEw==&#10;-----END SIGNATURE-----&#10;</Signature>
 </License>

@@ -34,6 +34,9 @@
 <refa_id>refa-a</refa_id>
 <refa_filepath>share/refa/refa-a.enc</refa_filepath>
 
+<use_cuda>0</use_cuda>
+<gpu_index>0</gpu_index>
+
 
 <depth_data_flag>0</depth_data_flag>
 <depth_liveness_config>conf/facerec/depth_liveness_estimator_cnn.xml</depth_liveness_config>

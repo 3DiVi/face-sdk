@@ -55,6 +55,9 @@ void test(
 	const pbio::FacerecService::Ptr service = pbio::FacerecService::createService(
 		dll_path,
 		sdk_config_dir);
+
+	std::cout << "Library version: " << service->getVersion() << std::endl << std::endl;
+
 	const pbio::Recognizer::Ptr recognizer = service->createRecognizer(recognizer_config, false, false);
 
 	// read dataset config

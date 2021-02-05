@@ -6,6 +6,7 @@ You can use GPU acceleration on:
 * Windows x86 64-bit 
 * Linux x86 64-bit
 * Android
+* Jetson (JetPack 4.3/4.4)
 
 In this section, you'll find the information about the GPU acceleration for available Face SDK modules, how to enable this function, as well as information about timing characteristics for the Face SDK modules with CPU and GPU usage, possible errors when using GPU, and solutions. 
 
@@ -14,6 +15,11 @@ In this section, you'll find the information about the GPU acceleration for avai
 Currently, the GPU acceleration is available for the following modules (single GPU mode only):
 
 * recognizers (9v30, 9v300, 9v1000, 9v30mask, 9v300mask, 9v1000mask) (see [Face Identification](face_identification.md))
+* detectors (BLF, REFA, ULD) (see [Face Capturing](face_capturing.md))
+
+To run models on GPU, you need to edit the configuration file of one of the supported recognizers: set `use_cuda` to `1`.
+
+### Windows/Linux
 
 * Software requirements:
    * Nvidia GPU Driver >= 410.48
@@ -25,13 +31,22 @@ Currently, the GPU acceleration is available for the following modules (single G
 
 You can also use pre-built docker containers with CUDA support, such as *nvidia/cuda:10.0-cudnn7-devel-ubuntu16.04* (please note that some licenses can be unavailable in this case).
 
-To run models on GPU, you need to edit the configuration file of one of the supported recognizers: set `use_cuda` to `1`. The GPU acceleration is performed on one of the available GPUs (by default on the GPU with index `0`). The GPU index can be changed as follows:
+The GPU acceleration is performed on one of the available GPUs (by default on the GPU with index `0`). The GPU index can be changed as follows:
 * via the `gpu_index` parameter in the configuration file 
 * via the `CUDA_VISIBLE_DEVICES` environment variable (see more info about [CUDA Environment Variables](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#env-vars))
 
+### Jetson 
+
+* System requirements:
+   * JetPack 4.3 or 4.4* 
+   
+\* Tests were performed on the Jetson TX2 and Jetson NX modules.
+
+The archive with the required libraries is `jetson_jetpack_4.3_4.4.tar.xz`. By default, it uses the build for jetpack 4.4. If you need a build for jetpack 4.3, move all files from the *lib/jetpack-4.3* directory to the *lib* directory.
+
 ### Timing characteristics
 
-The table below shows the speed measurements for the Face SDK modules using CPU and GPU:
+The table below shows the speed measurements for template creation using CPU and GPU:
 
 | Method | GPU    | CPU    |
 | ------ | ------ | ------ |
@@ -39,6 +54,7 @@ The table below shows the speed measurements for the Face SDK modules using CPU 
 | 9v300  | 7ms    | 260ms  |
 | 9v30   | 3ms    | 30ms  |
 
+See the timing characteristics of GPU-based face detection in the [Face detection](/doc/en/development/face_capturing.md#gpu) section.
 
 _**Note**: the NVIDIA GeForce GTX 1080 Ti and Intel Core i7 were used for the speed test._
 

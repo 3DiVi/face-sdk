@@ -13,6 +13,9 @@
 <blf_id>blf-back</blf_id>
 <blf_detector_file>share/facedetectors/blf/back_model.enc</blf_detector_file>
 
+<use_cuda>0</use_cuda>
+<gpu_index>0</gpu_index>
+
 
 <fda_max_bad_count_wait>5</fda_max_bad_count_wait>
 <fda_max_weak_count_wait>30</fda_max_weak_count_wait>

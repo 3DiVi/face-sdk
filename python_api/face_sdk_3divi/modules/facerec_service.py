@@ -30,6 +30,8 @@ from .raw_sample import RawSample
 from .capturer import Capturer
 from .config import Config
 from .video_worker import VideoWorker, Params
+from .error import Error
+from .wrap_funcs import write_func
 
 
 ##
@@ -95,6 +97,35 @@ class FacerecService(ComplexObject):
 
         check_exception(exception, dll_handle)
         return cls(dll_handle, facerec_conf_dir, c_void_p(the_impl))
+
+    ##
+    # \~English
+    #    \brief Get version of face recognition library.
+    #      Thread-safe.
+    #
+    #    \return The name of the method.
+    #
+    # \~Russian
+    #    \brief Получить имя метода.
+    #      Потокобезопасный.
+    #
+    #    \return Имя метода.
+    def get_version(self) -> str:
+        version_stream = BytesIO()
+
+        exception = make_exception()
+
+        self._dll_handle.get_version(
+            py_object(version_stream),
+            write_func,
+            exception)
+
+        check_exception(exception, self._dll_handle)
+
+        version = version_stream.getvalue()
+        version_stream.close()
+
+        return version.decode()
 
     ##
     #  \~English
@@ -287,19 +318,25 @@ class FacerecService(ComplexObject):
     def create_depth_liveness_estimator(self, config: Union[str, Config]) -> DepthLivenessEstimator:
         if isinstance(config, Config):
             file_path = self.__facerec_conf_dir + config.config_filepath
-            overriden_keys, overridden_values = config.prepare()
+            overridden_keys, overridden_values = config.prepare()
         else:
             file_path = self.__facerec_conf_dir + config
-            overriden_keys, overridden_values = [], []
+            overridden_keys, overridden_values = [], []
 
         exception = make_exception()
+
+        overridden_keys_buf = (c_char_p * len(overridden_keys))()
+        overridden_values_buf = (c_double * len(overridden_values))(*overridden_values)
+
+        for i in range(len(overridden_keys)):
+            overridden_keys_buf[i] = c_char_p(overridden_keys[i].encode())
 
         depth_liveness_impl = self._dll_handle.FacerecService_createDepthLivenessEstimatorE(
             self._impl,
             POINTER(c_char_p)(create_string_buffer(file_path.encode())),
-            c_int32(len(overriden_keys)),
-            py_object(overriden_keys),
-            py_object(overridden_values),
+            c_int32(len(overridden_keys)),
+            overridden_keys_buf if len(overridden_keys) else None,
+            overridden_values_buf if len(overridden_values) else None,
             exception)
 
         check_exception(exception, self._dll_handle)
@@ -327,19 +364,25 @@ class FacerecService(ComplexObject):
     def create_ir_liveness_estimator(self, config: Union[str, Config]) -> IRLivenessEstimator:
         if isinstance(config, Config):
             file_path = self.__facerec_conf_dir + config.config_filepath
-            overriden_keys, overridden_values = config.prepare()
+            overridden_keys, overridden_values = config.prepare()
         else:
             file_path = self.__facerec_conf_dir + config
-            overriden_keys, overridden_values = [], []
+            overridden_keys, overridden_values = [], []
 
         exception = make_exception()
+
+        overridden_keys_buf = (c_char_p * len(overridden_keys))()
+        overridden_values_buf = (c_double * len(overridden_values))(*overridden_values)
+
+        for i in range(len(overridden_keys)):
+            overridden_keys_buf[i] = c_char_p(overridden_keys[i].encode())
 
         ir_liveness_impl = self._dll_handle.FacerecService_createIRLivenessEstimatorE(
             self._impl,
             POINTER(c_char_p)(create_string_buffer(file_path.encode())),
-            c_int32(len(overriden_keys)),
-            py_object(overriden_keys),
-            py_object(overridden_values),
+            c_int32(len(overridden_keys)),
+            overridden_keys_buf if len(overridden_keys) else None,
+            overridden_values_buf if len(overridden_values) else None,
             exception)
 
         check_exception(exception, self._dll_handle)
@@ -367,19 +410,25 @@ class FacerecService(ComplexObject):
     def create_liveness_2d_estimator(self, config: Union[str, Config]) -> Liveness2DEstimator:
         if isinstance(config, Config):
             file_path = self.__facerec_conf_dir + config.config_filepath
-            overriden_keys, overridden_values = config.prepare()
+            overridden_keys, overridden_values = config.prepare()
         else:
             file_path = self.__facerec_conf_dir + config
-            overriden_keys, overridden_values = [], []
+            overridden_keys, overridden_values = [], []
 
         exception = make_exception()
+
+        overridden_keys_buf = (c_char_p * len(overridden_keys))()
+        overridden_values_buf = (c_double * len(overridden_values))(*overridden_values)
+
+        for i in range(len(overridden_keys)):
+            overridden_keys_buf[i] = c_char_p(overridden_keys[i].encode())
 
         liveness_2d_impl = self._dll_handle.FacerecService_createLiveness2DEstimatorE(
             self._impl,
             POINTER(c_char_p)(create_string_buffer(file_path.encode())),
-            c_int32(len(overriden_keys)),
-            py_object(overriden_keys),
-            py_object(overridden_values),
+            c_int32(len(overridden_keys)),
+            overridden_keys_buf if len(overridden_keys) else None,
+            overridden_values_buf if len(overridden_values) else None,
             exception)
 
         check_exception(exception, self._dll_handle)
@@ -391,8 +440,8 @@ class FacerecService(ComplexObject):
     #    \brief Creates a Recognizer object.
     #      Thread-safe.
     #
-    #    \param[in] ini_file
-    #      Name of the config file.
+    #    \param[in] recognizer_config
+    #      Name of the config file or recognizer configuration file with optionally overridden parameters.
     #
     #    \param[in] processing
     #      Flag to toggle the Recognizer.processing method in the created recognizer.
@@ -410,8 +459,8 @@ class FacerecService(ComplexObject):
     #    \brief Создать объект Recognizer.
     #      Потокобезопасный.
     #
-    #    \param[in] ini_file
-    #      Имя конфигурационного файла.
+    #    \param[in] recognizer_config
+    #      Имя конфигурационного файла или конфигурационный файл Recognizer с опционально переопределенными параметрами.
     #
     #    \param[in] processing
     #      Флаг для включения / выключения метода Recognizer.processing в создаваемом разпознавателе.
@@ -424,15 +473,31 @@ class FacerecService(ComplexObject):
     #      потребляющих много оперативной памяти при создании распознавателя (см. документацию).
     #
     #    \return Созданный объект Recognizer.
-    def create_recognizer(self, ini_file: str, matching: bool = True, processing: bool = True,
+    def create_recognizer(self, recognizer_config: Union[str, Config], matching: bool = True, processing: bool = True,
                           processing_less_memory_consumption: bool = False) -> Recognizer:
-        file_path = self.__facerec_conf_dir + ini_file
+        rec_overridden_keys = []
+        rec_overridden_values = []
+
+        if isinstance(recognizer_config, str):
+            file_path = recognizer_config
+        else:
+            file_path = recognizer_config.config_filepath
+            rec_overridden_keys, rec_overridden_values = recognizer_config.prepare()
 
         exception = make_exception()
 
+        rec_overridden_keys_buf = (c_char_p * len(rec_overridden_keys))()
+        rec_overridden_values_buf = (c_double * len(rec_overridden_values))(*rec_overridden_values)
+
+        for i in range(len(rec_overridden_keys)):
+            rec_overridden_keys_buf[i] = c_char_p(rec_overridden_keys[i].encode())
+
         recognizer_impl = self._dll_handle.FacerecService_createRecognizer2(
             self._impl,
-            POINTER(c_char_p)(create_string_buffer(file_path.encode())),
+            POINTER(c_char_p)(create_string_buffer((self.__facerec_conf_dir + file_path).encode())),
+            c_int32(len(rec_overridden_keys)),
+            rec_overridden_keys_buf if len(rec_overridden_keys_buf) else None,
+            rec_overridden_values_buf if len(rec_overridden_values_buf) else None,
             c_int(processing),
             c_int(matching),
             c_int(processing_less_memory_consumption),
@@ -471,7 +536,6 @@ class FacerecService(ComplexObject):
     def create_video_worker(self, params: Params) -> VideoWorker:
         assert params.video_worker_config is not None
         video_worker_file_path = self.__facerec_conf_dir + params.video_worker_config.config_filepath
-        recognizer_file_path = self.__facerec_conf_dir + params.recognizer_ini_file
 
         vw_overridden_keys, vw_overridden_values = params.video_worker_config.prepare()
 
@@ -482,6 +546,19 @@ class FacerecService(ComplexObject):
 
         for i in range(len(vw_overridden_keys)):
             vw_overridden_keys_buf[i] = c_char_p(vw_overridden_keys[i].encode())
+
+        if params.recognizer_ini_file and \
+            params.recognizer_config.config_filepath:
+            raise Error(0xed877a99, "You must use either recognizer_config or recognizer_ini_file")
+
+        recognizer_config = Config(params.recognizer_ini_file) if params.recognizer_ini_file != "" else params.recognizer_config
+        rec_overridden_keys, rec_overridden_values = recognizer_config.prepare()
+
+        rec_overridden_keys_buf = (c_char_p * len(rec_overridden_keys))()
+        rec_overridden_values_buf = (c_double * len(rec_overridden_values))(*rec_overridden_values)
+
+        for i in range(len(rec_overridden_keys)):
+            rec_overridden_keys_buf[i] = c_char_p(rec_overridden_keys[i].encode())
 
         vw_impl = self._dll_handle.FacerecService_createVideoWorkerStiAgeGenderEmotions(
             self._impl,
@@ -496,7 +573,10 @@ class FacerecService(ComplexObject):
             c_int32(len(vw_overridden_keys)),
             vw_overridden_keys_buf if len(vw_overridden_keys_buf) else None,
             vw_overridden_values_buf if len(vw_overridden_values_buf) else None,
-            POINTER(c_char_p)(create_string_buffer(recognizer_file_path.encode())),
+            POINTER(c_char_p)(create_string_buffer((self.__facerec_conf_dir + recognizer_config.config_filepath).encode())),
+            c_int32(len(rec_overridden_keys)),
+            rec_overridden_keys_buf if len(rec_overridden_keys_buf) else None,
+            rec_overridden_values_buf if len(rec_overridden_values_buf) else None,
             c_int32(params.streams_count),
             c_int32(params.processing_threads_count),
             c_int32(params.matching_threads_count),

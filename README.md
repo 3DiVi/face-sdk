@@ -34,7 +34,7 @@ Face SDK provides the following APIs:
 
   * [Components](doc/en/components.md) – essential information about the components included in Face SDK
   * [Use Cases](doc/en/use_cases.md) – diagrams that show possible use cases and connection between the components
-  * [Samples](doc/en/samples) – sample programs in C++/C#/Java/Python/Javascript that show you the features of Face SDK
+  * [Samples](doc/en/samples) – sample programs in C++/C#/Java/Python/Javascript and a Unity sample that show you the features of Face SDK
   * [Tutorials](doc/en/tutorials) – step-by-step tutorials on face detection, recognition, and estimation of age, gender, and emotions
   * [Licenses](doc/en/licenses.md) – information about different types of licenses, activation and locking of a license
   * [Performance Parameters](doc/en/performance_parameters.md) – CPU and memory usage, identification quality (FAR/FRR)
@@ -86,7 +86,8 @@ When extracting the archive, specify the path to the Face SDK root – the folde
 * [Error Handling](doc/en/development/error_handling.md) – error handling in C++/C#/Java/Python
 * [Memory Management](doc/en/development/memory_management.md) – memory management in C++/C#/Java/Python
 * [Guidelines for Cameras](doc/en/guidelines_for_cameras.md) – camera positioning and shooting, recommended cameras
-* [Face SDK Cross-Platform API. Latest Doxygen Output](http://download.3divi.com/facesdk/0d88ba7c-9a5d-45cd-897a-406fb1fca2d4/latest_docs/english/annotated.html) 
+* [Face SDK Cross-Platform API. Latest Doxygen Output](http://download.3divi.com/facesdk/archives/latest/docs/english/annotated.html) 
+* [Troubleshooting](/doc/en/development/troubleshooting.md) – error codes and description, possible solutions 
 
 # How can I propose changes to Face SDK? 
 

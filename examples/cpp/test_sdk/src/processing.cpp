@@ -110,6 +110,8 @@ void process(
 		dll_path,
 		sdk_config_dir);
 
+	std::cout << "Library version: " << service->getVersion() << std::endl << std::endl;
+
 	// read dataset config;
 	const Config config = read_dataset_config(
 		dataset_config,

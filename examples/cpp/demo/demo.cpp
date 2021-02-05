@@ -44,9 +44,12 @@ private:
 	// one face quality estimator
 	const pbio::FaceQualityEstimator::Ptr _face_quality_estimator;
 
+	// one face attributes estimator
+	pbio::FaceAttributesEstimator::Ptr _face_attributes_estimator;
+
 
 	// flags for enable / disable drawing and comuting of the features
-	static const int flags_count = 12;
+	static const int flags_count = 13;
 
 	bool _flag_positions;
 	bool _flag_angles;
@@ -60,11 +63,11 @@ private:
 	bool _flag_cutting_full;
 	bool _flag_cutting_token;
 	bool _flag_points;
+	bool _flag_masked_face;
 
 	// liveness estimator
 	pbio::Liveness2DEstimator::Ptr liveness2d;
-	const std::string liveness_config = "liveness_2d_estimator.xml";
-	std::vector<pbio::Liveness2DEstimator::Liveness> liveness2Dresults;
+	const std::string liveness_config = "liveness_2d_estimator_v2.xml";
 
 	bool& flag(int i);
 	std::string flag_name(int i) const;
@@ -107,6 +110,8 @@ int main(int argc, char const *argv[])
 				dll_path,
 				config_dir,
 				license_dir);
+
+		std::cout << "Library version: " << service->getVersion() << std::endl << std::endl;
 
 		// create worker
 		// (we are expecting run from bin folder)
@@ -208,7 +213,8 @@ _flag_emotions( false ),
 _flag_cutting_base( false ),
 _flag_cutting_full( false ),
 _flag_cutting_token( false ),
-_flag_points( true )
+_flag_points( true ),
+_flag_masked_face( false )
 
 {
 	// nothing else
@@ -231,6 +237,7 @@ bool& Worker::flag(int i)
 		case 9: return _flag_face_quality;
 		case 10: return _flag_angles_vectors;
 		case 11: return _flag_emotions;
+		case 12: return _flag_masked_face;
 	}
 
 	return _flag_points;
@@ -253,6 +260,7 @@ std::string Worker::flag_name(int i) const
 		case 9: return "face quality";
 		case 10: return "angles vectors";
 		case 11: return "emotions";
+		case 12: return "masked_face";
 	}
 
 	return "";
@@ -559,20 +567,37 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 			{
 				liveness2d = _service->createLiveness2DEstimator(liveness_config);
 			}
-			pbio::Liveness2DEstimator::Liveness verdict;
-			if (liveness2Dresults.size() >= id + 1)
-				verdict = liveness2Dresults[id];
-			else {
-				verdict = liveness2d->estimateLiveness(sample);
-				liveness2Dresults.push_back(verdict);
-			}
-
+			pbio::Liveness2DEstimator::LivenessAndScore liveness_2d_result;
+			liveness_2d_result = liveness2d->estimate(sample);
+			std::stringstream ss;
+			ss << std::fixed << std::setprecision(3) << liveness_2d_result.score;
+			std::string score_str = ss.str();
 			puttext(
 				draw_image,
 				std::string("liveness: ") + (
-				verdict == pbio::Liveness2DEstimator::REAL ? "real" :
-				verdict == pbio::Liveness2DEstimator::FAKE ? "fake" :
-				verdict == pbio::Liveness2DEstimator::NOT_ENOUGH_DATA ? "not enough data" : "??"),
+					liveness_2d_result.liveness == pbio::Liveness2DEstimator::REAL ? score_str + " - real" :
+					liveness_2d_result.liveness == pbio::Liveness2DEstimator::FAKE ? score_str + " - fake" :
+					liveness_2d_result.liveness == pbio::Liveness2DEstimator::NOT_ENOUGH_DATA ? "not enough data" : "??"),
+				text_point);
+
+			text_point.y += text_line_height;
+			text_point.y += text_line_height / 3;
+		}
+
+		// draw face attribute (masked_face)
+		if(_flag_masked_face)
+		{
+			if(!_face_attributes_estimator)
+			{
+				_face_attributes_estimator = _service->createFaceAttributesEstimator("face_mask_estimator.xml");
+			}
+			pbio::FaceAttributesEstimator::Attribute attr = _face_attributes_estimator->estimate(sample);
+			std::stringstream ss;
+			ss << std::fixed << std::setprecision(3) << attr.score;
+			std::string score_str = ss.str();
+			puttext(
+				draw_image,
+				std::string("masked: ") + std::string(attr.verdict ? "true - " : "false - ") + score_str,
 				text_point);
 
 			text_point.y += text_line_height;

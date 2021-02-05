@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <utility>
 #include <vector>
+#include <facerec/libfacerec.h>
 
 #ifdef ANDROID
 #include <jni.h>
@@ -30,6 +31,7 @@
 #include "DepthLivenessEstimator.h"
 #include "IRLivenessEstimator.h"
 #include "Liveness2DEstimator.h"
+#include "FaceAttributesEstimator.h"
 #include "EmotionsEstimator.h"
 #include "Error.h"
 #include "ExceptionCheck.h"
@@ -240,6 +242,25 @@ public:
 	/**
 		\~English
 		\brief
+			Get version of face recognition library.
+			Thread-safe.
+
+		\return
+			The version of face recognition library.
+
+		\~Russian
+		\brief
+			Получить версию библиотеки.
+			Потокобезопасный.
+
+		\return
+			Версия библиотеки.
+	*/
+	std::string getVersion() const;
+
+	/**
+		\~English
+		\brief
 			Force online license update.
 
 		\~Russian
@@ -438,7 +459,57 @@ public:
 			Созданный объект Recognizer.
 	*/
 	Recognizer::Ptr createRecognizer(
-		const std::string ini_file,
+		const char* ini_file,
+		const bool processing = true,
+		const bool matching = true,
+		const bool processing_less_memory_consumption = false) const;
+
+
+	/**
+		\~English
+		\brief
+			Creates a Recognizer object.
+			Thread-safe.
+
+		\param[in]  recognizer_config
+			The Recognizer configuration file with optionally overridden parameters.
+
+		\param[in]  processing
+			Flag to toggle the Recognizer::processing method in the created recognizer.
+
+		\param[in]  matching
+			Flag to toggle the Recognizer::verifyMatch method in the created recognizer.
+
+		\param[in]  processing_less_memory_consumption
+			Flag to toggle the Recognizer::processing member
+			function optimizations that consume a lot of RAM when creating the recognizer (see the docs).
+
+		\return
+			Created Recognizer object.
+
+		\~Russian
+		\brief
+			Создать объект Recognizer.
+			Потокобезопасный.
+
+		\param[in]  recognizer_config
+			Конфигурационный файл Recognizer с опционально переопределенными параметрами.
+
+		\param[in]  processing
+			Флаг для включения / выключения метода Recognizer::processing в создаваемом разпознавателе.
+
+		\param[in]  matching
+			Флаг для включения / выключения метода Recognizer::verifyMatch в создаваемом разпознавателе.
+
+		\param[in]  processing_less_memory_consumption
+			Флаг для выключения оптимизаций метода Recognizer::processing,
+			потребляющих много оперативной памяти при создании распознавателя (см. документацию).
+
+		\return
+			Созданный объект Recognizer.
+	*/
+	Recognizer::Ptr createRecognizer(
+		const pbio::FacerecService::Config recognizer_config,
 		const bool processing = true,
 		const bool matching = true,
 		const bool processing_less_memory_consumption = false) const;
@@ -522,6 +593,55 @@ public:
 	VideoWorker::Ptr createVideoWorker(
 		const pbio::FacerecService::Config video_worker_config,
 		const std::string recognizer_ini_file,
+		const int streams_count,
+		const int processing_threads_count,
+		const int matching_threads_count) const;
+
+
+	/**
+		\~English
+        \brief
+		\param[in]  video_worker_config
+			The VideoWorker configuration file with optionally overridden parameters.
+
+		\param[in]  recognizer_config
+			The Recognizer configuration file with optionally overridden parameters.
+
+		\param[in]  streams_count
+			Number of video streams.
+
+		\param[in]  processing_threads_count
+			Number of threads for creating templates.
+
+		\param[in]  matching_threads_count
+			Number of threads for matching templates with the database.
+
+		\return
+			Created VideoWorker object.
+
+		\~Russian
+        \brief
+		\param[in]  video_worker_config
+			Конфигурационный файл VideoWorker с опционально переопределенными параметрами.
+
+		\param[in]  recognizer_config
+			Конфигурационный файл Recognizer с опционально переопределенными параметрами.
+
+		\param[in]  streams_count
+			Количество видеопотоков.
+
+		\param[in]  processing_threads_count
+			Количество потоков для создания шаблонов.
+
+		\param[in]  matching_threads_count
+			Количество потоков для сравнения шаблонов, созданных из видеопотоков, с базой.
+
+		\return
+			Созданный объект VideoWorker.
+	*/
+	VideoWorker::Ptr createVideoWorker(
+		const pbio::FacerecService::Config video_worker_config,
+		const pbio::FacerecService::Config recognizer_config,
 		const int streams_count,
 		const int processing_threads_count,
 		const int matching_threads_count) const;
@@ -925,6 +1045,33 @@ public:
 	/**
 		\~English
 		\brief
+			Creates an FaceAttributesEstimator object.
+			Thread-safe.
+
+		\param[in]  ini_file
+			Name of the configuration file.
+
+		\return
+			Created FaceAttributesEstimator object.
+
+		\~Russian
+		\brief
+			Создать объект FaceAttributesEstimator.
+			Потокобезопасный.
+
+		\param[in]  ini_file
+			Имя конфигурационного файла.
+
+		\return
+			Созданный объект FaceAttributesEstimator.
+	*/
+	FaceAttributesEstimator::Ptr createFaceAttributesEstimator(
+		const std::string ini_file) const;
+
+
+	/**
+		\~English
+		\brief
 			Get the license state.
 			Thread-safe.
 
@@ -1222,9 +1369,31 @@ FacerecService::FacerecService(
 ComplexObject(dll_handle, impl),
 _facerec_conf_dir(facerec_conf_dir)
 {
-	// nothing else
+	std::string lib_version = getVersion();
+
+	if (LIBFACEREC_VERSION != lib_version)
+		std::cerr << "WARNING: The version in the header does not match the version in the library. Header version: "
+			<< LIBFACEREC_VERSION << ", library version: " << lib_version << std::endl;
 }
 
+
+inline
+std::string FacerecService::getVersion() const
+{
+	std::ostringstream version_stream;
+	pbio::stl_wraps::WrapOStreamImpl version_stream_wrap(version_stream);
+
+	void* exception = NULL;
+
+	_dll_handle->get_version(
+		&version_stream_wrap,
+		pbio::stl_wraps::WrapOStream::write_func,
+		&exception);
+
+	checkException(exception, *_dll_handle);
+
+	return version_stream.str();
+}
 
 
 inline
@@ -1360,7 +1529,7 @@ EmotionsEstimator::Ptr FacerecService::createEmotionsEstimator(
 
 inline
 Recognizer::Ptr FacerecService::createRecognizer(
-	const std::string ini_file,
+	const char* ini_file,
 	const bool processing,
 	const bool matching,
 	const bool processing_less_memory_consumption) const
@@ -1373,6 +1542,43 @@ Recognizer::Ptr FacerecService::createRecognizer(
 		_dll_handle->FacerecService_createRecognizer2(
 			_impl,
 			file_path.c_str(),
+			0,
+			NULL,
+			NULL,
+			(int) processing,
+			(int) matching,
+			(int) processing_less_memory_consumption,
+			&exception);
+
+	checkException(exception, *_dll_handle);
+
+	return Recognizer::Ptr::make(_dll_handle, recognizer_impl);
+}
+
+
+inline
+Recognizer::Ptr FacerecService::createRecognizer(
+	const pbio::FacerecService::Config recognizer_config,
+	const bool processing,
+	const bool matching,
+	const bool processing_less_memory_consumption) const
+{
+	const std::string file_path = _facerec_conf_dir + recognizer_config.config_filepath;
+
+	std::vector<char const*> overridden_keys;
+	std::vector<double> overridden_values;
+
+	recognizer_config.prepare(overridden_keys, overridden_values);
+
+	void* exception = NULL;
+
+	pbio::facerec::RecognizerImpl* const recognizer_impl =
+		_dll_handle->FacerecService_createRecognizer2(
+			_impl,
+			file_path.c_str(),
+			overridden_keys.size(),
+			overridden_keys.empty() ? NULL : &(overridden_keys[0]),
+			overridden_values.empty() ? NULL : &(overridden_values[0]),
 			(int) processing,
 			(int) matching,
 			(int) processing_less_memory_consumption,
@@ -1405,12 +1611,40 @@ VideoWorker::Ptr FacerecService::createVideoWorker(
 
 inline
 VideoWorker::Ptr FacerecService::createVideoWorker(
+	const pbio::FacerecService::Config video_worker_ini_file,
+	const pbio::FacerecService::Config recognizer_config,
+	const int streams_count,
+	const int processing_threads_count,
+	const int matching_threads_count) const
+{
+	return createVideoWorker(
+		VideoWorker::Params()
+			.video_worker_config(video_worker_ini_file)
+			.recognizer_config(recognizer_config)
+			.streams_count(streams_count)
+			.processing_threads_count(processing_threads_count)
+			.matching_threads_count(matching_threads_count)
+		);
+}
+
+inline
+VideoWorker::Ptr FacerecService::createVideoWorker(
 	const VideoWorker::Params params) const
 {
 	std::vector<char const*> vw_overridden_keys;
 	std::vector<double> vw_overridden_values;
 
 	params._video_worker_config.prepare(vw_overridden_keys, vw_overridden_values);
+
+	if (!params._recognizer_ini_file.empty() && !params._recognizer_config.config_filepath.empty())
+		throw pbio::Error(0xb3fe4d07, "Error: 0xed877a99 You must use either recognizer_config or recognizer_ini_file.");
+
+	pbio::FacerecService::Config recognizer_config = params._recognizer_ini_file.empty() ? params._recognizer_config : pbio::FacerecService::Config(params._recognizer_ini_file);
+
+	std::vector<char const*> rec_overridden_keys;
+	std::vector<double> rec_overridden_values;
+
+	recognizer_config.prepare(rec_overridden_keys, rec_overridden_values);
 
 	void* exception = NULL;
 
@@ -1428,7 +1662,12 @@ VideoWorker::Ptr FacerecService::createVideoWorker(
 			vw_overridden_keys.size(),
 			vw_overridden_keys.empty() ? NULL : &(vw_overridden_keys[0]),
 			vw_overridden_values.empty() ? NULL : &(vw_overridden_values[0]),
-			(_facerec_conf_dir + params._recognizer_ini_file).c_str(),
+
+			(_facerec_conf_dir + recognizer_config.config_filepath).c_str(),
+			rec_overridden_keys.size(),
+			rec_overridden_keys.empty() ? NULL : &(rec_overridden_keys[0]),
+			rec_overridden_values.empty() ? NULL : &(rec_overridden_values[0]),
+
 			params._streams_count,
 			params._processing_threads_count,
 			params._matching_threads_count,
@@ -1743,6 +1982,28 @@ Liveness2DEstimator::Ptr FacerecService::createLiveness2DEstimator(
 	checkException(exception, *_dll_handle);
 
 	return Liveness2DEstimator::Ptr::make(_dll_handle, the_impl);
+}
+
+inline
+FaceAttributesEstimator::Ptr FacerecService::createFaceAttributesEstimator(
+	const std::string ini_file) const
+{
+	const std::string file_path = _facerec_conf_dir + ini_file;
+
+	void* exception = NULL;
+
+	pbio::facerec::FaceAttributesEstimatorImpl* const the_impl =
+		_dll_handle->FacerecService_createFaceAttributesEstimator(
+			_impl,
+			file_path.c_str(),
+			0,     // overridden keys size
+			NULL,  // overridden keys
+			NULL,  // overriden values
+			&exception);
+
+	checkException(exception, *_dll_handle);
+
+	return FaceAttributesEstimator::Ptr::make(_dll_handle, the_impl);
 }
 
 inline

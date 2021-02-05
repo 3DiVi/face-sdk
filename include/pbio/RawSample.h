@@ -35,6 +35,8 @@ class EmotionsEstimator;
 class DepthLivenessEstimator;
 class IRLivenessEstimator;
 class Liveness2DEstimator;
+class FaceAttributesEstimator;
+class RawSampleExtractor;
 
 /** \~English
 	\brief Interface object that stores a captured face sample.
@@ -758,6 +760,10 @@ public:
 	*/
 	RawSample::Ptr downscaleToPreferredSize() const;
 
+	//! @cond IGNORED
+	void* getPtr() const;
+	//! @endcond
+
 private:
 
 	RawSample(
@@ -776,6 +782,8 @@ private:
 	friend class DepthLivenessEstimator;
 	friend class IRLivenessEstimator;
 	friend class Liveness2DEstimator;
+	friend class FaceAttributesEstimator;
+	friend class RawSampleExtractor;
 	friend class object_with_ref_counter<RawSample>;
 };
 
@@ -1176,6 +1184,12 @@ void RawSample::saveWithoutImage(
 		space_translation_x,
 		space_translation_y,
 		space_scale);
+}
+
+inline
+void* RawSample::getPtr() const
+{
+	return _impl;
 }
 
 

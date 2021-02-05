@@ -4,6 +4,7 @@
 * [Quality](#quality) 
 * [Liveness (2D and 3D)](#liveness)
 * [Emotions](#emotions)
+* [Presence of a mask on the face](#presence-of-a-mask-on-the-face)
 
 ## Age & Gender
 
@@ -71,22 +72,36 @@ To get an estimated result, you can call the `IRLivenessEstimator.estimateLivene
 
 ### Liveness2DEstimator
 
-To estimate liveness with an RGB map, you should create the `Liveness2DEstimator` object using the `FacerecService.createLiveness2DEstimator` method. Currently, only one configuration file is available – `liveness_2d_estimator.xml`.
+To estimate liveness with an RGB map, you should create the `Liveness2DEstimator` object using the `FacerecService.createLiveness2DEstimator` method. Currently, two configuration files are available: 
+* `liveness_2d_estimator.xml` – the first implementation (not recommended; used only for backward compatibility)
+* `liveness_2d_estimator_v2.xml` – an accelerated and improved version of the current module, recommended 
 
-To get an estimated result, you can call the `Liveness2DEstimator.estimateLiveness` method, passing the `RawSample` object. As a result you will have one of the following:
-  * `Liveness2DEstimator.NOT_ENOUGH_DATA` – not enough samples or face movements to make a decision.
-  * `Liveness2DEstimator.REAL` – the observed face belongs to a living person.
-  * `Liveness2DEstimator.FAKE` – the observed face is taken from a photo.
+Two methods can be used to obtain the evaluation result:
+* `Liveness2DEstimator.estimateLiveness`. This method returns a `Liveness2DEstimator.Liveness` object. The result will be one of the following:
+   * `Liveness2DEstimator.Liveness.NOT_ENOUGH_DATA` – not enough data to make a decision
+   * `Liveness2DEstimator.Liveness.REAL` – the observed person belongs to a living person
+   * `Liveness2DEstimator.Liveness.FAKE` – the observed face is take from a photo
+* `Liveness2DEstimator.estimate`. This method returns a `Liveness2DEstimator.LivenessAndScore` object that contains the following fields:
+   * `liveness` - object of the `Liveness2DEstimator.Liveness` class/structure (see above)
+   * `score` – the probability that a face belongs to a living person (for `liveness_2d_estimator.xml` this field is not available, a value of 0 or 1 is returned depending on the value of the `liveness` attribute)
 
-See an example of using `Liveness2DEstimator` in [demo.cpp](../../../examples/cpp/demo/demo.cpp).
+Both methods take a `RawSample` object as output. Examples are available in the *demo* sample ([C++](/examples/cpp/demo)/[C#](/examples/csharp/demo)/[Android](/examples/android/demo)).
 
 _**Note**: the `LivenessEstimator` object in Face SDK C++/C#/Java API is deprecated._
+
+#### Timing Characteristics (ms) 
+
+| Version | Core i7 4.5 ГГц (Single-Core) | Google Pixel 3 |
+| ------ | ------------------------ | -------------- |
+| liveness_2d_estimator.xml | 250 | 126 (GPU) / 550 (CPU) |
+| liveness_2d_estimator_v2.xml | 10 | 20 | 
+
 
 #### Quality metrics
 
 | Dataset | TAR@FAR=1e-2 |
-| ------------ | ------------ |
-|CASIA Face Anti-spoofing|0.99|
+| ------- | ------------ |
+| CASIA Face Anti-spoofing | 0.99 |
 
 ## Emotions
 
@@ -94,3 +109,13 @@ _**Note:** If you need to estimate emotions on a video stream, see [Estimation o
 
 To estimate emotions, create the `EmotionsEstimator` object using `FacerecService.createEmotionsEstimator` and pass the configuration file. Currently, there is only one configuration file, which is *emotions_estimator.xml*.  
 With the `EmotionsEstimator` object you can estimate the emotion of a captured face using the `EmotionsEstimator.estimateEmotions` method. The result is a vector with the `EmotionsEstimator.EmotionConfidence` elements containing emotions with a confidence value. See the example of using the `EmotionsEstimator` object in [demo.cpp](../../../examples/cpp/demo/demo.cpp).
+
+## Presence of a mask on the face
+
+To check the presence of a mask on a face, the `FaceAttributesEstimator` module and the `face_mask_estimator.xml` configuration file are available. For estimation, call the `FaceAttributesEstimator.estimate(RawSample)` method. The result of the evaluation is an object `Attribute`, which contains the following fields:
+* `score` – possibility that there's a mask on the face, value from 0 to 1 
+* `verdict` – possibility that there's a mask on the face, boolean value (`true`/`false`)
+* `mask_attribute` – an object of the `FaceAttributesEstimator.FaceAttributes.Attribute` class/structure, which contains the following values:
+    - `NOT_COMPUTED` – the attribute was not estimated
+    - `NO_MASK` – there's no mask on the face
+    - `HAS_MASK` – there's a mask on the face

@@ -1,7 +1,7 @@
 # Сэмплы
 
-* Face SDK включает в себя набор программ, демонстрирующих работу с C++, Java, C#, Python, Javascript API.
-* Предсобранные демонстрационные программы расположены в директориях *bin* (C++, C#, Python) и *apk* (Java для Android). 
+* Face SDK включает в себя набор программ, демонстрирующих работу с C++, Java, C#, Python, Javascript API, [Unity](/doc/ru/samples/unity/README.md).
+* Предсобранные демонстрационные программы расположены в директориях *bin* (C++, C#, Python, Unity) и *apk* (Java для Android). 
 * Исходные коды находятся в директории [examples](/examples) (C++, C#, Java, Python, Javascript).
 
 ## Windows/Linux

@@ -292,7 +292,9 @@ capturer.setParameter("max_size", 400);
 |manual_capturer_fda.xml|lbf|fda|[-30;30][-60;60][-60;60]|Eye points should be manually specified. The remaining points are calculated based on the eye points.|
 |manual_capturer_mesh.xml|lbf|mesh|[-30;30][-60;60][-60;60]|Eye points should be manually specified. The remaining points are calculated based on the eye points. Allows you to get a 3D face mask.|
 
-### Capturers Timing Characteristics for Core i7 4.5 GHz*
+### Capturers Timing Characteristics 
+
+#### Core i7 4.5 GHz (Single-Core)
 
 <table>
 <thead>
@@ -364,7 +366,53 @@ capturer.setParameter("max_size", 400);
   </tr>
 </table>
 
-\* – characteristics specified in this table are given for a single-core CPU 
+#### GPU 
+
+<table>
+<thead>
+  <tr>
+    <th rowspan="2">config file</th>
+    <th colspan="6">capture time (ms)</th>
+  </tr>
+  <tr>
+    <td>640x480, 1 face</td>
+    <td>640x480, 4 faces</td>
+    <td>1280x720, 1 face</td>
+    <td>1280x720, 4 faces</td>
+    <td>1920x1080, 1 face</td>
+    <td>1920x1080, 4 faces</td>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>common_capturer_blf_fda_auto.xml</td>
+    <td>4-5</td> <td>10-12</td> <td>6-8</td> <td>13-14</td> <td>17-20</td> <td>24-27</td>
+  </tr>
+  <tr>
+    <td>common_capturer_blf_fda_back.xml</td>
+    <td>5</td> <td>12</td> <td>8</td> <td>14</td> <td>20</td> <td>27</td>
+  </tr>
+  <tr>
+    <td>common_capturer_blf_fda_front.xml</td>
+    <td>4</td> <td>10</td> <td>6</td> <td>13</td> <td>17</td> <td>24</td>
+  </tr>
+  <tr>
+    <td>common_capturer_refa_fda_a.xml</td>
+    <td>236</td> <td>240</td> <td>229</td> <td>235</td> <td>170</td> <td>176</td>
+  </tr>
+  <tr>
+    <td>common_capturer_uld_fda.xml (min_size=150)</td>
+    <td>4</td> <td>10</td> <td>5</td> <td>11</td> <td>13</td> <td>20</td>
+  </tr>
+  <tr>
+    <td>common_capturer_uld_fda.xml (min_size=90)</td>
+    <td>14</td> <td>21</td> <td>17</td> <td>23</td> <td>26</td> <td>34</td>
+  </tr>
+  <tr>
+    <td>common_capturer_uld_fda.xml (min_size=50)</td>
+    <td>27</td> <td>34</td> <td>27</td> <td>35</td> <td>47</td> <td>49</td>
+  </tr>
+</table>
 
 _**Note:** Actual capture time may vary depending on the image content._
 

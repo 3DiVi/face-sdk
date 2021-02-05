@@ -27,6 +27,7 @@
     <string name="face_quality_check_box_text">face quality</string>
     <string name="angles_vectors_check_box_text">angles vectors</string>
     <string name="emotions_check_box_text">emotions</string>
+    <string name="face_mask_box_text">face mask</string>
 
     <string name="none_radio_button">none</string>
     <string name="base_cut_radio_button">base cut</string>

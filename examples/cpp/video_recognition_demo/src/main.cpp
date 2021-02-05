@@ -117,6 +117,8 @@ int main(int argc, char const *argv[])
 				config_dir,
 				license_dir);
 
+		std::cout << "Library version: " << service->getVersion() << std::endl << std::endl;
+
 		// create database
 		const Database database(
 			database_list_filepath,

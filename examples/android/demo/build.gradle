@@ -51,6 +51,8 @@ android {
                 "share/face_quality/**",
                 "share/faceanalysis/**",
                 "share/age_second/**",
+                "share/liveness_2d_v2/**",
+                "share/faceattributes/**",
                 "license/**"
             )
         }

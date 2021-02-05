@@ -38,10 +38,10 @@ int main(int argc, char const *argv[])
 		for(int i = 3; i < argc; ++i)
 			image_files.push_back(argv[i]);
 
-
-
 		// create facerec service (initialize facerec)
 		const pbio::FacerecService::Ptr service = pbio::FacerecService::createService(dll_path, conf_dir_path);
+
+		std::cout << "Library version: " << service->getVersion() << std::endl << std::endl;
 
 		// create capturer
 		const pbio::Capturer::Ptr capturer = service->createCapturer("common_capturer_blf_fda_back.xml");

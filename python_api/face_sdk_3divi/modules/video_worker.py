@@ -10,6 +10,7 @@ from ctypes import c_int32, c_void_p, py_object, c_float, sizeof, create_string_
     POINTER, c_int64, c_uint64
 
 from typing import List, Union
+from io import BytesIO
 
 from .exception_check import check_exception, make_exception
 from .recognizer import MatchResult, SearchAccelerationType
@@ -29,6 +30,7 @@ from .raw_sample import RawSample
 from .template import Template
 from .error import Error
 from . import get_repr
+from .wrap_funcs import write_func
 
 
 ##
@@ -597,6 +599,13 @@ class Params:
 
     ##
     #  \~English
+    #     \brief Set the configuration file with optionally overridden parameters for Recognizer that will be used inside VideoWorker.
+    #  \~Russian
+    #     \brief Задать конфигурационный файл Recognizer с опционально переопределенными параметрами (Recognizer).
+    recognizer_config: Config
+
+    ##
+    #  \~English
     #     \brief Set the number of video streams.
     #  \~Russian
     #     \brief Задать количество видеопотоков.
@@ -659,6 +668,7 @@ class Params:
     def __init__(self):
         self.video_worker_config = None
         self.recognizer_ini_file = ""
+        self.recognizer_config = Config("")
         self.streams_count = 0
         self.processing_threads_count = 0
         self.matching_threads_count = 0
@@ -1355,6 +1365,29 @@ class VideoWorker(ComplexObject):
         check_exception(exception, self._dll_handle)
 
         return result
+
+    ##
+    # \~English
+    #    \brief Get a method name of the recognizer used. Thread-safe.
+    #    \return The name of the method.
+    # \~Russian
+    #    \brief Получить имя метода используемого распознавателя. Потокобезопасный.
+    #    \return Имя метода.
+    def get_method_name(self) -> str:
+        name_stream_wrap = BytesIO()
+
+        exception = make_exception()
+        self._dll_handle.VideoWorker_getMethodName(
+            self._impl,
+            py_object(name_stream_wrap),
+            write_func,
+            exception)
+
+        check_exception(exception, self._dll_handle)
+
+        name = name_stream_wrap.getvalue()
+        name_stream_wrap.close()
+        return name.decode()
 
     ##
     # \~English

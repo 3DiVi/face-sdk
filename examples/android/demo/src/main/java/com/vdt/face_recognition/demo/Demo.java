@@ -26,11 +26,12 @@ import com.vdt.face_recognition.sdk.Capturer;
 import com.vdt.face_recognition.sdk.EmotionsEstimator;
 import com.vdt.face_recognition.sdk.FaceQualityEstimator;
 import com.vdt.face_recognition.sdk.FacerecService;
-import com.vdt.face_recognition.sdk.LivenessEstimator;
+import com.vdt.face_recognition.sdk.Liveness2DEstimator;
 import com.vdt.face_recognition.sdk.Point;
 import com.vdt.face_recognition.sdk.QualityEstimator;
 import com.vdt.face_recognition.sdk.RawImage;
 import com.vdt.face_recognition.sdk.RawSample;
+import com.vdt.face_recognition.sdk.FaceAttributesEstimator;
 import com.vdt.face_recognition.sdk.SDKException;
 
 
@@ -47,6 +48,8 @@ public class Demo{
 	private AgeGenderEstimator ageGenderEstimator = null;
 	private EmotionsEstimator emotionsEstimator = null;
 	private FaceQualityEstimator faceQualityEstimator = null;
+	private Liveness2DEstimator liveness2dEstimator = null;
+	private FaceAttributesEstimator faceMaskEstimator = null;
 
 	private boolean flag_rectangle = true;
 	private boolean flag_angles = true;
@@ -57,8 +60,8 @@ public class Demo{
 	private boolean flag_face_quality = false;
 	private boolean flag_angles_vectors = true;
 	private boolean flag_emotions = false;
+	private boolean flag_face_mask = false;
 
-	private HashMap<Integer, LivenessEstimator> id2le = new HashMap<Integer, LivenessEstimator>();
 	private RawSample.FaceCutType faceCutType = null;
 
 
@@ -74,6 +77,7 @@ public class Demo{
 		ageGenderEstimator = service.createAgeGenderEstimator("age_gender_estimator.xml");
 		emotionsEstimator = service.createEmotionsEstimator("emotions_estimator.xml");
 		faceQualityEstimator = service.createFaceQualityEstimator("face_quality_estimator.xml");
+		faceMaskEstimator = service.createFaceAttributesEstimator("face_mask_estimator.xml");
 	}
 
 
@@ -154,19 +158,16 @@ public class Demo{
 		//liveness
 		if (flag_liveness)
 		{
-			// here we get/create the liveness estimator that work with this face
-			final int id = sample.getID();
-			if(!id2le.containsKey(id)){
-				id2le.put(id, service.createLivenessEstimator());
+			if(liveness2dEstimator == null){
+				liveness2dEstimator =  service.createLiveness2DEstimator("liveness_2d_estimator_v2.xml");
 			}
-			final LivenessEstimator le = id2le.get(id);
-
-			// add information to the estimator
-			le.addSample(sample);
 
 			// get liveness
-			final LivenessEstimator.Liveness liveness = le.estimateLiveness();
-			text += "Liveness: " + liveness.name() + "\n";
+			final Liveness2DEstimator.LivenessAndScore liveness_and_score = liveness2dEstimator.estimate(sample);
+			String score_str = (liveness_and_score.liveness == Liveness2DEstimator.Liveness.REAL ||
+				liveness_and_score.liveness == Liveness2DEstimator.Liveness.FAKE) ?
+				String.format("%.03f", liveness_and_score.score) : "";
+			text += "Liveness: " + score_str + " - "+ liveness_and_score.liveness.name() + "\n";
 		}
 
 		//age and gender
@@ -187,6 +188,14 @@ public class Demo{
 				case GENDER_FEMALE: text += "Gender: female\n"; break;
 				case GENDER_MALE:   text += "Gender: male\n";   break;
 			}
+		}
+
+		// face attribute (masked_face)
+		if (flag_face_mask)
+		{
+            FaceAttributesEstimator.Attribute attr = faceMaskEstimator.estimate(sample);
+            String score_str = String.format("%.03f", attr.score);
+			text += "masked: " + (attr.verdict ? "true" : "false") + " - " + score_str + "\n";
 		}
 
 		//crops
@@ -334,6 +343,8 @@ public class Demo{
 			flag_face_quality = flags[6];
 			flag_angles_vectors = flags[7];
 			flag_emotions = flags[8];
+			flag_face_mask = flags[9];
+
 		}
 
 		faceCutType = (faceCutTypeId >0) ? RawSample.FaceCutType.values()[faceCutTypeId-1] : null;
@@ -351,7 +362,9 @@ public class Demo{
 			flag_points,
 			flag_face_quality,
 			flag_angles_vectors,
-			flag_emotions};
+			flag_emotions,
+			flag_face_mask
+		};
 
 		return flags;
 	}
@@ -369,6 +382,7 @@ public class Demo{
 		ageGenderEstimator.dispose();
 		emotionsEstimator.dispose();
 		faceQualityEstimator.dispose();
+		faceMaskEstimator.dispose();
 	}
 
 }

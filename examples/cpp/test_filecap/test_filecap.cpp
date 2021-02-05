@@ -47,6 +47,8 @@ int main(int argc, char** argv)
 		// create facerec service
 		const pbio::FacerecService::Ptr service = pbio::FacerecService::createService(dll_path, conf_dir_path);
 
+		std::cout << "Library version: " << service->getVersion() << std::endl << std::endl;
+
 		// create capturer
 		const pbio::Capturer::Ptr capturer = service->createCapturer(capturer_config_filename);
 

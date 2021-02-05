@@ -77,6 +77,28 @@ public:
 		NOT_COMPUTED    = 3
 	};
 
+	/** \~English
+		\brief Estimated liveness and score.
+		\~Russian
+		\brief Результат определения и вероятность принадлежности лица живому человеку.
+	*/
+	struct LivenessAndScore
+	{
+		/** \~English
+			\brief Estimated liveness (see Liveness for details).
+			\~Russian
+			\brief Результат определения принадлежности лица живому человеку (см. Liveness).
+		*/
+		Liveness liveness;
+
+		/** \~English
+			\brief Liveness score.
+			\~Russian
+			\brief Вероятность принадлежности лица живому человеку.
+		*/
+		float score;
+	};
+
 
 	/**
 		\~English
@@ -100,6 +122,30 @@ public:
 			Результат (см. Liveness2DEstimator::Liveness).
 	*/
 	Liveness estimateLiveness(const pbio::RawSample& sample);
+
+
+	/**
+		\~English
+		\brief
+			liveness and score of an observed face.
+
+		\param[in]  sample
+			Face sample.
+
+		\return
+			liveness and score (see LivenessAndScore for details).
+
+		\~Russian
+		\brief
+			Определение и вероятность принадлежности лица реальному человеку.
+
+		\param[in]  sample
+			Образец лица.
+
+		\return
+			Результат (см. LivenessAndScore).
+	*/
+	LivenessAndScore estimate(const pbio::RawSample& sample);
 
 private:
 
@@ -137,21 +183,55 @@ inline
 Liveness2DEstimator::Liveness Liveness2DEstimator::estimateLiveness(const pbio::RawSample& sample)
 {
 	void* exception = NULL;
+	int32_t verdict;
+	float score;
 
-	const int result = _dll_handle->Liveness2DEstimator_estimateLiveness(
+	_dll_handle->Liveness2DEstimator_estimateLiveness(
 		_impl,
 		(pbio::facerec::RawSampleImpl const*) sample._impl,
+		&verdict,
+		&score,
 		&exception);
 
 	checkException(exception, *_dll_handle);
 
-	if(result == 1)
+	if(verdict == 1)
 		return REAL;
 
-	if(result == 2)
+	if(verdict == 2)
 		return FAKE;
 
 	return NOT_ENOUGH_DATA;
+}
+
+
+inline
+Liveness2DEstimator::LivenessAndScore Liveness2DEstimator::estimate(const pbio::RawSample& sample)
+{
+	void* exception = NULL;
+	int32_t verdict;
+	float score;
+
+	_dll_handle->Liveness2DEstimator_estimateLiveness(
+		_impl,
+		(pbio::facerec::RawSampleImpl const*) sample._impl,
+		&verdict,
+		&score,
+		&exception);
+
+	checkException(exception, *_dll_handle);
+
+	LivenessAndScore result;
+	result.liveness = NOT_ENOUGH_DATA;
+	result.score = score;
+
+	if(verdict == 1)
+		result.liveness = REAL;
+
+	if(verdict == 2)
+		result.liveness = FAKE;
+
+	return result;
 }
 
 

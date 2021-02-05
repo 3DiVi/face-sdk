@@ -104,6 +104,7 @@ public class MainActivity extends Activity
 			getApplicationInfo().nativeLibraryDir + "/libfacerec.so",
 			getApplicationInfo().dataDir + "/fsdk/conf/facerec",
 			getApplicationInfo().dataDir + "/fsdk/license");
+		Log.i(TAG, "Library version: " + service.getVersion());
 
 		FacerecService.LicenseState license_state;
 		try

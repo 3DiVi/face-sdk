@@ -94,6 +94,13 @@
                 android:text="@string/emotions_check_box_text"
                 android:onClick="onCheckboxClicked" />
 
+            <CheckBox
+                android:id="@+id/face_mask"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/face_mask_box_text"
+                android:onClick="onCheckboxClicked" />
+
         </LinearLayout>
 
 

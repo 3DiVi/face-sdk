@@ -116,12 +116,13 @@ class VideoRecognitionDemo
 				Console.WriteLine("  {0}", sources_names[i]);
 			Console.WriteLine("");
 
-
 			// create facerec servcie
 			FacerecService service =
 				FacerecService.createService(
 					config_dir,
 					license_dir);
+
+			Console.WriteLine("Library version: {0}\n", service.getVersion());
 
 			// create database
 			Recognizer recognizer = service.createRecognizer(method_config, true, false, false);
