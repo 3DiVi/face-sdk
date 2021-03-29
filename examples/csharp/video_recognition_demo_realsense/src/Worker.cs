@@ -20,6 +20,11 @@ public class FaceData
 	public int frame_id;
 	public TimeSpan lost_time;
 	public int match_database_index;
+	public bool age_gender_set;
+	public AgeGenderEstimator.AgeGender age_gender;
+	public bool emotion_set;
+	public List<EmotionsEstimator.EmotionConfidence> emotion_confidence;
+	public ActiveLiveness.ActiveLivenessStatus active_liveness_status;
 
 	public float draw_multilier;
 	public FaceData()
@@ -27,6 +32,8 @@ public class FaceData
 		lost = true;
 		match_database_index = -1;
 		draw_multilier = 1;
+		age_gender_set = false;
+		emotion_set = false;
 	}
 };	
 
@@ -134,6 +141,33 @@ class Worker: IDisposable
 		Dispose();
 	}
 
+	static void puttext(OpenCvSharp.Mat image, string text, OpenCvSharp.Point2f position)
+	{
+		// twice - for better reading
+		// since we are drawing on the frame from webcam
+
+		// white background
+		OpenCvSharp.Cv2.PutText(
+				image,
+				text,
+				position,
+				OpenCvSharp.HersheyFonts.HersheyDuplex,
+				0.7,
+				OpenCvSharp.Scalar.All(255),
+				5,
+				OpenCvSharp.LineTypes.AntiAlias);
+
+		// black text
+		OpenCvSharp.Cv2.PutText(
+				image,
+				text,
+				position,
+				OpenCvSharp.HersheyFonts.HersheyDuplex,
+				0.7,
+				OpenCvSharp.Scalar.All(0),
+				1,
+				OpenCvSharp.LineTypes.AntiAlias);
+	}
 
 	// data for drawing
 	public class DrawingData
@@ -169,6 +203,11 @@ class Worker: IDisposable
 		RawSample[] samples = data.samples;
 		bool[] samples_weak = data.samples_weak;
 		float[] samples_quality = data.samples_quality;
+
+		bool[] AG_set = data.samples_track_age_gender_set;
+		AgeGenderEstimator.AgeGender[] AG = data.samples_track_age_gender;
+		bool[] emotion_set = data.samples_track_emotions_set;
+		List <EmotionsEstimator.EmotionConfidence>[] emotion = data.samples_track_emotions;
 
 		MAssert.Check(samples.Length == samples_weak.Length);
 		MAssert.Check(samples.Length == samples_quality.Length);
@@ -233,6 +272,17 @@ class Worker: IDisposable
 				face.lost = false;
 				face.weak = samples_weak[i];
 				face.sample = samples[i];
+				if (AG_set[i])
+				{
+					face.age_gender_set = true;
+					face.age_gender = AG[i];
+				}
+				if (emotion_set[i])
+				{
+					face.emotion_set = true;
+					face.emotion_confidence = emotion[i];
+				}
+				face.active_liveness_status = data.samples_active_liveness_status[i];
 			}
 			worker._drawing_data_mutex.ReleaseMutex();
 		}
@@ -521,6 +571,7 @@ class Worker: IDisposable
 			{
 				// get points
 				List<Point> points = face.sample.getLandmarks();
+				List<Point> iris_points = face.sample.getIrisLandmarks();
 
 				// compute center
 				OpenCvSharp.Point2f center = new OpenCvSharp.Point2f(0, 0);
@@ -542,6 +593,14 @@ class Worker: IDisposable
 				radius *= 1.5 / points.Count;
 
 				radius *= 2;
+
+				RawSample.Rectangle rectangle = face.sample.getRectangle();
+
+				// set a point to place information for this face
+				OpenCvSharp.Point2f text_point = new OpenCvSharp.Point2f(
+						rectangle.x + rectangle.width + 3,
+						rectangle.y + 10);
+				const float text_line_height = 22;
 
 				// choose color
 				OpenCvSharp.Scalar color =
@@ -581,6 +640,139 @@ class Worker: IDisposable
 							OpenCvSharp.LineTypes.AntiAlias);
 					}
 				}
+				if (face.age_gender_set)
+				{
+					// draw
+					AgeGenderEstimator.AgeGender age_gender = face.age_gender;
+
+					string age_text = "age: ";
+
+					switch (age_gender.age)
+					{
+						case AgeGenderEstimator.Age.AGE_KID: age_text += "kid    "; break;
+						case AgeGenderEstimator.Age.AGE_YOUNG: age_text += "young  "; break;
+						case AgeGenderEstimator.Age.AGE_ADULT: age_text += "adult  "; break;
+						case AgeGenderEstimator.Age.AGE_SENIOR: age_text += "senior "; break;
+					}
+
+					age_text += string.Format("years: {0:G3}", age_gender.age_years);
+
+					puttext(
+							result,
+							age_text,
+							text_point);
+
+					text_point.Y += text_line_height;
+
+					puttext(
+							result,
+							age_gender.gender == AgeGenderEstimator.Gender.GENDER_FEMALE ? "gender: female" :
+							age_gender.gender == AgeGenderEstimator.Gender.GENDER_MALE ? "gender: male" : "?",
+							text_point);
+					text_point.Y += text_line_height;
+
+					text_point.Y += text_line_height / 3;
+
+					// Console.WriteLine(face.age_gender.age_years);
+				}
+				if (face.emotion_set){
+					// draw
+					List<EmotionsEstimator.EmotionConfidence> emotions =  face.emotion_confidence;
+
+					for (int j = 0; j < emotions.Count; ++j){
+						EmotionsEstimator.Emotion emotion = emotions[j].emotion;
+						float confidence = emotions[j].confidence;
+
+						OpenCvSharp.Cv2.Rectangle(
+								result,
+								new OpenCvSharp.Rect(
+								(int)text_point.X,
+								(int)text_point.Y - (int)text_line_height / 2,
+								(int)(100 * confidence),
+								(int)text_line_height),
+								emotion == EmotionsEstimator.Emotion.EMOTION_NEUTRAL ? new OpenCvSharp.Scalar(255, 0, 0) :
+						emotion == EmotionsEstimator.Emotion.EMOTION_HAPPY ? new OpenCvSharp.Scalar(0, 255, 0) :
+						emotion == EmotionsEstimator.Emotion.EMOTION_ANGRY ? new OpenCvSharp.Scalar(0, 0, 255) :
+						emotion == EmotionsEstimator.Emotion.EMOTION_SURPRISE ? new OpenCvSharp.Scalar(0, 255, 255) :
+						new OpenCvSharp.Scalar(0, 0, 0), -1);
+
+						puttext(
+								result,
+								emotion == EmotionsEstimator.Emotion.EMOTION_NEUTRAL ? "neutral" :
+								emotion == EmotionsEstimator.Emotion.EMOTION_HAPPY ? "happy" :
+								emotion == EmotionsEstimator.Emotion.EMOTION_ANGRY ? "angry" :
+								emotion == EmotionsEstimator.Emotion.EMOTION_SURPRISE ? "surprise" : "?",
+								text_point + new OpenCvSharp.Point2f(100, 0));
+
+						text_point.Y += text_line_height;
+
+						text_point.Y += text_line_height / 3;
+					}
+				}
+				if (face.active_liveness_status.verdict != ActiveLiveness.Liveness.NOT_COMPUTED){
+					string active_liveness = "";
+
+					if (face.active_liveness_status.verdict == ActiveLiveness.Liveness.WAITING_FACE_ALIGN)
+						active_liveness += face.active_liveness_status.verdict.ToString();
+					else {
+						active_liveness += face.active_liveness_status.check_type.ToString();
+						active_liveness += ": ";
+						active_liveness += face.active_liveness_status.verdict.ToString();
+						active_liveness += " " + face.active_liveness_status.progress_level.ToString();
+					}
+					puttext(result, active_liveness, text_point);
+
+					text_point.Y += text_line_height;
+
+					text_point.Y += text_line_height / 3;
+
+
+				}
+
+//				// draw iris points
+//				for(int j = 0; j < iris_points.Count; ++j)
+//				{
+//					int ms = 1;
+//					OpenCvSharp.Scalar icolor = new OpenCvSharp.Scalar(50, 255, 50);
+//					int oi = j - 20 * Convert.ToInt32(j >= 20);
+//					Point pt1 = iris_points[j];
+//					Point pt2 = iris_points[(oi < 19 ? j : j - 15) + 1];
+//					OpenCvSharp.Point2f cv_pt1 = new OpenCvSharp.Point2f(pt1.x, frame_y_offset + pt1.y);
+//					OpenCvSharp.Point2f cv_pt2 = new OpenCvSharp.Point2f(pt2.x, frame_y_offset + pt2.y);
+//
+//					if(oi < 5)
+//					{
+//						icolor = new OpenCvSharp.Scalar(0, 165, 255);
+//						if(oi == 0)
+//						{
+//							double iradius = Math.Sqrt(Math.Pow(pt1.x - pt2.x, 2) + Math.Pow(pt1.y - pt2.y, 2));
+//							OpenCvSharp.Cv2.Circle(
+//								result,
+//								cv_pt1,
+//								(int) iradius,
+//								icolor,
+//								ms,
+//								OpenCvSharp.LineTypes.AntiAlias);
+//						}
+//					}else
+//					{
+//						OpenCvSharp.Cv2.Line(
+//							result,
+//							cv_pt1,
+//							cv_pt2,
+//							icolor,
+//							ms,
+//							OpenCvSharp.LineTypes.AntiAlias);
+//					}
+//
+//					OpenCvSharp.Cv2.Circle(
+//						result,
+//						cv_pt1,
+//						ms,
+//						color,
+//						-1,
+//						OpenCvSharp.LineTypes.AntiAlias);
+//				}
 			}
 
 			// no - draw the stripe

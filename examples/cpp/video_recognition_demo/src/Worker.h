@@ -73,6 +73,7 @@ private:
 		bool sti_person_id_set;
 		int sti_person_id;
 
+		pbio::ActiveLiveness::ActiveLivenessStatus active_liveness_status;
 
 		bool age_gender_set;
 		pbio::AgeGenderEstimator::AgeGender age_gender;

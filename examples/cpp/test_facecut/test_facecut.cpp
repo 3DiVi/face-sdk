@@ -80,6 +80,7 @@ int main(int argc, char const *argv[])
 				const pbio::RawSample::Point right_eye = samples[i]->getRightEye();
 				const pbio::RawSample::Angles angles = samples[i]->getAngles();
 				const std::vector<pbio::RawSample::Point> all_points = samples[i]->getLandmarks();
+				const std::vector<pbio::RawSample::Point> all_iris_points = samples[i]->getIrisLandmarks();
 
 				// estimate quality
 				const pbio::QualityEstimator::Quality quality = quality_estimator->estimateQuality(*samples[i]);
@@ -97,7 +98,8 @@ int main(int argc, char const *argv[])
 					" left_eye: (" << left_eye.x << "; " << left_eye.y << ")\n" <<
 					" right_eye: (" << right_eye.x << "; " << right_eye.y << ")\n" <<
 					" angles:\n  yaw: " << angles.yaw << "\n  pitch: " << angles.pitch << "\n  roll: " << angles.roll << "\n" <<
-					" all landmarks count: " << all_points.size() << "\n" << std::endl;
+					" all landmarks count: " << all_points.size() << "\n" <<
+					" all iris landmarks count: " << all_iris_points.size() << "\n" << std::endl;
 
 
 				// print quality

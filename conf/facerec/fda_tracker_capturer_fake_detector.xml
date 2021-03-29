@@ -10,6 +10,9 @@
 <fda_good_threshold>0.98</fda_good_threshold>
 <fda_continue_tracking_threshold>0.4</fda_continue_tracking_threshold>
 
+<iris_enabled>0</iris_enabled>
+<iris_config_filepath>conf/facerec/iris_fitter.xml</iris_config_filepath>
+
 
 <fake_detections_cnt>1</fake_detections_cnt>
 

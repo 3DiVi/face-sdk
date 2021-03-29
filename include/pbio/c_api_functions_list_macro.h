@@ -139,6 +139,73 @@ namespace capi {
 
 #define _583e_STRINGISE2(a) _583e_STRINGISE( a )
 
+#define _TDV_ADD_STATIC_PREFIX(a) static_##a
+
+
+// decl suppose to be a macro: decl(rtype, name, typed_args, args, return)
+#define __TDV_FLIST(decl) \
+	\
+	\
+	decl( \
+		void*, \
+		TDVFaceAttributesEstimator_createByConfig, \
+		( \
+			const char* serialisedConfig \
+		), \
+		( \
+			serialisedConfig \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		char*, \
+		TDVProcessingBlock_processSparse, \
+		( \
+			void* block_ptr, \
+			char* serialisedCtx \
+		), \
+		( \
+			block_ptr, \
+			serialisedCtx \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void*, \
+		TDVProcessingBlock_getException, \
+		( \
+			void* block_ptr \
+		), \
+		( \
+			block_ptr \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVProcessingBlock_destroy, \
+		( \
+			void* block_ptr \
+		), \
+		( \
+			block_ptr \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		tdvFreeStr, \
+		( \
+			char* ctx_ptr \
+		), \
+		( \
+			ctx_ptr \
+		), \
+		return )
 
 
 // decl suppose to be a macro: decl(rtype, name, typed_args, args, return)
@@ -888,7 +955,25 @@ namespace capi {
 	\
 	decl( \
 		void, \
-		FaceAttributesEstimator_estimate, \
+		FaceAttributesEstimator_getTaskName, \
+		( \
+			void* face_attributes_estimator, \
+			void* name_task, \
+			pbio::facerec::capi::binary_stream_write_func_type binary_stream_write_func, \
+			void** out_exception \
+		), \
+		( \
+			face_attributes_estimator, \
+			name_task, \
+			binary_stream_write_func, \
+			out_exception \
+		), \
+		) \
+	\
+	\
+	decl( \
+		void, \
+		FaceAttributesEstimator_estimateMaskedFace, \
 		( \
 			void* face_attributes_estimator, \
 			pbio::facerec::RawSampleImpl const* raw_sample, \
@@ -901,6 +986,30 @@ namespace capi {
 			raw_sample, \
 			verdict, \
 			score, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		FaceAttributesEstimator_estimateEyesOpenness, \
+		( \
+			void* face_attributes_estimator, \
+			pbio::facerec::RawSampleImpl const* raw_sample, \
+			int32_t *left_verdict, \
+			int32_t *right_verdict, \
+			float *left_score, \
+			float *right_score, \
+			void** out_exception \
+		), \
+		( \
+			face_attributes_estimator, \
+			raw_sample, \
+			left_verdict, \
+			right_verdict, \
+			left_score, \
+			right_score, \
 			out_exception \
 		), \
 		return ) \
@@ -1762,6 +1871,23 @@ namespace capi {
 	\
 	decl( \
 		void, \
+		RawSample_getIrisLandmarks, \
+		( \
+			void* rawsample, \
+			void* landmarks_floats_vector, \
+			pbio::facerec::capi::assign_floats_vector_func_type assign_floats_vector_func, \
+			void** out_exception \
+		), \
+		( \
+			rawsample, \
+			landmarks_floats_vector, \
+			assign_floats_vector_func, \
+			out_exception \
+		), \
+		) \
+	\
+	decl( \
+		void, \
 		RawSample_getLeftEye, \
 		( \
 			void* rawsample, \
@@ -1829,6 +1955,19 @@ namespace capi {
 	decl( \
 		int32_t, \
 		RawSample_getType, \
+		( \
+			void* rawsample, \
+			void** out_exception \
+		), \
+		( \
+			rawsample, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
+		float, \
+		RawSample_getScore, \
 		( \
 			void* rawsample, \
 			void** out_exception \
@@ -1952,7 +2091,10 @@ namespace capi {
 			void* rawsample, \
 			void* binary_stream, \
 			pbio::facerec::capi::binary_stream_write_func_type binary_stream_write_func, \
+			int32_t *width, \
+			int32_t *height, \
 			int32_t format, \
+			int32_t color_model, \
 			int32_t cut_type, \
 			void** out_exception \
 		), \
@@ -1960,7 +2102,10 @@ namespace capi {
 			rawsample, \
 			binary_stream, \
 			binary_stream_write_func, \
+			width, \
+			height, \
 			format, \
+			color_model, \
 			cut_type, \
 			out_exception \
 		), \

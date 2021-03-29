@@ -30,6 +30,7 @@
 #include "ComplexObject.h"
 #include "DepthLivenessEstimator.h"
 #include "IRLivenessEstimator.h"
+#include "ActiveLiveness.h"
 #include "Liveness2DEstimator.h"
 #include "FaceAttributesEstimator.h"
 #include "EmotionsEstimator.h"
@@ -45,6 +46,7 @@
 #include "VideoWorker.h"
 #include "StructStorage.h"
 #include "Config.h"
+#include "ProcessingBlock.h"
 
 namespace pbio
 {
@@ -592,7 +594,7 @@ public:
 	*/
 	VideoWorker::Ptr createVideoWorker(
 		const pbio::FacerecService::Config video_worker_config,
-		const std::string recognizer_ini_file,
+		const char* recognizer_ini_file,
 		const int streams_count,
 		const int processing_threads_count,
 		const int matching_threads_count) const;
@@ -1068,6 +1070,13 @@ public:
 	FaceAttributesEstimator::Ptr createFaceAttributesEstimator(
 		const std::string ini_file) const;
 
+	//! @cond IGNORED
+
+	ProcessingBlock::Ptr createProcessingBlock(
+		const int block_type,
+		const char* serializedConfig) const;
+
+	//! @endcond
 
 	/**
 		\~English
@@ -1594,7 +1603,7 @@ Recognizer::Ptr FacerecService::createRecognizer(
 inline
 VideoWorker::Ptr FacerecService::createVideoWorker(
 	const pbio::FacerecService::Config video_worker_ini_file,
-	const std::string recognizer_ini_file,
+	const char* recognizer_ini_file,
 	const int streams_count,
 	const int processing_threads_count,
 	const int matching_threads_count) const
@@ -1635,11 +1644,35 @@ VideoWorker::Ptr FacerecService::createVideoWorker(
 	std::vector<double> vw_overridden_values;
 
 	params._video_worker_config.prepare(vw_overridden_keys, vw_overridden_values);
+	std::vector<std::string> extra_over_params;
+
+	if(!params._active_liveness_checks_order.empty()){
+		bool is_unique = true;
+		for (auto it = params._active_liveness_checks_order.begin(); it != params._active_liveness_checks_order.end(); ++it)
+			if (std::find(it + 1, params._active_liveness_checks_order.end(), *it) != params._active_liveness_checks_order.end()) {
+				is_unique = false;
+				break;
+			}
+		if(!is_unique)
+			throw pbio::Error(0x3302330e,
+				"Error 0x3302330e: Set a unique order of `active_liveness_checks_order` for Active Liveness.");
+		for (size_t i = 0; i < params._active_liveness_checks_order.size(); i++){
+			ActiveLiveness::CheckType check = params._active_liveness_checks_order[i];
+			std::string check_str = ActiveLiveness::CheckTypeToString(check);
+			extra_over_params.push_back("active_liveness.check_" + check_str);
+			vw_overridden_keys.push_back(extra_over_params.back().c_str());
+			vw_overridden_values.push_back(-(double)(i+1));
+		}
+	}
+
 
 	if (!params._recognizer_ini_file.empty() && !params._recognizer_config.config_filepath.empty())
 		throw pbio::Error(0xb3fe4d07, "Error: 0xed877a99 You must use either recognizer_config or recognizer_ini_file.");
 
-	pbio::FacerecService::Config recognizer_config = params._recognizer_ini_file.empty() ? params._recognizer_config : pbio::FacerecService::Config(params._recognizer_ini_file);
+	pbio::FacerecService::Config recognizer_config =
+		params._recognizer_ini_file.empty() ?
+			params._recognizer_config :
+			pbio::FacerecService::Config(params._recognizer_ini_file);
 
 	std::vector<char const*> rec_overridden_keys;
 	std::vector<double> rec_overridden_values;
@@ -2005,6 +2038,18 @@ FaceAttributesEstimator::Ptr FacerecService::createFaceAttributesEstimator(
 
 	return FaceAttributesEstimator::Ptr::make(_dll_handle, the_impl);
 }
+
+//! @cond IGNORED
+
+inline
+ProcessingBlock::Ptr FacerecService::createProcessingBlock(
+	const int block_type,
+	const char* serializedConfig) const
+{
+	return ProcessingBlock::Ptr::make(_dll_handle, block_type, serializedConfig);
+}
+
+//! @endcond
 
 inline
 FacerecService::LicenseState FacerecService::getLicenseState() const

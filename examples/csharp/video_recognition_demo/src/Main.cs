@@ -141,15 +141,26 @@ class VideoRecognitionDemo
 			vw_config.overrideParameter("not_found_match_found_callback", 1);
 			vw_config.overrideParameter("downscale_rawsamples_to_preferred_size", 0);
 
+			//ActiveLiveness.CheckType[] checks = new ActiveLiveness.CheckType[3]
+			//{
+			//	ActiveLiveness.CheckType.BLINK,
+			//			ActiveLiveness.CheckType.TURN_RIGHT,
+			//			ActiveLiveness.CheckType.SMILE
+			//};
+
 
 			// create one VideoWorker
 			VideoWorker video_worker =
 				service.createVideoWorker(
-					vw_config,
-					method_config,
-					sources.Count,   // streams_count
-					sources.Count,   // processing_threads_count
-					sources.Count);  // matching_threads_count
+					new VideoWorker.Params()
+						.video_worker_config(vw_config)
+						.recognizer_ini_file(method_config)
+						.streams_count(sources.Count)
+						//.age_gender_estimation_threads_count(sources.Count)
+						//.emotions_estimation_threads_count(sources.Count)
+						//.active_liveness_checks_order(checks)
+						.processing_threads_count(sources.Count)
+						.matching_threads_count(sources.Count));
 
 			// set database
 			video_worker.setDatabase(database.vwElements, Recognizer.SearchAccelerationType.SEARCH_ACCELERATION_1);

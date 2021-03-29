@@ -102,6 +102,7 @@ int main(int argc, char** argv)
 				// get sample info
 				const pbio::RawSample::Rectangle rect = samples[i]->getRectangle();
 				const std::vector<pbio::RawSample::Point> all_points = samples[i]->getLandmarks();
+				const std::vector<pbio::RawSample::Point> all_iris_points = samples[i]->getIrisLandmarks();
 
 				// draw red points
 				for(size_t j = 0; j < all_points.size(); ++j)
@@ -110,6 +111,34 @@ int main(int argc, char** argv)
 						draw,
 						cv::Point2f(all_points[j].x, all_points[j].y),
 						2, cv::Scalar(0, 0, 255), -1);
+				}
+
+
+				// draw iris points
+				for(size_t j = 0; j < all_iris_points.size(); ++j)
+				{
+					float ms = 1;
+					auto color = cv::Scalar(0, 255, 255);
+					int oi = j - 20 * (j >= 20);
+					pbio::RawSample::Point pt1 = all_iris_points[j];
+					pbio::RawSample::Point pt2 = all_iris_points[(oi < 19 ? j : j - 15) + 1];
+
+					if(oi < 5)
+					{
+						if (oi == 0)
+						{
+							double radius = cv::norm(cv::Point2f(pt1.x, pt1.y) - cv::Point2f(pt2.x, pt2.y));
+							cv::circle(draw, cv::Point2f(pt1.x, pt1.y), radius, color, ms);
+						}
+					}else
+						cv::line(
+							draw,
+							cv::Point2f(pt1.x, pt1.y),
+							cv::Point2f(pt2.x, pt2.y),
+							color,
+							ms);
+
+					cv::circle(draw, cv::Point2f(pt1.x, pt1.y), ms, color, -1);
 				}
 
 				// draw green rectangle

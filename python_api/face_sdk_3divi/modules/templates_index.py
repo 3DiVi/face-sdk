@@ -15,6 +15,10 @@ from .wrap_funcs import write_func
 from .complex_object import ComplexObject
 from .template import Template
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup TemplatesIndex
+#  @{
 
 ##
 # \~English

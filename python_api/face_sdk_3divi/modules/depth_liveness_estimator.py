@@ -14,6 +14,10 @@ from .dll_handle import DllHandle
 from .raw_sample import RawSample
 from .depth_map_raw import DepthMapRaw
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup DepthLivenessEstimator
+#  @{
 
 ##
 #  \~English

@@ -40,6 +40,7 @@
 #include "StructStorageFields.h"
 #include "SampleCheckStatus.h"
 #include "Config.h"
+#include "ActiveLiveness.h"
 #include "util693bcd72/util.h"
 
 namespace pbio
@@ -158,6 +159,13 @@ public:
 			\~Russian \brief Задать в секундах длину временного интервала для <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременной идентификации"</a>. \return *this
 		*/
 		def_param_field_693bcd72(Params, float                       , short_time_identification_outdate_time_seconds);
+
+		/**
+			\~English \brief Set the order for checking the active liveness
+			\~Russian \brief Задать порядок для проверки активаного (сценарного) liveness
+		*/
+		def_param_field_693bcd72(Params, std::vector<ActiveLiveness::CheckType> , active_liveness_checks_order);
+
 	};
 
 
@@ -490,6 +498,22 @@ public:
 				(samples_track_emotions.size() == samples.size())
 		*/
 		std::vector<EmotionsEstimator::EstimatedEmotionsVector> samples_track_emotions;
+
+		/**
+			\~English
+			\brief
+				Face active liveness check status.
+				See ActiveLiveness::ActiveLivenessStatus for details.
+				(samples_active_liveness_status.size() == samples.size())
+
+			\~Russian
+			\brief
+				Состояние проверки лица на принадлежность живому человеку
+				посредством сценария.
+				См. также ActiveLiveness::ActiveLivenessStatus.
+				(samples_active_liveness_status.size() == samples.size())
+		*/
+		std::vector<ActiveLiveness::ActiveLivenessStatus> samples_active_liveness_status;
 	};
 
 	/**
@@ -3239,6 +3263,26 @@ void VideoWorker::STrackingCallback(
 				&exception));
 		checkException(exception, *this_vw._dll_handle);
 
+		int32_t const* const samples_track_active_liveness_type = static_cast<int32_t const* const>(
+				this_vw._dll_handle->StructStorage_get_pointer(
+						callback_data,
+						pbio::StructStorageFields::video_worker_active_liveness_type_samples_t,
+						&exception));
+		checkException(exception, *this_vw._dll_handle);
+
+		int32_t const* const samples_track_active_liveness_confirmed = static_cast<int32_t const* const>(
+				this_vw._dll_handle->StructStorage_get_pointer(
+						callback_data,
+						pbio::StructStorageFields::video_worker_active_liveness_confirmed_samples_t,
+						&exception));
+		checkException(exception, *this_vw._dll_handle);
+
+		float const* const samples_track_active_liveness_progress = static_cast<float const* const>(
+				this_vw._dll_handle->StructStorage_get_pointer(
+						callback_data,
+						pbio::StructStorageFields::video_worker_active_liveness_score_samples_t,
+						&exception));
+		checkException(exception, *this_vw._dll_handle);
 
 
 		TrackingCallbackData data;
@@ -3259,6 +3303,7 @@ void VideoWorker::STrackingCallback(
 		data.samples_track_age_gender.resize(samples_count);
 		data.samples_track_emotions_set.resize(samples_count);
 		data.samples_track_emotions.resize(samples_count);
+		data.samples_active_liveness_status.resize(samples_count);
 
 		for(int i = 0, emotions_i = 0; i < samples_count; ++i)
 		{
@@ -3276,6 +3321,10 @@ void VideoWorker::STrackingCallback(
 			data.samples_depth_liveness_confirmed[i] = (DepthLivenessEstimator::Liveness)samples_depth_liveness_confirmed[i];
 
 			data.samples_ir_liveness_confirmed[i]    = (IRLivenessEstimator::Liveness)samples_ir_liveness_confirmed[i];
+
+			data.samples_active_liveness_status[i].check_type     = (ActiveLiveness::CheckType)samples_track_active_liveness_type[i];
+			data.samples_active_liveness_status[i].verdict        = (ActiveLiveness::Liveness)samples_track_active_liveness_confirmed[i];
+			data.samples_active_liveness_status[i].progress_level = samples_track_active_liveness_progress[i];
 
 			data.samples_track_age_gender_set[i]          = samples_track_age_gender_set[i];
 
@@ -3946,6 +3995,7 @@ VideoWorker::Params::Params()
 , _short_time_identification_enabled(false)
 , _short_time_identification_distance_threshold(0)
 , _short_time_identification_outdate_time_seconds(0)
+, _active_liveness_checks_order()
 {
 	// nothing else
 }

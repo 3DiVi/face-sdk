@@ -5,6 +5,10 @@ import cv2
 from ctypes import c_ushort
 from . import get_repr
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup DepthLivenessEstimator
+#  @{
 
 ##
 # \~English

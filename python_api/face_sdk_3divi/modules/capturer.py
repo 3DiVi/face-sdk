@@ -23,6 +23,11 @@ from .raw_image import RawImage
 from .error import Error
 from typing import Union
 
+## @defgroup PythonAPI
+#  @{
+
+## @defgroup Capturer
+#  @{
 
 ##
 #  \~English

@@ -15,6 +15,11 @@ from enum import Enum
 
 from . import get_repr
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup Liveness2DEstimator
+#  @{
+
 
 ##
 #  \~English

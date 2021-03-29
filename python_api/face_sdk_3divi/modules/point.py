@@ -9,6 +9,8 @@ from typing import Union
 from .error import Error
 from . import get_repr
 
+## @defgroup PythonAPI
+#  @{
 
 ##
 # \~English

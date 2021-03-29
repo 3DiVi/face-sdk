@@ -1,3 +1,10 @@
+##
+#  \~English
+#    \brief Python interface.
+#  \~Russian
+#    \brief Python интерфейс.
+
+
 from .modules.config import Config
 from .modules.facerec_service import FacerecService
 from .modules.capturer import Capturer

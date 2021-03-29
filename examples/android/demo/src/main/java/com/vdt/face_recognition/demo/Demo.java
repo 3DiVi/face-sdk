@@ -50,6 +50,7 @@ public class Demo{
 	private FaceQualityEstimator faceQualityEstimator = null;
 	private Liveness2DEstimator liveness2dEstimator = null;
 	private FaceAttributesEstimator faceMaskEstimator = null;
+	private FaceAttributesEstimator eyesOpennessEstimator = null;
 
 	private boolean flag_rectangle = true;
 	private boolean flag_angles = true;
@@ -61,6 +62,7 @@ public class Demo{
 	private boolean flag_angles_vectors = true;
 	private boolean flag_emotions = false;
 	private boolean flag_face_mask = false;
+	private boolean flag_eyes_openness = false;
 
 	private RawSample.FaceCutType faceCutType = null;
 
@@ -72,12 +74,14 @@ public class Demo{
 
 		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer_mesh.xml");
 		capturer_conf.overrideParameter("downscale_rawsamples_to_preferred_size", 0);
+		capturer_conf.overrideParameter("iris_enabled", 1);
 		capturer = service.createCapturer(capturer_conf);
 		qualityEstimator = service.createQualityEstimator("quality_estimator_iso.xml");
 		ageGenderEstimator = service.createAgeGenderEstimator("age_gender_estimator.xml");
 		emotionsEstimator = service.createEmotionsEstimator("emotions_estimator.xml");
 		faceQualityEstimator = service.createFaceQualityEstimator("face_quality_estimator.xml");
 		faceMaskEstimator = service.createFaceAttributesEstimator("face_mask_estimator.xml");
+		eyesOpennessEstimator = service.createFaceAttributesEstimator("eyes_openness_estimator.xml");
 	}
 
 
@@ -91,6 +95,7 @@ public class Demo{
 
 		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer_mesh.xml");
 		capturer_conf.overrideParameter("downscale_rawsamples_to_preferred_size", 0);
+		capturer_conf.overrideParameter("iris_enabled", 1);
 		capturer = service.createCapturer(capturer_conf);
 	}
 
@@ -198,6 +203,17 @@ public class Demo{
 			text += "masked: " + (attr.verdict ? "true" : "false") + " - " + score_str + "\n";
 		}
 
+		// face attribute (eyes_openness)
+		if (flag_eyes_openness)
+		{
+			FaceAttributesEstimator.Attribute attr = eyesOpennessEstimator.estimate(sample);
+			String eye_left_score_str = String.format("%.03f", attr.left_eye_state.score);
+			String eye_right_score_str = String.format("%.03f", attr.right_eye_state.score);
+			text += "Eyes openness \n";
+			text += "  left eye opened: \n     " + (attr.left_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false") + "  " + eye_left_score_str + "\n";
+			text += "  right eye opened: \n     " + (attr.right_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false") + "  " + eye_right_score_str + "\n";
+		}
+
 		//crops
 		if (faceCutType != null){
 			Paint bitmap_paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -228,6 +244,7 @@ public class Demo{
 		//right eye - yellow
 		if (flag_points){
 			Vector<Point> points = sample.getLandmarks();
+			Vector<Point> iris_points = sample.getIrisLandmarks();
 			Point leftEye = sample.getLeftEye();
 			Point rightEye = sample.getRightEye();
 			paint.setStrokeWidth(3);
@@ -240,6 +257,34 @@ public class Demo{
 			canvas.drawCircle(leftEye.x, leftEye.y, 3, paint);
 			paint.setColor(0xffffff00);
 			canvas.drawCircle(rightEye.x, rightEye.y, 3, paint);
+
+
+			for(int j = 0; j < iris_points.size(); ++j)
+			{
+				int ms = 1;
+				int color = 0xffffff00;
+				int oi = j - 20 * (j >= 20 ? 1 : 0);
+				Point pt1 = iris_points.get(j);
+				Point pt2 = iris_points.get((oi < 19 ? j : j - 15) + 1);
+
+				if(oi < 5)
+				{
+					color = 0xffffa500;
+					if(oi == 0)
+					{
+						double radius = Math.sqrt((pt1.x - pt2.x)*(pt1.x - pt2.x) + (pt1.y - pt2.y)*(pt1.y - pt2.y));
+						paint.setColor(color);
+						canvas.drawCircle(pt1.x, pt1.y, (int) radius, paint);
+					}
+				}else
+				{
+					paint.setStrokeWidth(ms);
+					paint.setColor(color);
+					canvas.drawLine(pt1.x, pt1.y, pt2.x, pt2.y, paint);
+				}
+				paint.setColor(color);
+				canvas.drawCircle(pt1.x, pt1.y, ms, paint);
+			}
 		}
 
 		//face quality
@@ -344,7 +389,7 @@ public class Demo{
 			flag_angles_vectors = flags[7];
 			flag_emotions = flags[8];
 			flag_face_mask = flags[9];
-
+			flag_eyes_openness = flags[10];
 		}
 
 		faceCutType = (faceCutTypeId >0) ? RawSample.FaceCutType.values()[faceCutTypeId-1] : null;
@@ -363,7 +408,8 @@ public class Demo{
 			flag_face_quality,
 			flag_angles_vectors,
 			flag_emotions,
-			flag_face_mask
+			flag_face_mask,
+			flag_eyes_openness
 		};
 
 		return flags;

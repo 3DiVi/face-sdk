@@ -5,6 +5,9 @@
 
 <fda_file>share/fda/fda0017.3500.enc</fda_file>
 
+<iris_enabled>0</iris_enabled>
+<iris_config_filepath>conf/facerec/iris_fitter.xml</iris_config_filepath>
+
 <detector_sub_type>blf</detector_sub_type>
 <num_threads>1</num_threads>
 <score_threshold>0.67</score_threshold>

@@ -91,6 +91,36 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
+    def TDVFaceAttributesEstimator_createByConfig(self, *args, **kwargs):
+        func = self.__dll_handle['TDVFaceAttributesEstimator_createByConfig']
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def TDVProcessingBlock_destroy(self, *args, **kwargs):
+        func = self.__dll_handle['TDVProcessingBlock_destroy']
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def TDVProcessingBlock_processSparse(self, *args, **kwargs):
+        func = self.__dll_handle['TDVProcessingBlock_processSparse']
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def TDVProcessingBlock_getException(self, *args, **kwargs):
+        func = self.__dll_handle['TDVProcessingBlock_getException']
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def tdvFreeStr(self, *args, **kwargs):
+        func = self.__dll_handle['tdvFreeStr']
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
     def FacerecService_createRecognizer2(self, *args, **kwargs):
         func = self.__dll_handle['{}FacerecService_createRecognizer2'.format(self.__namespace)]
         func.restype = c_void_p
@@ -172,6 +202,9 @@ class DllHandle:
     def RawSample_getLandmarks(self, *args, **kwargs):
         self.__dll_handle['{}RawSample_getLandmarks'.format(self.__namespace)](*args, **kwargs)
 
+    def RawSample_getIrisLandmarks(self, *args, **kwargs):
+        self.__dll_handle['{}RawSample_getIrisLandmarks'.format(self.__namespace)](*args, **kwargs)
+
     def RawSample_getLeftEye(self, *args, **kwargs):
         self.__dll_handle['{}RawSample_getLeftEye'.format(self.__namespace)](*args, **kwargs)
 
@@ -220,6 +253,12 @@ class DllHandle:
     def RawSample_hasOriginalImage(self, *args, **kwargs):
         func = self.__dll_handle['{}RawSample_hasOriginalImage'.format(self.__namespace)]
         func.restype = c_int32
+
+        return func(*args, **kwargs)
+
+    def RawSample_getScore(self, *args, **kwargs):
+        func = self.__dll_handle['{}RawSample_getScore'.format(self.__namespace)]
+        func.restype = c_float
 
         return func(*args, **kwargs)
 

@@ -12,6 +12,10 @@ from .complex_object import ComplexObject
 from .dll_handle import DllHandle
 from .raw_sample import RawSample
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup FaceQualityEstimator
+#  @{
 
 ##
 # \~English

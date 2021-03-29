@@ -37,11 +37,11 @@ class Worker
 	// one face liveness estimator
 	Liveness2DEstimator _liveness_2d_estimator;
 
-	// one face attributes estimator
-	FaceAttributesEstimator _face_mask_estimator;
+	// two face attributes estimators
+	FaceAttributesEstimator _face_mask_estimator, _eyes_openness_estimator;
 
 	// flags for enable / disable drawing and comuting of the features
-	public const int flags_count = 13;
+	public const int flags_count = 14;
 
 	bool _flag_positions;
 	bool _flag_angles;
@@ -56,6 +56,7 @@ class Worker
 	bool _flag_cutting_token;
 	bool _flag_points;
 	bool _flag_masked_face;
+	bool _flag_eyes_openness;
 
 
 	public Worker(string facerec_conf_dir, string capturer_conf, string license_dir)
@@ -64,7 +65,8 @@ class Worker
 		Console.WriteLine("Library version: {0}\n", _service.getVersion());
 		_tracker = _service.createCapturer(
 			(new FacerecService.Config(capturer_conf))
-				.overrideParameter("downscale_rawsamples_to_preferred_size", 0));
+				.overrideParameter("downscale_rawsamples_to_preferred_size", 0)
+				.overrideParameter("iris_enabled", 1));
 		_quality_estimator = _service.createQualityEstimator("quality_estimator_iso.xml");
 		_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator.xml");
 		//_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator_v2.xml");
@@ -72,6 +74,7 @@ class Worker
 		_face_quality_estimator = _service.createFaceQualityEstimator("face_quality_estimator.xml");
 		_liveness_2d_estimator =  _service.createLiveness2DEstimator("liveness_2d_estimator_v2.xml");
 		_face_mask_estimator = _service.createFaceAttributesEstimator("face_mask_estimator.xml");
+		_eyes_openness_estimator = _service.createFaceAttributesEstimator("eyes_openness_estimator.xml");
 
 		_flag_positions = true;
 		_flag_angles = true;
@@ -86,6 +89,7 @@ class Worker
 		_flag_cutting_token = false;
 		_flag_points = true;
 		_flag_masked_face = false;
+		_flag_eyes_openness = false;
 
 		Worker.Instance = this;
 	}
@@ -107,6 +111,7 @@ class Worker
 			case 10: return _flag_angles_vectors;
 			case 11: return _flag_emotions;
 			case 12: return _flag_masked_face;
+			case 13: return _flag_eyes_openness;
 		}
 
 		return _flag_points;
@@ -129,6 +134,7 @@ class Worker
 			case 10: _flag_angles_vectors = value; return;
 			case 11: _flag_emotions       = value; return;
 			case 12: _flag_masked_face    = value; return;
+			case 13: _flag_eyes_openness  = value; return;
 		}
 	}
 
@@ -149,6 +155,7 @@ class Worker
 			case 10: return "angles vectors";
 			case 11: return "emotions";
 			case 12: return "face mask";
+			case 13: return "eyes_openness";
 		}
 
 		return "";
@@ -240,6 +247,7 @@ class Worker
 			if(_flag_points)
 			{
 				List<Point> points = sample.getLandmarks();
+				List<Point> iris_points = sample.getIrisLandmarks();
 
 				for(int j = -2; j < points.Count; ++j)
 				{
@@ -262,6 +270,51 @@ class Worker
 						draw_image,
 						new OpenCvSharp.Point2f(p.x, p.y),
 						j < 0 ? 4 : 2,
+						color,
+						-1,
+						OpenCvSharp.LineTypes.AntiAlias);
+				}
+
+				// draw iris points
+				for(int j = 0; j < iris_points.Count; ++j)
+				{
+					int ms = 1;
+					OpenCvSharp.Scalar color = new OpenCvSharp.Scalar(0, 255, 255);
+					int oi = j - 20 * Convert.ToInt32(j >= 20);
+					Point pt1 = iris_points[j];
+					Point pt2 = iris_points[(oi < 19 ? j : j - 15) + 1];
+					OpenCvSharp.Point2f cv_pt1 = new OpenCvSharp.Point2f(pt1.x, pt1.y);
+					OpenCvSharp.Point2f cv_pt2 = new OpenCvSharp.Point2f(pt2.x, pt2.y);
+
+					if(oi < 5)
+					{
+						color = new OpenCvSharp.Scalar(0, 165, 255);
+						if(oi == 0)
+						{
+							double radius = Math.Sqrt(Math.Pow(pt1.x - pt2.x, 2) + Math.Pow(pt1.y - pt2.y, 2));
+							OpenCvSharp.Cv2.Circle(
+								draw_image,
+								cv_pt1,
+								(int) radius,
+								color,
+								ms,
+								OpenCvSharp.LineTypes.AntiAlias);
+						}
+					}else
+					{
+						OpenCvSharp.Cv2.Line(
+							draw_image,
+							cv_pt1,
+							cv_pt2,
+							color,
+							ms,
+							OpenCvSharp.LineTypes.AntiAlias);
+					}
+
+					OpenCvSharp.Cv2.Circle(
+						draw_image,
+						cv_pt1,
+						ms,
 						color,
 						-1,
 						OpenCvSharp.LineTypes.AntiAlias);
@@ -480,6 +533,25 @@ class Worker
 				puttext(
 					draw_image,
 					"masked: " + (attr.verdict ? "true - " : "false - ") + score_str,
+					text_point);
+				text_point.Y += text_line_height;
+				text_point.Y += text_line_height / 3;
+			}
+
+			// draw face attribute (eyes_openness)
+			if(_flag_eyes_openness) {
+				FaceAttributesEstimator.Attribute attr = _eyes_openness_estimator.estimate(sample);
+				string left_score_str = Math.Round(attr.left_eye_state.score, 3).ToString();
+				string right_score_str = Math.Round(attr.right_eye_state.score, 3).ToString();
+				puttext(
+					draw_image,
+					"left eye: " + (attr.left_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false") + " " + left_score_str,
+					text_point);
+				text_point.Y += text_line_height;
+				text_point.Y += text_line_height / 3;
+				puttext(
+					draw_image,
+					"right eye: " + (attr.right_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false") + " " + right_score_str,
 					text_point);
 				text_point.Y += text_line_height;
 				text_point.Y += text_line_height / 3;

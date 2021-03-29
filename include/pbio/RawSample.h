@@ -231,6 +231,24 @@ public:
 	/**
 		\~English
 		\brief
+			Get the characteristic points of the eyes. Only frontal samples. Thread-safe.
+
+		\return
+			The vector of the positions of the points of the pupils and the boundaries of the eyelids in the original image.
+
+		\~Russian
+		\brief
+			Получить характерные точки глаз. Только для фронтальных образцов. Потокобезопасный.
+
+		\return
+			Вектор позиций точек зрачков и контуров век на оригинальном изображении.
+	*/
+	std::vector<Point> getIrisLandmarks() const;
+
+
+	/**
+		\~English
+		\brief
 			Get a point of the left eye. Only frontal samples. Thread-safe.
 
 		\return
@@ -354,6 +372,29 @@ public:
 	/**
 		\~English
 		\brief
+			Get the score of the detected face (for samples made with supported single-shot Capturers).
+			Thread-safe.
+
+		\return
+			One if this RawSample was made with an unsupported detector,
+			\n
+			otherwise - a number in the range [0 ... 1].
+
+		\~Russian
+		\brief
+			Получить уверенность детектирования лица
+			(для образцов, полученных с помощью поддерживаемого Capturer). Потокобезопасный.
+
+		\return
+			Один, если образец был получен через неподдерживаемый Capturer,
+			\n
+			иначе - число в диапазоне [0 ... 1].
+	*/
+	float getScore() const;
+
+	/**
+		\~English
+		\brief
 			Get an original image.
 			Throws an exception if a sample doesn’t contain an original image (check with RawSample::hasOriginalImage first).
 			Thread-safe.
@@ -469,6 +510,36 @@ public:
 	void cutFaceImage(
 		std::ostream &binary_stream,
 		ImageFormat format,
+		FaceCutType cut_type) const;
+
+
+	/**
+		\~English
+		\brief
+			Crop face in RawImage format (with raw pixels). Thread-safe.
+
+		\param[in]  color_model
+			Image color model.
+
+		\param[in]  cut_type
+			Face cropping types.
+
+		\return  RawImage with cropped face
+
+		\~Russian
+		\brief
+			Обрезать лицо и выдать в формате RawImage (с декодированными пикселями). Потокобезопасный.
+
+		\param[in]  color_model
+			Цветовая модель изображения.
+
+		\param[in]  cut_type
+			Тип обрезки.
+
+		\return  RawImage c кропом лица
+	*/
+	RawImage cutFaceRawImage(
+		RawImage::Format color_model,
 		FaceCutType cut_type) const;
 	
 	/**
@@ -857,6 +928,34 @@ std::vector<RawSample::Point> RawSample::getLandmarks() const
 
 
 inline
+std::vector<RawSample::Point> RawSample::getIrisLandmarks() const
+{
+	std::vector<float> coordinates;
+
+	void* exception = NULL;
+
+	_dll_handle->RawSample_getIrisLandmarks(
+		_impl,
+		&coordinates,
+		pbio::stl_wraps::assign_floats_vector_func,
+		&exception);
+
+	checkException(exception, *_dll_handle);
+
+	std::vector<Point> points(coordinates.size() / 3);
+
+	for(size_t i = 0; i < points.size(); ++i)
+	{
+		points[i].x = coordinates[i * 3 + 0];
+		points[i].y = coordinates[i * 3 + 1];
+		points[i].z = coordinates[i * 3 + 2];
+	}
+
+	return points;
+}
+
+
+inline
 RawSample::Point RawSample::getLeftEye() const
 {
 	Point p;
@@ -994,6 +1093,42 @@ void RawSample::cutFaceImage(
 }
 
 inline
+RawImage RawSample::cutFaceRawImage(
+	RawImage::Format color_model,
+	FaceCutType cut_type) const
+{
+	int32_t width, height;
+	std::ostringstream stream;
+	pbio::stl_wraps::WrapOStreamImpl binary_stream_wrap(stream);
+
+	void* exception = NULL;
+
+	_dll_handle->RawSample_cutFaceImage(
+		_impl,
+		&binary_stream_wrap,
+		pbio::stl_wraps::WrapOStream::write_func,
+		&width,
+		&height,
+		-1,
+		int(color_model),
+		int(cut_type),
+		&exception);
+
+	checkException(exception, *_dll_handle);
+
+	const std::string s_buffer(stream.str());
+	const std::vector<unsigned char> buffer(s_buffer.begin(), s_buffer.end());
+
+	pbio::RawImage result(
+		width,
+		height,
+		color_model,
+		buffer.data());
+
+	return result;
+}
+
+inline
 void RawSample::cutFaceImage(
 	pbio::stl_wraps::WrapOStream &binary_stream,
 	ImageFormat format,
@@ -1001,11 +1136,16 @@ void RawSample::cutFaceImage(
 {
 	void* exception = NULL;
 
+	int32_t w, h;
+
 	_dll_handle->RawSample_cutFaceImage(
 		_impl,
 		&binary_stream,
 		pbio::stl_wraps::WrapOStream::write_func,
+		&w,
+		&h,
 		int(format),
+		-1,
 		int(cut_type),
 		&exception);
 
@@ -1102,6 +1242,21 @@ bool RawSample::hasOriginalImage() const
 	checkException(exception, *_dll_handle);
 
 	return result;
+}
+
+inline
+float RawSample::getScore() const
+{
+	void* exception = NULL;
+
+	const float result = _dll_handle->RawSample_getScore(
+			_impl,
+			&exception);
+
+	checkException(exception, *_dll_handle);
+
+	return result;
+
 }
 
 

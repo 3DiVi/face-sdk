@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	>
+
+
+
+<LinearLayout
+	android:id="@+id/authSurfaceViewLL"
+	android:layout_width="match_parent"
+	android:layout_height="0dp"
+	android:keepScreenOn="true"
+	android:layout_weight="1"
+	android:gravity="center"
+	>
+
+	<view
+		class="com.vdt.face_recognition.telpo_liveness_video_recognition.AuthActivity$DrawingSurfaceView"
+		android:id="@+id/authSurfaceView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:keepScreenOn="true"
+		/>
+
+</LinearLayout>
+
+<LinearLayout
+	android:layout_width="match_parent"
+	android:layout_height="0dp"
+	android:layout_weight="1"
+	android:orientation="vertical"
+	>
+
+
+	<TextView
+		android:id="@+id/authFaceProblemText"
+		android:text="initializing face recognition"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		/>
+
+
+	<LinearLayout
+		android:id="@+id/authProgressLL"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="15"
+		android:gravity="center"
+		>
+
+		<ProgressBar
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			/>
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/authAuthenticationLL"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="15"
+		android:orientation="vertical"
+		android:visibility="gone"
+		>
+
+		<TextView
+			android:id="@+id/authDBStatus"
+			android:text=""
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			/>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="6"
+			android:orientation="horizontal"
+			>
+
+			<TextView
+				android:layout_height="match_parent"
+				android:layout_width="0dp"
+				android:layout_weight="0.3"
+				android:gravity="center"
+				android:text="live"
+				/>
+
+			<ImageView
+				android:id="@+id/authVideoSample1"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				/>
+			<ImageView
+				android:id="@+id/authVideoSample2"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				/>
+			<ImageView
+				android:id="@+id/authVideoSample3"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				/>
+			<ImageView
+				android:id="@+id/authVideoSample4"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="6"
+			android:orientation="horizontal"
+			>
+
+			<TextView
+				android:layout_height="match_parent"
+				android:layout_width="0dp"
+				android:layout_weight="0.3"
+				android:gravity="center"
+				android:text="db"
+				/>
+
+			<RelativeLayout
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				>
+				<ImageView
+					android:id="@+id/authDBSample1"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_centerInParent="true"
+					/>
+
+				<TextView
+					android:id="@+id/authDBSample1Name"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_alignParentBottom="true"
+					android:background="#60000000"
+					android:textColor="#FFFFFFFF"
+					android:gravity="center"
+					android:visibility="invisible"
+					/>
+			</RelativeLayout>
+
+			<RelativeLayout
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				>
+				<ImageView
+					android:id="@+id/authDBSample2"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_centerInParent="true"
+					/>
+
+				<TextView
+					android:id="@+id/authDBSample2Name"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_alignParentBottom="true"
+					android:background="#60000000"
+					android:textColor="#FFFFFFFF"
+					android:gravity="center"
+					android:visibility="invisible"
+					/>
+			</RelativeLayout>
+
+			<RelativeLayout
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				>
+				<ImageView
+					android:id="@+id/authDBSample3"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_centerInParent="true"
+					/>
+
+				<TextView
+					android:id="@+id/authDBSample3Name"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_alignParentBottom="true"
+					android:background="#60000000"
+					android:textColor="#FFFFFFFF"
+					android:gravity="center"
+					android:visibility="invisible"
+					/>
+			</RelativeLayout>
+
+			<RelativeLayout
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				>
+				<ImageView
+					android:id="@+id/authDBSample4"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_centerInParent="true"
+					/>
+
+				<TextView
+					android:id="@+id/authDBSample4Name"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_alignParentBottom="true"
+					android:background="#60000000"
+					android:textColor="#FFFFFFFF"
+					android:gravity="center"
+					android:visibility="invisible"
+					/>
+			</RelativeLayout>
+
+
+			<RelativeLayout
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				>
+				<ImageView
+					android:id="@+id/Temperature"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_centerInParent="true"
+					/>
+			</RelativeLayout>
+
+
+		</LinearLayout>
+
+		<Button
+			android:id="@+id/authRegistrationModeButton"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:text="register new"
+			android:layout_weight="2"
+		/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/authRegistrationLL"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="15"
+		android:orientation="horizontal"
+		android:visibility="gone"
+		>
+
+		<ImageView
+			android:id="@+id/authRegistrationImageView"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			/>
+
+		<LinearLayout
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="2"
+			android:orientation="vertical"
+			>
+
+			<TextView
+				android:id="@+id/authRegistrationStatus"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="9"
+				android:text="Invalid name ''"
+				/>
+
+			<TextView
+				android:text="Name"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="2"
+				/>
+
+			<EditText
+				android:id="@+id/authRegistrationNameEditText"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:inputType="text"
+				android:layout_weight="2"
+				/>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="2"
+				android:orientation="horizontal"
+				>
+
+				<Button
+					android:id="@+id/authRegisterOkButton"
+					android:layout_height="match_parent"
+					android:layout_width="0dp"
+					android:layout_weight="2"
+					android:text="ok"
+				/>
+
+				<Button
+					android:id="@+id/authRegisterResetButton"
+					android:layout_height="match_parent"
+					android:layout_width="0dp"
+					android:layout_weight="2"
+					android:text="reset"
+				/>
+
+				<Button
+					android:id="@+id/authRegisterCancelButton"
+					android:layout_height="match_parent"
+					android:layout_width="0dp"
+					android:layout_weight="2"
+					android:text="cancel"
+				/>
+			</LinearLayout>
+
+		</LinearLayout>
+
+	</LinearLayout>
+
+
+	<LinearLayout
+		android:layout_height="0dp"
+		android:layout_width="match_parent"
+		android:layout_weight="2"
+		android:orientation="horizontal"
+		>
+		<Button
+			android:id="@+id/authQuitButton"
+			android:layout_height="match_parent"
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:text="quit"
+		/>
+
+		<Button
+			android:id="@+id/authAboutButton"
+			android:layout_height="match_parent"
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:text="about"
+		/>
+	</LinearLayout>
+
+</LinearLayout>
+
+
+</LinearLayout>

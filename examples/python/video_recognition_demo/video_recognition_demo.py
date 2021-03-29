@@ -2,7 +2,7 @@ import argparse
 from sys import platform
 
 from face_sdk_3divi import FacerecService, Config
-from face_sdk_3divi.modules import video_worker
+from face_sdk_3divi.modules import video_worker, active_liveness
 
 from src import OpenCVSource, ImageAndDepth, Database, Mutex, Worker
 
@@ -75,6 +75,11 @@ def main():
         #####
         vw_params.age_gender_estimation_threads_count = len(sources)
         vw_params.emotions_estimation_threads_count = len(sources)
+        #####
+        # vw_params.active_liveness_checks_order = [
+        #     active_liveness.CheckType.SMILE,
+        #     active_liveness.CheckType.TURN_RIGHT,
+        #     active_liveness.CheckType.TURN_LEFT]
         #####
 
         vw = service.create_video_worker(vw_params)

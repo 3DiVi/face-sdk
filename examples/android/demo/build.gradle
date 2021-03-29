@@ -53,6 +53,7 @@ android {
                 "share/age_second/**",
                 "share/liveness_2d_v2/**",
                 "share/faceattributes/**",
+                "share/iris/**",
                 "license/**"
             )
         }

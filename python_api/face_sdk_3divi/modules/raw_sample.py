@@ -9,14 +9,20 @@ from ctypes import c_void_p, py_object, c_float, byref, c_int, c_double, c_int32
 from io import BytesIO
 from typing import List
 from enum import IntEnum
+import numpy as np
 
 from .wrap_funcs import assign_floats_vector_func, write_func
 from .exception_check import check_exception, make_exception
 from .complex_object import ComplexObject
 from .dll_handle import DllHandle
 from .point import Point
+from .raw_image import Format, RawImage
 from . import get_repr
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup RawSample
+#  @{
 
 ##
 # \~English
@@ -285,6 +291,38 @@ class RawSample(ComplexObject):
         return points
 
     ##
+    # \~English
+    #    \brief Get the characteristic points of the eyes. Only frontal samples. Thread-safe.
+    #
+    #    \return The vector of the positions of the points of the pupils and the boundaries of the eyelids in the original image.
+    #
+    # \~Russian
+    #    \brief Получить характерные точки глаз. Только для фронтальных образцов. Потокобезопасный.
+    #
+    #    \return Вектор позиций точек зрачков и контуров век на оригинальном изображении.
+    def get_iris_landmarks(self) -> List[Point]:
+        coordinates = list()
+
+        exception = make_exception()
+
+        self._dll_handle.RawSample_getIrisLandmarks(
+            self._impl,
+            py_object(coordinates),
+            assign_floats_vector_func,
+            exception)
+
+        check_exception(exception, self._dll_handle)
+
+        points = list()
+
+        for i in range(int(len(coordinates) / DIMENSIONS_NUMBER)):
+            points.append(Point(coordinates[i * DIMENSIONS_NUMBER + 0],
+                                coordinates[i * DIMENSIONS_NUMBER + 1],
+                                coordinates[i * DIMENSIONS_NUMBER + 2]))
+
+        return points
+
+    ##
     #  \~English
     #     \brief Get a face orientation. Only frontal samples. Thread-safe.
     #     \return Face orientation angles in degrees.
@@ -329,6 +367,29 @@ class RawSample(ComplexObject):
         exception = make_exception()
 
         result = self._dll_handle.RawSample_hasOriginalImage(
+            self._impl,
+            exception)
+
+        check_exception(exception, self._dll_handle)
+
+        return result
+
+    ##
+    #  \~English
+    #  \brief Get the score of the detected face (for samples made with supported single-shot Capturers). Thread-safe.
+    #
+    #    \return One if this RawSample was made with an unsupported detector,
+    #            otherwise - a number in the range [0 ... 1].
+    #
+    #    \~Russian
+    #    \brief Получить уверенность детектирования лица (для образцов, полученных с помощью поддерживаемого Capturer).
+    #           Потокобезопасный.
+    #
+    #    \return Один, если образец был получен через неподдерживаемый Capturer, иначе - число в диапазоне [0 ... 1].
+    def get_score(self) -> float:
+        exception = make_exception()
+
+        result = self._dll_handle.RawSample_getScore(
             self._impl,
             exception)
 
@@ -435,17 +496,73 @@ class RawSample(ComplexObject):
     def cut_face_image(self, binary_stream: BytesIO,
                        image_format: ImageFormat = ImageFormat.IMAGE_FORMAT_JPG,
                        cut_type: FaceCutType = FaceCutType.FACE_CUT_BASE):
+        width = c_int()
+        height = c_int()
+
         exception = make_exception()
         self._dll_handle.RawSample_cutFaceImage(
             self._impl,
             py_object(binary_stream),
             write_func,
+            byref(width),
+            byref(height),
             c_int32(image_format.value),
+            c_int32(-1),
             c_int32(cut_type.value),
-            exception
-        )
-
+            exception)
         check_exception(exception, self._dll_handle)
+
+    ##
+    # \~English
+    #    \brief Crop face in RawImage format (with raw pixels). Thread-safe.
+    #
+    #    \param[in]  color_model
+    #      Image color model.
+    #
+    #    \param[in]  cut_type
+    #      Face cropping types.
+    #
+    #    \return  RawImage with cropped face
+    #
+    # \~Russian
+    #    \brief Обрезать лицо и выдать в формате RawImage (с декодированными пикселями). Потокобезопасный.
+    #
+    #    \param[in]  color_model
+    #      Цветовая модель изображения.
+    #
+    #    \param[in]  cut_type
+    #      Тип обрезки.
+    #
+    #    \return  RawImage c кропом лица
+    def cut_face_raw_image(self, color_model: Format,
+                           cut_type: FaceCutType = FaceCutType.FACE_CUT_BASE):
+        binary_stream = BytesIO()
+
+        width = c_int()
+        height = c_int()
+
+        exception = make_exception()
+        self._dll_handle.RawSample_cutFaceImage(
+            self._impl,
+            py_object(binary_stream),
+            write_func,
+            byref(width),
+            byref(height),
+            c_int32(-1),
+            c_int32(color_model.value),
+            c_int32(cut_type.value),
+            exception)
+        check_exception(exception, self._dll_handle)
+
+        binary_stream.seek(0)
+        result = RawImage(
+                    width.value,
+                    height.value,
+                    color_model.value,
+                    binary_stream.read())
+        binary_stream.close()
+
+        return result
 
     ##
     #  \~English

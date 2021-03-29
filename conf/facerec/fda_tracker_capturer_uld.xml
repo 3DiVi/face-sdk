@@ -5,6 +5,9 @@
 
 <fda_file>share/fda/fda0017.3500.enc</fda_file>
 
+<iris_enabled>0</iris_enabled>
+<iris_config_filepath>conf/facerec/iris_fitter.xml</iris_config_filepath>
+
 <detector_sub_type>uld</detector_sub_type>
 <min_size>150</min_size>
 <max_size>10000</max_size>

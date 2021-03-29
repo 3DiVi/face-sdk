@@ -31,6 +31,7 @@
 		rtype _583e_ADD_NAMESPACE(name) typed_args;
 
 	__583e_FLIST(__583e_STATIC_DECL)
+	__TDV_FLIST(__583e_STATIC_DECL)
 
 // with __STATIC_LIBFACEREC_BUILD__
 ///////
@@ -64,6 +65,7 @@ public:
 	DllHandle() :
 		_placeholder(0)
 		__583e_FLIST(__583e_STATIC_F_INIT)
+		__TDV_FLIST(__583e_STATIC_F_INIT)
 	{
 		// nothing else
 	}
@@ -79,6 +81,9 @@ public:
 	#define __583e_SHARED_F_INIT(rtype, name, typed_args, args, return) \
 		, name( (FuncType_##name) getSymbol( _583e_STR_ADD_NAMESPACE(name) ) )
 
+	#define __TDV_SHARED_F_INIT(rtype, name, typed_args, args, return) \
+		, name( (FuncType_##name) getSymbol( _583e_STRINGISE2(name) ) )
+
 	DllHandle(const char* const dll_path) :
 		_dll_path(dll_path),
 #ifdef _WIN32
@@ -86,6 +91,7 @@ public:
 #endif
 		_dll( loadDll(dll_path) )
 		__583e_FLIST(__583e_SHARED_F_INIT)
+		__TDV_FLIST(__TDV_SHARED_F_INIT)
 	{
 		// nothig else
 	}
@@ -206,7 +212,12 @@ public:
 		typedef rtype (*FuncType_##name) typed_args; \
 		const FuncType_##name name;
 
+	#define __TDV_F_FIELD_DECL(rtype, name, typed_args, args, return) \
+		typedef rtype (*FuncType_##name) typed_args; \
+		const FuncType_##name name;
+
 	__583e_FLIST(__583e_F_FIELD_DECL)
+	__TDV_FLIST(__TDV_F_FIELD_DECL)
 
 };
 

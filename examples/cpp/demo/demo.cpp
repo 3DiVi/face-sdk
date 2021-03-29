@@ -44,12 +44,15 @@ private:
 	// one face quality estimator
 	const pbio::FaceQualityEstimator::Ptr _face_quality_estimator;
 
-	// one face attributes estimator
-	pbio::FaceAttributesEstimator::Ptr _face_attributes_estimator;
+	// masked_face face attributes estimator
+	pbio::FaceAttributesEstimator::Ptr _face_attributes_estimator_masked_face;
+
+	// eye_openness face attributes estimator
+	pbio::FaceAttributesEstimator::Ptr _face_attributes_estimator_eye_openness;
 
 
 	// flags for enable / disable drawing and comuting of the features
-	static const int flags_count = 13;
+	static const int flags_count = 14;
 
 	bool _flag_positions;
 	bool _flag_angles;
@@ -64,6 +67,7 @@ private:
 	bool _flag_cutting_token;
 	bool _flag_points;
 	bool _flag_masked_face;
+	bool _flag_eyes_openness;
 
 	// liveness estimator
 	pbio::Liveness2DEstimator::Ptr liveness2d;
@@ -195,7 +199,8 @@ _service(service),
 _tracker(
 	_service->createCapturer(
 		pbio::FacerecService::Config(capturer_conf)
-			.overrideParameter("downscale_rawsamples_to_preferred_size", 0))),
+			.overrideParameter("downscale_rawsamples_to_preferred_size", 0)
+			.overrideParameter("iris_enabled", 1))),
 _quality_estimator( _service->createQualityEstimator("quality_estimator_iso.xml") ),
 _age_geder_estimator( _service->createAgeGenderEstimator("age_gender_estimator.xml") ),
 //_age_geder_estimator( _service->createAgeGenderEstimator("age_gender_estimator_v2.xml") ),
@@ -214,7 +219,8 @@ _flag_cutting_base( false ),
 _flag_cutting_full( false ),
 _flag_cutting_token( false ),
 _flag_points( true ),
-_flag_masked_face( false )
+_flag_masked_face( false ),
+_flag_eyes_openness( false )
 
 {
 	// nothing else
@@ -238,6 +244,7 @@ bool& Worker::flag(int i)
 		case 10: return _flag_angles_vectors;
 		case 11: return _flag_emotions;
 		case 12: return _flag_masked_face;
+		case 13: return _flag_eyes_openness;
 	}
 
 	return _flag_points;
@@ -260,7 +267,8 @@ std::string Worker::flag_name(int i) const
 		case 9: return "face quality";
 		case 10: return "angles vectors";
 		case 11: return "emotions";
-		case 12: return "masked_face";
+		case 12: return "masked face";
+		case 13: return "eyes openness";
 	}
 
 	return "";
@@ -338,6 +346,7 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 		if(_flag_points)
 		{
 			const std::vector<pbio::RawSample::Point> points = sample.getLandmarks();
+			const std::vector<pbio::RawSample::Point> iris_points = sample.getIrisLandmarks();
 
 			for(int j = -2; j < (int) points.size(); ++j)
 			{
@@ -363,6 +372,34 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 					color,
 					-1,
 					cv::LINE_AA);
+			}
+
+			// draw iris points
+			for(size_t j = 0; j < iris_points.size(); ++j)
+			{
+				float ms = 1;
+				auto color = cv::Scalar(0, 255, 255);
+				int oi = j - 20 * (j >= 20);
+				pbio::RawSample::Point pt1 = iris_points[j];
+				pbio::RawSample::Point pt2 = iris_points[(oi < 19 ? j : j - 15) + 1];
+
+				if(oi < 5)
+				{
+					color = cv::Scalar(0, 165, 255);
+					if (oi == 0)
+					{
+						double radius = cv::norm(cv::Point2f(pt1.x, pt1.y) - cv::Point2f(pt2.x, pt2.y));
+						cv::circle(draw_image, cv::Point2f(pt1.x, pt1.y), radius, color, ms);
+					}
+				}else
+					cv::line(
+						draw_image,
+						cv::Point2f(pt1.x, pt1.y),
+						cv::Point2f(pt2.x, pt2.y),
+						color,
+						ms);
+
+				cv::circle(draw_image, cv::Point2f(pt1.x, pt1.y), ms, color, -1);
 			}
 		}
 
@@ -587,17 +624,51 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 		// draw face attribute (masked_face)
 		if(_flag_masked_face)
 		{
-			if(!_face_attributes_estimator)
+			if(!_face_attributes_estimator_masked_face)
 			{
-				_face_attributes_estimator = _service->createFaceAttributesEstimator("face_mask_estimator.xml");
+				_face_attributes_estimator_masked_face = _service->createFaceAttributesEstimator("face_mask_estimator.xml");
 			}
-			pbio::FaceAttributesEstimator::Attribute attr = _face_attributes_estimator->estimate(sample);
+			pbio::FaceAttributesEstimator::Attribute attr = _face_attributes_estimator_masked_face->estimate(sample);
 			std::stringstream ss;
 			ss << std::fixed << std::setprecision(3) << attr.score;
 			std::string score_str = ss.str();
 			puttext(
 				draw_image,
 				std::string("masked: ") + std::string(attr.verdict ? "true - " : "false - ") + score_str,
+				text_point);
+
+			text_point.y += text_line_height;
+			text_point.y += text_line_height / 3;
+		}
+
+		// draw face attribute (eyes_openness)
+		if(_flag_eyes_openness)
+		{
+			if(!_face_attributes_estimator_eye_openness)
+			{
+				_face_attributes_estimator_eye_openness = _service->createFaceAttributesEstimator("eyes_openness_estimator.xml");
+			}
+			pbio::FaceAttributesEstimator::Attribute attr = _face_attributes_estimator_eye_openness->estimate(sample);
+
+			pbio::FaceAttributesEstimator::EyeStateScore left_eye_state = attr.left_eye_state;
+			pbio::FaceAttributesEstimator::EyeStateScore right_eye_state = attr.right_eye_state;
+			std::stringstream ssl, ssr;
+			ssl << std::fixed << std::setprecision(3) << left_eye_state.score;
+			ssr << std::fixed << std::setprecision(3) << right_eye_state.score;
+			std::string left_score_str = ssl.str();
+			std::string right_score_str = ssr.str();
+
+			puttext(
+				draw_image,
+				std::string("left eye: ") + std::string(left_eye_state.eye_state == pbio::FaceAttributesEstimator::EyeStateScore::OPENED ? "true" : "false") + " " + left_score_str,
+				text_point);
+
+			text_point.y += text_line_height;
+			text_point.y += text_line_height / 3;
+
+			puttext(
+				draw_image,
+				std::string("right eye: ") + std::string(right_eye_state.eye_state == pbio::FaceAttributesEstimator::EyeStateScore::OPENED ? "true" : "false") + " " + right_score_str,
 				text_point);
 
 			text_point.y += text_line_height;

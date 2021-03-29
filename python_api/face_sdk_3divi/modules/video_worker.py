@@ -31,7 +31,12 @@ from .template import Template
 from .error import Error
 from . import get_repr
 from .wrap_funcs import write_func
+from . import active_liveness
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup VideoWorker
+#  @{
 
 ##
 # \~English
@@ -249,6 +254,18 @@ class TrackingCallbackData:
     samples_track_emotions: List[EmotionConfidence]
 
     ##
+    #  \~English
+    #     \brief Face active liveness check status.
+    #     See ActiveLiveness::ActiveLivenessStatus for details.
+    #     (samples_active_liveness_status.size() == samples.size())
+    #  \~Russian
+    #     \brief Состояние проверки лица на принадлежность живому человеку
+    #     посредством сценария.
+    #     См. также ActiveLiveness::ActiveLivenessStatus.
+    #     (samples_active_liveness_status.size() == samples.size())
+    samples_active_liveness_status: List[active_liveness.ActiveLivenessStatus]
+
+    ##
     def __init__(self):
         self.stream_id = 0
         self.frame_id = 0
@@ -266,6 +283,7 @@ class TrackingCallbackData:
         self.samples_track_age_gender: List[AgeGender] = list()
         self.samples_track_emotions_set: List[bool] = list()
         self.samples_track_emotions: List[EmotionConfidence] = list()
+        self.samples_active_liveness_status: List[active_liveness.ActiveLivenessStatus] = list()
 
     def __repr__(self):
         return get_repr(self)
@@ -662,6 +680,13 @@ class Params:
 
     ##
     #  \~English
+    #     \brief Set outdate_time in seconds for <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/en/development/video_stream_processing.md#short-time-identification">"short time #identification"</a>.
+    #  \~Russian
+    #     \brief Задать в секундах длину временного интервала для <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%#D0%BA%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременной идентификации"</a>.
+    active_liveness_checks_order: List[active_liveness.CheckType]
+
+    ##
+    #  \~English
     #     \brief \n Default constructor, set strings to empty, numbers to zero, flags to false.
     #  \~Russian
     #     \brief \n Конструктор по умолчанию, устанавливает строки пустыми, числа нулем, флаги выключены.
@@ -677,6 +702,7 @@ class Params:
         self.short_time_identification_enabled = False
         self.short_time_identification_distance_threshold = 0
         self.short_time_identification_outdate_time_seconds = 0
+        self.active_liveness_checks_order = list()
 
     def __repr__(self):
         return get_repr(self)
@@ -1431,145 +1457,147 @@ class VideoWorker(ComplexObject):
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_stream_id_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             frame_id = self._dll_handle.StructStorage_get_int64(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_frame_id_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_count = self._dll_handle.StructStorage_get_int64(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_samples_count_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_impls = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_samples_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             weak_samples = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_weak_samples_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_quality = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_samples_quality_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_good_light_and_blur = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_good_light_and_blur_samples_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_good_angles = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_good_angles_samples_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_good_face_size = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_good_face_size_samples_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_detector_confirmed = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_detector_confirmed_samples_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_depth_liveness_confirmed = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_depth_liveness_confirmed_samples_t.value,
                 exception)
+            check_exception(exception, self._dll_handle)
 
             samples_ir_liveness_confirmed = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_ir_liveness_confirmed_samples_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_track_age_gender_set = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_samples_track_age_gender_set_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_track_gender = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_samples_track_gender_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_track_age = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_samples_track_age_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_track_age_years = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_samples_track_age_years_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_track_emotions_set = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_samples_track_emotions_set_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_track_emotions_count = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_samples_track_emotions_count_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_track_emotions_confidence = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_samples_track_emotions_confidence_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
 
             samples_track_emotions_emotion = self._dll_handle.StructStorage_get_pointer(
                 c_void_p(callback_data),
                 StructStorageFields.video_worker_samples_track_emotions_emotion_t.value,
                 exception)
-
             check_exception(exception, self._dll_handle)
+
+            samples_track_active_liveness_type = self._dll_handle.StructStorage_get_pointer(
+                c_void_p(callback_data),
+                StructStorageFields.video_worker_active_liveness_type_samples_t.value,
+                exception)
+            check_exception(exception, self._dll_handle)
+
+            samples_track_active_liveness_confirmed = self._dll_handle.StructStorage_get_pointer(
+                c_void_p(callback_data),
+                StructStorageFields.video_worker_active_liveness_confirmed_samples_t.value,
+                exception)
+            check_exception(exception, self._dll_handle)
+
+            samples_track_active_liveness_progress = self._dll_handle.StructStorage_get_pointer(
+                c_void_p(callback_data),
+                StructStorageFields.video_worker_active_liveness_score_samples_t.value,
+                exception)
+            check_exception(exception, self._dll_handle)
+
 
             data = TrackingCallbackData()
             data.stream_id = stream_id
             data.frame_id = frame_id
             data.samples_track_age_gender = [0] * samples_count
             data.samples_track_emotions = [[]] * samples_count
+            data.samples_active_liveness_status = [None] * samples_count
 
             p_size = sizeof(c_void_p)
             c_int32_size = sizeof(c_int32)
@@ -1604,6 +1632,11 @@ class VideoWorker(ComplexObject):
 
                 sample_ir_liveness_confirmed = ir_liveness_estimator.Liveness(c_int32.from_address(samples_ir_liveness_confirmed + i * c_int32_size).value)
                 data.samples_ir_liveness_confirmed.append(sample_ir_liveness_confirmed)
+                samples_active_liveness_status = active_liveness.ActiveLivenessStatus(
+                    active_liveness.CheckType(c_int32.from_address(samples_track_active_liveness_type + i * c_int32_size).value),
+                    active_liveness.Liveness(c_int32.from_address(samples_track_active_liveness_confirmed + i * c_int32_size).value),
+                    c_float.from_address(samples_track_active_liveness_progress + i * c_float_size).value)
+                data.samples_active_liveness_status[i] = samples_active_liveness_status
 
                 sample_track_age_gender_set = c_int32.from_address(samples_track_age_gender_set + i * c_int32_size).value != 0
                 data.samples_track_age_gender_set.append(sample_track_age_gender_set)

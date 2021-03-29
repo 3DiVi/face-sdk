@@ -19,6 +19,10 @@ from .dll_handle import DllHandle
 from .raw_sample import RawSample
 from . import get_repr
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup EmotionsEstimator
+#  @{
 
 ##
 # \~English

@@ -157,6 +157,8 @@ void Worker::TrackingCallback(
 			face.sample = samples[i];
 			face.sti_person_id_set = false;
 
+			face.active_liveness_status = data.samples_active_liveness_status[i];
+
 			if(data.samples_track_emotions_set[i])
 			{
 				face.emotions_set = true;
@@ -548,6 +550,8 @@ cv::Mat Worker::Draw(
 			// get points
 			const std::vector<pbio::RawSample::Point> points =
 				face.sample->getLandmarks();
+			const std::vector<pbio::RawSample::Point> all_iris_points =
+				face.sample->getIrisLandmarks();
 
 			// compute center
 			cv::Point2f center(0, 0);
@@ -620,6 +624,31 @@ cv::Mat Worker::Draw(
 			}
 
 
+//			// draw iris points
+//			for(size_t j = 0; j < all_iris_points.size(); ++j)
+//			{
+//				float ms = 1;
+//				auto color = cv::Scalar(0, 255, 255);
+//				int oi = j - 20 * (j >= 20);
+//				pbio::RawSample::Point pt1 = all_iris_points[j];
+//				pbio::RawSample::Point pt2 = all_iris_points[(oi < 19 ? j : j - 15) + 1];
+//				cv::Point2f cv_pt1 = cv::Point2f(pt1.x, pt1.y + frame_y_offset);
+//				cv::Point2f cv_pt2 = cv::Point2f(pt2.x, pt2.y + frame_y_offset);
+//
+//				if(oi < 5)
+//				{
+//					color = cv::Scalar(0, 165, 255);
+//					if (oi == 0)
+//					{
+//						double radius = cv::norm(cv_pt1 - cv_pt2);
+//						cv::circle(result, cv_pt1, radius, color, ms);
+//					}
+//				}else
+//					cv::line(result, cv_pt1, cv_pt2, color, ms);
+//
+//				cv::circle(result, cv_pt1, ms, color, -1);
+//			}
+
 			// draw facial points
 			/*for(size_t i = 0; i < points.size(); ++i)
 			{
@@ -635,6 +664,28 @@ cv::Mat Worker::Draw(
 				cv::Point2f text_position;
 				text_position.x = center.x + radius * 0.7;
 				text_position.y = frame_y_offset + center.y - radius * 0.5;
+
+				std::vector<std::string> verdict{
+					"all_checks_passed",
+					"current_check_passed",
+					"check_fail",
+					"waiting_face_align",
+					"in_progress",
+					"not_computed"};
+
+				if(face.active_liveness_status.verdict != pbio::ActiveLiveness::Liveness::NOT_COMPUTED) {
+					std::string active_liveness = "";
+					if (face.active_liveness_status.verdict == pbio::ActiveLiveness::WAITING_FACE_ALIGN ||
+						face.active_liveness_status.verdict == pbio::ActiveLiveness::ALL_CHECKS_PASSED)
+						active_liveness += verdict[face.active_liveness_status.verdict];
+					else {
+						active_liveness += pbio::ActiveLiveness::CheckTypeToString(face.active_liveness_status.check_type);
+						active_liveness += ": ";
+						active_liveness += verdict[face.active_liveness_status.verdict];
+						active_liveness += " " + std::to_string(face.active_liveness_status.progress_level);
+					}
+					text_position.y += puttext(result, active_liveness, text_position);
+				}
 
 				if(face.age_gender_set)
 				{

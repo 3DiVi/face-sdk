@@ -36,6 +36,34 @@ public:
 	*/
 	typedef LightSmartPtr<FaceAttributesEstimator>::tPtr Ptr;
 
+
+	/** \~English
+		\brief Estimated eye state and probability of eye opening.
+		\~Russian
+		\brief Результат определения состояния глаза и вероятность, что глаз открыт.
+	*/
+    struct EyeStateScore{
+
+    	/** \~English
+			\brief Estimated eye state.
+			\~Russian
+			\brief Результат определения состояния глаза.
+		*/
+        enum EyeState{
+            NOT_COMPUTED = 0,
+            CLOSED = 1,
+            OPENED = 2
+        } eye_state;
+
+        /** \~English
+            \brief Probability of eye opening.
+            \~Russian
+            \brief Вероятность, что глаз открыт.
+        */
+        float score = -1.f;
+    };
+
+
 	/** \~English
 		\brief The result of determining the presence of the required attribute on the face.
 		\~Russian
@@ -55,7 +83,7 @@ public:
 			\~Russian
 			\brief Вероятность наличия атрибута.
 		*/
-		float score = 0.0f;
+		float score = -1.0f;
 
 		/** \~English
 			\brief Detailed description for attribute - medical mask .
@@ -67,6 +95,13 @@ public:
 			NO_MASK = 1,
 			HAS_MASK = 2
 		} mask_attribute;
+
+		/** \~English
+			\brief Estimated left or right eye state and probability of eye opening.
+			\~Russian
+			\brief Результат определения состояния левого или правого глаза и вероятность, что глаз открыт.
+		*/
+        EyeStateScore left_eye_state, right_eye_state;
 	};
 
 	/**
@@ -127,23 +162,63 @@ ComplexObject(dll_handle, impl)
 inline
 FaceAttributesEstimator::Attribute FaceAttributesEstimator::estimate(const pbio::RawSample &sample) const
 {
+	Attribute result;
+
+	std::ostringstream name_task;
+	pbio::stl_wraps::WrapOStreamImpl name_task_wrap(name_task);
+
 	void* exception = NULL;
 
-	Attribute result;
-	int32_t verdict;
-
-	_dll_handle->FaceAttributesEstimator_estimate(
+	_dll_handle->FaceAttributesEstimator_getTaskName(
 		_impl,
-		(pbio::facerec::RawSampleImpl const*) sample._impl,
-		&verdict,
-		&result.score,
+		&name_task_wrap,
+		pbio::stl_wraps::WrapOStream::write_func,
 		&exception);
 
 	checkException(exception, *_dll_handle);
 
-	result.verdict = verdict;
+	if (name_task.str() == "masked_face")
+	{
+		int32_t verdict;
 
-	result.mask_attribute = verdict ? Attribute::MaskAttribute::HAS_MASK: Attribute::MaskAttribute::NO_MASK;
+		void* exception = NULL;
+
+		_dll_handle->FaceAttributesEstimator_estimateMaskedFace(
+			_impl,
+			(pbio::facerec::RawSampleImpl const*) sample._impl,
+			&verdict,
+			&result.score,
+			&exception);
+
+		checkException(exception, *_dll_handle);
+
+		result.verdict = verdict;
+
+		result.mask_attribute = verdict ? Attribute::MaskAttribute::HAS_MASK: Attribute::MaskAttribute::NO_MASK;
+	}else
+	if (name_task.str() == "eyes_openness")
+	{
+		EyeStateScore left_eye_state, right_eye_state;
+		int32_t left_eye_verdict, right_eye_verdict;
+
+		void* exception = NULL;
+
+		_dll_handle->FaceAttributesEstimator_estimateEyesOpenness(
+			_impl,
+			(pbio::facerec::RawSampleImpl const*) sample._impl,
+			&left_eye_verdict,
+			&right_eye_verdict,
+			&result.left_eye_state.score,
+			&result.right_eye_state.score,
+			&exception);
+
+		checkException(exception, *_dll_handle);
+
+		result.left_eye_state.eye_state = left_eye_verdict ? EyeStateScore::OPENED: EyeStateScore::CLOSED;
+		result.right_eye_state.eye_state = right_eye_verdict ? EyeStateScore::OPENED: EyeStateScore::CLOSED;
+	}else
+		PBI0x3dfb4fe3Assert(0xec9eb983, false, "FaceAttributesEstimator: unknown name_task: '" + name_task.str() + "'");
+
 
 	return result;
 }

@@ -56,6 +56,9 @@ class StructStorageFields(Enum):
     video_worker_samples_track_emotions_count_t           = 33
     video_worker_samples_track_emotions_confidence_t      = 34
     video_worker_samples_track_emotions_emotion_t         = 35
+    video_worker_active_liveness_type_samples_t           = 38
+    video_worker_active_liveness_confirmed_samples_t      = 39
+    video_worker_active_liveness_score_samples_t          = 40
 
 
-    max_fields_count                                      = 38
+    max_fields_count                                      = 41

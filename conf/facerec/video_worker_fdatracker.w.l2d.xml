@@ -15,6 +15,9 @@
 <fda_continue_tracking_threshold>0.4</fda_continue_tracking_threshold>
 <lbf_threshold>0.1</lbf_threshold>
 
+<iris_enabled>0</iris_enabled>
+<iris_config_filepath>conf/facerec/iris_fitter.xml</iris_config_filepath>
+
 <base_angle>0</base_angle>
 <min_size>20</min_size>
 <max_size>1000000</max_size>
@@ -99,5 +102,8 @@
 
 <enable_liveness_2d>1</enable_liveness_2d>
 <liveness_2d_config>conf/facerec/liveness_2d_estimator.xml</liveness_2d_config>
+
+<enable_active_liveness>0</enable_active_liveness>
+<active_liveness_estimator_config>conf/facerec/active_liveness_estimator.xml</active_liveness_estimator_config>
 
 </opencv_storage>

@@ -101,6 +101,13 @@
                 android:text="@string/face_mask_box_text"
                 android:onClick="onCheckboxClicked" />
 
+            <CheckBox
+                android:id="@+id/eyes_openness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/eyes_openness_box_text"
+                android:onClick="onCheckboxClicked" />
+
         </LinearLayout>
 
 

@@ -37,6 +37,9 @@
 
 <fda_file>share/fda/fda0017.3500.enc</fda_file>
 
+<iris_enabled>0</iris_enabled>
+<iris_config_filepath>conf/facerec/iris_fitter.xml</iris_config_filepath>
+
 
 
 <downscale_rawsamples_to_preferred_size>1</downscale_rawsamples_to_preferred_size>

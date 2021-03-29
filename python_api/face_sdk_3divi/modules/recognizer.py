@@ -20,6 +20,10 @@ from .template import Template
 from .error import Error
 from . import get_repr
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup Recognizer
+#  @{
 
 ##
 # \~English

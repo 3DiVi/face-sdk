@@ -4,6 +4,8 @@
 
 <div align="center">English | <a href="README_rus.md">Русский</a></div>
 
+<div align="center"><b>The documentation in this repository is outdated. The latest version is available at https://docs.facesdk.3divi.com/</b></div>
+
 # Overview
 
 **3DiVi Face SDK** is a set of software components (code libraries) for building face recognition solutions of any complexity – from a simple app to portals like Azure Face API or AWS Rekognition.

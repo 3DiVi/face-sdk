@@ -1,3 +1,3 @@
 include ':demo'
 include ':video_recognition_demo'
-include ':telpo_3dliveness_video_recognition'
+include ':telpo_liveness_video_recognition'

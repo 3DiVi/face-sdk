@@ -12,6 +12,9 @@
 <fda_good_threshold>0.15</fda_good_threshold>
 <fda_continue_tracking_threshold>0.05</fda_continue_tracking_threshold>
 
+<iris_enabled>0</iris_enabled>
+<iris_config_filepath>conf/facerec/iris_fitter.xml</iris_config_filepath>
+
 <base_angle>0</base_angle>
 <min_size>20</min_size>
 <max_size>1000000</max_size>

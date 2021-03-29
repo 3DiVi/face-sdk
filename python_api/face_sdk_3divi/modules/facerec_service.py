@@ -22,6 +22,7 @@ from .quality_estimator import QualityEstimator
 from .depth_liveness_estimator import DepthLivenessEstimator
 from .ir_liveness_estimator import IRLivenessEstimator
 from .liveness_2d_estimator import Liveness2DEstimator
+from .face_attributes_estimator import FaceAttributesEstimator
 from .wrap_funcs import read_func
 from .complex_object import ComplexObject
 from .recognizer import Recognizer
@@ -33,6 +34,10 @@ from .video_worker import VideoWorker, Params
 from .error import Error
 from .wrap_funcs import write_func
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup FacerecService
+#  @{
 
 ##
 # \~English
@@ -437,6 +442,29 @@ class FacerecService(ComplexObject):
 
     ##
     # \~English
+    #    \brief Creates an FaceAttributesEstimator object.
+    #      Thread-safe.
+    #
+    #    \param[in] ini_file
+    #      Name of the configuration file.
+    #
+    #    \return Created FaceAttributesEstimator object.
+    #
+    # \~Russian
+    #    \brief Создать объект FaceAttributesEstimator.
+    #      Потокобезопасный.
+    #
+    #    \param[in] ini_file
+    #      Имя конфигурационного файла
+    #
+    #    \return Созданный объект FaceAttributesEstimator.
+    def create_face_attributes_estimator(self, config: str) -> FaceAttributesEstimator:
+        file_path = self.__facerec_conf_dir + config
+
+        return FaceAttributesEstimator(self._dll_handle, file_path)
+
+    ##
+    # \~English
     #    \brief Creates a Recognizer object.
     #      Thread-safe.
     #
@@ -539,6 +567,12 @@ class FacerecService(ComplexObject):
 
         vw_overridden_keys, vw_overridden_values = params.video_worker_config.prepare()
 
+        if len(params.active_liveness_checks_order) > 0:
+            if len(set(params.active_liveness_checks_order)) != len(params.active_liveness_checks_order):
+                raise Error(0x3302330e, "Set a unique order of `active_liveness_checks_order` for Active Liveness")
+            for i, check in enumerate(params.active_liveness_checks_order):
+                vw_overridden_keys.append("active_liveness.check_" + check.name.lower())
+                vw_overridden_values.append(-(i + 1))
         exception = make_exception()
 
         vw_overridden_keys_buf = (c_char_p * len(vw_overridden_keys))()

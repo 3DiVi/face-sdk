@@ -15,6 +15,9 @@
 <fda_continue_tracking_threshold>0.2</fda_continue_tracking_threshold>
 <!--<base_angle>0</base_angle>-->
 
+<iris_enabled>0</iris_enabled>
+<iris_config_filepath>conf/facerec/iris_fitter.xml</iris_config_filepath>
+
 <min_detection_period>0.1</min_detection_period>
 <max_detection_period>0</max_detection_period>
 <move_detection_threshold>8</move_detection_threshold>
@@ -104,5 +107,8 @@
 
 <age_gender_estimator_config>conf/facerec/age_gender_estimator.xml</age_gender_estimator_config>
 <emotions_estimator_config>conf/facerec/emotions_estimator.xml</emotions_estimator_config>
+
+<enable_active_liveness>0</enable_active_liveness>
+<active_liveness_estimator_config>conf/facerec/active_liveness_estimator.xml</active_liveness_estimator_config>
 
 </opencv_storage>

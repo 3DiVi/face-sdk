@@ -3,6 +3,10 @@
 
 from enum import Enum
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup Verdict
+#  @{
 
 ##
 # \~English

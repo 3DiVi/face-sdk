@@ -14,6 +14,10 @@ from .dll_handle import DllHandle
 from .raw_sample import RawSample
 from .ir_frame_raw import IRFrameRaw
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup IRLivenessEstimator
+#  @{
 
 ##
 # \~English

@@ -4,7 +4,7 @@ from threading import Thread
 import time
 
 from face_sdk_3divi import Point, Capturer
-from face_sdk_3divi.modules import video_worker, raw_image, raw_sample, age_gender_estimator, emotions_estimator, recognizer
+from face_sdk_3divi.modules import video_worker, raw_image, raw_sample, age_gender_estimator, emotions_estimator, recognizer, active_liveness
 from face_sdk_3divi.example import CVRawImage
 
 from .image_and_depth_source import ImageAndDepthSource, ImageAndDepth
@@ -181,6 +181,8 @@ class FaceData:
         self.emotions_set = False
         self.emotions = None
 
+        self.active_liveness_status = None
+
 
 # data for drawing
 class DrawingData:
@@ -349,6 +351,7 @@ class Worker:
             face.weak = samples_weak[i]
             face.sample = samples[i]
             face.sti_person_id_set = False
+            face.active_liveness_status = data.samples_active_liveness_status[i]
 
             if data.samples_track_emotions_set[i]:
                 face.emotions_set = True
@@ -680,6 +683,16 @@ class Worker:
                     center.x + radius * 0.7,
                     frame_y_offset + center.y - radius * 0.5,
                 )
+                if face.active_liveness_status.verdict != active_liveness.Liveness.NOT_COMPUTED:
+                    active_liveness_str = ""
+                    if face.active_liveness_status.verdict == active_liveness.Liveness.WAITING_FACE_ALIGN:
+                        active_liveness_str += active_liveness.Liveness.WAITING_FACE_ALIGN.name.lower()
+                    else:
+                        active_liveness_str += face.active_liveness_status.check_type.name.lower()
+                        active_liveness_str += ": "
+                        active_liveness_str += face.active_liveness_status.verdict.name.lower()
+                        active_liveness_str += " " + str(face.active_liveness_status.progress_level)
+                    text_position.y += self.puttext(result, active_liveness_str, text_position)
 
                 if face.age_gender_set:
                     text_position.y += self.puttext(
@@ -710,6 +723,23 @@ class Worker:
                             text_position,
                             face_emotion.confidence * 0.75 + 0.25
                         )
+
+                # iris_points = face.sample.get_iris_landmarks()
+                # for j in range(len(iris_points)):
+                #     ms = 1
+                #     color = (0, 255, 255)
+                #     oi = j - 20 * (j >= 20)
+                #     pt1 = Point(0, frame_y_offset) + iris_points[j]
+                #     pt2 = Point(0, frame_y_offset) + iris_points[(j if oi < 19 else j - 15) + 1]
+                #
+                #     if oi < 5:
+                #         color = (0, 165, 255)
+                #         if oi == 0:
+                #             radius = np.sqrt((pt1.x - pt2.x)**2 + (pt1.y - pt2.y)**2)
+                #             cv2.circle(result, (int(pt1.x), int(pt2.y)), int(radius), color, ms)
+                #     else:
+                #         cv2.line(result, (int(pt1.x), int(pt1.y)), (int(pt2.x), int(pt2.y)), color, ms)
+                #     cv2.circle(result, (int(pt1.x), int(pt1.y)), ms, color, -1)
 
             # no - draw the stripe
             if oi < self.max_count_in_stripe:

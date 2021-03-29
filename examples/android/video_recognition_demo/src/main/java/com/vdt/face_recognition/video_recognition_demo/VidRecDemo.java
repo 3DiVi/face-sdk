@@ -21,6 +21,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.widget.ImageView;
 
+import com.vdt.face_recognition.sdk.ActiveLiveness;
 import com.vdt.face_recognition.sdk.Capturer;
 import com.vdt.face_recognition.sdk.FacerecService;
 import com.vdt.face_recognition.sdk.MatchFoundCallbackData;
@@ -136,7 +137,12 @@ public class VidRecDemo implements TheCameraPainter{
 
 		init_thread.start();
 
-
+		/*
+		Vector<ActiveLiveness.CheckType> checks = new Vector<ActiveLiveness.CheckType>();
+		checks.add(ActiveLiveness.CheckType.BLINK);
+		checks.add(ActiveLiveness.CheckType.TURN_DOWN);
+		checks.add(ActiveLiveness.CheckType.TURN_UP);
+		*/
 
 		//create videoWorker
 		Log.v(TAG, "creating worker");
@@ -157,6 +163,7 @@ public class VidRecDemo implements TheCameraPainter{
 						.short_time_identification_enabled(true)
 						.short_time_identification_distance_threshold(threshold)
 						.short_time_identification_outdate_time_seconds(5)
+						//.active_liveness_checks_order(checks)
 		);
 
 		//add callbacks
@@ -195,6 +202,7 @@ public class VidRecDemo implements TheCameraPainter{
 		int frame_id = videoWorker.addVideoFrame(frame, stream_id);
 		frames.offer(new Pair<Integer, Bitmap>(frame_id, mut_bitmap));
 
+		videoWorker.checkExceptions();
 	}
 
 
@@ -232,6 +240,12 @@ public class VidRecDemo implements TheCameraPainter{
 
 					RawSample sample = data.samples.get(i);
 					int id = sample.getID();
+					/*
+					ActiveLiveness.ActiveLivenessStatus st = data.samples_active_liveness_status.get(i);
+					Log.d("liveness", "Check: "+  st.check_type.toString() +
+							". Status: " + st.verdict.toString() +
+							". Progress: "+ st.progress_level );
+					*/
 
 					if(!drawingData.faces.containsKey(id)){
 						FaceData faceData = new FaceData(sample);

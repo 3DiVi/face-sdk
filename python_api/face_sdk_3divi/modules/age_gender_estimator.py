@@ -14,6 +14,17 @@ from .dll_handle import DllHandle
 from .raw_sample import RawSample
 from . import get_repr
 
+## @defgroup PythonAPI
+#  @{
+#  \~English
+#    \brief Python API interface.
+#  \~Russian
+#    \brief Python API интерфейс.
+
+
+## @defgroup AgeGenderEstimator
+#  @{
+
 
 ##
 #  \~English

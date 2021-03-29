@@ -28,7 +28,8 @@ protected:
 
 	~ComplexObject()
 	{
-		_dll_handle->apiObject_destructor(_impl);
+		if(_impl)
+			_dll_handle->apiObject_destructor(_impl);
 	}
 
 	const DHPtr _dll_handle;

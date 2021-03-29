@@ -4,6 +4,8 @@
 from typing import List
 from . import get_repr
 
+## @defgroup PythonAPI
+#  @{
 
 ##
 #  \~English

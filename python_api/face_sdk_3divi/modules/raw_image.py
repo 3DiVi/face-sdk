@@ -25,6 +25,10 @@ class CapiData:
         self.crop_info_data_image_width = crop_info_data_image_width
         self.crop_info_data_image_height = crop_info_data_image_height
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup RawImage
+#  @{
 
 ##
 # \~English

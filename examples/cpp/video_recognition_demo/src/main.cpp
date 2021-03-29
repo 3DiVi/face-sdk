@@ -65,6 +65,7 @@ int main(int argc, char const *argv[])
 		const std::string database_list_filepath         = parser.get<std::string>("--database_list_filepath        ");
 		const std::string method_config                  = parser.get<std::string>("--method_config                 ");
 		const std::string fullscreen                     = parser.get<std::string>("--fullscreen                    ", "yes");
+		const std::string enable_active_liveness         = parser.get<std::string>("--enable_active_liveness        ", "no");
 		const std::string vw_config_file                 = parser.get<std::string>("--vw_config_file                ", "video_worker_fdatracker_blf_fda.xml");
 		const float       frame_fps_limit                = parser.get<float      >("--frame_fps_limit               ", 25);
 		const float       recognition_distance_threshold = parser.get<float      >("--recognition_distance_threshold");
@@ -125,6 +126,12 @@ int main(int argc, char const *argv[])
 			*service->createRecognizer(method_config, true, false),
 			*service->createCapturer("common_capturer4_fda_singleface.xml"),
 			recognition_distance_threshold);
+		int active_liveness = enable_active_liveness == "yes" ? 1 : 0;
+		//std::vector<pbio::ActiveLiveness::CheckType> checks{
+		//		pbio::ActiveLiveness::CheckType::TURN_UP,
+		//		pbio::ActiveLiveness::CheckType::SMILE,
+		//		pbio::ActiveLiveness::CheckType::TURN_DOWN
+		//};
 
 		// create one VideoWorker
 		const pbio::VideoWorker::Ptr video_worker =
@@ -136,6 +143,7 @@ int main(int argc, char const *argv[])
 							.overrideParameter("search_k", 10)
 							.overrideParameter("not_found_match_found_callback", 1)
 							.overrideParameter("downscale_rawsamples_to_preferred_size", 0)
+							.overrideParameter("enable_active_liveness", active_liveness)
 #ifdef DEPTH_LIVENESS
 							.overrideParameter("depth_data_flag", 1)
 							.overrideParameter("good_light_dark_threshold", 1)
@@ -154,6 +162,7 @@ int main(int argc, char const *argv[])
 
 					.age_gender_estimation_threads_count(sources.size())
 					.emotions_estimation_threads_count(sources.size())
+					//.active_liveness_checks_order(checks)
 			);
 
 		// set database
