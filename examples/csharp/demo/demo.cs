@@ -543,15 +543,25 @@ class Worker
 				FaceAttributesEstimator.Attribute attr = _eyes_openness_estimator.estimate(sample);
 				string left_score_str = Math.Round(attr.left_eye_state.score, 3).ToString();
 				string right_score_str = Math.Round(attr.right_eye_state.score, 3).ToString();
+
+				string left_verdict_str = "not_computed";
+				string right_verdict_str = "not_computed";
+
+				if (attr.left_eye_state.score != -1)
+					left_verdict_str = (attr.left_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false");
+
+				if (attr.right_eye_state.score != -1)
+					right_verdict_str = (attr.right_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false");
+
 				puttext(
 					draw_image,
-					"left eye: " + (attr.left_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false") + " " + left_score_str,
+					"left eye: " + left_verdict_str + " " + left_score_str,
 					text_point);
 				text_point.Y += text_line_height;
 				text_point.Y += text_line_height / 3;
 				puttext(
 					draw_image,
-					"right eye: " + (attr.right_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false") + " " + right_score_str,
+					"right eye: " + right_verdict_str + " " + right_score_str,
 					text_point);
 				text_point.Y += text_line_height;
 				text_point.Y += text_line_height / 3;

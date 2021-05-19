@@ -65,7 +65,7 @@ void print_usage(const std::string program_name)
 #ifdef __linux__
 	const std::string dll_path = " ../lib/libfacerec.so";
 #else
-	const std::string dll_path = " ./facerec.dll";
+	const std::string dll_path = " facerec.dll";
 #endif
 
 	std::cout << "\nUsage:\n" << " enrollment mode:\n " << program_name

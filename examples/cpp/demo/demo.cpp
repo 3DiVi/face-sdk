@@ -658,9 +658,18 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 			std::string left_score_str = ssl.str();
 			std::string right_score_str = ssr.str();
 
+			std::string left_verdict_str = "not_computed";
+			std::string right_verdict_str = "not_computed";
+
+			if(left_eye_state.eye_state != pbio::FaceAttributesEstimator::EyeStateScore::NOT_COMPUTED)
+				left_verdict_str = std::string(left_eye_state.eye_state == pbio::FaceAttributesEstimator::EyeStateScore::OPENED ? "true" : "false");
+
+			if(right_eye_state.eye_state != pbio::FaceAttributesEstimator::EyeStateScore::NOT_COMPUTED)
+				right_verdict_str = std::string(right_eye_state.eye_state == pbio::FaceAttributesEstimator::EyeStateScore::OPENED ? "true" : "false");
+
 			puttext(
 				draw_image,
-				std::string("left eye: ") + std::string(left_eye_state.eye_state == pbio::FaceAttributesEstimator::EyeStateScore::OPENED ? "true" : "false") + " " + left_score_str,
+				std::string("left eye: ") + left_verdict_str + " " + left_score_str,
 				text_point);
 
 			text_point.y += text_line_height;
@@ -668,7 +677,7 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 
 			puttext(
 				draw_image,
-				std::string("right eye: ") + std::string(right_eye_state.eye_state == pbio::FaceAttributesEstimator::EyeStateScore::OPENED ? "true" : "false") + " " + right_score_str,
+				std::string("right eye: ") + right_verdict_str + " " + right_score_str,
 				text_point);
 
 			text_point.y += text_line_height;

@@ -64,6 +64,7 @@ struct StructStorageFields
 		video_worker_active_liveness_score_samples_t          = 40,
 
 		// license state
+		license_state_android_serial_t                        = -4,
 		license_state_android_app_id_t                        = -3,
 		license_state_ios_app_id_t                            = -2,
 		license_state_hardware_reg_t                          = -1,

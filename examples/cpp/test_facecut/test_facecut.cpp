@@ -24,10 +24,16 @@ int main(int argc, char const *argv[])
 	try
 	{
 
+		#if defined(_WIN32)
+			const std::string default_dll_path = " facerec.dll";
+		#else
+			const std::string default_dll_path = " ../lib/libfacerec.so";
+		#endif
+
 		if(argc < 4)
 		{
 			std::cout << "Usage: '" << argv[0] << " <dll_path> <conf_dir_path> <image1_path> [<image2_path> [...] ]'" << std::endl;
-			std::cout << "Example: '" << argv[0] << " ../lib/libfacerec.so ../conf/facerec ~/Pictures/1.png'" << std::endl;
+			std::cout << "Example: '" << argv[0] << default_dll_path << " ../conf/facerec ~/Pictures/1.png'" << std::endl;
 			return 0;
 		}
 

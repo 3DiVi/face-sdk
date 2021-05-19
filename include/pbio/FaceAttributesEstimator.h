@@ -42,26 +42,26 @@ public:
 		\~Russian
 		\brief Результат определения состояния глаза и вероятность, что глаз открыт.
 	*/
-    struct EyeStateScore{
+	struct EyeStateScore{
 
-    	/** \~English
+		/** \~English
 			\brief Estimated eye state.
 			\~Russian
 			\brief Результат определения состояния глаза.
 		*/
-        enum EyeState{
-            NOT_COMPUTED = 0,
-            CLOSED = 1,
-            OPENED = 2
-        } eye_state;
+		enum EyeState{
+			NOT_COMPUTED = 0,
+			CLOSED = 1,
+			OPENED = 2
+		} eye_state;
 
-        /** \~English
-            \brief Probability of eye opening.
-            \~Russian
-            \brief Вероятность, что глаз открыт.
-        */
-        float score = -1.f;
-    };
+		/** \~English
+			\brief Probability of eye opening.
+			\~Russian
+			\brief Вероятность, что глаз открыт.
+		*/
+		float score = -1.f;
+	};
 
 
 	/** \~English
@@ -101,7 +101,7 @@ public:
 			\~Russian
 			\brief Результат определения состояния левого или правого глаза и вероятность, что глаз открыт.
 		*/
-        EyeStateScore left_eye_state, right_eye_state;
+		EyeStateScore left_eye_state, right_eye_state;
 	};
 
 	/**
@@ -214,8 +214,15 @@ FaceAttributesEstimator::Attribute FaceAttributesEstimator::estimate(const pbio:
 
 		checkException(exception, *_dll_handle);
 
-		result.left_eye_state.eye_state = left_eye_verdict ? EyeStateScore::OPENED: EyeStateScore::CLOSED;
-		result.right_eye_state.eye_state = right_eye_verdict ? EyeStateScore::OPENED: EyeStateScore::CLOSED;
+		if (result.left_eye_state.score == -1.f)
+			result.left_eye_state.eye_state = EyeStateScore::NOT_COMPUTED;
+		else
+			result.left_eye_state.eye_state = left_eye_verdict ? EyeStateScore::OPENED: EyeStateScore::CLOSED;
+
+		if (result.right_eye_state.score == -1.f)
+			result.right_eye_state.eye_state = EyeStateScore::NOT_COMPUTED;
+		else
+			result.right_eye_state.eye_state = right_eye_verdict ? EyeStateScore::OPENED: EyeStateScore::CLOSED;
 	}else
 		PBI0x3dfb4fe3Assert(0xec9eb983, false, "FaceAttributesEstimator: unknown name_task: '" + name_task.str() + "'");
 

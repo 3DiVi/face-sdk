@@ -60,7 +60,8 @@ class OpenCVSource(ImageAndDepthSource):
     def get(self, data: ImageAndDepth):
         _, image = self.capturer.read()
 
-        data.color_image = image.flatten()
-        data.color_width = image.shape[1]
-        data.color_height = image.shape[0]
-        data.color_format = raw_image.Format.FORMAT_BGR
+        if image is not None:
+            data.color_image = image.flatten()
+            data.color_width = image.shape[1]
+            data.color_height = image.shape[0]
+            data.color_format = raw_image.Format.FORMAT_BGR

@@ -209,9 +209,19 @@ public class Demo{
 			FaceAttributesEstimator.Attribute attr = eyesOpennessEstimator.estimate(sample);
 			String eye_left_score_str = String.format("%.03f", attr.left_eye_state.score);
 			String eye_right_score_str = String.format("%.03f", attr.right_eye_state.score);
+
+			String left_verdict_str = "not_computed";
+			String right_verdict_str = "not_computed";
+
+			if (attr.left_eye_state.score != -1)
+				left_verdict_str = (attr.left_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false");
+
+			if (attr.right_eye_state.score != -1)
+				right_verdict_str = (attr.right_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false");
+
 			text += "Eyes openness \n";
-			text += "  left eye opened: \n     " + (attr.left_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false") + "  " + eye_left_score_str + "\n";
-			text += "  right eye opened: \n     " + (attr.right_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false") + "  " + eye_right_score_str + "\n";
+			text += "  left eye opened: \n     " + left_verdict_str + "  " + eye_left_score_str + "\n";
+			text += "  right eye opened: \n     " + right_verdict_str + "  " + eye_right_score_str + "\n";
 		}
 
 		//crops

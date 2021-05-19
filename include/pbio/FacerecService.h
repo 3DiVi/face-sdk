@@ -130,6 +130,12 @@ public:
 		std::string android_app_id;
 
 		/**
+			\~English \brief Serial number of the Android device. Only available on Android (tag <android_serial>).
+			\~Russian \brief Серийный номер Android-устройства. Доступен только на Android (тэг <android_serial>).
+		*/
+		std::string android_serial;
+
+		/**
 			\~English \brief iOS application ID. Available only on iOS (tag <ios_app_id>).
 			\~Russian \brief ID iOS приложения. Доступен только на iOS (тэг <ios_app_id>).
 		*/
@@ -2067,6 +2073,7 @@ FacerecService::LicenseState FacerecService::getLicenseState() const
 	result.online = struct_storage.get_int64(StructStorageFields::license_state_online_t);
 
 	result.android_app_id = (char const*) struct_storage.get_pointer(StructStorageFields::license_state_android_app_id_t);
+	result.android_serial = (char const*) struct_storage.get_pointer(StructStorageFields::license_state_android_serial_t);
 	result.ios_app_id     = (char const*) struct_storage.get_pointer(StructStorageFields::license_state_ios_app_id_t);
 	result.hardware_reg   = (char const*) struct_storage.get_pointer(StructStorageFields::license_state_hardware_reg_t);
 

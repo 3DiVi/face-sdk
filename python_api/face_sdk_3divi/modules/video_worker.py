@@ -794,7 +794,7 @@ class VideoWorker(ComplexObject):
             cdata.crop_info_data_image_height,
 
             c_int32(stream_id),
-            c_int32(timestamp_microsec),
+            c_uint64(timestamp_microsec),
             exception)
 
         check_exception(exception, self._dll_handle)
@@ -1438,15 +1438,15 @@ class VideoWorker(ComplexObject):
 
     @staticmethod
     @CFUNCTYPE(None, c_void_p, py_object, c_void_p, c_int32, c_void_p, c_void_p, c_int32, c_void_p, c_void_p)
-    def s_tracking_callback_u(err_stream: c_void_p,
-                              self: py_object,
-                              callback_data: c_void_p,
-                              callbacks_count: c_int32,
-                              callbacks_func: c_void_p,
-                              callbacks_userdata: c_void_p,
-                              u_callbacks_count: c_int32,
-                              u_callbacks_func: c_void_p,
-                              u_callbacks_userdata: c_void_p):
+    def s_tracking_callback_u(err_stream: int,
+                              self,
+                              callback_data: int,
+                              callbacks_count: int,
+                              callbacks_func: int,
+                              callbacks_userdata: int,
+                              u_callbacks_count: int,
+                              u_callbacks_func: int,
+                              u_callbacks_userdata: int):
         try:
             if self is None:
                 raise Error(0x22bec9af, 'zero self in s_tracking_callback_u')
@@ -1723,15 +1723,15 @@ class VideoWorker(ComplexObject):
 
     @staticmethod
     @CFUNCTYPE(None, c_void_p, py_object, c_void_p, c_int32, c_void_p, c_void_p, c_int32, c_void_p, c_void_p)
-    def s_template_created_callback_u(err_stream: c_void_p,
-                                      self: py_object,
-                                      callback_data: c_void_p,
-                                      callbacks_count: c_int32,
-                                      callbacks_func: c_void_p,
-                                      callbacks_userdata: c_void_p,
-                                      u_callbacks_count: c_int32,
-                                      u_callbacks_func: c_void_p,
-                                      u_callbacks_userdata: c_void_p):
+    def s_template_created_callback_u(err_stream: int,
+                                      self,
+                                      callback_data: int,
+                                      callbacks_count: int,
+                                      callbacks_func: int,
+                                      callbacks_userdata: int,
+                                      u_callbacks_count: int,
+                                      u_callbacks_func: int,
+                                      u_callbacks_userdata: int):
         try:
             if self is None:
                 raise Error(0x4e9a2681, 'zero self in s_template_created_callback_u')
@@ -1779,7 +1779,7 @@ class VideoWorker(ComplexObject):
             templ = Template(self._dll_handle, c_void_p(templ_impl))
             data = TemplateCreatedCallbackData(stream_id, frame_id, quality, sample, templ)
 
-            for i in range(u_callbacks_count.value):
+            for i in range(u_callbacks_count):
                 try:
                     u_callback_function_i = py_object.from_address(u_callbacks_func + i * p_size).value
                     u_callback_function_i(data, py_object.from_address(u_callbacks_userdata + i * p_size).value)
@@ -1845,18 +1845,18 @@ class VideoWorker(ComplexObject):
     @staticmethod
     @CFUNCTYPE(None, c_void_p, py_object, c_void_p, c_int32, c_void_p, c_void_p, c_int32, c_void_p, c_void_p,
                c_int32, c_void_p, c_void_p)
-    def s_match_found_callback_u(err_stream: c_void_p,
-                                 self: py_object,
-                                 callback_data: c_void_p,
-                                 callbacks_count: c_int32,
-                                 callbacks_func: c_void_p,
-                                 callbacks_userdata: c_void_p,
-                                 ext_callbacks_count: c_int32,
-                                 ext_callbacks_func: c_void_p,
-                                 ext_callbacks_userdata: c_void_p,
-                                 u_callbacks_count: c_int32,
-                                 u_callbacks_func: c_void_p,
-                                 u_callbacks_userdata: c_void_p):
+    def s_match_found_callback_u(err_stream: int,
+                                 self,
+                                 callback_data: int,
+                                 callbacks_count: int,
+                                 callbacks_func: int,
+                                 callbacks_userdata: int,
+                                 ext_callbacks_count: int,
+                                 ext_callbacks_func: int,
+                                 ext_callbacks_userdata: int,
+                                 u_callbacks_count: int,
+                                 u_callbacks_func: int,
+                                 u_callbacks_userdata: int):
         try:
             if self is None:
                 raise Error(0x3c512755, 'zero self in s_match_found_callback_u')
@@ -2119,15 +2119,15 @@ class VideoWorker(ComplexObject):
 
     @staticmethod
     @CFUNCTYPE(None, c_void_p, py_object, c_void_p, c_int32, c_void_p, c_void_p, c_int32, c_void_p, c_void_p)
-    def s_tracking_lost_callback_u(err_stream: c_void_p,
-                                   self: py_object,
-                                   callback_data: c_void_p,
-                                   callbacks_count: c_int32,
-                                   callbacks_func: c_void_p,
-                                   callbacks_userdata: c_void_p,
-                                   u_callbacks_count: c_int32,
-                                   u_callbacks_func: c_void_p,
-                                   u_callbacks_userdata: c_void_p):
+    def s_tracking_lost_callback_u(err_stream: int,
+                                   self,
+                                   callback_data: int,
+                                   callbacks_count: int,
+                                   callbacks_func: int,
+                                   callbacks_userdata: int,
+                                   u_callbacks_count: int,
+                                   u_callbacks_func: int,
+                                   u_callbacks_userdata: int):
         try:
             if self is None:
                 raise Error(0xd74f2df7, 'zero self in s_tracking_lost_callback_u')

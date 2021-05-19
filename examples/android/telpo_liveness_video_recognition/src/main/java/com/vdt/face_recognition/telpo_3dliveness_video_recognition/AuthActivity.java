@@ -503,6 +503,7 @@ public class AuthActivity
 			//repeat again
 			Log.i(TAG, "license_state.online            = " + Boolean.toString(license_state.online));
 			Log.i(TAG, "license_state.android_app_id    = " + license_state.android_app_id);
+			Log.i(TAG, "license_state.android_serial    = " + license_state.android_serial);
 			Log.i(TAG, "license_state.ios_app_id        = " + license_state.ios_app_id);
 			Log.i(TAG, "license_state.hardware_reg      = " + license_state.hardware_reg);
 

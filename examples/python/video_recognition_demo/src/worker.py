@@ -497,8 +497,9 @@ class Worker:
                 data = ImageAndDepth()
                 self.source.get(data)
 
-                # put a frame in the VideoWorker
-                if len(data.color_image) and data.color_format == raw_image.Format.FORMAT_BGR:
+                if not len(data.color_image):
+                    self._shutdown = True
+                elif data.color_format == raw_image.Format.FORMAT_BGR:
                     image = np.reshape(data.color_image, [data.color_height, data.color_width, 3])
                     cvri = CVRawImage(image)
 

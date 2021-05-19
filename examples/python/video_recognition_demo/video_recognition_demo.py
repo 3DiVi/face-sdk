@@ -125,19 +125,27 @@ def main():
         while True:
             draw_images_mutex.wait_one()
 
-            for i in range(len(workers)):
-                if workers[i].draw_image.size:
+            i = 0
+            for worker in workers:
+                if worker._shutdown:
+                    worker.dispose()
+                    workers.remove(worker)
+                    cv2.destroyWindow(args.sources_names[i])
+                    args.sources_names.remove(args.sources_names[i])
+                    i -= 1
+                elif worker.draw_image.size:
                     cv2.imshow(
                         args.sources_names[i],
-                        workers[i].draw_image
+                        worker.draw_image
                     )
-                    workers[i].draw_image = np.array([])
+                    worker.draw_image = np.array([])
+                i += 1
 
             draw_images_mutex.release_mutex()
 
             key = cv2.waitKey(20)
 
-            if 27 == key:
+            if 27 == key or not workers:
                 cv2.destroyAllWindows()
                 break
 

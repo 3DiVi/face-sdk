@@ -14,7 +14,7 @@ class ExceptionDestroyer:
         pass
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.__exception:
+        if self.__exception.contents:
             self._dll_handle.apiObject_destructor(self.__exception.contents)
 
 

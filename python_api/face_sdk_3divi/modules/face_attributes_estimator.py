@@ -139,10 +139,20 @@ class FaceAttributesEstimator(ProcessingBlock):
             result.score = new_ctx["mask_score"]
             result.mask_attribute = MaskAttribute.HAS_MASK if new_ctx["mask_verdict"] else MaskAttribute.NO_MASK
         elif task_name == "eyes_openness":
-            result.left_eye_state.eye_state = EyeState.OPENED if new_ctx["eye_openness_left_verdict"] else EyeState.CLOSED
-            result.right_eye_state.eye_state = EyeState.OPENED if new_ctx["eye_openness_right_verdict"] else EyeState.CLOSED
+
             result.left_eye_state.score = new_ctx["eye_openness_left_score"]
             result.right_eye_state.score = new_ctx["eye_openness_right_score"]
+
+            if result.left_eye_state.score == -1:
+                result.left_eye_state.eye_state = EyeState.NOT_COMPUTED
+            else:
+                result.left_eye_state.eye_state = EyeState.OPENED if new_ctx["eye_openness_left_verdict"] else EyeState.CLOSED
+
+            if result.right_eye_state.score == -1:
+                result.right_eye_state.eye_state = EyeState.NOT_COMPUTED
+            else:
+                result.right_eye_state.eye_state = EyeState.OPENED if new_ctx["eye_openness_right_verdict"] else EyeState.CLOSED
+
         else:
             raise Exception(f"FaceAttributesEstimator: unknown name_task: {task_name}")
 
