@@ -5,9 +5,10 @@
 #  \~Russian
 #     \brief VideoWorker - интерфейсный объект для трекинга, обработки и распознавания лиц на нескольких видеопотоках.
 
-from ctypes import CFUNCTYPE
-from ctypes import c_int32, c_void_p, py_object, c_float, sizeof, create_string_buffer, c_char_p,\
+from ctypes import CFUNCTYPE, c_double
+from ctypes import c_int32, c_void_p, py_object, c_float, sizeof, create_string_buffer, c_char_p, \
     POINTER, c_int64, c_uint64
+from enum import IntEnum
 
 from typing import List, Union
 from io import BytesIO
@@ -33,6 +34,7 @@ from . import get_repr
 from .wrap_funcs import write_func
 from . import active_liveness
 
+
 ## @defgroup PythonAPI
 #  @{
 ## @defgroup VideoWorker
@@ -44,7 +46,6 @@ from . import active_liveness
 # \~Russian
 #    \brief Результат поиска шаблона (для face_sdk_3divi.modules.video_worker.MatchFoundCallbackFuncU).
 class SearchResult:
-
     ##
     #  \~English
     #     \brief Unique id of the person.
@@ -82,7 +83,6 @@ class SearchResult:
 # \~Russian
 #    \brief Данные Tracking коллбэка.
 class TrackingCallbackData:
-
     ##
     #  \~English
     #     \brief Integer id of the video stream
@@ -295,7 +295,6 @@ class TrackingCallbackData:
 # \~Russian
 #    \brief Данные TemplateCreated коллбэка.
 class TemplateCreatedCallbackData:
-
     ##
     #  \~English
     #     \brief Integer id of the video stream
@@ -355,7 +354,6 @@ class TemplateCreatedCallbackData:
 # \~Russian
 #    \brief Данные MatchFound коллбэка.
 class MatchFoundCallbackData(TemplateCreatedCallbackData):
-
     ##
     #  \~English
     #     \brief Found elements with a distance less than distance_threshold
@@ -391,7 +389,6 @@ class MatchFoundCallbackData(TemplateCreatedCallbackData):
 # \~Russian
 #    \brief Данные TrackingLost коллбэка.
 class TrackingLostCallbackData:
-
     ##
     #  \~English
     #     \brief Integer id of the video stream
@@ -499,7 +496,6 @@ class TrackingLostCallbackData:
 # \~Russian
 #    \brief Данные StiPersonOutdated коллбэка.
 class StiPersonOutdatedCallbackData:
-
     ##
     #  \~English
     #     \brief Integer id of the video stream
@@ -540,7 +536,6 @@ class StiPersonOutdatedCallbackData:
 #       нужно создать по одному элементу для каждого шаблона
 #       с одинаковыми person_id, но разными element_id.
 class DatabaseElement:
-
     ##
     #  \~English
     #     \brief Unique id of the element.
@@ -600,7 +595,6 @@ MATCH_NOT_FOUND_ID = -1
 # \~Russian
 #    \brief Параметры конструктора VideoWorker.
 class Params:
-
     ##
     #  \~English
     #     \brief Set the VideoWorker configuration file with optionally overridden parameters.
@@ -706,6 +700,15 @@ class Params:
 
     def __repr__(self):
         return get_repr(self)
+
+
+class VideoWorkerSomething(IntEnum):
+    Processing_Enable = 1
+    Processing_Disable = 2
+    AgeGender_Enable = 3
+    AgeGender_Disable = 4
+    Emotions_Enable = 5
+    Emotions_Disable = 6
 
 
 ##
@@ -1591,7 +1594,6 @@ class VideoWorker(ComplexObject):
                 exception)
             check_exception(exception, self._dll_handle)
 
-
             data = TrackingCallbackData()
             data.stream_id = stream_id
             data.frame_id = frame_id
@@ -1615,7 +1617,8 @@ class VideoWorker(ComplexObject):
                 sample_quality = c_float.from_address(samples_quality + i * c_float_size).value
                 data.samples_quality.append(sample_quality)
 
-                sample_good_light_and_blur = Verdict(c_int32.from_address(samples_good_light_and_blur + i * c_int32_size).value)
+                sample_good_light_and_blur = Verdict(
+                    c_int32.from_address(samples_good_light_and_blur + i * c_int32_size).value)
                 data.samples_good_light_and_blur.append(sample_good_light_and_blur)
 
                 sample_good_angles = Verdict(c_int32.from_address(samples_good_angles + i * c_int32_size).value)
@@ -1624,21 +1627,27 @@ class VideoWorker(ComplexObject):
                 sample_good_face_size = Verdict(c_int32.from_address(samples_good_face_size + i * c_int32_size).value)
                 data.samples_good_face_size.append(sample_good_face_size)
 
-                sample_detector_confirmed = Verdict(c_int32.from_address(samples_detector_confirmed + i * c_int32_size).value)
+                sample_detector_confirmed = Verdict(
+                    c_int32.from_address(samples_detector_confirmed + i * c_int32_size).value)
                 data.samples_detector_confirmed.append(sample_detector_confirmed)
 
-                sample_depth_liveness_confirmed = depth_liveness_estimator.Liveness(c_int32.from_address(samples_depth_liveness_confirmed + i * c_int32_size).value)
+                sample_depth_liveness_confirmed = depth_liveness_estimator.Liveness(
+                    c_int32.from_address(samples_depth_liveness_confirmed + i * c_int32_size).value)
                 data.samples_depth_liveness_confirmed.append(sample_depth_liveness_confirmed)
 
-                sample_ir_liveness_confirmed = ir_liveness_estimator.Liveness(c_int32.from_address(samples_ir_liveness_confirmed + i * c_int32_size).value)
+                sample_ir_liveness_confirmed = ir_liveness_estimator.Liveness(
+                    c_int32.from_address(samples_ir_liveness_confirmed + i * c_int32_size).value)
                 data.samples_ir_liveness_confirmed.append(sample_ir_liveness_confirmed)
                 samples_active_liveness_status = active_liveness.ActiveLivenessStatus(
-                    active_liveness.CheckType(c_int32.from_address(samples_track_active_liveness_type + i * c_int32_size).value),
-                    active_liveness.Liveness(c_int32.from_address(samples_track_active_liveness_confirmed + i * c_int32_size).value),
+                    active_liveness.CheckType(
+                        c_int32.from_address(samples_track_active_liveness_type + i * c_int32_size).value),
+                    active_liveness.Liveness(
+                        c_int32.from_address(samples_track_active_liveness_confirmed + i * c_int32_size).value),
                     c_float.from_address(samples_track_active_liveness_progress + i * c_float_size).value)
                 data.samples_active_liveness_status[i] = samples_active_liveness_status
 
-                sample_track_age_gender_set = c_int32.from_address(samples_track_age_gender_set + i * c_int32_size).value != 0
+                sample_track_age_gender_set = c_int32.from_address(
+                    samples_track_age_gender_set + i * c_int32_size).value != 0
                 data.samples_track_age_gender_set.append(sample_track_age_gender_set)
 
                 if sample_track_age_gender_set:
@@ -1652,14 +1661,16 @@ class VideoWorker(ComplexObject):
 
                     data.samples_track_age_gender[i] = age_gender
 
-                sample_track_emotions_set = c_int32.from_address(samples_track_emotions_set + i * c_int32_size).value != 0
+                sample_track_emotions_set = c_int32.from_address(
+                    samples_track_emotions_set + i * c_int32_size).value != 0
                 data.samples_track_emotions_set.append(sample_track_emotions_set)
 
                 if sample_track_emotions_set:
                     emotions_count = c_int32.from_address(samples_track_emotions_count + i * c_int32_size).value
                     for k in range(emotions_count):
                         emotion = c_int32.from_address(samples_track_emotions_emotion + emotions_i * c_int32_size).value
-                        confidence = c_float.from_address(samples_track_emotions_confidence + emotions_i * c_float_size).value
+                        confidence = c_float.from_address(
+                            samples_track_emotions_confidence + emotions_i * c_float_size).value
 
                         data.samples_track_emotions[i].append(EmotionConfidence(emotion, confidence))
 
@@ -2278,3 +2289,161 @@ class VideoWorker(ComplexObject):
                 c_void_p(err_stream),
                 POINTER(c_char_p)(create_string_buffer(error_str.encode())),
                 c_uint64(len(error_str)))
+
+    def toggle_something(self, stream_id: int, something: VideoWorkerSomething):
+        exception = make_exception()
+
+        self._dll_handle.VideoWorker_toggleSomething(
+            self._impl,
+            c_int32(stream_id),
+            c_int32(something),
+            exception)
+
+        check_exception(exception, self._dll_handle)
+
+    ##
+    # \~English
+    #    \brief Disable the creation of templates for a given stream.
+    #      After that, the matching stops as well.
+    #      Thread-safe.
+    #
+    #   \param[in]  stream_id
+    #     Integer id of the video stream
+    #     (0 <= stream_id < streams_count).
+    #
+    # \~Russian
+    #    \brief Отключить генерацию шаблонов для данного потока.
+    #      Соответственно, сравнения также остановятся.
+    #      Потокобезопасный.
+    #
+    #    \param[in]  stream_id
+    #      Целочисленный идентификатор видеопотока
+    #      (0 <= stream_id < streams_count).
+    def disable_processing_on_stream(self, stream_id: int):
+        self.toggle_something(stream_id, VideoWorkerSomething.Processing_Disable)
+
+    ##
+    # \~English
+    #    \brief Enable the creation of templates for a given stream.
+    #      After that, the matching is resumed as well.
+    #      Thread-safe.
+    #
+    #   \param[in]  stream_id
+    #     Integer id of the video stream
+    #     (0 <= stream_id < streams_count).
+    #
+    # \~Russian
+    #    \brief Включить генерацию шаблонов для данного потока.
+    #      Соответственно, сравнения также возобновятся.
+    #      Потокобезопасный.
+    #
+    #    \param[in]  stream_id
+    #      Целочисленный идентификатор видеопотока
+    #      (0 <= stream_id < streams_count).
+    def enable_processing_on_stream(self, stream_id: int):
+        self.toggle_something(stream_id, VideoWorkerSomething.Processing_Enable)
+
+    ##
+    # \~English
+    #    \brief Disable age and gender estimation for a given stream.
+    #      Thread-safe.
+    #
+    #   \param[in]  stream_id
+    #     Integer id of the video stream
+    #     (0 <= stream_id < streams_count).
+    #
+    # \~Russian
+    #    \brief Отключить определение пола и возраста для данного потока.
+    #      Потокобезопасный.
+    #
+    #    \param[in]  stream_id
+    #      Целочисленный идентификатор видеопотока
+    #      (0 <= stream_id < streams_count).
+    def disable_age_gender_estimation_on_stream(self, stream_id: int):
+        self.toggle_something(stream_id, VideoWorkerSomething.AgeGender_Disable)
+
+    ##
+    # \~English
+    #    \brief Enable age and gender estimation for a given stream.
+    #      Thread-safe.
+    #
+    #   \param[in]  stream_id
+    #     Integer id of the video stream
+    #     (0 <= stream_id < streams_count).
+    #
+    # \~Russian
+    #    \brief Включить определение пола и возраста для данного потока.
+    #      Потокобезопасный.
+    #
+    #    \param[in]  stream_id
+    #      Целочисленный идентификатор видеопотока
+    #      (0 <= stream_id < streams_count).
+    def enable_age_gender_estimation_on_stream(self, stream_id: int):
+        self.toggle_something(stream_id, VideoWorkerSomething.AgeGender_Enable)
+
+    ##
+    # \~English
+    #    \brief Disable estimation of emotions for a given stream.
+    #      Thread-safe.
+    #
+    #   \param[in]  stream_id
+    #     Integer id of the video stream
+    #     (0 <= stream_id < streams_count).
+    #
+    # \~Russian
+    #    \brief Отключить определение эмоций для данного потока.
+    #      Потокобезопасный.
+    #
+    #    \param[in]  stream_id
+    #      Целочисленный идентификатор видеопотока
+    #      (0 <= stream_id < streams_count).
+    def disable_emotions_estimation_on_stream(self, stream_id: int):
+        self.toggle_something(stream_id, VideoWorkerSomething.Emotions_Disable)
+
+    ##
+    # \~English
+    #    \brief Enable estimation of emotions for a given stream.
+    #      Thread-safe.
+    #
+    #   \param[in]  stream_id
+    #     Integer id of the video stream
+    #     (0 <= stream_id < streams_count).
+    #
+    # \~Russian
+    #    \brief Включить определение эмоций для данного потока.
+    #      Потокобезопасный.
+    #
+    #    \param[in]  stream_id
+    #      Целочисленный идентификатор видеопотока
+    #      (0 <= stream_id < streams_count).
+    def enable_emotions_estimation_on_stream(self, stream_id: int):
+        self.toggle_something(stream_id, VideoWorkerSomething.Emotions_Enable)
+
+    ##
+    # \~English
+    #    \brief Change the parameter value in runtime.
+    #
+    #    \param[in] parameter
+    #      Parameter name (tag name in the .xml config file).
+    #
+    #    \param[in] value
+    #      New parameter value.
+    #
+    # \~Russian
+    #    \brief Изменить значение параметра в runtime.
+    #
+    #    \param[in] parameter
+    #      Имя параметра (имя тэга из .xml конфигурационного файла).
+    #
+    #    \param[in] value
+    #      Новое значение параметра.
+    def set_parameter(self, parameter: str, value: float):
+        exception = make_exception()
+
+        self._dll_handle.VideoWorker_toggleSomething(
+            self._impl,
+            c_char_p(bytes(parameter, "ascii")),
+            c_double(value),
+            exception)
+
+        check_exception(exception, self._dll_handle)

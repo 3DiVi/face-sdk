@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<recognizer_impl_name>method_link</recognizer_impl_name>
+<recognizer_config>conf/facerec/method10v100_recognizer.xml</recognizer_config>
+
+</opencv_storage>

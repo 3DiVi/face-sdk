@@ -10,5 +10,5 @@ video_recognition_demo ^
   --config_dir ../conf/facerec/ ^
   --dll_path facerec.dll ^
   --database_list_filepath ./base.list.txt ^
-  --method_config method9v1000_recognizer.xml ^
-  --recognition_distance_threshold 7200.0
+  --method_config recognizer_latest_v1000.xml ^
+  --recognition_far_threshold 1e-6

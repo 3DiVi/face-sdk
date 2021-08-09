@@ -25,11 +25,11 @@ class Options
 	[Option("database_dir", Default = "../../base", HelpText = "Path to database directory.")]
 	public string database_dir { get; set; }
 
-	[Option("method_config", Default = "method6v7_recognizer.xml", HelpText = "Recognizer config file.")]
+	[Option("method_config", Default = "recognizer_latest_v100.xml", HelpText = "Recognizer config file.")]
 	public string method_config { get; set; }
 
-	[Option("recognition_distance_threshold", Default = 7000.0f, HelpText = "Recognition distance threshold.")]
-	public float recognition_distance_threshold { get; set; }
+	[Option("recognition_far_threshold", Default = 1e-6f, HelpText = "Recognition FAR threshold.")]
+	public float recognition_far_threshold { get; set; }
 
 	[Option("frame_fps_limit", Default = 25f, HelpText = "Frame fps limit.")]
 	public float frame_fps_limit { get; set; }
@@ -84,7 +84,7 @@ class VideoRecognitionDemo
 			string license_dir = options.license_dir;
 			string database_dir = options.database_dir;
 			string method_config = options.method_config;
-			float recognition_distance_threshold = options.recognition_distance_threshold;
+			float recognition_far_threshold = options.recognition_far_threshold;
 			float frame_fps_limit = options.frame_fps_limit;
 			List<string> video_sources = new List<string>(options.video_sources);
 
@@ -92,7 +92,7 @@ class VideoRecognitionDemo
 			MAssert.Check(config_dir != string.Empty, "Error! config_dir is empty.");
 			MAssert.Check(database_dir != string.Empty, "Error! database_dir is empty.");
 			MAssert.Check(method_config != string.Empty, "Error! method_config is empty.");
-			MAssert.Check(recognition_distance_threshold > 0, "Error! Failed recognition distance threshold.");
+			MAssert.Check(recognition_far_threshold > 0, "Error! Failed recognition far threshold.");
 
 			List<ImageAndDepthSource> sources = new List<ImageAndDepthSource>();
 			List<string> sources_names = new List<string>();
@@ -123,6 +123,8 @@ class VideoRecognitionDemo
 
 			// create database
 			Recognizer recognizer = service.createRecognizer(method_config, true, false, false);
+			float recognition_distance_threshold = Convert.ToSingle(recognizer.getROCCurvePointByFAR(recognition_far_threshold).distance);
+
 			Capturer capturer = service.createCapturer("common_capturer4_lbf_singleface.xml");
 			Database database = new Database(
 				database_dir,

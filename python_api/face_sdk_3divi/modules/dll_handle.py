@@ -160,6 +160,18 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
+    def Capturer_getType(self, *args, **kwargs):
+        func = self.__dll_handle['{}Capturer_getType'.format(self.__namespace)]
+        func.restype = c_int32
+
+        return func(*args, **kwargs)
+
+    def Capturer_resetHistory(self, *args, **kwargs):
+        self.__dll_handle['{}Capturer_resetHistory'.format(self.__namespace)](*args, **kwargs)
+
+    def Capturer_setParameter(self, *args, **kwargs):
+        self.__dll_handle['{}Capturer_setParameter'.format(self.__namespace)](*args, **kwargs)
+
     def EmotionsEstimator_estimateEmotions(self, *args, **kwargs):
         func = self.__dll_handle['{}EmotionsEstimator_estimateEmotions'.format(self.__namespace)]
         func.restype = c_int32
@@ -226,6 +238,12 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
+    def RawSample_downscaleToPreferredSize(self, *args, **kwargs):
+        func = self.__dll_handle['{}RawSample_downscaleToPreferredSize'.format(self.__namespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
     def RawSample_getFaceCutRectangle(self, *args, **kwargs):
         func = self.__dll_handle['{}RawSample_getFaceCutRectangle'.format(self.__namespace)]
         func.restype = c_void_p
@@ -263,10 +281,7 @@ class DllHandle:
         return func(*args, **kwargs)
 
     def RawSample_getOriginalImage(self, *args, **kwargs):
-        func = self.__dll_handle['{}RawSample_getOriginalImage'.format(self.__namespace)]
-        func.restype = c_void_p
-
-        return func(*args, **kwargs)
+        self.__dll_handle['{}RawSample_getOriginalImage'.format(self.__namespace)](*args, **kwargs)
 
     def RawSample_cutFaceImage(self, *args, **kwargs):
         func = self.__dll_handle['{}RawSample_cutFaceImage'.format(self.__namespace)]
@@ -293,6 +308,18 @@ class DllHandle:
     def Recognizer_verifyMatch_v2(self, *args, **kwargs):
         self.__dll_handle['{}Recognizer_verifyMatch_v2'.format(self.__namespace)](*args, **kwargs)
 
+    def Recognizer_getROCCurvePointByDistanceThreshold(self, *args, **kwargs):
+        self.__dll_handle['{}Recognizer_getROCCurvePointByDistanceThreshold'.format(self.__namespace)](*args, **kwargs)
+
+    def Recognizer_getROCCurvePointByFAR(self, *args, **kwargs):
+        self.__dll_handle['{}Recognizer_getROCCurvePointByFAR'.format(self.__namespace)](*args, **kwargs)
+
+    def Recognizer_getROCCurvePointByFRR(self, *args, **kwargs):
+        self.__dll_handle['{}Recognizer_getROCCurvePointByFRR'.format(self.__namespace)](*args, **kwargs)
+
+    def Recognizer_getROCCurvePointByScoreThreshold(self, *args, **kwargs):
+        self.__dll_handle['{}Recognizer_getROCCurvePointByScoreThreshold'.format(self.__namespace)](*args, **kwargs)
+
     def Recognizer_createIndex(self, *args, **kwargs):
         func = self.__dll_handle['{}Recognizer_createIndex'.format(self.__namespace)]
         func.restype = c_void_p
@@ -300,7 +327,7 @@ class DllHandle:
         return func(*args, **kwargs)
 
     def Recognizer_getMethodName(self, *args, **kwargs):
-         self.__dll_handle['{}Recognizer_getMethodName'.format(self.__namespace)](*args, **kwargs)
+        self.__dll_handle['{}Recognizer_getMethodName'.format(self.__namespace)](*args, **kwargs)
 
     def Recognizer_search(self, *args, **kwargs):
         self.__dll_handle['{}Recognizer_search'.format(self.__namespace)](*args, **kwargs)
@@ -336,6 +363,9 @@ class DllHandle:
         func.restype = c_int64
 
         return func(*args, **kwargs)
+
+    def TemplatesIndex_reserveSearchMemory(self, *args, **kwargs):
+        self.__dll_handle['{}TemplatesIndex_reserveSearchMemory'.format(self.__namespace)](*args, **kwargs)
 
     def TemplatesIndex_at(self, *args, **kwargs):
         func = self.__dll_handle['{}TemplatesIndex_at'.format(self.__namespace)]
@@ -444,7 +474,7 @@ class DllHandle:
         return func(*args, **kwargs)
 
     def VideoWorker_getMethodName(self, *args, **kwargs):
-         self.__dll_handle['{}VideoWorker_getMethodName'.format(self.__namespace)](*args, **kwargs)
+        self.__dll_handle['{}VideoWorker_getMethodName'.format(self.__namespace)](*args, **kwargs)
 
     def VideoWorker_getStreamsCount(self, *args, **kwargs):
         func = self.__dll_handle['{}VideoWorker_getStreamsCount'.format(self.__namespace)]
@@ -455,8 +485,14 @@ class DllHandle:
     def VideoWorker_errStreamWriteFunc(self, *args, **kwargs):
         self.__dll_handle['{}VideoWorker_errStreamWriteFunc'.format(self.__namespace)](*args, **kwargs)
 
+    def VideoWorker_toggleSomething(self, *args, **kwargs):
+        self.__dll_handle['{}VideoWorker_toggleSomething'.format(self.__namespace)](*args, **kwargs)
+
+    def VideoWorker_setParameter(self, *args, **kwargs):
+        self.__dll_handle['{}VideoWorker_setParameter'.format(self.__namespace)](*args, **kwargs)
+
     def get_version(self, *args, **kwargs):
-         self.__dll_handle['{}get_version'.format(self.__namespace)](*args, **kwargs)
+        self.__dll_handle['{}get_version'.format(self.__namespace)](*args, **kwargs)
 
     def FacerecService_constructor2(self, *args, **kwargs):
         func = self.__dll_handle['{}FacerecService_constructor2'.format(self.__namespace)]

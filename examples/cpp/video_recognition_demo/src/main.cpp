@@ -68,10 +68,10 @@ int main(int argc, char const *argv[])
 		const std::string enable_active_liveness         = parser.get<std::string>("--enable_active_liveness        ", "no");
 		const std::string vw_config_file                 = parser.get<std::string>("--vw_config_file                ", "video_worker_fdatracker_blf_fda.xml");
 		const float       frame_fps_limit                = parser.get<float      >("--frame_fps_limit               ", 25);
-		const float       recognition_distance_threshold = parser.get<float      >("--recognition_distance_threshold");
+		const float       recognition_far_threshold      = parser.get<float      >("--recognition_far_threshold");
 
 		// cehck params
-		MAssert(recognition_distance_threshold > 0,);
+		MAssert(recognition_far_threshold > 0,);
 
 		std::vector<cv::Ptr<ImageAndDepthSource> > sources;
 		std::vector<std::string> sources_names;
@@ -120,10 +120,13 @@ int main(int argc, char const *argv[])
 
 		std::cout << "Library version: " << service->getVersion() << std::endl << std::endl;
 
+		const pbio::Recognizer::Ptr recognizer = service->createRecognizer(method_config, true, false);
+		const float recognition_distance_threshold = recognizer->getROCCurvePointByFAR(recognition_far_threshold).distance;
+
 		// create database
 		const Database database(
 			database_list_filepath,
-			*service->createRecognizer(method_config, true, false),
+			*recognizer,
 			*service->createCapturer("common_capturer4_fda_singleface.xml"),
 			recognition_distance_threshold);
 		int active_liveness = enable_active_liveness == "yes" ? 1 : 0;

@@ -10,11 +10,12 @@
 
 <detector_sub_type>blf</detector_sub_type>
 <num_threads>1</num_threads>
-<score_threshold>0.67</score_threshold>
-<nms_iou_threshold>0.5</nms_iou_threshold>
-<coarse_score_threshold>0.3</coarse_score_threshold>
-<blf_id>blf-back</blf_id>
-<blf_detector_file>share/facedetectors/blf/back_model.enc</blf_detector_file>
+<score_threshold>0.5</score_threshold>
+<nms_iou_threshold>0.3</nms_iou_threshold>
+<coarse_score_threshold>0.1</coarse_score_threshold>
+
+<blf_id>blf-front</blf_id>
+<blf_detector_file>share/facedetectors/blf/front_model.enc</blf_detector_file>
 
 <use_cuda>0</use_cuda>
 <gpu_index>0</gpu_index>

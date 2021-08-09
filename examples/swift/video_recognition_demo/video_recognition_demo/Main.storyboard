@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="video_recognition_demo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" layoutMarginsFollowReadableWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T7b-VI-Q2X">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wi3-Yb-lHw">
+                                <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="wi3-Yb-lHw" secondAttribute="height" multiplier="1:1" id="nju-f0-X83"/>
+                                </constraints>
+                            </imageView>
+                            <textField hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="bezel" placeholder="Name" textAlignment="center" clearsOnBeginEditing="YES" minimumFontSize="17" id="Uqa-j0-tWe">
+                                <rect key="frame" x="0.0" y="849" width="209" height="47"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <color key="backgroundColor" systemColor="systemGray2Color"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="HideClav:" destination="BYZ-38-t0r" eventType="editingDidEndOnExit" id="bGb-r9-UNn"/>
+                                </connections>
+                            </textField>
+                            <button hidden="YES" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="bottom" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KQq-o5-Ovu" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="208" y="849" width="206" height="47"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <directionalEdgeInsets key="directionalLayoutMargins" top="8" leading="8" bottom="8" trailing="8"/>
+                                <state key="normal" title="Add to database">
+                                    <color key="titleColor" systemColor="systemPinkColor"/>
+                                </state>
+                                <state key="highlighted">
+                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="17"/>
+                                </state>
+                                <connections>
+                                    <action selector="actSaveButton:" destination="BYZ-38-t0r" eventType="touchDown" id="0I5-s3-2Vc"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Need one person not added to the database" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dg8-ER-EY6">
+                                <rect key="frame" x="0.0" y="816" width="414" height="33"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                                <color key="tintColor" systemColor="secondarySystemGroupedBackgroundColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" systemColor="systemPinkColor"/>
+                                <color key="highlightedColor" systemColor="secondarySystemBackgroundColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="T7b-VI-Q2X" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="6YS-Sz-bFf"/>
+                            <constraint firstItem="T7b-VI-Q2X" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="7IB-6V-PU2"/>
+                            <constraint firstItem="Uqa-j0-tWe" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="88H-D0-dj8"/>
+                            <constraint firstItem="wi3-Yb-lHw" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Djg-s2-uEb"/>
+                            <constraint firstItem="T7b-VI-Q2X" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" id="Gv3-Wf-h6p"/>
+                            <constraint firstItem="T7b-VI-Q2X" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Uka-7U-YSw"/>
+                            <constraint firstItem="wi3-Yb-lHw" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="25:112" id="ZHF-CC-YhS"/>
+                            <constraint firstAttribute="bottom" secondItem="Uqa-j0-tWe" secondAttribute="bottom" id="ZSn-UF-DwA"/>
+                            <constraint firstItem="wi3-Yb-lHw" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="c7S-Iu-EyH"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="cutImage" destination="wi3-Yb-lHw" id="UDd-Xf-wF4"/>
+                        <outlet property="imageView" destination="T7b-VI-Q2X" id="s4e-AO-jTw"/>
+                        <outlet property="labelText" destination="dg8-ER-EY6" id="LZe-SG-f9e"/>
+                        <outlet property="textFieldName" destination="Uqa-j0-tWe" id="3rg-AN-y7u"/>
+                        <outletCollection property="SaveButton" destination="KQq-o5-Ovu" collectionClass="NSMutableArray" id="6bV-al-KVM"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-197.10144927536234" y="28.794642857142854"/>
+        </scene>
+    </scenes>
+    <color key="tintColor" systemColor="systemPinkColor"/>
+    <resources>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="secondarySystemGroupedBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray2Color">
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGroupedBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemPinkColor">
+            <color red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

@@ -3,6 +3,7 @@
 
 #include "SmartPtr.h"
 #include "IRawImage.h"
+#include "ComplexObject.h"
 
 namespace pbio
 {

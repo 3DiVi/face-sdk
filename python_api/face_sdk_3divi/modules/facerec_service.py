@@ -138,7 +138,7 @@ class FacerecService(ComplexObject):
     #       Type and features depend on the content of the configuration file.
     #       Thread-safe.
     #     \param[in] config
-    #       Сonfiguration file with optionally overridden parameters.
+    #       Name of the configuration file or configuration file with optionally overridden parameters.
     #     \return Created Capturer object.
     #
     #  \~Russian
@@ -146,13 +146,18 @@ class FacerecService(ComplexObject):
     #       Тип и возможности зависят от указанного конфигурационного файла.
     #       Потокобезопасный.
     #     \param[in] config
-    #       Конфигурационный файл с опционально переопределенными параметрами.
+    #       Имя конфигурационного файла или конфигурационный файл с опционально переопределенными параметрами.
     #     \return Созданный объект Capturer.
-    def create_capturer(self, config: Config) -> Capturer:
-        assert isinstance(config, Config)
-        file_path = self.__facerec_conf_dir + config.config_filepath
+    def create_capturer(self, config: Union[Config, str]) -> Capturer:
 
-        overridden_keys, overridden_values = config.prepare()
+        if isinstance(config, Config):
+            file_path = self.__facerec_conf_dir + config.config_filepath
+            overridden_keys, overridden_values = config.prepare()
+        elif isinstance(config, str):
+            file_path = self.__facerec_conf_dir + config
+            overridden_keys, overridden_values = [], []
+        else:
+            raise Error(0xf9df02ab, "Wrong type of config")
 
         exception = make_exception()
 

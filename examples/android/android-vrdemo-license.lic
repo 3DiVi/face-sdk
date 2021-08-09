@@ -7,16 +7,16 @@
 	<VideoClientExt>1</VideoClientExt>
 	<processor8v7>2</processor8v7>
 	<processor6v7>2</processor6v7>
-	<processor9v30>2</processor9v30>
 	<processor9v30mask>2</processor9v30mask>
+	<processor10v30>2</processor10v30>
 	<matcher8v7>1</matcher8v7>
 	<matcher6v7>1</matcher6v7>
-	<matcher9v30>1</matcher9v30>
 	<matcher9v30mask>1</matcher9v30mask>
+	<matcher10v30>1</matcher10v30>
 	<templatesindex8v7>100</templatesindex8v7>
 	<templatesindex6v7>100</templatesindex6v7>
-	<templatesindex9v30>100</templatesindex9v30>
 	<templatesindex9v30mask>100</templatesindex9v30mask>
+	<templatesindex10v30>100</templatesindex10v30>
 	<quality_estimator>1</quality_estimator>
 	<face_quality_estimator>1</face_quality_estimator>
 	<capturer1>1</capturer1>
@@ -32,5 +32,5 @@
 	<Reg>0</Reg>
 	<android_app_id>62afa60849efabf4f39e8e81d765431a2c6fa6d244ea86caf278c2b4d6984d23-com.vdt.face_recognition.video_recognition_demo</android_app_id>
 	<Hardware>0f77c6ae59a1db75969fadef1937c151cb5a4c98db81735cb64cf3626109610d</Hardware>
-	<Signature>&#10;-----BEGIN SIGNATURE-----&#10;mQwRLhnGG2gnb2nlOnGyzC6AUOCaDoSANuKYYr2UPblxydrDONfpqXSOIiSN5iZM&#10;dyyO0T3Uq0DWguTdrifNAPV60SV6W6EK146ULHx1Nx/MMU4ibDLVj6KWaOG++NYw&#10;KDjG9HzeF5h0PV0Vf0WqvL9Dce2Mz+AbHsPRrAaQlANRpg/qkgKVuMeJiHGpk1ai&#10;2GGlbzbSw8SnBh/fgHxLOijXG3ZNgIlBg7EmTfz9IuaLZkGo057r0bAQMbRtpepw&#10;V+r6fmvuchikbeYSJ34PfSsxgCXUvJznlO3Lzg7rhQhXFXKiTfOrOEN5HPgN/bjI&#10;JNHUQtiYqr5cHQlY1oUfbA==&#10;-----END SIGNATURE-----&#10;</Signature>
+	<Signature>&#10;-----BEGIN SIGNATURE-----&#10;JmIb6epXLyvZPFg6QzXR6yV5lsLWARBsgjMghYy5XWZJVflKICF6LT5WUQXVv12F&#10;AzUPpF/rDJXH7+UwrVkjDOL0O4MHeGQirDvpNG1mSiAZAPu2LQ+6ISLf+t+Pfahs&#10;mbmPIzeTM5Z/eXGaMm0BYbXaO8ngnZq+pcIlYnbQ/QwzmWT90Tlo/ty73HfDXFjz&#10;LJvX56TzSf17VsZRHDicKpa6VChO+ii3jG4iBXpPeoMdpYP/R+Zaw83JIPK7Q9IL&#10;7K5HGBdl0BzFaYwBtZxppYLNNK7H4jiHdwAOD6faITxXqEddFHzzc0Tsu7fYiD7w&#10;a8KVQEnGw2VmKehSsI7ACw==&#10;-----END SIGNATURE-----&#10;</Signature>
 </License>

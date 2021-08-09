@@ -26,7 +26,7 @@ def parse_args():
     parser.add_argument('--fullscreen', default="yes", type=str)
     parser.add_argument('--vw_config_file', default="video_worker_fdatracker.xml", type=str)
     parser.add_argument('--frame_fps_limit', default=25, type=float)
-    parser.add_argument('--recognition_distance_threshold', type=float, required=True)
+    parser.add_argument('--recognition_far_threshold', type=float, required=True)
     parser.add_argument("sources_names", nargs="+")
 
     return parser.parse_args()
@@ -36,7 +36,7 @@ def main():
     try:
         args = parse_args()
 
-        assert args.recognition_distance_threshold > 0
+        assert args.recognition_far_threshold > 0
 
         sources = []
 
@@ -48,6 +48,7 @@ def main():
         print("Library version: ", service.get_version(), "\n")
 
         recognizer = service.create_recognizer(args.method_config, True, True)
+        recognition_distance_threshold = recognizer.get_roc_curve_point_by_far(args.recognition_far_threshold).distance
 
         capturer_config = Config("common_capturer4_fda_singleface.xml")
         capturer = service.create_capturer(capturer_config)
@@ -57,7 +58,7 @@ def main():
             args.database_list_filepath,
             recognizer,
             capturer,
-            args.recognition_distance_threshold
+            recognition_distance_threshold
         )
 
         # create one VideoWorker
@@ -156,6 +157,30 @@ def main():
             if ord('r') == key:
                 track_id_threshold = vw.reset_stream(0)
                 print("resetStream return track_id_threshold: ", track_id_threshold)
+
+            if ord("\r") == key:
+                vw.disable_processing_on_stream(0)
+                print("disable_processing_on_stream: ")
+
+            if ord(' ') == key:
+                vw.enable_processing_on_stream(0)
+                print("enable_processing_on_stream: ")
+
+            if ord('n') == key:
+                vw.disable_age_gender_estimation_on_stream(0)
+                print("disable_age_gender_estimation_on_stream: ")
+
+            if ord('h') == key:
+                vw.enable_age_gender_estimation_on_stream(0)
+                print("disable_age_gender_estimation_on_stream: ")
+
+            if ord('m') == key:
+                vw.disable_emotions_estimation_on_stream(0)
+                print("disable_emotions_estimation_on_stream: ")
+
+            if ord('j') == key:
+                vw.enable_emotions_estimation_on_stream(0)
+                print("enable_emotions_estimation_on_stream: ")
 
             # check exceptions in callbacks
             vw.check_exception()

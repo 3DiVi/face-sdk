@@ -5,7 +5,7 @@
 #  \~Russian
 #     \brief TemplatesIndex - Интерфейсный объект для работы с индексом шаблонов.
 
-from ctypes import CDLL
+from ctypes import CDLL, c_int64
 from ctypes import c_void_p, py_object
 
 from io import BytesIO
@@ -112,3 +112,31 @@ class TemplatesIndex(ComplexObject):
         check_exception(exception, self._dll_handle)
 
         return Template(self._dll_handle, c_void_p(result_impl))
+
+    ##
+    # \~English
+    #    \brief Reserve memory for temporary buffers used when searching.
+    #      These temporary buffers require 8 * size() * queries_count bytes.
+    #
+    #    \param[in]  queries_count
+    #      Integer queries_count >= 0 - max size of the queries_templates list
+    #      passed to Recognizer.search at once to prepare the buffers for.
+    #
+    # \~Russian
+    #    \brief Зарезервировать память для временных буферов, используемых при поиске.
+    #       Эти временные буферы требуют 8 * size() * queries_count байт.
+    #
+    #    \param[in]  queries_count
+    #      Целое число queries_count >= 0 - максимальный размер списка
+    #      queries_templates, подаваемого в Recognizer.search за один раз,
+    #      к которому нужно подготовить буферы.
+    def reserve_search_memory(self, queries_count: int):
+        exception = make_exception()
+
+        self._dll_handle.TemplatesIndex_reserveSearchMemory(
+            self._impl,
+            c_int64(queries_count),
+            exception
+        )
+
+        check_exception(exception, self._dll_handle)

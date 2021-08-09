@@ -127,7 +127,7 @@ public class AuthActivity
 	// recognizer config
 	// use method9v30mask_recognizer.xml for mask-wearing face identification
 	//private final String recognizer_config = "method9v30mask_recognizer.xml";
-	private final String recognizer_config = "method9v30_recognizer.xml";
+	private final String recognizer_config = "recognizer_latest_v30.xml";
 
 	private String video_worker_config = "";
 

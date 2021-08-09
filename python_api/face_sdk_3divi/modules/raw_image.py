@@ -9,6 +9,7 @@ from enum import Enum
 from ctypes import c_int32, c_char_p
 import numpy as np
 import cv2
+from . import get_repr
 
 
 class CapiData:
@@ -30,6 +31,51 @@ class CapiData:
 ## @defgroup RawImage
 #  @{
 
+
+##
+# \~English
+#    \brief %Rectangle in an image.
+# \~Russian
+#    \brief Прямоугольник на изображении.
+class Rectangle:
+    ##
+    # \~English
+    #    \brief X coordinate of the top-left corner.
+    # \~Russian
+    #    \brief Координата X левого верхнего угла прямоугольника.
+    x: int
+
+    ##
+    # \~English
+    #    \brief Y coordinate of the top-left corner.
+    # \~Russian
+    #    \brief Координата Y левого верхнего угла прямоугольника.
+    y: int
+
+    ##
+    # \~English
+    #    \brief Width of the rectangle.
+    # \~Russian
+    #    \brief Ширина прямоугольника.
+    width: int
+
+    ##
+    # \~English
+    #    \brief Height of the rectangle.
+    # \~Russian
+    #    \brief Высота прямоугольника.
+    height: int
+
+    def __init__(self, x: int, y: int, width: int, height: int):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def __repr__(self):
+        return get_repr(self)
+
+
 ##
 # \~English
 #    \brief Format of image data.
@@ -39,37 +85,37 @@ class Format(Enum):
 
     ##
     # \~English
-    #   \brief Grayscale, 8 bit per pixel.
+    #    \brief Grayscale, 8 bit per pixel.
     # \~Russian
-    # 	\brief Оттенки серого, 8 бит на пиксел.
+    #    \brief Оттенки серого, 8 бит на пиксел.
     FORMAT_GRAY = 0
 
     ##
     # \~English
-    # 	\brief RGB, 24 bit per pixel, 8 bit per channel.
+    #    \brief RGB, 24 bit per pixel, 8 bit per channel.
     # \~Russian
-    # 	\brief RGB, 24 бита на пиксел, 8 бит на канал.
+    #    \brief RGB, 24 бита на пиксел, 8 бит на канал.
     FORMAT_RGB = 1
 
     ##
     # \~English
-    # 	\brief BGR, 24 bit per pixel, 8 bit per channel.
+    #    \brief BGR, 24 bit per pixel, 8 bit per channel.
     # \~Russian
-    # 	\brief BGR, 24 бита на пиксел, 8 бит на канал.
+    #    \brief BGR, 24 бита на пиксел, 8 бит на канал.
     FORMAT_BGR = 2
 
     ##
     # \~English
-    # 	\brief NV21 format in the YUV color coding system, the standard image format used on the Android camera preview.
+    #    \brief NV21 format in the YUV color coding system, the standard image format used on the Android camera preview.
     # \~Russian
-    # 	\brief Формат NV21 в цветовой системе кодирования YUV, стандартный формат изображений, используемых в превью Android-камер.
+    #    \brief Формат NV21 в цветовой системе кодирования YUV, стандартный формат изображений, используемых в превью Android-камер.
     FORMAT_YUV_NV21 = 3
 
     ##
     # \~English
-    # 	\brief NV12 format in the YUV color coding system.
+    #    \brief NV12 format in the YUV color coding system.
     # \~Russian
-    # 	\brief Формат NV12 в цветовой системе кодирования YUV.
+    #    \brief Формат NV12 в цветовой системе кодирования YUV.
     FORMAT_YUV_NV12 = 4
 
 
@@ -112,56 +158,65 @@ class Format(Enum):
 #      - Отрицательное число - из метода RawImage.format.
 #      <br>
 #      Обнаружив некорректное значения, библиотека libfacerec выбросит исключение Error, которое вы сможете перехватить.
+
 class RawImage:
 
     ##
     # \~English
-    # 	\brief Get a pointer to the image data buffer.
-    # 		All pixels must be stored continuously row by row, without gaps at the end of each row.
-    # 		Can't throw an exception (see Warning in Class description).
-    # 	\return	Pointer to the image data buffer.
+    #    \brief Get a pointer to the image data buffer.
+    #      All pixels must be stored continuously row by row, without gaps at the end of each row.
+    #      Can't throw an exception (see Warning in Class description).
+    #    \return
+    #      Pointer to the image data buffer.
     #
     # \~Russian
-    # 	\brief Получить указатель на данные изображения.
-    # 		Все пикселы должны быть сохранены последовательно, строка за строкой, без разрывов.
-    # 		Не может выбрасывать исключения (см. предупреждение).
-    # 	\return	Указатель на данные изображения.
+    #    \brief Получить указатель на данные изображения.
+    #      Все пикселы должны быть сохранены последовательно, строка за строкой, без разрывов.
+    #      Не может выбрасывать исключения (см. предупреждение).
+    #    \return
+    #      Указатель на данные изображения.
     data: bytes
 
     ##
     # \~English
-    # 	\brief Get image width.
-    # 		Can't throw an exception (see Warning in Class description).
-    # 	\return	Number of columns in the image.
+    #    \brief Get image width.
+    #      Can't throw an exception (see Warning in Class description).
+    #    \return
+    #      Number of columns in the image.
     #
     # \~Russian
-    # 	\brief Получить ширину изображения.
-    # 		Не может выбрасывать исключения (см. предупреждение).
-    # 	\return Ширина изображения в пикселах.
+    #    \brief Получить ширину изображения.
+    #      Не может выбрасывать исключения (см. предупреждение).
+    #    \return
+    #      Ширина изображения в пикселах.
     width: int
 
     ##
     # \~English
-    # 	\brief Get image height.
-    # 		Can't throw an exception (see Warning in Class description).
-    # 	\return	Number of rows in the image.
+    #    \brief Get image height.
+    #      Can't throw an exception (see Warning in Class description).
+    #    \return
+    #      Number of rows in the image.
     #
     # \~Russian
-    # 	\brief Получить высоту изображения.
-    # 		Не может выбрасывать исключения (см. предупреждение).
-    # 	\return	Высота изображения в пикселах.
+    #    \brief Получить высоту изображения.
+    #      Не может выбрасывать исключения (см. предупреждение).
+    #    \return
+    #      Высота изображения в пикселах.
     height: int
 
     ##
     # \~English
-    # 	\brief Get image format.
-    # 		Can't throw an exception (see Warning in Class description).
-    # 	\return	Number of the image format (see face_sdk_3divi.modules.raw_image.Format).
+    #    \brief Get image format.
+    #      Can't throw an exception (see Warning in Class description).
+    #    \return
+    #      Number of the image format (see face_sdk_3divi.modules.raw_image.Format).
     #
     # \~Russian
-    # 	\brief Получить формат изображения.
-    # 		Не может выбрасывать исключения (см. предупреждение).
-    # 	\return	Формат изображения (см. face_sdk_3divi.modules.raw_image.Format).
+    #    \brief Получить формат изображения.
+    #      Не может выбрасывать исключения (см. предупреждение).
+    #    \return
+    #      Формат изображения (см. face_sdk_3divi.modules.raw_image.Format).
     format: Format
 
     ##
@@ -193,6 +248,28 @@ class RawImage:
             c_int32(self.crop_info_data_image_width),
             c_int32(self.crop_info_data_image_height)
         )
+    ##
+    # \~English
+    #    \brief Create a RawImage object that represents the specified rectangle area of this image.
+    #
+    # \~Russian
+    #    \brief Создать объект RawImage, представляющий указанную прямоугольную область этого изображения.
+    def crop(self, rectangle: Rectangle):
+
+        offset_x = self.crop_info_offset_x if self.with_crop else 0
+        offset_y = self.crop_info_offset_y if self.with_crop else 0
+        data_width = self.crop_info_data_image_width if self.with_crop else self.width
+        data_height = self.crop_info_data_image_height if self.with_crop else self.height
+
+        result = RawImage(rectangle.width, rectangle.height, self.format, self.data)
+
+        result.with_crop = True
+        result.crop_info_offset_x = rectangle.x + offset_x
+        result.crop_info_offset_y = rectangle.y + offset_y
+        result.crop_info_data_image_width = data_width
+        result.crop_info_data_image_height = data_height
+
+        return result
 
     ##
     # \~English

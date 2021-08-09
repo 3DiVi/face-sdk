@@ -77,15 +77,15 @@ void print_usage(const std::string program_name)
 					"verify <image_file1> <image_file2> \n" << std::endl;
 
 	std::cout << "\nExample enrollment (run from bin folder): " << program_name
-			<< dll_path + " ../conf/facerec method9v1000_recognizer.xml "
+			<< dll_path + " ../conf/facerec recognizer_latest_v1000.xml  "
 					"enroll set1 set1/list.txt templates.bin 0" << std::endl;
 
 	std::cout << "\nExample identifying (run from bin folder): " << program_name
-			<< dll_path + " ../conf/facerec method9v1000_recognizer.xml "
+			<< dll_path + " ../conf/facerec recognizer_latest_v1000.xml "
 					"identify set2/01100.jpg templates.bin" << std::endl;
 
 	std::cout << "\nExample verify (run from bin folder): " << program_name
-			<< dll_path + " ../conf/facerec method9v1000_recognizer.xml "
+			<< dll_path + " ../conf/facerec recognizer_latest_v1000.xml "
 					"verify set2/01100.jpg set2/01101.jpg" << std::endl;
 }
 

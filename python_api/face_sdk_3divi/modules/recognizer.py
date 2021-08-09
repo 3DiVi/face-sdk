@@ -4,7 +4,7 @@
 #  \~Russian
 #     \brief Recognizer - Интерфейсный объект для создания и сравнения шаблонов.
 
-from ctypes import c_int64, c_void_p,  c_float, py_object, c_double, byref, c_int8, c_int32
+from ctypes import c_int64, c_void_p, c_float, py_object, c_double, byref, c_int8, c_int32
 
 from io import BytesIO
 from enum import Enum
@@ -20,6 +20,7 @@ from .template import Template
 from .error import Error
 from . import get_repr
 
+
 ## @defgroup PythonAPI
 #  @{
 ## @defgroup Recognizer
@@ -31,7 +32,6 @@ from . import get_repr
 # \~Russian
 #    \brief Интерфейсный объект для создания и сравнения шаблонов.
 class MatchResult:
-
     #  \~English
     #     \brief Distance between the templates.
     #  \~Russian
@@ -80,7 +80,6 @@ class MatchResult:
 # \~Russian
 #    \brief Результат поиска запросного шаблона (Template) в индексе (TemplatesIndex).
 class SearchResult:
-
     #  \~English
     #     \brief Index in the TemplatesIndex.
     #  \~Russian
@@ -107,7 +106,6 @@ class SearchResult:
 # \~Russian
 #    \brief Типы ускорения поиска.
 class SearchAccelerationType(Enum):
-
     #  \~English
     #     \brief No acceleration, a standard line search.
     #       The result is identical to N calls of Recognizer.verify_match.
@@ -258,9 +256,9 @@ class Recognizer(ComplexObject):
 
         result_impl = self._dll_handle.Recognizer_createIndex(
             self._impl,
-            len(templates),
+            c_int64(len(templates)),
             templates_impls,
-            search_threads_count,
+            c_int32(search_threads_count),
             exception)
 
         check_exception(exception, self._dll_handle)
@@ -473,3 +471,143 @@ class Recognizer(ComplexObject):
         )
         check_exception(exception, self._dll_handle)
         return [i for i in result]
+
+    ##
+    # \~English
+    #    \brief Get a point on the ROC curve with a given distance threshold.
+    #      Thread-safe.
+    #
+    #    \return
+    #      Point on the ROC curve in the form of a MatchResult struct.
+    #
+    # \~Russian
+    #    \brief Получить точку на ROC-кривой с заданным порогом расстояния.
+    #      Потокобезопасный.
+    #
+    #    \return
+    #      Точка на ROC-кривой в виде структуры MatchResult.
+    def get_roc_curve_point_by_distance_threshold(self, distance_threshold: float) -> MatchResult:
+        exception = make_exception()
+
+        distance = c_double()
+        fa_r = c_double()
+        fr_r = c_double()
+        score = c_double()
+
+        self._dll_handle.Recognizer_getROCCurvePointByDistanceThreshold(
+            self._impl,
+            c_double(distance_threshold),
+            byref(distance),
+            byref(fa_r),
+            byref(fr_r),
+            byref(score),
+            exception
+        )
+        check_exception(exception, self._dll_handle)
+
+        return MatchResult(distance.value, fa_r.value, fr_r.value, score.value)
+
+    ##
+    # \~English
+    #    \brief Get a point on the ROC curve with a given false acceptance rate (FAR).
+    #      Thread-safe.
+    #
+    #    \return
+    #      Point on the ROC curve in the form of a MatchResult struct.
+    #
+    # \~Russian
+    #    \brief Получить точку на ROC-кривой с заданным false acceptance rate (FAR).
+    #      Потокобезопасный.
+    #
+    #    \return
+    #      Точка на ROC-кривой в виде структуры MatchResult.
+    def get_roc_curve_point_by_far(self, desired_far: float) -> MatchResult:
+        exception = make_exception()
+
+        distance = c_double()
+        fa_r = c_double()
+        fr_r = c_double()
+        score = c_double()
+
+        self._dll_handle.Recognizer_getROCCurvePointByFAR(
+            self._impl,
+            c_double(desired_far),
+            byref(distance),
+            byref(fa_r),
+            byref(fr_r),
+            byref(score),
+            exception
+        )
+        check_exception(exception, self._dll_handle)
+
+        return MatchResult(distance.value, fa_r.value, fr_r.value, score.value)
+
+    ##
+    # \~English
+    #    \brief Get a point on the ROC curve with a given false rejection rate (FRR).
+    #      Thread-safe.
+    #
+    #    \return
+    #      Point on the ROC curve in the form of a MatchResult struct.
+    #
+    # \~Russian
+    #    \brief Получить точку на ROC-кривой с заданным false rejection rate (FRR).
+    #      Потокобезопасный.
+    #
+    #    \return
+    #      Точка на ROC-кривой в виде структуры MatchResult.
+    def get_roc_curve_point_by_frr(self, desired_frr: float) -> MatchResult:
+        exception = make_exception()
+
+        distance = c_double()
+        fa_r = c_double()
+        fr_r = c_double()
+        score = c_double()
+
+        self._dll_handle.Recognizer_getROCCurvePointByFRR(
+            self._impl,
+            c_double(desired_frr),
+            byref(distance),
+            byref(fa_r),
+            byref(fr_r),
+            byref(score),
+            exception
+        )
+        check_exception(exception, self._dll_handle)
+
+        return MatchResult(distance.value, fa_r.value, fr_r.value, score.value)
+
+    ##
+    # \~English
+    #    \brief Get a point on the ROC curve with a given similarity score threshold.
+    #      Thread-safe.
+    #
+    #    \return
+    #      Point on the ROC curve in the form of a MatchResult struct.
+    #
+    # \~Russian
+    #    \brief Получить точку на ROC-кривой с заданным порогом значения сходства.
+    #      Потокобезопасный.
+    #
+    #    \return
+    #      Точка на ROC-кривой в виде структуры MatchResult.
+    def get_roc_curve_point_by_score_threshold(self, score_threshold: float) -> MatchResult:
+        exception = make_exception()
+
+        distance = c_double()
+        fa_r = c_double()
+        fr_r = c_double()
+        score = c_double()
+
+        self._dll_handle.Recognizer_getROCCurvePointByScoreThreshold(
+            self._impl,
+            c_double(score_threshold),
+            byref(distance),
+            byref(fa_r),
+            byref(fr_r),
+            byref(score),
+            exception
+        )
+        check_exception(exception, self._dll_handle)
+
+        return MatchResult(distance.value, fa_r.value, fr_r.value, score.value)

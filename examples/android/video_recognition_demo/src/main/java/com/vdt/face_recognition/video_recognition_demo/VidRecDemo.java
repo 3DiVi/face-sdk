@@ -90,8 +90,8 @@ public class VidRecDemo implements TheCameraPainter{
 		int method_index = shared_settings.getInt("method index", 0);
 		switch (method_index){
 			case 0:
-				method_recognizer = shared_settings.getString("rec_method0", "method9v30_recognizer.xml" );
-				threshold = Float.parseFloat(shared_settings.getString("threshold0", "6800"));
+				method_recognizer = shared_settings.getString("rec_method0", "recognizer_latest_v30.xml" );
+				threshold = Float.parseFloat(shared_settings.getString("threshold0", "6250"));
 				break;
 			case 1:
 				method_recognizer = shared_settings.getString("rec_method1", "method9v30mask_recognizer.xml" );

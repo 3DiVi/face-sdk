@@ -16,8 +16,9 @@ from .exception_check import check_exception, make_exception
 from .complex_object import ComplexObject
 from .dll_handle import DllHandle
 from .point import Point
-from .raw_image import Format, RawImage
+from .raw_image import Format, RawImage, Rectangle
 from . import get_repr
+
 
 ## @defgroup PythonAPI
 #  @{
@@ -30,26 +31,25 @@ from . import get_repr
 # \~Russian
 #    \brief Углы ориентации лица.
 class Angles:
-
     ##
-    #  \~English
-    #     \brief Yaw angle in degrees.
-    #  \~Russian
-    #     \brief Угол поворота вокруг вертикальной оси в градусах.
+    # \~English
+    #    \brief Yaw angle in degrees.
+    # \~Russian
+    #    \brief Угол поворота вокруг вертикальной оси в градусах.
     yaw: float
 
     ##
-    #  \~English
-    #     \brief Pitch angle in degrees.
-    #  \~Russian
-    #     \brief Угол поворота вокруг горизонтальной оси в градусах.
+    # \~English
+    #    \brief Pitch angle in degrees.
+    # \~Russian
+    #    \brief Угол поворота вокруг горизонтальной оси в градусах.
     pitch: float
 
     ##
-    #  \~English
-    #     \brief Roll angle in degrees.
-    #  \~Russian
-    #     \brief Угол поворота в картинной плоскости в градусах.
+    # \~English
+    #    \brief Roll angle in degrees.
+    # \~Russian
+    #    \brief Угол поворота в картинной плоскости в градусах.
     roll: float
 
     ##
@@ -64,56 +64,10 @@ class Angles:
 
 ##
 # \~English
-#    \brief %Rectangle in an image.
-# \~Russian
-#    \brief Прямоугольник на изображении.
-class Rectangle:
-
-    ##
-    #  \~English
-    #     \brief X coordinate of the top-left corner.
-    #  \~Russian
-    #     \brief Координата X левого верхнего угла прямоугольника.
-    x: int
-
-    ##
-    #  \~English
-    #     \brief Y coordinate of the top-left corner.
-    #  \~Russian
-    #     \brief Координата Y левого верхнего угла прямоугольника.
-    y: int
-
-    ##
-    #  \~English
-    #     \brief Width of the rectangle.
-    #  \~Russian
-    #     \brief Ширина прямоугольника.
-    width: int
-
-    ##
-    #  \~English
-    #     \brief Height of the rectangle.
-    #  \~Russian
-    #     \brief Высота прямоугольника.
-    height: int
-
-    def __init__(self, x: int, y: int, width: int, height: int):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-
-    def __repr__(self):
-        return get_repr(self)
-
-
-##
-# \~English
 #    \brief Image formats for saving.
 # \~Russian
 #    \brief Форматы изображения для сохранения (сериализации).
 class ImageFormat(IntEnum):
-
     #  \~English
     #     \brief JPEG (lossy compression).
     #  \~Russian
@@ -138,6 +92,30 @@ class ImageFormat(IntEnum):
     #     \brief BMP (без сжатия).
     IMAGE_FORMAT_BMP = 3
 
+##
+# \~English
+#    \brief Sample types (see also VDT.FaceRecognition.SDK.Capturer.CapturerType).
+# \~Russian
+#    \brief Типы образцов (см. также VDT.FaceRecognition.SDK.Capturer.CapturerType).
+class SampleType(IntEnum):
+    #  \~English
+    #     \brief The face is frontal - oriented.
+    #  \~Russian
+    #      \brief Фронтальное лицо.
+    SAMPLE_TYPE_FRONTAL = 0
+
+    #  \~English
+    #     \brief The face is left-profile-oriented.
+    #  \~Russian
+    #      \brief Лицо в профиль, смотрящее влево.
+    SAMPLE_TYPE_LEFT_PROFILE = 1
+
+    #  \~English
+    #     \brief The face is right-profile-oriented.
+    #  \~Russian
+    #      \brief Лицо в профиль, смотрящее вправо.
+    SAMPLE_TYPE_RIGHT_PROFILE = 2
+
 
 ##
 # \~English
@@ -145,7 +123,6 @@ class ImageFormat(IntEnum):
 # \~Russian
 #    \brief Типы обрезки лица.
 class FaceCutType(IntEnum):
-
     #  \~English
     #     \brief Unspecified cropping (any sample type).
     #  \~Russian
@@ -556,10 +533,10 @@ class RawSample(ComplexObject):
 
         binary_stream.seek(0)
         result = RawImage(
-                    width.value,
-                    height.value,
-                    color_model.value,
-                    binary_stream.read())
+            width.value,
+            height.value,
+            color_model.value,
+            binary_stream.read())
         binary_stream.close()
 
         return result
@@ -706,3 +683,79 @@ class RawSample(ComplexObject):
             exception
         )
         check_exception(exception, self._dll_handle)
+
+    ##
+    # \~English
+    #    \brief Get an original image. Throws an exception if a sample doesn’t contain an
+    #      original image (check with RawSample.hasOriginalImage first). Thread-safe.
+    #
+    #    \return
+    #      Original image.
+    #
+    # \~Russian
+    #    \brief Получить оригинальное изображение. Выбрасывается исключение, если образец не содержит
+    #      оригинальное изображение (проверка через RawSample.hasOriginalImage). Потокобезопасный.
+    #
+    #    \return
+    #      Оригинальное изображение.
+    def get_original_image(self) -> RawImage:
+
+        exception = make_exception()
+
+        width = c_int32()
+        height = c_int32()
+        format_id = c_int32()
+
+        data = c_void_p()
+
+        self._dll_handle.RawSample_getOriginalImage(
+            self._impl,
+            byref(width),
+            byref(height),
+            byref(format_id),
+            byref(data),
+            exception
+        )
+
+        data_array = bytearray(data)
+
+        check_exception(exception, self._dll_handle)
+
+        return RawImage(width.value, height.value, Format(format_id.value), data_array)
+
+    ##
+    # \~English
+    #    \brief Clone this RawSample with an internal face image downscaled to preferred size and without an
+    #      original image. In order to reduce memory consumption (both in RAM and after serialization). \n At work
+    #      Capturer and VideoWorker automatically downscale all RawSamples if
+    #      <i>downscale_rawsamples_to_preferred_size</i> parameter is enabled (enabled by default), but it decreases the
+    #      performance. \n So it is recommended to disable <i>downscale_rawsamples_to_preferred_size</i> and use
+    #      RawSample.downscaleToPreferredSize manually for RawSamples that you
+    #      need to save or hold for a long time in RAM.
+    #
+    #    \return
+    #      Created RawSample.
+    #
+    # \~Russian
+    #    \brief Создать копию образца с внутренним изображением лица, уменьшенным до желаемого
+    #      размера и без оригинального изображения.
+    #      В целях уменьшения потребления памяти (как в оперативной памяти, так и после сериализации).
+    #      \n При работе Capturer и VideoWorker автоматически уменьшают все образцы, если параметр
+    #      <i>downscale_rawsamples_to_preferred_size</i> включен (включен по умолчанию), но это снижает
+    #      производительность.
+    #      \n Поэтому лучше отключать <i>downscale_rawsamples_to_preferred_size</i>,
+    #      и использовать RawSample.downscaleToPreferredSize вручную для образцов, которые
+    #      вам нужно сохранить или длительно удерживать в оперативной памяти.
+    #
+    #    \return
+    #      Созданный RawSample.
+    def downscale_to_preferred_size(self):
+        exception = make_exception()
+
+        rs_impl = self._dll_handle.RawSample_downscaleToPreferredSize(
+            self._impl,
+            exception
+        )
+        check_exception(exception, self._dll_handle)
+
+        return RawSample(self._dll_handle, c_void_p(rs_impl))

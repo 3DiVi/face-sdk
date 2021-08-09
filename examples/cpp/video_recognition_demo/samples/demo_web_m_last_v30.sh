@@ -11,5 +11,5 @@ find ./base -type f > ./base.list.txt
   --config_dir ../conf/facerec/ \
   --dll_path ../lib/libfacerec.so \
   --database_list_filepath ./base.list.txt \
-  --method_config method9v30_recognizer.xml \
-  --recognition_distance_threshold 6800.0
+  --method_config recognizer_latest_v30.xml \
+  --recognition_far_threshold 1e-6

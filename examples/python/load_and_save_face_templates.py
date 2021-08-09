@@ -23,7 +23,7 @@ service = FacerecService.create_service(
     os.path.join(face_sdk_dir, "conf/facerec"))
 print('Service created')
 
-recognizer = service.create_recognizer("method9v30_recognizer.xml", True, True, False)
+recognizer = service.create_recognizer("recognizer_latest_v30.xml", True, True, False)
 print('Recognizer created')
 
 capturer = service.create_capturer(Config("common_capturer_blf_fda_front.xml"))
