@@ -12,7 +12,6 @@ def read_image(img_path):
 
 
 def detect(img):
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     raw_img = CVRawImage(img)
     detected = capturer.capture(raw_img)
     print(f'On image detected {len(detected)} faces')

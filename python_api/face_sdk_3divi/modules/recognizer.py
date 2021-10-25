@@ -336,7 +336,7 @@ class Recognizer(ComplexObject):
     def search(self, queries_templates: List[Template],
                templates_index: TemplatesIndex,
                k: int,
-               acceleration: SearchAccelerationType) -> List[List[SearchResult]]:
+               acceleration: SearchAccelerationType = SearchAccelerationType.SEARCH_ACCELERATION_1) -> List[List[SearchResult]]:
         queries_count = len(queries_templates)
 
         queries_impls = (c_void_p * queries_count)()

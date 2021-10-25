@@ -9,7 +9,6 @@ from face_sdk_3divi.example import CVRawImage
 def detect(img_path):
     img = cv2.imread(img_path)
     assert img is not None
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     raw_img = CVRawImage(img)
     detected = capturer.capture(raw_img)
     print(f'On image detected {len(detected)} faces')

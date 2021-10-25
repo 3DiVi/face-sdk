@@ -100,14 +100,14 @@ int main(int argc, char const *argv[])
 #else
 		const std::string default_dll_path = "../lib/libfacerec.so";
 #endif
+
 		// parse named params
 		ConsoleArgumentsParser parser(argc, argv);
 
 		const std::string dll_path           = parser.get<std::string>("--dll_path      ", default_dll_path);
 		const std::string config_dir         = parser.get<std::string>("--config_dir    ", "../conf/facerec");
 		const std::string capturer_conf      = parser.get<std::string>("--capturer_conf ", "fda_tracker_capturer_blf_front.xml");
-		const std::string license_dir        = parser.get<std::string>("--license_dir   ", "");
-
+		const std::string license_dir        = parser.get<std::string>("--license_dir   ", "../license");
 
 		const pbio::FacerecService::Ptr service =
 			pbio::FacerecService::createService(
@@ -159,8 +159,6 @@ int main(int argc, char const *argv[])
 			}
 		}
 
-
-
 		for(;;)
 		{
 			const pbio::InternalImageBuffer::Ptr frame =
@@ -169,7 +167,9 @@ int main(int argc, char const *argv[])
 					frame_size.height,
 					pbio::RawImage::Format::FORMAT_BGR);
 
-			if(!camera.read(cv::Mat(frame->height, frame->width, CV_8UC3, frame->data)))
+			auto frame_mat = cv::Mat(frame->height,frame->width,CV_8UC3,frame->data);
+
+			if(!camera.read(frame_mat))
 				break;
 
 			// give a frame to the worker
@@ -178,7 +178,6 @@ int main(int argc, char const *argv[])
 			if(27 == (uchar) cv::waitKey(10))
 				break;
 		}
-
 	}
 	catch(const std::exception &e)
 	{

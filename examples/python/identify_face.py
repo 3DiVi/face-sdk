@@ -27,7 +27,17 @@ print('Recognizer created')
 capturer = service.create_capturer(Config("common_capturer_blf_fda_front.xml"))
 print('Capturer created')
 
-template1 = process_one_face(os.path.join(face_sdk_dir, "bin/set1", "01100.jpg"))
-template2 = process_one_face(os.path.join(face_sdk_dir, "bin/set2", "01100.jpg"))
+base_dir = os.path.join(face_sdk_dir, "bin/set1")
+templates = []
+base_dir_content = os.listdir(base_dir)
+for file in base_dir_content:
+    if file.endswith('jpg'):
+        path = os.path.join(base_dir, file)
+        templates.append(process_one_face(path))
 
-print(recognizer.verify_match(template1, template2))
+search_filename = "bin/set2/01100.jpg"
+search_template = process_one_face(os.path.join(face_sdk_dir, search_filename))
+
+index = recognizer.create_index(templates, 1)
+nearest = recognizer.search([search_template], index, 1)[0][0]
+print(f'For image `{search_filename}` closest - `{base_dir_content[nearest.i]}`.\n{nearest.match_result}' )

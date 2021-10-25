@@ -46,6 +46,7 @@ public class MainActivity extends Activity
 	private VidRecDemo vr_demo = null;
 	private TheCamera camera = null;
 
+
 	private String[] permissions_str = new String[] {
 		Manifest.permission.CAMERA,
 		Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -264,6 +265,7 @@ public class MainActivity extends Activity
 
 		public void run(){
 			try{
+
 				final TheCamera camera = new TheCamera(ma);
 
 				final VidRecDemo vr_demo = new VidRecDemo(ma);

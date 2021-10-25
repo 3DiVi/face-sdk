@@ -52,7 +52,6 @@ public class MainActivity extends Activity
 	private boolean [] flags;
 	private int faceCutTypeId;
 
-	
 
 
 
@@ -249,6 +248,7 @@ public class MainActivity extends Activity
 
 		public void run(){
 			try{
+
 				final TheCamera camera = new TheCamera(ma);
 
 				final Demo demo = new Demo(ma, service);

@@ -763,12 +763,11 @@ cv::Mat Worker::Draw(
 			Database::makeThumbnail(*face.sample).copyTo(result(sample_rect));
 
 			// draw match from short time identification if available
-			if(face.sti_person_id_set)
-			{
-				const std::map<int, StiPersonData>::const_iterator sti_data_it =
+			const std::map<int, StiPersonData>::const_iterator sti_data_it =
 					data.sti_persons_data.find(face.sti_person_id);
 
-				MAssert(sti_data_it != data.sti_persons_data.end(),);
+			if(face.sti_person_id_set && sti_data_it != data.sti_persons_data.end())
+			{
 
 				const StiPersonData &sti_data = sti_data_it->second;
 

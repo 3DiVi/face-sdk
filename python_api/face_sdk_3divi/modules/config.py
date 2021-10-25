@@ -40,6 +40,7 @@ class Config:
     #       Новое значение параметра.
     def override_parameter(self, parameter, value):
         self.overriden[parameter] = value
+        return self
 
     def prepare(self) -> (List[str], List[float]):
         return list(self.overriden.keys()), list(self.overriden.values())

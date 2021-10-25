@@ -14,3 +14,4 @@ from .modules.point import Point
 from .modules.template import Template
 from .modules.templates_index import TemplatesIndex
 from .modules.error import Error
+from .modules.recognizer import Recognizer

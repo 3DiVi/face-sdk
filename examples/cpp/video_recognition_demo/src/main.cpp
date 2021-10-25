@@ -2,12 +2,10 @@
 	\file video_recognition_demo/src/main.cpp
 */
 
-
 #include <iostream>
 #include <stdexcept>
 #include <vector>
 #include <queue>
-
 
 #include <opencv2/opencv.hpp>
 
@@ -30,14 +28,12 @@
 #include "OpencvSource.h"
 #endif
 
-
 #ifndef CV_WND_PROP_FULLSCREEN
 #define CV_WND_PROP_FULLSCREEN cv::WND_PROP_FULLSCREEN
 #endif
 #ifndef CV_WINDOW_FULLSCREEN
 #define CV_WINDOW_FULLSCREEN cv::WINDOW_FULLSCREEN
 #endif
-
 
 
 int main(int argc, char const *argv[])
@@ -61,7 +57,7 @@ int main(int argc, char const *argv[])
 
 		const std::string dll_path                       = parser.get<std::string>("--dll_path                      ", default_dll_path);
 		const std::string config_dir                     = parser.get<std::string>("--config_dir                    ", "../conf/facerec");
-		const std::string license_dir                    = parser.get<std::string>("--license_dir                   ", "");
+		const std::string license_dir                    = parser.get<std::string>("--license_dir                   ", "../license");
 		const std::string database_list_filepath         = parser.get<std::string>("--database_list_filepath        ");
 		const std::string method_config                  = parser.get<std::string>("--method_config                 ");
 		const std::string fullscreen                     = parser.get<std::string>("--fullscreen                    ", "yes");
@@ -109,7 +105,6 @@ int main(int argc, char const *argv[])
 		for(size_t i = 0; i < sources_names.size(); ++i)
 			std::cout << "  " << sources_names[i] << std::endl;
 		std::cout << std::endl;
-
 
 		// create facerec servcie
 		const pbio::FacerecService::Ptr service =
@@ -206,7 +201,6 @@ int main(int argc, char const *argv[])
 				draw_images[i],
 				frame_fps_limit)));
 		}
-
 
 		// draw results until escape presssed
 		for(;;)
