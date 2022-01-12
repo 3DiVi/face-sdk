@@ -1,6 +1,9 @@
 #ifndef __PBIO_API__PBIO__RAW_IMAGE_H_409ecb3ab16c416ea44ca0828ae7d624
 #define __PBIO_API__PBIO__RAW_IMAGE_H_409ecb3ab16c416ea44ca0828ae7d624
 
+#include <cstring>
+#include <vector>
+
 #include "IRawImage.h"
 #include "Rectangle.h"
 #include "InternalImageBuffer.h"
@@ -69,7 +72,8 @@ public:
 		const int width,
 		const int height,
 		const Format format,
-		unsigned char const* data);
+		unsigned char const* data,
+		std::size_t size = 0); // if size is passed, data will be copied to internal buffer
 
 	/**
 		\~English
@@ -184,6 +188,8 @@ private:
 	// if not empty then, data is owned by this buffer
 	InternalImageBuffer::Ptr internal_image_buffer;
 
+	std::vector<unsigned char> buffer;
+
 	friend class RawSample;
 	friend class CameraCalibrator;
 	friend class Capturer;
@@ -245,9 +251,9 @@ RawImage::RawImage(
 	const int width,
 	const int height,
 	const Format format,
-	unsigned char const* data)
-: data(data)
-, width(width)
+	unsigned char const* data,
+ 	const std::size_t size)
+: width(width)
 , height(height)
 , format(format)
 , with_crop(false)
@@ -256,7 +262,13 @@ RawImage::RawImage(
 , crop_info_data_image_width(-1)
 , crop_info_data_image_height(-1)
 {
-	// nothing else
+	if (size) {
+		buffer.resize(size);
+		memcpy(&buffer[0], data, size);
+		this->data = buffer.data();
+	}else{
+		this->data = data;
+	}
 }
 
 

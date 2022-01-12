@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<liveness_2d_impl_name>the_one</liveness_2d_impl_name>
+<liveness_2d_data>share/facerec/liveness2d/l2d.data</liveness_2d_data>
+<liveness_2d_impl>l-0018</liveness_2d_impl>
+<liveness_2d_iou_threshold>0.5</liveness_2d_iou_threshold>
+<liveness_2d_score_threshold>0.5</liveness_2d_score_threshold>
+<num_threads>4</num_threads>
+
+</opencv_storage>

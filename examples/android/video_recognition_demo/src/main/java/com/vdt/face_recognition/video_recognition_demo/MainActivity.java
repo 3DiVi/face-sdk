@@ -30,6 +30,7 @@ import com.vdt.face_recognition.sdk.SDKException;
 import com.vdt.face_recognition.video_recognition_demo.VidRecDemo;
 import com.vdt.face_recognition.video_recognition_demo.TheCamera;
 
+
 //all init parameters in init_settings
 public class MainActivity extends Activity
 {
@@ -45,7 +46,6 @@ public class MainActivity extends Activity
 
 	private VidRecDemo vr_demo = null;
 	private TheCamera camera = null;
-
 
 	private String[] permissions_str = new String[] {
 		Manifest.permission.CAMERA,
@@ -263,9 +263,9 @@ public class MainActivity extends Activity
 			this.service = service;
 		}
 
+
 		public void run(){
 			try{
-
 				final TheCamera camera = new TheCamera(ma);
 
 				final VidRecDemo vr_demo = new VidRecDemo(ma);

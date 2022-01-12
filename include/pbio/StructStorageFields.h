@@ -74,7 +74,13 @@ struct StructStorageFields
 		license_state_licenses_total_counts_int16_t           =  0x84c6,
 		license_state_licenses_in_use_counts_int16_t          =  0x2a1c,
 
-		max_fields_count                                      = 41
+		// pool results
+		video_worker_tracking_callback_t                      = 42,
+		video_worker_template_created_callback_t              = 43,
+		video_worker_match_found_callback_t                   = 44,
+		video_worker_tracking_lost_callback_t                 = 45,
+
+		max_fields_count                                      = 46
 	};
 };
 

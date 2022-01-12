@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<capturer_impl_name>fld_capturer</capturer_impl_name>
+
+<capturer_type>frontal</capturer_type>
+
+<detector_type>rfd</detector_type>
+
+<min_size>50</min_size>
+<max_size>10000</max_size>
+<num_threads>1</num_threads>
+<score_threshold>0.95</score_threshold>
+<rfd_detector_file>share/rfd/m_106.enc</rfd_detector_file>
+<use_mobile_gpu>0</use_mobile_gpu>
+
+<fitter_type>fda</fitter_type>
+<fda_file>share/fda/fda0017.3500.enc</fda_file>
+
+<iris_enabled>0</iris_enabled>
+<iris_config_filepath>conf/facerec/iris_fitter.xml</iris_config_filepath>
+
+
+<downscale_rawsamples_to_preferred_size>1</downscale_rawsamples_to_preferred_size>
+
+</opencv_storage>

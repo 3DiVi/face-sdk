@@ -856,7 +856,21 @@ namespace capi {
 			param_value, \
 			out_exception \
 		), \
-		) \
+		)\
+	decl( \
+		void*, \
+		VideoWorker_poolTrackResults, \
+		( \
+			void* video_worker,\
+			int timeout, \
+			void** out_exception \
+		), \
+		( \
+			video_worker, \
+			timeout, \
+			out_exception \
+		), \
+		return ) \
 	\
 	\
 	\

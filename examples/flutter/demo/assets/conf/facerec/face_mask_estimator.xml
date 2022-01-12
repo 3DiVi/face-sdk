@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<face_attribute_impl>the_one</face_attribute_impl>
+
+<face_attribute_name>masked_face</face_attribute_name>
+<face_attribute_data>share/faceattributes/face_mask.enc</face_attribute_data>
+<score_threshold>0.0001498</score_threshold>
+
+<use_mobile_gpu>0</use_mobile_gpu>
+
+</opencv_storage>

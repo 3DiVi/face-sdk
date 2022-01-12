@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 'yes' to use proxy from system -->
+<use_system_proxy>yes</use_system_proxy>
+
+<!-- proxy server address -->
+<proxy>proxy.example.com:3128</proxy>
+
+<!-- 'yes' to disable proxy for server host -->
+<no_proxy_for_server>no</no_proxy_for_server>
+
+<!-- connection timeout in seconds -->
+<timeout>10</timeout>

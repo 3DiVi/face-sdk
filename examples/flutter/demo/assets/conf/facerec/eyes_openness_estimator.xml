@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<face_attribute_impl>the_one</face_attribute_impl>
+
+<face_attribute_name>eyes_openness</face_attribute_name>
+<face_attribute_data>share/iris/iris.enc</face_attribute_data>
+<score_threshold>0.4</score_threshold>
+
+</opencv_storage>

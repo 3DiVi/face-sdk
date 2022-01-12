@@ -14,4 +14,6 @@ You can use `face_sdk_3divi` package on Linux, Windows platforms
 
 | Error | Solution |
 | ----- | -------- |
-| `OSError: libtensorflow.so.2: cannot open shared object file: No such file or directory` | You need to set the environment variable `LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/path/to/lib`, where `path/to/lib` is the path to the *lib* directory from the Face SDK  |
+| `Assertion failed (Cannot open shared object file libtensorflow.so.2)` | Make sure the library file libtensorflow.so.2 is in the same directory as the libfacerec.so library you are using |
+| `Assertion failed (Cannot open shared object file tensorflow.dll)` | Make sure the library file tensorflow.dll is in the same directory as the facerec.dll library you are using |
+

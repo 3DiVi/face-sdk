@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<liveness_2d_impl_name>the_two</liveness_2d_impl_name>
+<liveness_2d_data>share/liveness_2d_v2/model.enc</liveness_2d_data>
+<liveness_2d_impl>liveness_2d_v2</liveness_2d_impl>
+<liveness_2d_score_threshold>0.9</liveness_2d_score_threshold>
+
+</opencv_storage>

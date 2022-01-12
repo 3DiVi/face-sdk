@@ -60,7 +60,9 @@ public:
 			\~Russian
 			\brief Вероятность, что глаз открыт.
 		*/
-		float score = -1.f;
+		float score;
+
+		EyeStateScore() : eye_state( NOT_COMPUTED ), score( -1.f ) {}
 	};
 
 
@@ -76,14 +78,14 @@ public:
 			\~Russian
 			\brief Вердикт.
 		*/
-		bool verdict = false;
+		bool verdict;
 
 		/** \~English
 			\brief Probability of a required attribute.
 			\~Russian
 			\brief Вероятность наличия атрибута.
 		*/
-		float score = -1.0f;
+		float score;
 
 		/** \~English
 			\brief Detailed description for attribute - medical mask .
@@ -101,6 +103,8 @@ public:
 			\~Russian
 			\brief Результат определения состояния левого или правого глаза и вероятность, что глаз открыт.
 		*/
+		Attribute() : verdict( false ), score( -1.0f ), mask_attribute( NOT_COMPUTED ) {}
+
 		EyeStateScore left_eye_state, right_eye_state;
 	};
 

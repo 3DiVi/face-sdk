@@ -1116,14 +1116,12 @@ RawImage RawSample::cutFaceRawImage(
 
 	checkException(exception, *_dll_handle);
 
-	const std::string s_buffer(stream.str());
-	const std::vector<unsigned char> buffer(s_buffer.begin(), s_buffer.end());
-
 	pbio::RawImage result(
 		width,
 		height,
 		color_model,
-		buffer.data());
+		(unsigned char*) stream.str().c_str(),
+		stream.str().size());
 
 	return result;
 }

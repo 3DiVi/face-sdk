@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -32,7 +31,6 @@ import com.vdt.face_recognition.sdk.SDKException;
 import com.vdt.face_recognition.demo.TheCamera;
 
 
-
 public class MainActivity extends Activity
 {
 	private static final int REQUEST_SETTINGS = 1;
@@ -51,8 +49,6 @@ public class MainActivity extends Activity
 	//Options
 	private boolean [] flags;
 	private int faceCutTypeId;
-
-
 
 
 	private String[] permissions_str = new String[] {
@@ -105,6 +101,7 @@ public class MainActivity extends Activity
 			starting();
 		}
 	}
+
 
 	private void starting()
 	{

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<ir_liveness_impl_name>cnn</ir_liveness_impl_name>
+
+<model_path>share/ir_liveness/model.enc</model_path>
+
+<use_mobile_gpu>0</use_mobile_gpu>
+
+<ir_liveness_impl>ir_liveness_model</ir_liveness_impl>
+
+<class_threshold>0.6113</class_threshold>
+
+<avg_kps_dist_threshold>0.05</avg_kps_dist_threshold>
+
+<max_kps_dist_threshold>0.1</max_kps_dist_threshold>
+
+<fda_file>share/fda/fda0017.3500.enc</fda_file>
+
+</opencv_storage>

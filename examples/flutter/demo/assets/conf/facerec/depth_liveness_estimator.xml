@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<depth_liveness_impl_name>the_one</depth_liveness_impl_name>
+
+<min_face_depth>                200.0 </min_face_depth>
+<max_face_depth>                2000.0 </max_face_depth>
+<max_face_depth_range>          100.0  </max_face_depth_range>
+<max_face_threshold_neighbours> 10.0 </max_face_threshold_neighbours>
+<plane_error_threshold>         5.0    </plane_error_threshold>
+<sqsurf_error_threshold>        5.0    </sqsurf_error_threshold>
+<min_face_points>               100     </min_face_points>
+<min_valid_depth_proportion>    0.7   </min_valid_depth_proportion>
+
+</opencv_storage>

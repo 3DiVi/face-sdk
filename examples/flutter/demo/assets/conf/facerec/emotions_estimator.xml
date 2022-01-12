@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<emotion_impl_name>the_one</emotion_impl_name>
+
+<analysis>share/faceanalysis/emotion_analysis.bin</analysis>
+
+</opencv_storage>
