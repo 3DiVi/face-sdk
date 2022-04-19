@@ -46,7 +46,11 @@
 #include "VideoWorker.h"
 #include "StructStorage.h"
 #include "Config.h"
-#include "ProcessingBlock.h"
+#include "ProcessingUnit.h"
+#ifndef LEGACY_METASDK
+	#include "Context.h"
+	#include "ProcessingBlock.h"
+#endif
 
 namespace pbio
 {
@@ -1078,9 +1082,15 @@ public:
 
 	//! @cond IGNORED
 
-	ProcessingBlock::Ptr createProcessingBlock(
+	ProcessingUnit::Ptr createProcessingUnit(
 		const int block_type,
 		const char* serializedConfig) const;
+
+#ifndef LEGACY_METASDK
+	Context createContext() const;
+
+	ProcessingBlock createProcessingBlock(const Context& config) const;
+#endif
 
 	//! @endcond
 
@@ -2048,12 +2058,24 @@ FaceAttributesEstimator::Ptr FacerecService::createFaceAttributesEstimator(
 //! @cond IGNORED
 
 inline
-ProcessingBlock::Ptr FacerecService::createProcessingBlock(
+ProcessingUnit::Ptr FacerecService::createProcessingUnit(
 	const int block_type,
 	const char* serializedConfig) const
 {
-	return ProcessingBlock::Ptr::make(_dll_handle, block_type, serializedConfig);
+	return ProcessingUnit::Ptr::make(_dll_handle, block_type, serializedConfig);
 }
+
+#ifndef LEGACY_METASDK
+inline Context FacerecService::createContext() const
+{
+	return Context(_dll_handle);
+}
+
+inline ProcessingBlock FacerecService::createProcessingBlock(const Context& config) const
+{
+	return ProcessingBlock(_impl, _dll_handle, config);
+}
+#endif
 
 //! @endcond
 

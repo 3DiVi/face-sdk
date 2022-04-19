@@ -27,6 +27,14 @@
 ///////
 // with __STATIC_LIBFACEREC_BUILD__
 
+#ifndef LEGACY_METASDK
+
+	#define __META_STATIC_DECL(rtype, name, typed_args, args, return) \
+		extern "C" rtype name typed_args;
+
+	__TDV_METASDK_FLIST(__META_STATIC_DECL)
+#endif
+
 	#define __583e_STATIC_DECL(rtype, name, typed_args, args, return) \
 		rtype _583e_ADD_NAMESPACE(name) typed_args;
 
@@ -39,8 +47,6 @@
 
 namespace pbio {
 namespace import {
-
-
 
 class DllHandle
 {
@@ -61,11 +67,16 @@ private:
 public:
 	#define __583e_STATIC_F_INIT(rtype, name, typed_args, args, return) \
 		, name( _583e_ADD_NAMESPACE(name) )
+	#define __META_STATIC_F_INIT(rtype, name, typed_args, args, return) \
+		, name( ::name )
 
 	DllHandle() :
 		_placeholder(0)
 		__583e_FLIST(__583e_STATIC_F_INIT)
 		__TDV_FLIST(__583e_STATIC_F_INIT)
+#ifndef LEGACY_METASDK
+		__TDV_METASDK_FLIST(__META_STATIC_F_INIT)
+#endif
 	{
 		// nothing else
 	}
@@ -92,6 +103,9 @@ public:
 		_dll( loadDll(dll_path) )
 		__583e_FLIST(__583e_SHARED_F_INIT)
 		__TDV_FLIST(__TDV_SHARED_F_INIT)
+#ifndef LEGACY_METASDK
+		__TDV_METASDK_FLIST(__TDV_SHARED_F_INIT)
+#endif
 	{
 		// nothig else
 	}
@@ -218,6 +232,9 @@ public:
 
 	__583e_FLIST(__583e_F_FIELD_DECL)
 	__TDV_FLIST(__TDV_F_FIELD_DECL)
+#ifndef LEGACY_METASDK
+	__TDV_METASDK_FLIST(__583e_F_FIELD_DECL)
+#endif
 
 };
 

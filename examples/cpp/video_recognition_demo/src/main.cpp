@@ -220,8 +220,9 @@ int main(int argc, char const *argv[])
 			}
 
 			const uchar key = cv::waitKey(20);
-			if(27 == key)
+			if(27 == key) {
 				break;
+			}
 
 			if(' ' == key)
 			{

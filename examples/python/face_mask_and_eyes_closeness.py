@@ -27,7 +27,7 @@ print('Capturer created')
 masked_face_estimator = service.create_face_attributes_estimator("face_mask_estimator.xml")
 print('Masked face estimator created')
 
-eyes_openness_estimator = service.create_face_attributes_estimator("eyes_openness_estimator.xml")
+eyes_openness_estimator = service.create_face_attributes_estimator("eyes_openness_estimator_v2.xml")
 
 samples = detect(os.path.join(face_sdk_dir, "bin/set1", "01100.jpg"))
 for sample in samples:

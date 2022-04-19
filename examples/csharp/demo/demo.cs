@@ -74,7 +74,7 @@ class Worker
 		_face_quality_estimator = _service.createFaceQualityEstimator("face_quality_estimator.xml");
 		_liveness_2d_estimator =  _service.createLiveness2DEstimator("liveness_2d_estimator_v2.xml");
 		_face_mask_estimator = _service.createFaceAttributesEstimator("face_mask_estimator.xml");
-		_eyes_openness_estimator = _service.createFaceAttributesEstimator("eyes_openness_estimator.xml");
+		_eyes_openness_estimator = _service.createFaceAttributesEstimator("eyes_openness_estimator_v2.xml");
 
 		_flag_positions = true;
 		_flag_angles = true;

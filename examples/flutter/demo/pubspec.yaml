@@ -6,7 +6,7 @@ description: Demo demonstrates using of the Face SDK Flutter plugin
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.12.0 <=2.15.1"
 
 dependencies:
   flutter:
@@ -45,8 +45,8 @@ flutter:
     - assets/share/facedetectors/uld/
     - assets/share/facedetectors/config_lbf/
     - assets/share/facedetectors/config_lbf_noise/
+    - assets/share/faceattributes/
     - assets/share/fda/
-    - assets/share/iris/
     - assets/share/facerec/recognizers/method10v30/
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -29,8 +29,9 @@ class Database:
         self.thumbnails = list()
         self.names = list()
 
-        file = open(database_list_filepath, 'r')
-        files = [x.strip() for x in file.readlines()]
+        with open(database_list_filepath, "r", encoding="utf-8") as file:
+            files = [x.strip() for x in file.readlines()]
+
         files = [x for x in files if not x.endswith(".txt")]
         files = list(filter(None, files))
 
@@ -62,7 +63,7 @@ class Database:
 
             # read image with opencv
             image_path = os.path.join(dir, f)
-            cv_img = cv2.imread(image_path)
+            cv_img = cv2.imdecode(np.fromfile(image_path, dtype=np.uint8), cv2.IMREAD_COLOR)
             assert cv_img is not None, f"Not opened {image_path}"
             image = CVRawImage(cv_img)
 
@@ -688,6 +689,10 @@ class Worker:
                     active_liveness_str = ""
                     if face.active_liveness_status.verdict == active_liveness.Liveness.WAITING_FACE_ALIGN:
                         active_liveness_str += active_liveness.Liveness.WAITING_FACE_ALIGN.name.lower()
+                    elif face.active_liveness_status.verdict == active_liveness.Liveness.ALL_CHECKS_PASSED:
+                        active_liveness_str += active_liveness.Liveness.ALL_CHECKS_PASSED.name.lower()
+                    elif face.active_liveness_status.verdict == active_liveness.Liveness.CHECK_FAIL:
+                        active_liveness_str += active_liveness.Liveness.CHECK_FAIL.name.lower()
                     else:
                         active_liveness_str += face.active_liveness_status.check_type.name.lower()
                         active_liveness_str += ": "

@@ -138,7 +138,7 @@ class FaceAttributesEstimator(ProcessingBlock):
         if task_name == "masked_face":
             result.score = new_ctx["mask_score"]
             result.mask_attribute = MaskAttribute.HAS_MASK if new_ctx["mask_verdict"] else MaskAttribute.NO_MASK
-        elif task_name == "eyes_openness":
+        elif task_name == "eyes_openness" or task_name == "eyes_openness_v2":
 
             result.left_eye_state.score = new_ctx["eye_openness_left_score"]
             result.right_eye_state.score = new_ctx["eye_openness_right_score"]
