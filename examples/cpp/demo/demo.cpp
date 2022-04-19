@@ -159,7 +159,7 @@ int main(int argc, char const *argv[])
 			}
 		}
 
-		for(;;)
+	for(;;)
 		{
 			const pbio::InternalImageBuffer::Ptr frame =
 				service->createInternalImageBuffer(
@@ -169,16 +169,19 @@ int main(int argc, char const *argv[])
 
 			auto frame_mat = cv::Mat(frame->height,frame->width,CV_8UC3,frame->data);
 
-			if(!camera.read(frame_mat))
+			if(!camera.read(frame_mat)) {
 				break;
+			}
 
 			// give a frame to the worker
 			worker.work(frame);
 
-			if(27 == (uchar) cv::waitKey(10))
+			if(27 == (uchar) cv::waitKey(10)) {
 				break;
-		}
+			}
+
 	}
+}
 	catch(const std::exception &e)
 	{
 		std::cout << "! exception catched: '" << e.what() << "' ... exiting" << std::endl;
@@ -645,7 +648,7 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 		{
 			if(!_face_attributes_estimator_eye_openness)
 			{
-				_face_attributes_estimator_eye_openness = _service->createFaceAttributesEstimator("eyes_openness_estimator.xml");
+				_face_attributes_estimator_eye_openness = _service->createFaceAttributesEstimator("eyes_openness_estimator_v2.xml");
 			}
 			pbio::FaceAttributesEstimator::Attribute attr = _face_attributes_estimator_eye_openness->estimate(sample);
 

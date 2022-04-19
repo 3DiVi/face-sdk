@@ -81,7 +81,7 @@ public class Demo{
 		emotionsEstimator = service.createEmotionsEstimator("emotions_estimator.xml");
 		faceQualityEstimator = service.createFaceQualityEstimator("face_quality_estimator.xml");
 		faceMaskEstimator = service.createFaceAttributesEstimator("face_mask_estimator.xml");
-		eyesOpennessEstimator = service.createFaceAttributesEstimator("eyes_openness_estimator.xml");
+		eyesOpennessEstimator = service.createFaceAttributesEstimator("eyes_openness_estimator_v2.xml");
 	}
 
 

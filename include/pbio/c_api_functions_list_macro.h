@@ -4,6 +4,9 @@
 
 #include <stdint.h>
 
+typedef struct ContextEH ContextEH;
+typedef struct HContext HContext;
+typedef struct HPBlock HPBlock;
 
 namespace pbio {
 namespace facerec {
@@ -141,6 +144,24 @@ namespace capi {
 
 #define _TDV_ADD_STATIC_PREFIX(a) static_##a
 
+#ifdef LEGACY_METASDK
+#define DECLARE_CHBD(decl)
+#else
+#define DECLARE_CHBD(decl) decl( \
+	HPBlock*, \
+	TDVProcessingBlock_createHumanBodyDetector, \
+	( \
+		void* service, \
+		const HContext* block_ptr, \
+		void** out_exception \
+	), \
+	( \
+		service, \
+		block_ptr, \
+		out_exception \
+	), \
+	return )
+#endif
 
 // decl suppose to be a macro: decl(rtype, name, typed_args, args, return)
 #define __TDV_FLIST(decl) \
@@ -3165,7 +3186,519 @@ namespace capi {
 		apiObject_destructor, \
 		(void* object), \
 		(object), \
-		)
+		) \
+	\
+	DECLARE_CHBD(decl)
 
+// decl suppose to be a macro: decl(rtype, name, typed_args, args, return)
+#define __TDV_METASDK_FLIST(decl) \
+	\
+	decl( \
+		void, \
+		TDVProcessingBlock_processContext, \
+		( \
+			HPBlock* block_ptr, \
+			HContext* ctx_ptr, \
+			ContextEH** out_exception \
+		), \
+		( \
+			block_ptr, \
+			ctx_ptr, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVProcessingBlock_destroyBlock, \
+		( \
+			HPBlock* block_ptr, \
+			ContextEH** out_exception \
+		), \
+		( \
+			block_ptr, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
+		HContext*, \
+		TDVContext_create, \
+		( \
+			ContextEH** errorHandler \
+		), \
+		( \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_destroy, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		HContext*, \
+		TDVContext_getByIndex, \
+		( \
+			HContext* ctx, \
+			int key, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			key, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		HContext*, \
+		TDVContext_getByKey, \
+		( \
+			HContext* ctx, \
+			const char* key, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			key, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		HContext*, \
+		TDVContext_getOrInsertByKey, \
+		( \
+			HContext* ctx, \
+			const char* key, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			key, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_copy, \
+		( \
+			HContext* src, \
+			HContext* dst, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			src, \
+			dst, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		HContext*, \
+		TDVContext_clone, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_putStr, \
+		( \
+			HContext* ctx, \
+			const char* str, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			str, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_putLong, \
+		( \
+			HContext* ctx, \
+			long val, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			val, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_putDouble, \
+		( \
+			HContext* ctx, \
+			double val, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			val, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_putBool, \
+		( \
+			HContext* ctx, \
+			bool val, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			val, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		unsigned char*, \
+		TDVContext_putDataPtr, \
+		( \
+			HContext* ctx, \
+			unsigned char* val, \
+			unsigned long copy_sz, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			val, \
+			copy_sz, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_pushBack, \
+		( \
+			HContext* ctx, \
+			void* data, \
+			bool toMove, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			data, \
+			toMove, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		unsigned long, \
+		TDVContext_getLength, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		char**, \
+		TDVContext_getKeys, \
+		( \
+			HContext* ctx, \
+			unsigned long length, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			length, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_isNone, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_isArray, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_isObject, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_isBool, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_isLong, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_isDouble, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_isString, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_isDataPtr, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		const char*, \
+		TDVContext_getStr, \
+		( \
+			HContext* ctx, \
+			char* buff, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			buff, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		unsigned long, \
+		TDVContext_getStrSize, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_freePtr, \
+		( \
+			void* ptr \
+		), \
+		( \
+			ptr \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		long, \
+		TDVContext_getLong, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		double, \
+		TDVContext_getDouble, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_getBool, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		unsigned char*, \
+		TDVContext_getDataPtr, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		const char*, \
+		TDVException_getMessage, \
+		( \
+			ContextEH* errorHandler \
+		), \
+		( \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		unsigned int, \
+		TDVException_getErrorCode, \
+		( \
+			ContextEH* errorHandler \
+		), \
+		( \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVException_deleteException, \
+		( \
+			ContextEH* errorHandler \
+		), \
+		( \
+			errorHandler \
+		), \
+		return )
 
 #endif  // __pbio__imp_exp_macro_1bcdd890e87a41b786dfa83f9c4236ad

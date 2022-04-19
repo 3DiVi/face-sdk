@@ -12,7 +12,6 @@
 <check_turn_right>1</check_turn_right>
 <check_turn_left>1</check_turn_left>
 
-<random_order>1</random_order>
 <check_count>3</check_count>
 
 <max_frames_wait>200</max_frames_wait>
@@ -26,5 +25,5 @@
 <face_align_angle>10</face_align_angle>
 
 
-<eyes_openness_estimator_config>conf/facerec/eyes_openness_estimator.xml</eyes_openness_estimator_config>
+<eyes_openness_estimator_config>conf/facerec/eyes_openness_estimator_v2.xml</eyes_openness_estimator_config>
 </opencv_storage>

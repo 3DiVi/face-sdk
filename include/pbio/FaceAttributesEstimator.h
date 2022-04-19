@@ -200,7 +200,7 @@ FaceAttributesEstimator::Attribute FaceAttributesEstimator::estimate(const pbio:
 
 		result.mask_attribute = verdict ? Attribute::MaskAttribute::HAS_MASK: Attribute::MaskAttribute::NO_MASK;
 	}else
-	if (name_task.str() == "eyes_openness")
+	if (name_task.str() == "eyes_openness" || name_task.str() == "eyes_openness_v2" )
 	{
 		EyeStateScore left_eye_state, right_eye_state;
 		int32_t left_eye_verdict, right_eye_verdict;

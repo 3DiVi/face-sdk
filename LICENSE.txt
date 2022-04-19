@@ -164,3 +164,4 @@ conditions of this SLA:
     The parties have agreed that in case of legal proceedings between the parties the 
     competent court is the court with territorial jurisdiction of the Licensor.
 
+

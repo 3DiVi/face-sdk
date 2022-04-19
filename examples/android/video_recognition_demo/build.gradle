@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.vdt.face_recognition.video_recognition_demo"
-        minSdkVersion 14
+        minSdkVersion 18
         targetSdkVersion 30
     }
 
@@ -51,10 +51,11 @@ android {
                 "share/quality/**",
                 "share/quality_iso/**",
                 "share/face_quality/**",
-                "share/iris/*",
                 "share/facerec/recognizers/method10v30/**",
                 "share/facerec/recognizers/method9v30mask/**",
                 "share/facerec/recognizers/method8v7/**",
+                "share/faceattributes/**",
+                "share/faceanalysis/**",
                 "license/**"
             )
             exclude ('share/facerec/recognizers/**/*dt')

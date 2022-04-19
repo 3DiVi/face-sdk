@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<face_attribute_impl>the_one</face_attribute_impl>
+
+<face_attribute_name>eyes_openness_v2</face_attribute_name>
+<face_attribute_data>share/faceattributes/eye_wink.enc</face_attribute_data>
+<score_threshold>0.5</score_threshold>
+
+</opencv_storage>

@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.vdt.face_recognition.demo"
-        minSdkVersion 14
+        minSdkVersion 18
         targetSdkVersion 30
     }
 

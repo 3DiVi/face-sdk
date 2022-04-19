@@ -4,7 +4,7 @@
 #     \brief RawSample - Interface object that stores a captured face sample.
 #  \~Russian
 #     \brief RawSample - Интерфейсный объект, хранящий образец лица.
-
+import ctypes
 from ctypes import c_void_p, py_object, c_float, byref, c_int, c_double, c_int32
 from io import BytesIO
 from typing import List
@@ -700,6 +700,8 @@ class RawSample(ComplexObject):
     #      Оригинальное изображение.
     def get_original_image(self) -> RawImage:
 
+        IMG_CHANNELS = 3
+
         exception = make_exception()
 
         width = c_int32()
@@ -710,14 +712,14 @@ class RawSample(ComplexObject):
 
         self._dll_handle.RawSample_getOriginalImage(
             self._impl,
-            byref(width),
             byref(height),
+            byref(width),
             byref(format_id),
             byref(data),
             exception
         )
 
-        data_array = bytearray(data)
+        data_array = bytearray(ctypes.string_at(data, width.value * height.value * IMG_CHANNELS))
 
         check_exception(exception, self._dll_handle)
 

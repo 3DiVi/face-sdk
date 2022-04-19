@@ -1639,10 +1639,10 @@ class VideoWorker(ComplexObject):
                     c_int32.from_address(samples_ir_liveness_confirmed + i * c_int32_size).value)
                 data.samples_ir_liveness_confirmed.append(sample_ir_liveness_confirmed)
                 samples_active_liveness_status = active_liveness.ActiveLivenessStatus(
-                    active_liveness.CheckType(
-                        c_int32.from_address(samples_track_active_liveness_type + i * c_int32_size).value),
                     active_liveness.Liveness(
                         c_int32.from_address(samples_track_active_liveness_confirmed + i * c_int32_size).value),
+                    active_liveness.CheckType(
+                        c_int32.from_address(samples_track_active_liveness_type + i * c_int32_size).value),
                     c_float.from_address(samples_track_active_liveness_progress + i * c_float_size).value)
                 data.samples_active_liveness_status[i] = samples_active_liveness_status
 
