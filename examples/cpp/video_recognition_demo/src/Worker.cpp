@@ -726,6 +726,9 @@ cv::Mat Worker::Draw(
 							face.emotions[i].emotion == pbio::EmotionsEstimator::EMOTION_HAPPY    ? "happy" :
 							face.emotions[i].emotion == pbio::EmotionsEstimator::EMOTION_ANGRY    ? "angry" :
 							face.emotions[i].emotion == pbio::EmotionsEstimator::EMOTION_SURPRISE ? "surprise" :
+                            face.emotions[i].emotion == pbio::EmotionsEstimator::EMOTION_DISGUSTED ? "disgusted" :
+                            face.emotions[i].emotion == pbio::EmotionsEstimator::EMOTION_SAD ? "sad" :
+                            face.emotions[i].emotion == pbio::EmotionsEstimator::EMOTION_SCARED ? "scared" :
 							"bad emotion",
 							text_position,
 							face.emotions[i].confidence * 0.75 + 0.25);

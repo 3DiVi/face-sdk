@@ -74,7 +74,77 @@ public:
 			\~Russian
 			\brief Лицо не было проверено.
 		*/
-		NOT_COMPUTED    = 3
+		NOT_COMPUTED = 3,
+
+		/** \~English
+			\brief The observed face is out of image boundaries.
+			\~Russian
+			\brief Лицо выходит за рамки изображения.
+		*/
+		FACE_NOT_FULLY_FRAMED = 4,
+
+		/** \~English
+			\brief More than one face detected on the input image.
+			\~Russian
+			\brief В кадре находится больше одного лица.
+		*/
+		MULTIPLE_FACE_FRAMED = 5,
+
+		/** \~English
+			\brief The observed face is not frontal and turned right
+			\~Russian
+			\brief Лицо повернуто вправо.
+		*/
+		FACE_TURNED_RIGHT = 6,
+
+		/** \~English
+			\brief The observed face is not frontal and turned left
+			\~Russian
+			\brief Лицо повернуто влево.
+		*/
+		FACE_TURNED_LEFT = 7,
+
+		/** \~English
+			\brief The Observed face is not frontal and turned up
+			\~Russian
+			\brief Лицо повернуто вверх.
+		*/
+		FACE_TURNED_UP = 9,
+
+		/** \~English
+			\brief The Observed face is not frontal and turned down
+			\~Russian
+			\briefЛицо повернуто вниз.
+		*/
+		FACE_TURNED_DOWN = 10,
+
+		/** \~English
+			\brief Input image has bad lighting
+			\~Russian
+			\brief Недостаточные условия освещения.
+		*/
+		BAD_IMAGE_LIGHTING = 11,
+
+		/** \~English
+			\brief Input image is too noisy
+			\~Russian
+			\brief Исходное изображение слишком зашумлено.
+		*/
+		BAD_IMAGE_NOISE = 12,
+
+		/** \~English
+			\brief Input image is too blurry
+			\~Russian
+			\brief Исходное изображение слишком размыто
+		*/
+		BAD_IMAGE_BLUR = 13,
+
+		/** \~English
+			\brief Input image is too flared
+			\~Russian
+			\brief Исходное изображение слишком яркое
+		*/
+		BAD_IMAGE_FLARE = 14,
 	};
 
 	/** \~English
@@ -195,13 +265,7 @@ Liveness2DEstimator::Liveness Liveness2DEstimator::estimateLiveness(const pbio::
 
 	checkException(exception, *_dll_handle);
 
-	if(verdict == 1)
-		return REAL;
-
-	if(verdict == 2)
-		return FAKE;
-
-	return NOT_ENOUGH_DATA;
+	return static_cast<Liveness>(verdict);
 }
 
 
@@ -222,14 +286,8 @@ Liveness2DEstimator::LivenessAndScore Liveness2DEstimator::estimate(const pbio::
 	checkException(exception, *_dll_handle);
 
 	LivenessAndScore result;
-	result.liveness = NOT_ENOUGH_DATA;
+	result.liveness = static_cast<Liveness>(verdict);
 	result.score = score;
-
-	if(verdict == 1)
-		result.liveness = REAL;
-
-	if(verdict == 2)
-		result.liveness = FAKE;
 
 	return result;
 }

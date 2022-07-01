@@ -3,6 +3,8 @@
 
 <quality_impl_name>the_iso</quality_impl_name>
 
+<quality_estimator_iso_v>2</quality_estimator_iso_v>
+
 <qm_fne>share/quality_iso/NoiseEstimateNet.bin</qm_fne>
 <qm_ill>share/quality_iso/illuminationNet.bin</qm_ill>
 <use_mobile_gpu>0</use_mobile_gpu>

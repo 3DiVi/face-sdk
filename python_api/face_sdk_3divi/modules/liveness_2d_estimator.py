@@ -56,6 +56,75 @@ class Liveness(Enum):
     #     \brief Лицо не было проверено.
     NOT_COMPUTED = 3
 
+    ##
+    #  \~English
+    #     \brief The observed face is out of image boundaries.
+    #  \~Russian
+    #     \brief Лицо выходит за рамки изображения.
+    FACE_NOT_FULLY_FRAMED = 4
+
+    ##
+    #  \~English
+    #     \brief More than one face detected on the input image.
+    #  \~Russian
+    #     \brief В кадре находится больше одного лица.
+    MULTIPLE_FACE_FRAMED = 5
+
+    ##
+    #  \~English
+    #     \brief The observed face is not frontal and turned right
+    #  \~Russian
+    #     \brief Лицо повернуто вправо.
+    FACE_TURNED_RIGHT = 6
+
+    ##
+    #  \~English
+    #     \brief The observed face is not frontal and turned left
+    #  \~Russian
+    #    \brief Лицо повернуто влево.
+    FACE_TURNED_LEFT = 7
+
+    ##
+    #  \~English
+    #     \brief The Observed face is not frontal and turned up
+    #  \~Russian
+    #     \brief Лицо повернуто вверх.
+    FACE_TURNED_UP = 9
+
+    ##
+    #  \~English
+    #     \brief The Observed face is not frontal and turned down
+    #  \~Russian
+    #     \briefЛицо повернуто вниз.
+    FACE_TURNED_DOWN = 10
+
+    ##
+    #  \~English
+    #     \brief Input image has bad lighting
+    #  \~Russian
+    #     \brief Недостаточные условия освещения.
+    BAD_IMAGE_LIGHTING = 11
+
+    ##  \~English
+    #	\brief Input image is too noisy
+    #	\~Russian
+    #	\brief Исходное изображение слишком зашумлено.
+    BAD_IMAGE_NOISE = 12
+
+    ##
+    #  \~English
+    #     \brief Input image is too blurry
+    #  \~Russian
+    #     \brief Исходное изображение слишком размыто
+    BAD_IMAGE_BLUR = 13
+
+    ##
+    #  \~English
+    #     \brief Input image is too flared
+    #  \~Russian
+    #     \brief Исходное изображение слишком яркое
+    BAD_IMAGE_FLARE = 14
+
 
 ##
 #  \~English
@@ -127,13 +196,9 @@ class Liveness2DEstimator(ComplexObject):
 
         check_exception(exception, self._dll_handle)
 
-        if verdict.value == 1:
-            return Liveness.REAL
-
-        if verdict.value == 2:
-            return Liveness.FAKE
-
-        return Liveness.NOT_ENOUGH_DATA
+        values = set(item.value for item in Liveness)
+        if verdict.value in values:
+            return Liveness(verdict.value)
 
     ##
     # \~English
@@ -167,10 +232,9 @@ class Liveness2DEstimator(ComplexObject):
         check_exception(exception, self._dll_handle)
 
         result = LivenessAndScore(Liveness.NOT_ENOUGH_DATA, score.value)
-        if verdict.value == 1:
-            result.liveness = Liveness.REAL
 
-        if verdict.value == 2:
-            result.liveness = Liveness.FAKE
+        values = set(item.value for item in Liveness)
+        if verdict.value in values:
+            result.liveness = Liveness(verdict.value)
 
         return result

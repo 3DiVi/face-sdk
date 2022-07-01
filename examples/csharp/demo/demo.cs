@@ -72,7 +72,7 @@ class Worker
 		//_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator_v2.xml");
 		_emotions_estimator = _service.createEmotionsEstimator("emotions_estimator.xml");
 		_face_quality_estimator = _service.createFaceQualityEstimator("face_quality_estimator.xml");
-		_liveness_2d_estimator =  _service.createLiveness2DEstimator("liveness_2d_estimator_v2.xml");
+		_liveness_2d_estimator =  _service.createLiveness2DEstimator("liveness_2d_estimator_v3.xml");
 		_face_mask_estimator = _service.createFaceAttributesEstimator("face_mask_estimator.xml");
 		_eyes_openness_estimator = _service.createFaceAttributesEstimator("eyes_openness_estimator_v2.xml");
 
@@ -400,7 +400,10 @@ class Worker
 						emotion == EmotionsEstimator.Emotion.EMOTION_NEUTRAL  ? "neutral" :
 						emotion == EmotionsEstimator.Emotion.EMOTION_HAPPY    ? "happy" :
 						emotion == EmotionsEstimator.Emotion.EMOTION_ANGRY    ? "angry" :
-						emotion == EmotionsEstimator.Emotion.EMOTION_SURPRISE ? "surprise" : "?",
+						emotion == EmotionsEstimator.Emotion.EMOTION_SURPRISE ? "surprise" :
+						emotion == EmotionsEstimator.Emotion.EMOTION_DISGUSTED ? "disgusted" :
+						emotion == EmotionsEstimator.Emotion.EMOTION_SAD ? "sad" :
+						emotion == EmotionsEstimator.Emotion.EMOTION_SCARED ? "scared" : "?",
 						text_point + new OpenCvSharp.Point2f(100, 0));
 
 					text_point.Y += text_line_height;
@@ -506,9 +509,8 @@ class Worker
 				puttext(
 					draw_image,
 					"liveness: " + (
-						liveness_2d_result.liveness == Liveness2DEstimator.Liveness.REAL ? score_str + " - real"  :
-						liveness_2d_result.liveness == Liveness2DEstimator.Liveness.FAKE ? score_str + " - fake" :
-						liveness_2d_result.liveness == Liveness2DEstimator.Liveness.NOT_ENOUGH_DATA ? "not enough data" : "??"),
+						liveness_2d_result.liveness != Liveness2DEstimator.Liveness.NOT_ENOUGH_DATA ? score_str + " - " + liveness_2d_result.liveness.ToString() :
+						"not enough data"),
 					text_point);
 
 				text_point.Y += text_line_height;

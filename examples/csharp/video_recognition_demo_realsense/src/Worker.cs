@@ -701,7 +701,10 @@ class Worker: IDisposable
 								emotion == EmotionsEstimator.Emotion.EMOTION_NEUTRAL ? "neutral" :
 								emotion == EmotionsEstimator.Emotion.EMOTION_HAPPY ? "happy" :
 								emotion == EmotionsEstimator.Emotion.EMOTION_ANGRY ? "angry" :
-								emotion == EmotionsEstimator.Emotion.EMOTION_SURPRISE ? "surprise" : "?",
+								emotion == EmotionsEstimator.Emotion.EMOTION_SURPRISE ? "surprise" :
+                                emotion == EmotionsEstimator.Emotion.EMOTION_DISGUSTED ? "disgusted" :
+                                emotion == EmotionsEstimator.Emotion.EMOTION_SAD ? "sad" :
+                                emotion == EmotionsEstimator.Emotion.EMOTION_SCARED ? "scared" : "?",
 								text_point + new OpenCvSharp.Point2f(100, 0));
 
 						text_point.Y += text_line_height;

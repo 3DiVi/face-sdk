@@ -308,14 +308,14 @@ class DllHandle:
     def Recognizer_verifyMatch_v2(self, *args, **kwargs):
         self.__dll_handle['{}Recognizer_verifyMatch_v2'.format(self.__namespace)](*args, **kwargs)
 
-    def Recognizer_getROCCurvePointByDistanceThreshold(self, *args, **kwargs):
-        self.__dll_handle['{}Recognizer_getROCCurvePointByDistanceThreshold'.format(self.__namespace)](*args, **kwargs)
+    def Recognizer_getROCCurvePointByDistanceThreshold_v2(self, *args, **kwargs):
+        self.__dll_handle['{}Recognizer_getROCCurvePointByDistanceThreshold_v2'.format(self.__namespace)](*args, **kwargs)
 
-    def Recognizer_getROCCurvePointByFAR(self, *args, **kwargs):
-        self.__dll_handle['{}Recognizer_getROCCurvePointByFAR'.format(self.__namespace)](*args, **kwargs)
+    def Recognizer_getROCCurvePointByFAR_v2(self, *args, **kwargs):
+        self.__dll_handle['{}Recognizer_getROCCurvePointByFAR_v2'.format(self.__namespace)](*args, **kwargs)
 
-    def Recognizer_getROCCurvePointByFRR(self, *args, **kwargs):
-        self.__dll_handle['{}Recognizer_getROCCurvePointByFRR'.format(self.__namespace)](*args, **kwargs)
+    def Recognizer_getROCCurvePointByFRR_v2(self, *args, **kwargs):
+        self.__dll_handle['{}Recognizer_getROCCurvePointByFRR_v2'.format(self.__namespace)](*args, **kwargs)
 
     def Recognizer_getROCCurvePointByScoreThreshold(self, *args, **kwargs):
         self.__dll_handle['{}Recognizer_getROCCurvePointByScoreThreshold'.format(self.__namespace)](*args, **kwargs)

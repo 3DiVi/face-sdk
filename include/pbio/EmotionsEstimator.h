@@ -75,6 +75,27 @@ public:
 			\brief Удивленный.
 		*/
 		EMOTION_SURPRISE = 3,
+
+		/** \~English
+			\brief Disgusted.
+			\~Russian
+			\brief Испытывающий отвращение.
+		*/
+		EMOTION_DISGUSTED = 4,
+
+		/** \~English
+			\brief Scared.
+			\~Russian
+			\brief Напуганный.
+		*/
+		EMOTION_SCARED = 5,
+
+		/** \~English
+			\brief Sad.
+			\~Russian
+			\brief Грустный.
+		*/
+		EMOTION_SAD = 6,
 	};
 
 	/** \~English

@@ -494,7 +494,7 @@ class Recognizer(ComplexObject):
         fr_r = c_double()
         score = c_double()
 
-        self._dll_handle.Recognizer_getROCCurvePointByDistanceThreshold(
+        self._dll_handle.Recognizer_getROCCurvePointByDistanceThreshold_v2(
             self._impl,
             c_double(distance_threshold),
             byref(distance),
@@ -529,7 +529,7 @@ class Recognizer(ComplexObject):
         fr_r = c_double()
         score = c_double()
 
-        self._dll_handle.Recognizer_getROCCurvePointByFAR(
+        self._dll_handle.Recognizer_getROCCurvePointByFAR_v2(
             self._impl,
             c_double(desired_far),
             byref(distance),
@@ -564,7 +564,7 @@ class Recognizer(ComplexObject):
         fr_r = c_double()
         score = c_double()
 
-        self._dll_handle.Recognizer_getROCCurvePointByFRR(
+        self._dll_handle.Recognizer_getROCCurvePointByFRR_v2(
             self._impl,
             c_double(desired_frr),
             byref(distance),

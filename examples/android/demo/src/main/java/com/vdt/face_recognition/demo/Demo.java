@@ -164,13 +164,12 @@ public class Demo{
 		if (flag_liveness)
 		{
 			if(liveness2dEstimator == null){
-				liveness2dEstimator =  service.createLiveness2DEstimator("liveness_2d_estimator_v2.xml");
+				liveness2dEstimator =  service.createLiveness2DEstimator("liveness_2d_estimator_v3.xml");
 			}
 
 			// get liveness
 			final Liveness2DEstimator.LivenessAndScore liveness_and_score = liveness2dEstimator.estimate(sample);
-			String score_str = (liveness_and_score.liveness == Liveness2DEstimator.Liveness.REAL ||
-				liveness_and_score.liveness == Liveness2DEstimator.Liveness.FAKE) ?
+			String score_str = (liveness_and_score.liveness != Liveness2DEstimator.Liveness.NOT_ENOUGH_DATA) ?
 				String.format("%.03f", liveness_and_score.score) : "";
 			text += "Liveness: " + score_str + " - "+ liveness_and_score.liveness.name() + "\n";
 		}

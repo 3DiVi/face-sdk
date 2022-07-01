@@ -144,25 +144,6 @@ namespace capi {
 
 #define _TDV_ADD_STATIC_PREFIX(a) static_##a
 
-#ifdef LEGACY_METASDK
-#define DECLARE_CHBD(decl)
-#else
-#define DECLARE_CHBD(decl) decl( \
-	HPBlock*, \
-	TDVProcessingBlock_createHumanBodyDetector, \
-	( \
-		void* service, \
-		const HContext* block_ptr, \
-		void** out_exception \
-	), \
-	( \
-		service, \
-		block_ptr, \
-		out_exception \
-	), \
-	return )
-#endif
-
 // decl suppose to be a macro: decl(rtype, name, typed_args, args, return)
 #define __TDV_FLIST(decl) \
 	\
@@ -3188,7 +3169,81 @@ namespace capi {
 		(object), \
 		) \
 	\
-	DECLARE_CHBD(decl)
+	\
+	decl( \
+		HPBlock*, \
+		FacerecService_ProcessingBlock_createObjectDetector, \
+		( \
+			void* service, \
+			const HContext* block_ptr, \
+			void** out_exception \
+		), \
+		( \
+			service, \
+			block_ptr, \
+			out_exception \
+		), \
+		return ) \
+	\
+		decl( \
+		HPBlock*, \
+		FacerecService_ProcessingBlock_createHumanBodyDetector, \
+		( \
+			void* service, \
+			const HContext* block_ptr, \
+			void** out_exception \
+		), \
+		( \
+			service, \
+			block_ptr, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
+		HPBlock*, \
+		FacerecService_ProcessingBlock_createLivenessEstimator, \
+		( \
+			void* service, \
+			const HContext* block_ptr, \
+			void** out_exception \
+		), \
+		( \
+			service, \
+			block_ptr, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
+		HPBlock*, \
+		FacerecService_ProcessingBlock_createEmotionEstimator, \
+		( \
+			void* service, \
+			const HContext* block_ptr, \
+			void** out_exception \
+		), \
+		( \
+			service, \
+			block_ptr, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
+		HPBlock*, \
+		FacerecService_ProcessingBlock_createGenderEstimator, \
+		( \
+			void* service, \
+			const HContext* block_ptr, \
+			void** out_exception \
+		), \
+		( \
+			service, \
+			block_ptr, \
+			out_exception \
+		), \
+		return )
 
 // decl suppose to be a macro: decl(rtype, name, typed_args, args, return)
 #define __TDV_METASDK_FLIST(decl) \
@@ -3327,6 +3382,20 @@ namespace capi {
 	\
 	\
 	decl( \
+		HContext*, \
+		TDVContext_clear, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
 		void, \
 		TDVContext_putStr, \
 		( \
@@ -3392,10 +3461,44 @@ namespace capi {
 	\
 	decl( \
 		unsigned char*, \
+		TDVContext_allocDataPtr, \
+		( \
+			HContext* ctx, \
+			unsigned long size, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			size, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		unsigned char*, \
 		TDVContext_putDataPtr, \
 		( \
 			HContext* ctx, \
 			unsigned char* val, \
+			unsigned long copy_sz, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			val, \
+			copy_sz, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		unsigned char*, \
+		TDVContext_putConstDataPtr, \
+		( \
+			HContext* ctx, \
+			const unsigned char* val, \
 			unsigned long copy_sz, \
 			ContextEH** errorHandler \
 		), \
@@ -3414,13 +3517,13 @@ namespace capi {
 		( \
 			HContext* ctx, \
 			void* data, \
-			bool toMove, \
+			bool copy, \
 			ContextEH** errorHandler \
 		), \
 		( \
 			ctx, \
 			data, \
-			toMove, \
+			copy, \
 			errorHandler \
 		), \
 		return ) \

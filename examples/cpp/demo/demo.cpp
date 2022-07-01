@@ -14,6 +14,24 @@
 
 #include "../console_arguments_parser/ConsoleArgumentsParser.h"
 
+
+static const std::map<pbio::Liveness2DEstimator::Liveness, std::string> LivenessToStr{
+	{pbio::Liveness2DEstimator::BAD_IMAGE_BLUR, "FAKE - BAD IMAGE BLUR"},
+	{pbio::Liveness2DEstimator::BAD_IMAGE_FLARE, "FAKE - BAD IMAGE FLARE"},
+	{pbio::Liveness2DEstimator::BAD_IMAGE_LIGHTING, "FAKE - BAD IMAGE LIGHTING"},
+	{pbio::Liveness2DEstimator::BAD_IMAGE_NOISE, "FAKE - BAD IMAGE NOISE"},
+	{pbio::Liveness2DEstimator::FACE_NOT_FULLY_FRAMED, "FAKE - FACE NOT FULLY FRAMED"},
+	{pbio::Liveness2DEstimator::FACE_TURNED_DOWN, "FAKE - FACE TURNED DOWN"},
+	{pbio::Liveness2DEstimator::FACE_TURNED_LEFT, "FAKE - FACE TURNED LEFT"},
+	{pbio::Liveness2DEstimator::FACE_TURNED_RIGHT, "FAKE - FACE TURNED RIGHT"},
+	{pbio::Liveness2DEstimator::FACE_TURNED_UP, "FAKE - FACE TURNED UP"},
+	{pbio::Liveness2DEstimator::FAKE, "FAKE - NOT REAL FACE"},
+	{pbio::Liveness2DEstimator::REAL, "REAL"},
+	{pbio::Liveness2DEstimator::MULTIPLE_FACE_FRAMED, "FAKE - MORE THAN ONE FACE FRAMED"},
+	{pbio::Liveness2DEstimator::NOT_COMPUTED, "NOT COMPUTED"},
+	{pbio::Liveness2DEstimator::NOT_ENOUGH_DATA, "NOT ENOUGH DATA"}
+};
+
 // calss that will do all the work
 class Worker
 {
@@ -36,7 +54,7 @@ private:
 	const pbio::QualityEstimator::Ptr _quality_estimator;
 
 	// one age and gender estimator
-	const pbio::AgeGenderEstimator::Ptr _age_geder_estimator;
+	const pbio::AgeGenderEstimator::Ptr _age_gender_estimator;
 
 	// one emotions estimator
 	const pbio::EmotionsEstimator::Ptr _emotions_estimator;
@@ -71,7 +89,7 @@ private:
 
 	// liveness estimator
 	pbio::Liveness2DEstimator::Ptr liveness2d;
-	const std::string liveness_config = "liveness_2d_estimator_v2.xml";
+	const std::string liveness_config = "liveness_2d_estimator_v3.xml";
 
 	bool& flag(int i);
 	std::string flag_name(int i) const;
@@ -204,9 +222,8 @@ _tracker(
 			.overrideParameter("downscale_rawsamples_to_preferred_size", 0)
 			.overrideParameter("iris_enabled", 1))),
 _quality_estimator( _service->createQualityEstimator("quality_estimator_iso.xml") ),
-_age_geder_estimator( _service->createAgeGenderEstimator("age_gender_estimator.xml") ),
-//_age_geder_estimator( _service->createAgeGenderEstimator("age_gender_estimator_v2.xml") ),
-_emotions_estimator( _service->createEmotionsEstimator("emotions_estimator.xml") ),
+_age_gender_estimator( _service->createAgeGenderEstimator("age_gender_estimator_v3.xml") ),
+_emotions_estimator( _service->createEmotionsEstimator("emotions_estimator_v2.xml") ),
 _face_quality_estimator( _service->createFaceQualityEstimator("face_quality_estimator.xml")),
 
 _flag_positions( true ),
@@ -425,7 +442,7 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 		if( _flag_age_gender )
 		{
 			const pbio::AgeGenderEstimator::AgeGender age_gender =
-				_age_geder_estimator->estimateAgeGender(sample);
+				_age_gender_estimator->estimateAgeGender(sample);
 
 			std::ostringstream age_text;
 
@@ -479,6 +496,9 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 					emotion == pbio::EmotionsEstimator::EMOTION_HAPPY    ? cv::Scalar(0, 255, 0) :
 					emotion == pbio::EmotionsEstimator::EMOTION_ANGRY    ? cv::Scalar(0, 0, 255) :
 					emotion == pbio::EmotionsEstimator::EMOTION_SURPRISE ? cv::Scalar(0, 255, 255) :
+					emotion == pbio::EmotionsEstimator::EMOTION_DISGUSTED ? cv::Scalar(255, 255, 0) :
+					emotion == pbio::EmotionsEstimator::EMOTION_SAD ? cv::Scalar(255, 0, 255) :
+					emotion == pbio::EmotionsEstimator::EMOTION_SCARED ? cv::Scalar(0, 255, 127) :
 						cv::Scalar(0, 0, 0),
 					-1);
 
@@ -487,7 +507,10 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 					emotion == pbio::EmotionsEstimator::EMOTION_NEUTRAL  ? "neutral" :
 					emotion == pbio::EmotionsEstimator::EMOTION_HAPPY    ? "happy" :
 					emotion == pbio::EmotionsEstimator::EMOTION_ANGRY    ? "angry" :
-					emotion == pbio::EmotionsEstimator::EMOTION_SURPRISE ? "surprise" : "?",
+					emotion == pbio::EmotionsEstimator::EMOTION_SURPRISE ? "surprised" :
+					emotion == pbio::EmotionsEstimator::EMOTION_DISGUSTED ? "disgusted" :
+					emotion == pbio::EmotionsEstimator::EMOTION_SAD ? "sad":
+					emotion == pbio::EmotionsEstimator::EMOTION_SCARED ? "scared" : "?",
 					text_point + cv::Point2f(100, 0));
 
 				text_point.y += text_line_height;
@@ -608,19 +631,15 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 			}
 			pbio::Liveness2DEstimator::LivenessAndScore liveness_2d_result;
 			liveness_2d_result = liveness2d->estimate(sample);
-			std::stringstream ss;
-			ss << std::fixed << std::setprecision(3) << liveness_2d_result.score;
-			std::string score_str = ss.str();
-			puttext(
-				draw_image,
-				std::string("liveness: ") + (
-					liveness_2d_result.liveness == pbio::Liveness2DEstimator::REAL ? score_str + " - real" :
-					liveness_2d_result.liveness == pbio::Liveness2DEstimator::FAKE ? score_str + " - fake" :
-					liveness_2d_result.liveness == pbio::Liveness2DEstimator::NOT_ENOUGH_DATA ? "not enough data" : "??"),
-				text_point);
-
+			auto info = LivenessToStr.find(liveness_2d_result.liveness);
+			puttext(draw_image, "Liveness: " + (info == LivenessToStr.end() ? " not enough data" : info->second), text_point);
 			text_point.y += text_line_height;
-			text_point.y += text_line_height / 3;
+			text_point.y += (text_line_height / 3);
+			std::stringstream ss;
+			ss << "score: " << std::fixed << std::setprecision(3) << liveness_2d_result.score;
+			puttext(draw_image, ss.str(), text_point);
+			text_point.y += text_line_height;
+			text_point.y += (text_line_height / 3);
 		}
 
 		// draw face attribute (masked_face)
