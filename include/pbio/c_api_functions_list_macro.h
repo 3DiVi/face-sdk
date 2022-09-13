@@ -3172,67 +3172,7 @@ namespace capi {
 	\
 	decl( \
 		HPBlock*, \
-		FacerecService_ProcessingBlock_createObjectDetector, \
-		( \
-			void* service, \
-			const HContext* block_ptr, \
-			void** out_exception \
-		), \
-		( \
-			service, \
-			block_ptr, \
-			out_exception \
-		), \
-		return ) \
-	\
-		decl( \
-		HPBlock*, \
-		FacerecService_ProcessingBlock_createHumanBodyDetector, \
-		( \
-			void* service, \
-			const HContext* block_ptr, \
-			void** out_exception \
-		), \
-		( \
-			service, \
-			block_ptr, \
-			out_exception \
-		), \
-		return ) \
-	\
-	decl( \
-		HPBlock*, \
-		FacerecService_ProcessingBlock_createLivenessEstimator, \
-		( \
-			void* service, \
-			const HContext* block_ptr, \
-			void** out_exception \
-		), \
-		( \
-			service, \
-			block_ptr, \
-			out_exception \
-		), \
-		return ) \
-	\
-	decl( \
-		HPBlock*, \
-		FacerecService_ProcessingBlock_createEmotionEstimator, \
-		( \
-			void* service, \
-			const HContext* block_ptr, \
-			void** out_exception \
-		), \
-		( \
-			service, \
-			block_ptr, \
-			out_exception \
-		), \
-		return ) \
-	\
-	decl( \
-		HPBlock*, \
-		FacerecService_ProcessingBlock_createGenderEstimator, \
+		FacerecService_ProcessingBlock_createProcessingBlock, \
 		( \
 			void* service, \
 			const HContext* block_ptr, \

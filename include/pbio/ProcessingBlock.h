@@ -54,44 +54,10 @@ public:
 private:
 
 	ProcessingBlock(void* service, const DHPtr &dll_handle, const pbio::Context& ctx) : dll_handle_(dll_handle), eh_(nullptr) {
-		const std::string unit_type = ctx["unit_type"].getString();
-		if (!unit_type.compare("HUMAN_BODY_DETECTOR"))
-		{
-			void* exception = nullptr;
-			handle_ = dll_handle_->FacerecService_ProcessingBlock_createHumanBodyDetector(service, ctx.getHandle(), &exception);
-			checkException(exception, *dll_handle_);
-		}
-		else if (!unit_type.compare("EMOTION_ESTIMATOR"))
-		{
-			void* exception = nullptr;
-			handle_ = dll_handle_->FacerecService_ProcessingBlock_createEmotionEstimator(service, ctx.getHandle(), &exception);
-			checkException(exception, *dll_handle_);
-		}
-		else if (!unit_type.compare("GENDER_ESTIMATOR"))
-		{
-			void* exception = nullptr;
-			handle_ = dll_handle_->FacerecService_ProcessingBlock_createGenderEstimator(service, ctx.getHandle(), &exception);
-			checkException(exception, *dll_handle_);
-		}
-		else if (!unit_type.compare("LIVENESS_ESTIMATOR"))
-		{
-			void* exception = nullptr;
-			handle_ = dll_handle_->FacerecService_ProcessingBlock_createLivenessEstimator(service, ctx.getHandle(), &exception);
-			checkException(exception, *dll_handle_);
-		}
-		else if (!unit_type.compare("OBJECT_DETECTOR"))
-		{
-			void* exception = nullptr;
-			handle_ = dll_handle_->FacerecService_ProcessingBlock_createObjectDetector(service, ctx.getHandle(), &exception);
-			checkException(exception, *dll_handle_);
-		}
-		else
-		{
-			throw pbio::Error(0x18ba1f8e, "Error in pbio::ProcessingBlock"
-						" unknown unit type for ProcessingBlock");
-		}
+		void* exception = nullptr;
+		handle_ = dll_handle_->FacerecService_ProcessingBlock_createProcessingBlock(service, ctx.getHandle(), &exception);
+		checkException(exception, *dll_handle_);
 	}
-
 
 	typedef LightSmartPtr<import::DllHandle>::tPtr DHPtr;
 

@@ -222,8 +222,13 @@ _tracker(
 			.overrideParameter("downscale_rawsamples_to_preferred_size", 0)
 			.overrideParameter("iris_enabled", 1))),
 _quality_estimator( _service->createQualityEstimator("quality_estimator_iso.xml") ),
+#ifdef PROCESSING_BLOCK_API
 _age_gender_estimator( _service->createAgeGenderEstimator("age_gender_estimator_v3.xml") ),
 _emotions_estimator( _service->createEmotionsEstimator("emotions_estimator_v2.xml") ),
+#else
+_age_gender_estimator( _service->createAgeGenderEstimator("age_gender_estimator_v2.xml") ),
+_emotions_estimator( _service->createEmotionsEstimator("emotions_estimator.xml") ),
+#endif
 _face_quality_estimator( _service->createFaceQualityEstimator("face_quality_estimator.xml")),
 
 _flag_positions( true ),
@@ -647,7 +652,11 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 		{
 			if(!_face_attributes_estimator_masked_face)
 			{
+#ifdef LEGACY_METASDK
 				_face_attributes_estimator_masked_face = _service->createFaceAttributesEstimator("face_mask_estimator.xml");
+#else
+				_face_attributes_estimator_masked_face = _service->createFaceAttributesEstimator("face_mask_estimator_v2.xml");
+#endif
 			}
 			pbio::FaceAttributesEstimator::Attribute attr = _face_attributes_estimator_masked_face->estimate(sample);
 			std::stringstream ss;

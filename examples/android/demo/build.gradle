@@ -43,7 +43,7 @@ android {
         from("$projectDir/../../.."){
             include (
                 "conf/**",
-                "share/facedetectors/config_lbf/**",
+                "share/facedetectors/blf/**",
                 "share/fda/**",
                 "share/mesh/**",
                 "share/quality/**",

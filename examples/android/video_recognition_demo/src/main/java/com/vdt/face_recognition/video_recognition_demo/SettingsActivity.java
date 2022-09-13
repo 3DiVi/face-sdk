@@ -13,6 +13,7 @@ import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,6 +25,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vdt.face_recognition.video_recognition_demo.TheCamera;
 
@@ -155,6 +157,11 @@ public class SettingsActivity extends Activity{
 		Button okButton = (Button) findViewById(R.id.settings_ok_button);
 		okButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+            	if (TextUtils.isEmpty(threshold_editText.getText().toString())){
+					Toast.makeText(SettingsActivity.this, "the threshold cannot be empty",
+							Toast.LENGTH_LONG).show();
+					return;
+				}
 
             	int new_method_index = recognizer_spinner.getSelectedItemPosition();
 

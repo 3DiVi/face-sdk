@@ -321,7 +321,7 @@ int main(int argc, char** argv)
 
 			original_cut_file.flush();
 
-			std::cout << "saving origianl scale cut face in '" << original_cut_save_path_stream.str() << "' " <<
+			std::cout << "saving original scale cut face in '" << original_cut_save_path_stream.str() << "' " <<
 				( (original_cut_file.is_open() && original_cut_file.good()) ? "success" : "failed") << std::endl;
 
 			original_cut_file.close();

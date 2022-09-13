@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<face_attribute_impl>the_one</face_attribute_impl>
+
+<face_attribute_name>background_uniformity</face_attribute_name>
+<score_threshold>0.09</score_threshold>
+
+</opencv_storage>

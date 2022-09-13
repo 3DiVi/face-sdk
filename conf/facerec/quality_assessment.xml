@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<capturer_config>common_capturer_refa_fda_a.xml</capturer_config>
+<quality_config>quality_estimator_iso_qaa.xml</quality_config>
+<emotion_config>emotions_estimator.xml</emotion_config>
+<face_mask_config>face_mask_estimator.xml</face_mask_config>
+<eyes_openness_config>eyes_openness_estimator_v2.xml</eyes_openness_config>
+<background_config>background_uniformity_estimator.xml</background_config>
+
+<threshold_blur>20</threshold_blur>
+<threshold_illumination>50</threshold_illumination>
+<pitch_offset>20</pitch_offset>
+<threshold_angles>10</threshold_angles>
+<threshold_eyes_distance>60</threshold_eyes_distance>
+<threshold_noise>20</threshold_noise>
+<neutral_emotion_score>20</neutral_emotion_score>
+<mask_score>20</mask_score>
+
+</opencv_storage>

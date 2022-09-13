@@ -181,7 +181,7 @@ FaceAttributesEstimator::Attribute FaceAttributesEstimator::estimate(const pbio:
 
 	checkException(exception, *_dll_handle);
 
-	if (name_task.str() == "masked_face")
+	if (name_task.str() == "masked_face" || name_task.str() == "masked_face_v2")
 	{
 		int32_t verdict;
 

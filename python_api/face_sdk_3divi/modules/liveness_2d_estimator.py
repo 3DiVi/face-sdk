@@ -89,41 +89,41 @@ class Liveness(Enum):
     #     \brief The Observed face is not frontal and turned up
     #  \~Russian
     #     \brief Лицо повернуто вверх.
-    FACE_TURNED_UP = 9
+    FACE_TURNED_UP = 8
 
     ##
     #  \~English
     #     \brief The Observed face is not frontal and turned down
     #  \~Russian
     #     \briefЛицо повернуто вниз.
-    FACE_TURNED_DOWN = 10
+    FACE_TURNED_DOWN = 9
 
     ##
     #  \~English
     #     \brief Input image has bad lighting
     #  \~Russian
     #     \brief Недостаточные условия освещения.
-    BAD_IMAGE_LIGHTING = 11
+    BAD_IMAGE_LIGHTING = 10
 
     ##  \~English
     #	\brief Input image is too noisy
     #	\~Russian
     #	\brief Исходное изображение слишком зашумлено.
-    BAD_IMAGE_NOISE = 12
+    BAD_IMAGE_NOISE = 11
 
     ##
     #  \~English
     #     \brief Input image is too blurry
     #  \~Russian
     #     \brief Исходное изображение слишком размыто
-    BAD_IMAGE_BLUR = 13
+    BAD_IMAGE_BLUR = 12
 
     ##
     #  \~English
     #     \brief Input image is too flared
     #  \~Russian
     #     \brief Исходное изображение слишком яркое
-    BAD_IMAGE_FLARE = 14
+    BAD_IMAGE_FLARE = 13
 
 
 ##

@@ -72,7 +72,7 @@ public class Demo{
 
 		this.service = service;
 
-		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer_mesh.xml");
+		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer_blf_front.xml");
 		capturer_conf.overrideParameter("downscale_rawsamples_to_preferred_size", 0);
 		capturer_conf.overrideParameter("iris_enabled", 1);
 		capturer = service.createCapturer(capturer_conf);
@@ -93,7 +93,7 @@ public class Demo{
 			capturer.dispose();
 		}
 
-		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer_mesh.xml");
+		FacerecService.Config capturer_conf = service.new Config("fda_tracker_capturer_blf_front.xml");
 		capturer_conf.overrideParameter("downscale_rawsamples_to_preferred_size", 0);
 		capturer_conf.overrideParameter("iris_enabled", 1);
 		capturer = service.createCapturer(capturer_conf);

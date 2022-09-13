@@ -77,9 +77,8 @@
         android:id="@+id/threshold_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0.0"
-        android:inputType="text"
-        />
+        android:inputType="numberSigned|number|numberDecimal"
+        android:text="0.0" />
 
 </LinearLayout>
 

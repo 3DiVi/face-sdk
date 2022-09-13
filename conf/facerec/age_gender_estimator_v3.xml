@@ -3,9 +3,9 @@
 
 <age_gender_impl_name>version_3.0</age_gender_impl_name>
 
-<analysisa>share/age_second/age_model.enc</analysisa>
-<age_second_impl>age_model_second</age_second_impl>
-<analysisg>share/faceanalysis/gender.enc</analysisg>
+<analysisa>share/faceanalysis/age_heavy.enc</analysisa>
+<age_use_cuda>false</age_use_cuda>
+<analysisg>share/faceanalysis/gender_heavy.enc</analysisg>
 <gender_use_cuda>false</gender_use_cuda>
 
 </opencv_storage>
