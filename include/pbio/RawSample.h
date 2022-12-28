@@ -395,6 +395,33 @@ public:
 	/**
 		\~English
 		\brief
+			Get the score of face visibility.
+			Thread-safe.
+
+		\return
+			One if face is fully visible,
+			\n
+			zero if face is invisible,
+			\n
+			otherwise - a number in the range [0 ... 1].
+
+		\~Russian
+		\brief
+			Получить оценку видимости лица.
+			Потокобезопасный.
+
+		\return
+			Один, если лицо полностью видимо,
+			\n
+			ноль, если лицо невидимо,
+			\n
+			иначе - число в диапазоне [0 ... 1].
+	*/
+	float getFaceVisibilityScore() const;
+
+	/**
+		\~English
+		\brief
 			Get an original image.
 			Throws an exception if a sample doesn’t contain an original image (check with RawSample::hasOriginalImage first).
 			Thread-safe.
@@ -1248,6 +1275,21 @@ float RawSample::getScore() const
 	void* exception = NULL;
 
 	const float result = _dll_handle->RawSample_getScore(
+			_impl,
+			&exception);
+
+	checkException(exception, *_dll_handle);
+
+	return result;
+
+}
+
+inline
+float RawSample::getFaceVisibilityScore() const
+{
+	void* exception = NULL;
+
+	const float result = _dll_handle->RawSample_getFaceVisibilityScore(
 			_impl,
 			&exception);
 

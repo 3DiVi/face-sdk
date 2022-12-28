@@ -1,13 +1,85 @@
+##
+#  \file face_attributes_estimator.py
+#  \~English
+#     \brief ProcessingBlock is an interface object used to work with estimators from Processing Block API.
+#  \~Russian
+#     \brief ProcessingBlock - интерфейсный объект для взаимодействия с методами из Processing Block API.
+
 import sys
 import json
 from ctypes import c_void_p, c_char_p, create_string_buffer, POINTER, c_int32, c_int64
+from typing import Union
 
-from .dll_handle import DllHandle
 from .complex_object import ComplexObject
-from .exception_check import check_exception
+from .exception_check import check_exception, check_processing_block_exception, make_exception
+from .dll_handle import DllHandle
+from .context import Context
+from .error import Error
 
+## @defgroup PythonAPI
+#  @{
+## @defgroup ProcessingBlock
+#  @{
+    
+##
+#  \~English
+#     \brief Interface object used to work with estimators from Processing Block API.
+#  \~Russian
+#     \brief Интерфейсный объект для взаимодействия с методами из Processing Block API.
 
 class ProcessingBlock(ComplexObject):
+    def __del__(self):
+        exception = make_exception()
+
+        self._dll_handle.TDVProcessingBlock_destroyBlock(self._impl, exception)
+
+        check_exception(exception, self._dll_handle)
+
+    def __call__(self, ctx: Union[dict, Context]):
+        if isinstance(ctx, dict):
+            self.__call_dicts(ctx)
+        elif isinstance(ctx, Context):
+            self.__call_ctx(ctx)
+        else:
+            raise Error(0xa341de35, "Wrong type of ctx")
+
+    def __call_dicts(self, ctx: dict):
+        exception = make_exception()
+        meta_ctx = Context(self._dll_handle)
+        meta_ctx(ctx)
+
+        self._dll_handle.TDVProcessingBlock_processContext(self._impl, meta_ctx._impl, exception)
+
+        check_processing_block_exception(exception, self._dll_handle)
+
+        new_keys_dict = set(meta_ctx.keys()) - set(ctx.keys())
+        for key in new_keys_dict:
+            ctx[key] = self.get_output_data(meta_ctx[key])
+
+    def __call_ctx(self, ctx: Context):
+        exception = make_exception()
+
+        self._dll_handle.TDVProcessingBlock_processContext(self._impl, ctx._impl, exception)
+
+        check_processing_block_exception(exception, self._dll_handle)
+
+    def get_output_data(self, meta_ctx: Context):
+
+        if meta_ctx.is_array():
+            return [self.get_output_data(meta_ctx[i]) for i in range(len(meta_ctx))]
+
+        if meta_ctx.is_object():
+            return {key: self.get_output_data(meta_ctx[key]) for key in meta_ctx.keys()}
+
+        return meta_ctx.get_value()
+
+##
+#  \~English
+#     \brief Interface object used to work with Legacy Processing Block API. Shouldn't be used anymore.
+#  \~Russian
+#     \brief Интерфейсный объект для взаимодействия с методами из Processing Block API.
+
+class LegacyProcessingBlock(ComplexObject):
     @staticmethod
     def __serialized_ctx_to_ptr(serialized_ctx: str):
         return POINTER(c_char_p)(create_string_buffer(serialized_ctx.encode()))
@@ -31,7 +103,7 @@ class ProcessingBlock(ComplexObject):
         serialized_config_ptr = self.__serialized_ctx_to_ptr(serialized_config)
 
         impl = dll_handle.TDVFaceAttributesEstimator_createByConfig(serialized_config_ptr)
-        super(ProcessingBlock, self).__init__(dll_handle, c_void_p(impl))
+        super(LegacyProcessingBlock, self).__init__(dll_handle, c_void_p(impl))
         check_exception(self.get_exception(), self._dll_handle)
 
     def process(self, ctx: dict):
@@ -60,7 +132,4 @@ class ProcessingBlock(ComplexObject):
         self._dll_handle.tdvFreeStr(c_ptr)
 
     def __del__(self):
-        self._dll_handle.TDVProcessingBlock_destroy(
-            c_void_p(self._obj_impl)
-        )
-        self._obj_impl = None
+        self._dll_handle.TDVProcessingBlock_destroy(self._impl)

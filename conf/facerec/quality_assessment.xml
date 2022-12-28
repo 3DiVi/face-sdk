@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <opencv_storage>
 
-<capturer_config>common_capturer_refa_fda_a.xml</capturer_config>
 <quality_config>quality_estimator_iso_qaa.xml</quality_config>
 <emotion_config>emotions_estimator.xml</emotion_config>
 <face_mask_config>face_mask_estimator.xml</face_mask_config>

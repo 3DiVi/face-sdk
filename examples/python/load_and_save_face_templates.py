@@ -16,10 +16,10 @@ def detect_and_save_templ(img_path, save_path):
         recognizer.processing(detected[0]).save(f)
 
 
-face_sdk_dir = "../.."
+face_sdk_3divi_dir = "../.."
 service = FacerecService.create_service(
-    os.path.join(face_sdk_dir, "lib/libfacerec.so"),
-    os.path.join(face_sdk_dir, "conf/facerec"))
+    os.path.join(face_sdk_3divi_dir, "lib/libfacerec.so"),
+    os.path.join(face_sdk_3divi_dir, "conf/facerec"))
 print('Service created')
 
 recognizer = service.create_recognizer("recognizer_latest_v30.xml", True, True, False)
@@ -29,7 +29,7 @@ capturer = service.create_capturer(Config("common_capturer_blf_fda_front.xml"))
 print('Capturer created')
 
 save_path = 'test_emb1.bin'
-detect_and_save_templ(os.path.join(face_sdk_dir, "bin/set1", "01100.jpg"), save_path)
+detect_and_save_templ(os.path.join(face_sdk_3divi_dir, "bin/set1", "01100.jpg"), save_path)
 
 with open(save_path, 'rb') as f:
     template1 = recognizer.load_template(f)

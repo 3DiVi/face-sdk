@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <License>
-	<name>3DiVi Face SDK License</name>
-	<cc>Face SDK Demo License (c)3DiVi.com</cc>
+	<name>Face SDK License</name>
+	<cc>Face SDK Demo License</cc>
 	<note>For Demo and Testing Only!</note>
 	<version>3.4.0.0</version>
 	<max_sdk_version>4.0.0</max_sdk_version>
@@ -18,5 +18,5 @@
 	<Reg>0</Reg>
 	<android_app_id>62afa60849efabf4f39e8e81d765431a2c6fa6d244ea86caf278c2b4d6984d23-com.vdt.face_recognition.demo</android_app_id>
 	<Hardware>0f77c6ae59a1db75969fadef1937c151cb5a4c98db81735cb64cf3626109610d</Hardware>
-	<Signature>&#10;-----BEGIN SIGNATURE-----&#10;MRQpoAl2tad1k13ln2FISvQkgthbQKZoahEptVxSJD7gA13tHine77+l7W4aSF7S&#10;YJofEi5VD4pROBUjliHqPEQUqkJnyeYCO65CNrCRD0lr7D3nZ8OQ4eMbg9s5SKw+&#10;9BKXrNLiVB4WHqu+J51DIOh4FiXztm9DlI8JR7O5cWEZlWoqPy1txbZq8PswwoEK&#10;IJlZaTIyHDPGk4SqW7RH8PXtAq51/XPZH9jzOMOBEC4nsXdeJ7qQHmCxV5VL70vc&#10;cSbm7nj1ppKx0iTseX2ptbpUmRYFzq91uqUH8rp2Ee3Zq84PDG4tyJYotFj3jkr3&#10;VMQeM8mZSa5AqVXGwcCbyQ==&#10;-----END SIGNATURE-----&#10;</Signature>
+	<Signature>&#10;-----BEGIN SIGNATURE-----&#10;Jxbu79kK2rInwhxDIUEaNsj69rYFsBxjVPo5I+qzinRaE/fr39QwjAdBgl7XbB5J&#10;9I8E6ko+jWMqc1uHt0rDzpB0r93qdB/f0Z8K7nkwqaVzo2FAB/cqkik2GPmvlxN7&#10;T9OpTmadZkCkAESTML382Ex8OuoNstS37XFfj42kRCjhZOivVglGMXUp3Gad05V6&#10;kxic7n+BBjud58tvj/y31IOYjcWTx4qtoPrbRsAMPFUu6JDUvxsdm1xtJplXIxTO&#10;VA8e1ftUYfwrQW2Cu+WYZeOjRJpvOi4rFOb9RKmaUFRirq7ysIJKBCkAyBTg1ZI5&#10;7lrgjxQROzcXElLVKNL/Fw==&#10;-----END SIGNATURE-----&#10;</Signature>
 </License>

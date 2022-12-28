@@ -10,6 +10,8 @@ add_executable(${name} processing_block.cpp)
 
 set_property(TARGET ${name} PROPERTY CXX_STANDARD 11)
 
-target_link_libraries( ${name} pbio_cpp ${OpenCV_LIBS})
+set(LIBS pbio_cpp ${OpenCV_LIBS})
+
+target_link_libraries( ${name} ${LIBS})
 
 install(TARGETS ${name} DESTINATION bin)

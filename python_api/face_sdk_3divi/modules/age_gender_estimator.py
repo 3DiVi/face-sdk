@@ -2,8 +2,12 @@
 #  \file age_gender_estimator.py
 #  \~English
 #      \brief AgeGenderEstimator - interface object for age and gender estimation
+#        \warning
+#        This is a deprecated version (see the new Age and Gender estimators in Processing Block API). It's support will end in 2024.
 #  \~Russian
 #      \brief AgeGenderEstimator - интерфейсный объект для определения пола и возраста
+#        \warning
+#        Это устаревшая версия (см. новые блоки в Processing Block API). Поддержка будет прекращена в 2024 году.
 
 from enum import Enum
 from ctypes import c_int, c_void_p, c_float, byref
@@ -124,8 +128,13 @@ class AgeGender:
 ##
 #  \~English
 #    \brief Interface object for age & gender estimation.
+#        \warning
+#        This is a deprecated version (see the new Age and Gender estimators in Processing Block API). It's support will end in 2024.
 #  \~Russian
 #    \brief Интерфейсный объект для возраста и пола.
+#        \warning
+#        Это устаревшая версия (см. новые блоки в Processing Block API). Поддержка будет прекращена в 2024 году.
+
 class AgeGenderEstimator(ComplexObject):
 
     def __init__(self, dll_handle: DllHandle, impl: c_void_p):

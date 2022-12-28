@@ -120,7 +120,7 @@ class _MyAppState extends State<MyApp> {
         child: Scaffold(
           body: Stack(
             children: [
-              Center(child: Text("Match score: ${_match?.score}\nIs same persons: ${_match!.score > 0.5 ? "true" : "false" } \nLiveness passed: $_livenessPassed")),
+              Center(child: Text("Match score: ${_match?.score}\nIs same persons: ${_match!.score > 0.9 ? "true" : "false" } \nLiveness passed: $_livenessPassed")),
               Container(
                 height: 150,
                 width: 500,

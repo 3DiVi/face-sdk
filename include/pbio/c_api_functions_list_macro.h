@@ -1994,6 +1994,19 @@ namespace capi {
 		), \
 		return ) \
 	\
+   	decl( \
+		float, \
+		RawSample_getFaceVisibilityScore, \
+		( \
+			void* rawsample, \
+			void** out_exception \
+		), \
+		( \
+			rawsample, \
+			out_exception \
+		), \
+		return ) \
+	\
 	decl( \
 		void, \
 		RawSample_getFaceCutRectangle, \

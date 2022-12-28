@@ -95,7 +95,7 @@ packages:
   face_sdk_3divi:
     dependency: "direct main"
     description:
-      path: "../../../face_sdk_flutter"
+      path: "../../../face_sdk_3divi_flutter"
       relative: true
     source: path
     version: "0.0.1"

@@ -36,7 +36,7 @@ static const std::vector<std::pair<std::string,std::string>> bone_map = {
 };
 
 void putTextWithRightExpansion(cv::Mat& img, const std::string& text, cv::Point org, int fontFace, double fontScale, cv::Scalar color,
-							int thickness = 1, int lineType = cv::LINE_8, bool bottomLeftOrigin = false, int borderType = cv::BORDER_REPLICATE)
+							int thickness = 1, int lineType = cv::LINE_8, bool bottomLeftOrigin = false, int borderType = cv::BORDER_CONSTANT)
 {
 	int* baseLine = nullptr;
 	cv::Size text_sz = cv::getTextSize(text, fontFace, fontScale, thickness, baseLine);
@@ -58,8 +58,8 @@ void drawObjects(const pbio::Context& data, cv::Mat& image, std::string class_fi
 		if(!class_filter.empty() && class_name.compare(class_filter))
 			continue;
 		const auto& rectCtx = obj.at("bbox");
-		cv::Rect rect(cv::Point{static_cast<int>(rectCtx[0].getDouble()*width), static_cast<int>(rectCtx[1].getDouble()*heigth)},
-					  cv::Point{static_cast<int>(rectCtx[2].getDouble()*width), static_cast<int>(rectCtx[3].getDouble()*heigth)});
+		cv::Rect rect(cv::Point{std::max(static_cast<int>(rectCtx[0].getDouble()*width), 0), std::max(static_cast<int>(rectCtx[1].getDouble()*heigth), 0)},
+					  cv::Point{std::min(static_cast<int>(rectCtx[2].getDouble()*width), width), std::min(static_cast<int>(rectCtx[3].getDouble()*heigth), heigth)});
 		cv::rectangle(image, rect, {0, 255, 0}, 1);
 		if(class_filter.empty())
 			putTextWithRightExpansion(image, class_name, cv::Point{rect.x, rect.y+20}, cv::FONT_HERSHEY_DUPLEX,1,cv::Scalar(0,255,0),1,false);
@@ -103,8 +103,8 @@ void drawEmotions(const pbio::Context& data, cv::Mat& image)
 				continue;
 
 		const pbio::Context& emotions = obj.at("emotions");
-		cv::Point text_point{static_cast<int>(obj.at("bbox")[2].getDouble()*width),
-							 static_cast<int>(obj.at("bbox")[1].getDouble()*heigth)};
+		cv::Point text_point{std::min(static_cast<int>(obj.at("bbox")[2].getDouble()*width), width),
+							 std::max(static_cast<int>(obj.at("bbox")[1].getDouble()*heigth), 0) + 15};
 
 		std::set<std::pair<double, std::string>> results;
 		for(size_t i = 0; i < emotions.size(); ++i)
@@ -147,8 +147,8 @@ void drawAgeGenderMaskQuality(const pbio::Context& data, cv::Mat& image, const s
 	{
 		if(obj.at("class").getString().compare("face"))
 			continue;
-		cv::Point text_point{static_cast<int>(obj.at("bbox")[2].getDouble()*width),
-							 static_cast<int>(obj.at("bbox")[1].getDouble()*heigth)};
+		cv::Point text_point{std::min(static_cast<int>(obj.at("bbox")[2].getDouble()*width), width),
+							 std::max(static_cast<int>(obj.at("bbox")[1].getDouble()*heigth), 0) + 15};
 		if(!className.compare("gender"))
 			putTextWithRightExpansion(image, obj.at("gender").getString(), text_point, cv::FONT_HERSHEY_DUPLEX, 0.5,cv::Scalar(0,0,255), 1, false);
 		else if(!className.compare("age"))
@@ -258,15 +258,8 @@ int main(int argc, char **argv)
 		configCtx["ONNXRuntime"]["library_path"] = lib_dir; // optional, no default value, os-specific default search order if not set
 		configCtx["use_cuda"] = use_cuda;
 
-		if(!unit_type.compare("quality")) {
-			configCtx["config_name"] = "quality_assessment.xml";
-			configCtx["sdk_path"] = sdk_dir;
-		}
-
 		if(!unit_type.compare("pose"))
 			configCtx["label_map"] = model_dir + "/humanpose/label_map_keypoints.txt";
-
-		pbio::ProcessingBlock processingBlock = service->createProcessingBlock(configCtx);
 
 		cv::Mat image;
 		image = cv::imread(input_image_path, cv::IMREAD_COLOR);
@@ -281,8 +274,47 @@ int main(int argc, char **argv)
 		pbio::RawImage input_rawimg(input_image.cols, input_image.rows, pbio::RawImage::Format::FORMAT_RGB, input_image.data);
 
 		auto ioData = service->createContext();
+		if(unit_type == "quality")
+		{
+			configCtx["config_name"] = "quality_assessment.xml";
+			configCtx["sdk_path"] = sdk_dir;
+			configCtx["facerec_conf_dir"] = sdk_dir + "/conf/facerec/";
+		}
 
-		if(!unit_type.compare("emotions") || !unit_type.compare("gender") || !unit_type.compare("age") || !unit_type.compare("mask"))
+		if(unit_type == "liveness")
+		{
+			configCtx["config_name"] = "liveness_2d_estimator_v3.xml";
+			configCtx["sdk_path"] = sdk_dir;
+			configCtx["facerec_conf_dir"] = sdk_dir + "/conf/facerec/";
+		}
+
+		pbio::ProcessingBlock processingBlock = service->createProcessingBlock(configCtx);
+
+		if(unit_type == "quality")
+		{
+			// create capturer
+			const pbio::Capturer::Ptr capturer = service->createCapturer("common_capturer_refa_fda_a.xml");
+
+			std::vector<pbio::RawSample::Ptr> samples = capturer->capture(input_rawimg);
+			
+			auto capture_result = service->createContext();
+			auto wholeImageCtx = capture_result["image"];
+			pbio::context_utils::putImage(wholeImageCtx, input_rawimg);
+			auto objectsCtx = capture_result["objects"];
+			for(auto &sample: samples)
+			{
+				auto faceData = service->createContext();
+				faceData["image_ptr"] = capture_result["image"];
+
+				//fitter names: fda, mesh, mesh_3d, lbf29, lbf68, esr
+				pbio::context_utils::putRawSample(faceData, sample, "fda", input_rawimg.width, input_rawimg.height);
+				processingBlock(faceData);
+				objectsCtx.push_back(std::move(faceData));
+			}
+			ioData = std::move(capture_result);
+		}
+
+		else if(!unit_type.compare("emotions") || !unit_type.compare("gender") || !unit_type.compare("age") || !unit_type.compare("mask"))
 		{
 			auto faceCtx = service->createContext();
 			faceCtx["unit_type"] = unitTypes.at("face").first;
@@ -302,10 +334,10 @@ int main(int argc, char **argv)
 			{
 				const auto& rectCtx = obj.at("bbox");
 
-				int x = static_cast<int>(rectCtx[0].getDouble()*image.size[1]);
-				int y = static_cast<int>(rectCtx[1].getDouble()*image.size[0]);
-				int width = static_cast<int>(rectCtx[2].getDouble()*image.size[1]) - x;
-				int height = static_cast<int>(rectCtx[3].getDouble()*image.size[0]) - y;
+				int x = std::max(static_cast<int>(rectCtx[0].getDouble()*image.size[1]), 0);
+				int y = std::max(static_cast<int>(rectCtx[1].getDouble()*image.size[0]), 0);
+				int width = std::min(static_cast<int>(rectCtx[2].getDouble()*image.size[1]), image.size[1]) - x;
+				int height = std::min(static_cast<int>(rectCtx[3].getDouble()*image.size[0]), image.size[0]) - y;
 				pbio::RawSample::Rectangle rect(x, y, width, height);
 				pbio::RawImage raw_image_crop = input_rawimg.crop(rect);
 

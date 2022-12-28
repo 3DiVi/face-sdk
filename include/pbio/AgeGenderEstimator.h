@@ -2,8 +2,12 @@
 	\file AgeGenderEstimator.h
 	\~English
 	\brief AgeGenderEstimator - interface object for age and gender estimation
+		\warning
+		This is a deprecated version (see the new Age and Gender estimators in Processing Block API). It's support will end in 2024.
 	\~Russian
 	\brief AgeGenderEstimator - интерфейсный объект для определения пола и возраста
+		\warning
+		Это устаревшая версия (см. новые блоки в Processing Block API). Поддержка будет прекращена в 2024 году.
 */
 
 #ifndef __PBIO_API__PBIO__AGE_GENDER_ESTIMATOR_H_
@@ -32,8 +36,12 @@ class FacerecService;
 
 /** \~English
 	\brief Interface object for age and gender estimation. 
+		\warning
+		This is a deprecated version (see the new Age and Gender estimators in Processing Block API). It's support will end in 2024.
 	\~Russian
 	\brief Интерфейсный объект для определения пола и возраста.
+		\warning
+		Это устаревшая версия (см. новые блоки в Processing Block API). Поддержка будет прекращена в 2024 году.
 */
 class AgeGenderEstimator : public ComplexObject
 {

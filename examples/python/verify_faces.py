@@ -15,10 +15,10 @@ def process_one_face(img_path):
     return recognizer.processing(detected[0])
 
 
-face_sdk_dir = "../.."
+face_sdk_3divi_dir = "../.."
 service = FacerecService.create_service(
-    os.path.join(face_sdk_dir, "lib/libfacerec.so"),
-    os.path.join(face_sdk_dir, "conf/facerec"))
+    os.path.join(face_sdk_3divi_dir, "lib/libfacerec.so"),
+    os.path.join(face_sdk_3divi_dir, "conf/facerec"))
 print('Service created')
 
 recognizer = service.create_recognizer("recognizer_latest_v30.xml", True, True, False)
@@ -27,7 +27,7 @@ print('Recognizer created')
 capturer = service.create_capturer(Config("common_capturer_blf_fda_front.xml"))
 print('Capturer created')
 
-template1 = process_one_face(os.path.join(face_sdk_dir, "bin/set1", "01100.jpg"))
-template2 = process_one_face(os.path.join(face_sdk_dir, "bin/set2", "01100.jpg"))
+template1 = process_one_face(os.path.join(face_sdk_3divi_dir, "bin/set1", "01100.jpg"))
+template2 = process_one_face(os.path.join(face_sdk_3divi_dir, "bin/set2", "01100.jpg"))
 
 print(recognizer.verify_match(template1, template2))

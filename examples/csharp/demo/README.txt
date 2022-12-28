@@ -1,6 +1,7 @@
 === Build with Visual Studio ===
 
 1. extract windows_x86_64.zip
+1.1 please make sure the libonnxruntime.so library can be found when building the project
 2. open examples/csharp/demo/vs/csharp_demo.sln in Visual Studio, build and run.
 
 === Build with dotnet ===

@@ -2,9 +2,12 @@
 #  \file quality_estimator.py
 #  \~English
 #     \brief QualityEstimator - Interface object used to estimate sample quality.
+#        \warning
+#        This is a deprecated version (see the new one in Processing Block API). It's support will end in 2024.
 #  \~Russian
 #     \brief QualityEstimator - Интерфейсный объект для определения качества образца лица.
-
+#        \warning
+#        Это устаревшая версия (см. новый блок в Processing Block API). Поддержка будет прекращена в 2024 году.
 from ctypes import c_int, c_void_p, byref
 
 from .exception_check import check_exception, make_exception
@@ -83,9 +86,13 @@ class Quality:
 
 ##
 # \~English
-#    \brief Alias for the type of a smart pointer to QualityEstimator.
+#    \brief Interface object for image quality estimation.
+#        \warning
+#        This is a deprecated version (see the new one in Processing Block API). It's support will end in 2024.
 # \~Russian
-#    \brief Псевдоним для типа умного указателя на QualityEstimator.
+#    \brief Интерфейсный объект для определения качества изображений.
+#        \warning
+#        Это устаревшая версия (см. новый блок в Processing Block API). Поддержка будет прекращена в 2024 году.
 class QualityEstimator(ComplexObject):
 
     def __init__(self, dll_handle: DllHandle, impl: c_void_p):

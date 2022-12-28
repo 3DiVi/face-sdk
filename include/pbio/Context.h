@@ -13,6 +13,7 @@
 
 #include <pbio/DllHandle.h>
 #include <pbio/RawImage.h>
+#include <pbio/RawSample.h>
 
 
 namespace pbio {
@@ -678,6 +679,47 @@ inline void putImage(Context& ctx, unsigned char* data, size_t height, size_t wi
 	ctx["shape"].push_back(height);
 	ctx["shape"].push_back(width);
 	ctx["shape"].push_back(channels);
+}
+
+inline void putRawSample(Context& ctx, pbio::RawSample::Ptr& sample, std::string fitter_type, int img_width, int img_height) {
+	auto bbx = sample->getRectangle();
+	auto rct = ctx["bbox"];
+	rct.push_back(static_cast<double>(bbx.x / (float)img_width));
+	rct.push_back(static_cast<double>(bbx.y / (float)img_height));
+	rct.push_back(static_cast<double>((bbx.x + bbx.width) / (float)img_width));
+	rct.push_back(static_cast<double>((bbx.y + bbx.height) / (float)img_height));
+
+	ctx["confidence"] = sample->getScore();
+
+	ctx["class"] = "face";
+
+	auto fitter_data = ctx["fitter"];
+
+	fitter_data["fitter_type"] = fitter_type;
+
+	auto lndmrks = sample->getLandmarks();
+	
+	for(auto &pt: lndmrks)
+	{
+		fitter_data["keypoints"].push_back(pt.x);
+		fitter_data["keypoints"].push_back(pt.y);
+		fitter_data["keypoints"].push_back(pt.z);;
+	}
+
+	auto lft_eye = fitter_data["left_eye"];
+	lft_eye.push_back(sample->getLeftEye().x);
+	lft_eye.push_back(sample->getLeftEye().y);
+
+	auto rt_eye = fitter_data["right_eye"];
+	rt_eye.push_back(sample->getRightEye().x);
+	rt_eye.push_back(sample->getRightEye().y);
+
+	auto anglesCtx = ctx["angles"];
+	anglesCtx["yaw"] = sample->getAngles().yaw;
+	anglesCtx["pitch"] = sample->getAngles().pitch;
+	anglesCtx["roll"] = sample->getAngles().roll;
+
+	ctx["id"] = sample->getID();
 }
 
 }

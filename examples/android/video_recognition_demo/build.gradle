@@ -51,7 +51,7 @@ android {
                 "share/quality/**",
                 "share/quality_iso/**",
                 "share/face_quality/**",
-                "share/facerec/recognizers/method10v30/**",
+                "share/facerec/recognizers/method12v30/**",
                 "share/facerec/recognizers/method9v30mask/**",
                 "share/facerec/recognizers/method8v7/**",
                 "share/faceattributes/**",

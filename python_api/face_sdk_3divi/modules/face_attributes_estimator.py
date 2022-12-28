@@ -7,7 +7,7 @@
 
 from enum import Enum
 
-from .processing_block import ProcessingBlock
+from .processing_block import LegacyProcessingBlock
 from .dll_handle import DllHandle
 from .raw_sample import RawSample
 
@@ -105,7 +105,7 @@ class Attribute:
 #     \brief Interface object used to estimate attributes of the face.
 #  \~Russian
 #     \brief Интерфейсный объект для определения аттрибутов лица.
-class FaceAttributesEstimator(ProcessingBlock):
+class FaceAttributesEstimator(LegacyProcessingBlock):
 
     def __init__(self, dll_handle: DllHandle, config: str):
         super(FaceAttributesEstimator, self).__init__(dll_handle, config)

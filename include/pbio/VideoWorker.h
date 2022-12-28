@@ -143,20 +143,20 @@ public:
 		def_param_field_693bcd72(Params, int                         , emotions_estimation_threads_count);
 
 		/**
-			\~English \brief Set the flag enabling <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/en/development/video_stream_processing.md#short-time-identification">"short time identification"</a>. \return *this
-			\~Russian \brief Задать флаг, включающий <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременную идентификацию"</a>. \return *this
+			\~English \brief Set the flag enabling short time identification. \return *this
+			\~Russian \brief Задать флаг, включающий кратковременную идентификацию. \return *this
 		*/
 		def_param_field_693bcd72(Params, bool                        , short_time_identification_enabled);
 
 		/**
-			\~English \brief Set the recognition distance threshold for <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/en/development/video_stream_processing.md#short-time-identification">"short time identification"</a>. \return *this
-			\~Russian \brief Задать порог распознавания для <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременной идентификации"</a>. \return *this
+			\~English \brief Set the recognition distance threshold for short time identification. \return *this
+			\~Russian \brief Задать порог распознавания для кратковременной идентификации. \return *this
 		*/
 		def_param_field_693bcd72(Params, float                       , short_time_identification_distance_threshold);
 
 		/**
-			\~English \brief Set outdate_time in seconds for <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/en/development/video_stream_processing.md#short-time-identification">"short time identification"</a>. \return *this
-			\~Russian \brief Задать в секундах длину временного интервала для <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременной идентификации"</a>. \return *this
+			\~English \brief Set outdate_time in seconds for short time identification. \return *this
+			\~Russian \brief Задать в секундах длину временного интервала для кратковременной идентификации. \return *this
 		*/
 		def_param_field_693bcd72(Params, float                       , short_time_identification_outdate_time_seconds);
 

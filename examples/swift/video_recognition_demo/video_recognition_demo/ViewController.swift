@@ -12,7 +12,7 @@ let vw_params = Params()
 func testTryCatch() -> VideoWorker{
     do{
         vw_params.video_worker_config = Config("video_worker_fdatracker_blf_fda.xml")
-        vw_params.recognizer_config = Config("method8v7_recognizer.xml")
+        vw_params.recognizer_config = Config("method12v30_recognizer.xml")
         vw_params.streams_count = 1
         vw_params.processing_threads_count = 1
         vw_params.matching_threads_count = 1
@@ -27,7 +27,7 @@ func testTryCatch() -> VideoWorker{
 
 let video_worker = testTryCatch()
 let capturer = service.createCapturer(Config("common_capturer_blf_fda_front.xml"))
-let recognizer = service.createRecognizer(Config("method8v7_recognizer.xml"), true, true, false)
+let recognizer = service.createRecognizer(Config("method12v30_recognizer.xml"), true, true, false)
 var arr: Array<RawImage> = []
 
 

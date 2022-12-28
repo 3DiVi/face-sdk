@@ -2,9 +2,12 @@
 #  \file liveness_2d_estimator.py
 #  \~English
 #      \brief Liveness2DEstimator is an interface object used to estimate face liveness in order to prevent spoofing attacks.
+#        \warning
+#        This is a deprecated version (see the new one in Processing Block API). It's support will end in 2024.
 #  \~Russian
 #      \brief Liveness2DEstimator - интерфейсный объект для определения принадлежности лица реальному человеку.
-
+#        \warning
+#        Это устаревшая версия (см. новый блок в Processing Block API). Поддержка будет прекращена в 2024 году.
 from ctypes import c_void_p, byref, c_int, c_float
 
 from .exception_check import check_exception, make_exception
@@ -158,8 +161,12 @@ class LivenessAndScore:
 ##
 # \~English
 #    \brief Interface object used to estimate face liveness in order to prevent spoofing attacks.
+#        \warning
+#        This is a deprecated version (see the new one in Processing Block API). It's support will end in 2024.
 # \~Russian
 #    \brief Интерфейсный объект для определения принадлежности лица реальному человеку.
+#        \warning
+#        Это устаревшая версия (см. новый блок в Processing Block API). Поддержка будет прекращена в 2024 году.
 class Liveness2DEstimator(ComplexObject):
 
     def __init__(self, dll_handle: DllHandle, impl: c_void_p):

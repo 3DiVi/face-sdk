@@ -36,9 +36,9 @@ protected:
 	void* const _impl;
 	int32_t refcounter4light_shared_ptr;
 
-private:
-	ComplexObject(const ComplexObject&);  // deleted
-	ComplexObject& operator=(const ComplexObject&);  // deleted
+//private:
+//	ComplexObject(const ComplexObject&);  // deleted
+//	ComplexObject& operator=(const ComplexObject&);  // deleted
 };
 
 

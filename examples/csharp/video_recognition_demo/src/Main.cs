@@ -158,8 +158,8 @@ class VideoRecognitionDemo
 						.video_worker_config(vw_config)
 						.recognizer_ini_file(method_config)
 						.streams_count(sources.Count)
-						//.age_gender_estimation_threads_count(sources.Count)
-						//.emotions_estimation_threads_count(sources.Count)
+						.age_gender_estimation_threads_count(sources.Count)
+						.emotions_estimation_threads_count(sources.Count)
 						//.active_liveness_checks_order(checks)
 						.processing_threads_count(sources.Count)
 						.matching_threads_count(sources.Count));

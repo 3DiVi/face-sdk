@@ -532,7 +532,7 @@ public:
 			When VideoWorker is created with <i>matching_thread=0</i> and <i>processing_thread=0</i>,
 			then the standard Capturer license is used. <br>Depending on the settings, VideoWorker uses either the 
 			<i>VideoClient</i> license (face tracking on video streams) or the <i>VideoClientExt</i> license (face tracking, template
-			creation and matching with the database) (see <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/en/components.md">Components</a> for details).
+			creation and matching with the database).
 
 		\param[in]  params
 			Parameters of the VideoWorker constructor.
@@ -547,7 +547,7 @@ public:
 			Если при создании VideoWorker указаны параметры <i>matching_thread=0</i> и
 			<i>processing_thread=0</i>, то потребляется обычная лицензия Capturer. <br>В зависимости от настроек,
 			VideoWorker потребляет лицензию <i>VideoClient</i> (детекция лиц на видеопотоках)
-			либо <i>VideoClientExt</i> (детекция лиц на видеопотоках, создание шаблонов и сравнение с базой) (см. <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/ru/components.md">Компоненты</a>).
+			либо <i>VideoClientExt</i> (детекция лиц на видеопотоках, создание шаблонов и сравнение с базой).
 
 		\param[in]  params
 			Параметры конструктора VideoWorker.
@@ -1277,14 +1277,14 @@ public:
 
 private:
 
+	const std::string _facerec_conf_dir;
+
+	friend class object_with_ref_counter<FacerecService>;
+protected:
 	FacerecService(
 		const DHPtr &dll_handle,
 		const std::string &facerec_conf_dir,
 		void* impl);
-
-	const std::string _facerec_conf_dir;
-
-	friend class object_with_ref_counter<FacerecService>;
 };
 
 }  // pbio namespace

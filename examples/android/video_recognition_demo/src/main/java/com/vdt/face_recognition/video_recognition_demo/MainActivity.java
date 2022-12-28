@@ -233,7 +233,7 @@ public class MainActivity extends Activity
 		editor.putString 	("resolution", shared_settings.getString("resolution", "640x480"));
 
 		//fastest recognizer
-		editor.putString	("rec_method0", shared_settings.getString("rec_method0", "recognizer_latest_v30.xml"));
+		editor.putString	("rec_method0", shared_settings.getString("rec_method0", "method12v30_recognizer.xml"));
 		//fastest recognizer for mask wearing
 		editor.putString	("rec_method1", shared_settings.getString("rec_method1", "method9v30mask_recognizer.xml"));
 		//recognizer for fastest loading

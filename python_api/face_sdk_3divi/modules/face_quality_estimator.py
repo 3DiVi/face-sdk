@@ -2,8 +2,13 @@
 #  \file face_quality_estimator.py
 #  \~English
 #      \brief FaceQualityEstimator - Interface object for sample quality estimation.
+#        \warning
+#        This is a deprecated version (see the new one in Processing Block API). It's support will end in 2024.
+
 #  \~Russian
 #      \brief FaceQualityEstimator - Интерфейсный объект для определения качества образца лица.
+#        \warning
+#        Это устаревшая версия (см. новый блок в Processing Block API). Поддержка будет прекращена в 2024 году.
 
 from ctypes import c_void_p
 
@@ -20,8 +25,13 @@ from .raw_sample import RawSample
 ##
 # \~English
 #    \brief Interface object for sample quality estimation.
+#        \warning
+#        This is a deprecated version (see the new one in Processing Block API). It's support will end in 2024.
 # \~Russian
 #    \brief Интерфейсный объект для определения качества образца лица.
+#        \warning
+#        Это устаревшая версия (см. новый блок в Processing Block API). Поддержка будет прекращена в 2024 году.
+
 class FaceQualityEstimator(ComplexObject):
 
     def __init__(self, dll_handle: DllHandle, impl: c_void_p):

@@ -2,8 +2,12 @@
 	\file EmotionsEstimator.h
 	\~English
 	\brief EmotionsEstimator - Interface object for estimation of emotions.
+		\warning
+		This is a deprecated version (see the new one in Processing Block API). It's support will end in 2024.
 	\~Russian
 	\brief EmotionsEstimator - интерфейсный объект для определения эмоций.
+		\warning
+		Это устаревшая версия (см. новый блок в Processing Block API). Поддержка будет прекращена в 2024 году.
 */
 
 #ifndef __PBIO_API__PBIO__EMOTIONS_ESTIMATOR_H_
@@ -27,8 +31,12 @@ class FacerecService;
 
 /** \~English
 	\brief Interface object for estimation of emotions.
+		\warning
+		This is a deprecated version (see the new one in Processing Block API). It's support will end in 2024.
 	\~Russian
 	\brief Интерфейсный объект для определения эмоций.
+		\warning
+		Это устаревшая версия (см. новый блок в Processing Block API). Поддержка будет прекращена в 2024 году.
 */
 class EmotionsEstimator : public ComplexObject
 {

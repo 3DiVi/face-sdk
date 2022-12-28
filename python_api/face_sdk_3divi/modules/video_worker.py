@@ -653,30 +653,30 @@ class Params:
 
     ##
     #  \~English
-    #     \brief Set the flag enabling <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/en/development/video_stream_processing.md#short-time-identification">"short time #identification"</a>.
+    #     \brief Set the flag enabling short time #identification.
     #  \~Russian
-    #     \brief Задать флаг, включающий <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D0%B2%D1%80%D#0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременную идентификацию"</a>.
+    #     \brief Задать флаг, включающий кратковременную идентификацию.
     short_time_identification_enabled: bool
 
     ##
     # \~English
-    #    \brief Set the recognition distance threshold for <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/en/development/#video_stream_processing.md#short-time-identification">"short time identification"</a>.
+    #    \brief Set the recognition distance threshold for short time identification.
     # \~Russian
-    #    \brief Задать порог распознавания для <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D0%B2%#D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременной идентификации"</a>.
+    #    \brief Задать порог распознавания для кратковременной идентификации.
     short_time_identification_distance_threshold: float
 
     ##
     #  \~English
-    #     \brief Set outdate_time in seconds for <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/en/development/video_stream_processing.md#short-time-identification">"short time #identification"</a>.
+    #     \brief Set outdate_time in seconds for short time #identification.
     #  \~Russian
-    #     \brief Задать в секундах длину временного интервала для <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%#D0%BA%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременной идентификации"</a>.
+    #     \brief Задать в секундах длину временного интервала для кратковременной идентификации.
     short_time_identification_outdate_time_seconds: float
 
     ##
     #  \~English
-    #     \brief Set outdate_time in seconds for <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/en/development/video_stream_processing.md#short-time-identification">"short time #identification"</a>.
+    #     \brief Set outdate_time in seconds for short time #identification.
     #  \~Russian
-    #     \brief Задать в секундах длину временного интервала для <a href="https://github.com/3DiVi/face-sdk/blob/master/doc/ru/development/video_stream_processing.md#%D0%BA%D1%80%D0%B0%D1%82%#D0%BA%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F">"кратковременной идентификации"</a>.
+    #     \brief Задать в секундах длину временного интервала для кратковременной идентификации.
     active_liveness_checks_order: List[active_liveness.CheckType]
 
     ##

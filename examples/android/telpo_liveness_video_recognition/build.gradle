@@ -53,6 +53,7 @@ android {
                 "share/ir_liveness/**",
                 "share/facerec/recognizers/method10v30/**",
                 "share/facerec/recognizers/method9v30mask/**",
+		        "share/facerec/recognizers/method12v30/**",
                 "license/**"
             )
             exclude ('share/facerec/recognizers/**/*dt')

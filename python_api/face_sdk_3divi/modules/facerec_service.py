@@ -33,6 +33,8 @@ from .config import Config
 from .video_worker import VideoWorker, Params
 from .error import Error
 from .wrap_funcs import write_func
+from .context import Context
+from .processing_block import ProcessingBlock
 
 ## @defgroup PythonAPI
 #  @{
@@ -50,6 +52,21 @@ class FacerecService(ComplexObject):
         super(FacerecService, self).__init__(dll_handle, impl)
         self.__facerec_conf_dir = facerec_conf_dir
 
+    def create_context(self, ctx: dict):
+        meta_ctx = Context(self._dll_handle)
+        meta_ctx(ctx)
+        return meta_ctx
+
+    def create_processing_block(self, ctx: dict):
+        exception = make_exception()
+        meta_ctx = self.create_context(ctx)
+
+        impl = self._dll_handle.FacerecService_ProcessingBlock_createProcessingBlock(self._impl, meta_ctx._impl, exception)
+
+        check_exception(exception, self._dll_handle)
+
+        return ProcessingBlock(self._dll_handle, c_void_p(impl))
+
     ##
     #  \~English
     #     \brief Initializes the facerec lib (can be called only once).
@@ -58,12 +75,12 @@ class FacerecService(ComplexObject):
     #       An absolute or a relative path to libfacerec.so on Linux or facerec.dll on Windows.
     #
     #     \param[in] facerec_conf_dir
-    #       An absolute or a relative path to the directory with config files (the 'face_sdk/conf/facerec/' directory).
+    #       An absolute or a relative path to the directory with config files (the 'face_sdk_3divi/conf/facerec/' directory).
     #
     #     \param[in] license_dir
     #       If you need to specify the directory containing the license file, then it's an absolute
     #       or a relative path to this directory, otherwise, it's an empty string.
-    #       In case of an empty string, a license file is searched first in the 'face_sdk/license/' directory. If it's not found, it's searched in the 'face_sdk/conf/facerec/' directory.
+    #       In case of an empty string, a license file is searched first in the 'face_sdk_3divi/license/' directory. If it's not found, it's searched in the 'face_sdk_3divi/conf/facerec/' directory.
     #
     #     \return Created FacerecService object.
     #
@@ -74,12 +91,12 @@ class FacerecService(ComplexObject):
     #       Абсолютный или относительный путь до файла билиотеки - libfacerec.so на Linux или facerec.dll на Windows.
     #
     #     \param[in] facerec_conf_dir
-    #       Абсолютный или относительный путь до каталога с конфигурационными файлами (каталог 'face_sdk/conf/facerec/' в дистрибутиве).
+    #       Абсолютный или относительный путь до каталога с конфигурационными файлами (каталог 'face_sdk_3divi/conf/facerec/' в дистрибутиве).
     #
     #     \param[in] license_dir
     #       Если требуется указать директорию с файлом лицензии, то абсолютный
     #       или относительный путь до этой директории, иначе - пустая строка.
-    #       В случае пустой строки файл лицензии ищется сначала в каталоге 'face_sdk/license/', затем в каталоге 'face_sdk/conf/facerec/'.
+    #       В случае пустой строки файл лицензии ищется сначала в каталоге 'face_sdk_3divi/license/', затем в каталоге 'face_sdk_3divi/conf/facerec/'.
     #
     #     \return Созданный объект FacerecService.
     @classmethod
@@ -547,7 +564,7 @@ class FacerecService(ComplexObject):
     #      When VideoWorker is created with <i>matching_thread=0</i> and <i>processing_thread=0</i>,
     #      then the standard Capturer license is used. <br>Depending on the settings, VideoWorker uses either the
     #      <i>VideoClient</i> license (face tracking on video streams) or the <i>VideoClientExt</i> license (face tracking, template
-    #      creation and matching with the database) (see <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/en/components.md">Components</a> for details).
+    #      creation and matching with the database).
     #
     #    \param[in] params
     #      Parameters of the VideoWorker constructor.
@@ -560,7 +577,7 @@ class FacerecService(ComplexObject):
     #      Если при создании VideoWorker указаны параметры <i>matching_thread=0</i> и
     #      <i>processing_thread=0</i>, то потребляется обычная лицензия Capturer. <br>В зависимости от настроек,
     #      VideoWorker потребляет лицензию <i>VideoClient</i> (детекция лиц на видеопотоках)
-    #      либо <i>VideoClientExt</i> (детекция лиц на видеопотоках, создание шаблонов и сравнение с базой) (см. <a href="https://github.com/3DiVi/face-sdk-docs/blob/master/doc/ru/#components.md">Компоненты</a>).
+    #      либо <i>VideoClientExt</i> (детекция лиц на видеопотоках, создание шаблонов и сравнение с базой).
     #
     #    \param[in] params
     #      Параметры конструктора VideoWorker.

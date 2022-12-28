@@ -33,6 +33,7 @@
 		AA0AABB1269D6CA5007BF703 /* Recognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = AA0AABA4269D6CA5007BF703 /* Recognizer.mm */; };
 		AA0AABB5269D6CB9007BF703 /* facerec.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AA0AABB3269D6CB9007BF703 /* facerec.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AA0AABBD269D7850007BF703 /* share in Resources */ = {isa = PBXBuildFile; fileRef = AA0AABBC269D7850007BF703 /* share */; };
+		AA9CAFFE293F5F1200905FE4 /* onnxruntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AA9CAFFC293F5F1200905FE4 /* onnxruntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,6 +43,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				AA9CAFFE293F5F1200905FE4 /* onnxruntime.framework in Embed Frameworks */,
 				AA0AABB5269D6CB9007BF703 /* facerec.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -90,6 +92,7 @@
 		AA0AABB3269D6CB9007BF703 /* facerec.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = facerec.framework; path = ../../../facerec.framework; sourceTree = "<group>"; };
 		AA0AABB7269D6D49007BF703 /* video_recognition_demo-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "video_recognition_demo-Bridging-Header.h"; sourceTree = "<group>"; };
 		AA0AABBC269D7850007BF703 /* share */ = {isa = PBXFileReference; lastKnownFileType = folder; name = share; path = ../../../../share; sourceTree = "<group>"; };
+		AA9CAFFC293F5F1200905FE4 /* onnxruntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = onnxruntime.framework; path = ../../../onnxruntime.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,6 +180,7 @@
 		AA0AABB2269D6CB9007BF703 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AA9CAFFC293F5F1200905FE4 /* onnxruntime.framework */,
 				AA0AABB3269D6CB9007BF703 /* facerec.framework */,
 			);
 			name = Frameworks;
@@ -414,7 +418,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "-divi.video-recognition-demo";
+				PRODUCT_BUNDLE_IDENTIFIER = "video-recognition-demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "./video_recognition_demo/video_recognition_demo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -439,7 +443,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "-divi.video-recognition-demo";
+				PRODUCT_BUNDLE_IDENTIFIER = "video-recognition-demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "./video_recognition_demo/video_recognition_demo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

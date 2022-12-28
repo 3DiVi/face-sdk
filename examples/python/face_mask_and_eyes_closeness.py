@@ -15,10 +15,10 @@ def detect(img_path):
     return detected
 
 
-face_sdk_dir = "../.."
+face_sdk_3divi_dir = "../.."
 service = FacerecService.create_service(
-    os.path.join(face_sdk_dir, "lib/libfacerec.so"),
-    os.path.join(face_sdk_dir, "conf/facerec"))
+    os.path.join(face_sdk_3divi_dir, "lib/libfacerec.so"),
+    os.path.join(face_sdk_3divi_dir, "conf/facerec"))
 print('Service created')
 
 capturer = service.create_capturer(Config("common_capturer_blf_fda_back.xml"))
@@ -29,7 +29,7 @@ print('Masked face estimator created')
 
 eyes_openness_estimator = service.create_face_attributes_estimator("eyes_openness_estimator_v2.xml")
 
-samples = detect(os.path.join(face_sdk_dir, "bin/set1", "01100.jpg"))
+samples = detect(os.path.join(face_sdk_3divi_dir, "bin/set1", "01100.jpg"))
 for sample in samples:
     masked_face_res = masked_face_estimator.estimate(sample)
     if masked_face_res.mask_attribute == MaskAttribute.HAS_MASK:

@@ -18,15 +18,15 @@ def detect(img):
     return detected
 
 
-face_sdk_dir = "../.."
+face_sdk_3divi_dir = "../.."
 service = FacerecService.create_service(
-    os.path.join(face_sdk_dir, "lib/libfacerec.so"),
-    os.path.join(face_sdk_dir, "conf/facerec"))
+    os.path.join(face_sdk_3divi_dir, "lib/libfacerec.so"),
+    os.path.join(face_sdk_3divi_dir, "conf/facerec"))
 print('Service created')
 
 capturer = service.create_capturer(Config("common_capturer_blf_fda_back.xml"))
 print('Capturer created')
-image = read_image(os.path.join(face_sdk_dir, "bin/set1", "01100.jpg"))
+image = read_image(os.path.join(face_sdk_3divi_dir, "bin/set1", "01100.jpg"))
 samples = detect(image)
 
 for sample in samples:

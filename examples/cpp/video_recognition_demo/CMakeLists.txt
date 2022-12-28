@@ -11,7 +11,9 @@ add_executable(${name}
 	src/StreamVideoCapture.cpp
 	)
 
-target_link_libraries(${name} pbio_cpp opencv_highgui opencv_videoio opencv_imgcodecs opencv_imgproc)
+set(LIBS pbio_cpp opencv_highgui opencv_videoio opencv_imgcodecs opencv_imgproc)
+
+target_link_libraries(${name} ${LIBS})
 
 if(" ${CMAKE_SYSTEM_NAME} " STREQUAL " Linux ")
 	target_link_libraries(${name} pthread)

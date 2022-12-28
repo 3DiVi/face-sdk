@@ -1,7 +1,13 @@
+/**
+	\file ProcessingBlock.h
+	\~English
+	\brief ProcessingBlock - Interface object used to work with estimators from Processing Block API.
+	\~Russian
+	\brief ProcessingBlock - Интерфейсный объект для взаимодействия с методами из Processing Block API.
+*/
+
 #ifndef PROCESSINGBLOCK_H
 #define PROCESSINGBLOCK_H
-
-//! @cond IGNORED
 
 #include "Context.h"
 #include "DllHandle.h"
@@ -12,6 +18,12 @@ namespace pbio
 
 class FacerecService;
 
+/**
+	\~English
+	\brief Interface object used to work with estimators from Processing Block API.
+	\~Russian
+	\brief Интерфейсный объект для взаимодействия с методами из Processing Block API.
+*/
 class ProcessingBlock
 {
 public:

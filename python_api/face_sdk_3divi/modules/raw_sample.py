@@ -375,6 +375,32 @@ class RawSample(ComplexObject):
         return result
 
     ##
+    #  \~English
+    #  \brief Get the score of face visibility. Thread-safe.
+    #
+    #    \return One if face is fully visible,
+    #            zero if face is invisible,
+    #            otherwise - a number in the range [0 ... 1].
+    #
+    #    \~Russian
+    #    \brief Получить оценку видимости лица. Потокобезопасный.
+    #
+    #
+    #    \return Один, если лицо полностью видимо,
+    #            ноль, если лицо невидимо,
+    #            иначе - число в диапазоне [0 ... 1].
+    def get_face_visibility_score(self) -> float:
+        exception = make_exception()
+
+        result = self._dll_handle.RawSample_getFaceVisibilityScore(
+            self._impl,
+            exception)
+
+        check_exception(exception, self._dll_handle)
+
+        return result
+
+    ##
     # \~English
     #    \brief Get a sample type. Thread-safe.
     #

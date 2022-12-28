@@ -4,6 +4,8 @@ set(name demo)
 
 project(${name})
 
+set(LIBS pbio_cpp opencv_videoio opencv_highgui opencv_imgcodecs opencv_imgproc)
+
 add_executable(${name} demo.cpp)
 
 if (WIN32 OR (UNIX AND NOT APPLE))
@@ -12,6 +14,6 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 	endif()
 endif()
 
-target_link_libraries(${name} pbio_cpp opencv_videoio opencv_highgui opencv_imgcodecs opencv_imgproc)
+target_link_libraries(${name} ${LIBS})
 
 install(TARGETS ${name} DESTINATION bin)
