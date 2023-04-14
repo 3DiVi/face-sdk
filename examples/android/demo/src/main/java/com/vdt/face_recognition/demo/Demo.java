@@ -77,7 +77,7 @@ public class Demo{
 		capturer_conf.overrideParameter("iris_enabled", 1);
 		capturer = service.createCapturer(capturer_conf);
 		qualityEstimator = service.createQualityEstimator("quality_estimator_iso.xml");
-		ageGenderEstimator = service.createAgeGenderEstimator("age_gender_estimator.xml");
+		ageGenderEstimator = service.createAgeGenderEstimator("age_gender_estimator_v3.xml");
 		emotionsEstimator = service.createEmotionsEstimator("emotions_estimator.xml");
 		faceQualityEstimator = service.createFaceQualityEstimator("face_quality_estimator.xml");
 		faceMaskEstimator = service.createFaceAttributesEstimator("face_mask_estimator.xml");

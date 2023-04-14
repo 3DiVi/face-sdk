@@ -1,3 +1,5 @@
+from sys import platform
+
 from face_sdk_3divi import FacerecService, Config
 from face_sdk_3divi.example import CVRawImage
 
@@ -16,12 +18,16 @@ def detect_and_save_templ(img_path, save_path):
         recognizer.processing(detected[0]).save(f)
 
 
+if platform == "win32":
+    default_dll_path = "bin/facerec.dll"
+else:
+    default_dll_path = "lib/libfacerec.so"
+
 face_sdk_3divi_dir = "../.."
 service = FacerecService.create_service(
-    os.path.join(face_sdk_3divi_dir, "lib/libfacerec.so"),
+    os.path.join(face_sdk_3divi_dir, default_dll_path),
     os.path.join(face_sdk_3divi_dir, "conf/facerec"))
 print('Service created')
-
 recognizer = service.create_recognizer("recognizer_latest_v30.xml", True, True, False)
 print('Recognizer created')
 

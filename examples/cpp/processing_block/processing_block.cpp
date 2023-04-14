@@ -117,6 +117,7 @@ void drawEmotions(const pbio::Context& data, cv::Mat& image)
 			const std::string& emotion = emotion_iter->second;
 			const double confidence = emotion_iter->first;
 			const float text_line_height = font_height * std::max(0.5, confidence/top_shift);
+			putTextWithRightExpansion(image, emotion, text_point + cv::Point(top_shift * lenght_coef, 0), cv::FONT_HERSHEY_DUPLEX, text_line_height / (font_height*2), cv::Scalar(255,255,0),1,false);
 			cv::rectangle(
 				image,
 				cv::Rect( text_point.x, text_point.y - text_line_height / 2, confidence * lenght_coef, text_line_height),
@@ -130,8 +131,6 @@ void drawEmotions(const pbio::Context& data, cv::Mat& image)
 					cv::Scalar(0, 0, 0),
 				-1);
 
-			putTextWithRightExpansion(image, emotion, text_point + cv::Point(top_shift * lenght_coef, 0), cv::FONT_HERSHEY_DUPLEX, text_line_height / (font_height*2), cv::Scalar(255,255,0),1,false);
-
 			text_point.y += text_line_height;
 			text_point.y += text_line_height / 3;
 		}
@@ -142,7 +141,9 @@ void drawAgeGenderMaskQuality(const pbio::Context& data, cv::Mat& image, const s
 {
 	const auto width = image.size[1];
 	const auto heigth = image.size[0];
+	cv::Mat image_copy = image.clone();
 	drawObjects(data, image, std::string("face"));
+	int objects_counter = 1;
 	for(const auto& obj : data.at("objects"))
 	{
 		if(obj.at("class").getString().compare("face"))
@@ -157,8 +158,27 @@ void drawAgeGenderMaskQuality(const pbio::Context& data, cv::Mat& image, const s
 			putTextWithRightExpansion(image, "Mask: " + std::to_string(obj.at(className).at("value").getBool()), text_point, cv::FONT_HERSHEY_DUPLEX, 0.5,cv::Scalar(0,0,255), 1, false);
 		else if(!className.compare("quality"))
 		{
-			putTextWithRightExpansion(image, "Quality Score:", cv::Point{text_point.x, text_point.y+20}, cv::FONT_HERSHEY_DUPLEX,1,cv::Scalar(0,255,0),1,false);
-			putTextWithRightExpansion(image, std::to_string(obj["quality"]["qaa"]["totalScore"].getLong()), cv::Point{text_point.x, text_point.y+50}, cv::FONT_HERSHEY_DUPLEX,1,cv::Scalar(0,255,0),1,false);
+			if (objects_counter <= 6)
+			{
+				cv::Rect face_rect(cv::Point{std::max(static_cast<int>(obj.at("bbox")[0].getDouble()*width), 0), std::max(static_cast<int>(obj.at("bbox")[1].getDouble()*heigth), 0)},
+								cv::Point{std::min(static_cast<int>(obj.at("bbox")[2].getDouble()*width), width), std::min(static_cast<int>(obj.at("bbox")[3].getDouble()*heigth), heigth)});
+				int height_for_text_and_crop = static_cast<int>(heigth * 0.15 * objects_counter - (heigth * 0.05));
+
+				cv::Mat face = image_copy(face_rect);
+				double scale_factor = heigth/(7.0*(face.rows));
+				cv::resize(face, face, cv::Size(), scale_factor, scale_factor, cv::INTER_LINEAR);
+				cv::Rect roi = cv::Rect(width+5, height_for_text_and_crop, face.cols, face.rows);
+				putTextWithRightExpansion(image, "Result of 6 first faces:", cv::Point{width,20}, cv::FONT_HERSHEY_SIMPLEX, 
+										0.5, cv::Scalar(0,255,0),1,false);
+				putTextWithRightExpansion(image, "Quality :", cv::Point{width+5+roi.width, height_for_text_and_crop+30}, cv::FONT_HERSHEY_DUPLEX, 
+										0.5, cv::Scalar(0,255,0),1,false);
+				putTextWithRightExpansion(image, std::to_string(obj["quality"]["qaa"]["totalScore"].getLong()),
+										cv::Point{width+75+roi.width, height_for_text_and_crop+30}, cv::FONT_HERSHEY_DUPLEX, 
+										0.5, cv::Scalar(0,255,0),1,false);
+				cv::Mat draw_roi = image(roi);
+				face.copyTo(draw_roi);
+				objects_counter++;
+			}
 		}
 	}
 };

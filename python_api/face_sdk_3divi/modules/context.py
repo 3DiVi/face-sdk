@@ -204,7 +204,7 @@ class Context(ComplexObject):
     @dispatch(list)
     def parser(self, ctx: list):
         for value in ctx:
-            ctt = Context(self._dll_handle).set_weak(True)
+            ctt = Context(self._dll_handle)
             ctt.parser(value)
             self.__pushBack(ctt)
 
@@ -232,14 +232,18 @@ class Context(ComplexObject):
         exception = make_exception()
 
         cout_keys = self.__getLength()
-
-        buf = POINTER(c_char_p * cout_keys)
-        value = self._dll_handle.getKeys(self._impl, c_ulong(cout_keys), exception)
+        buf = POINTER(c_char_p)
+        
+        p_value_array = self._dll_handle.getKeys(self._impl, cout_keys, c_ulong(cout_keys), exception)
         check_exception(exception, self._dll_handle)
 
-        result = buf(value.contents)
+        result = [buf(i)[0].decode() for i in p_value_array[0]]
 
-        return [result[0][i].decode() for i in range(cout_keys)]
+        for i in p_value_array[0]:
+            self._dll_handle.freePtr(i)
+        self._dll_handle.freePtr(p_value_array[0])
+
+        return result
 
     def keys(self) -> list:
         return self.__get_keys()

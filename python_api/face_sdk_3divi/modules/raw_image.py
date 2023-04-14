@@ -234,8 +234,7 @@ class RawImage:
     def make_c_api_data(self):
         assert self.data
 
-        decoded = cv2.imdecode(np.frombuffer(self.data, np.uint8), cv2.IMREAD_UNCHANGED)
-        cdata = decoded.tobytes()
+        cdata = self.data
 
         return CapiData(
             c_char_p(cdata),

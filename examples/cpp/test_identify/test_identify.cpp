@@ -130,7 +130,7 @@ int main(int argc, char const *argv[])
 				.overrideParameter("use_cuda", use_cuda) );
 		std::cout << "createRecognizer time: " << milliseconds_from( time_c ) << " ms" << std::endl;
 
-		std::cout << "\ntotal initilazition time: " << milliseconds_from( init_c ) << " ms\n" << std::endl;
+		std::cout << "\ntotal initialization time: " << milliseconds_from( init_c ) << " ms\n" << std::endl;
 
 		if( mode == "enroll" )
 		{

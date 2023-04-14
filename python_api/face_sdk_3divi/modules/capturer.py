@@ -19,7 +19,7 @@ from .wrap_funcs import assign_pointers_vector_func
 from .exception_check import check_exception, make_exception
 from .complex_object import ComplexObject
 from .raw_sample import RawSample
-from .raw_image import RawImage
+from .raw_image import RawImage, CapiData
 from .error import Error
 from typing import Union
 
@@ -88,11 +88,13 @@ class Capturer(ComplexObject):
     #    \warning Черно-белые изображения не поддерживаются объектами, созданными с некоторыми конфигурационными файлами.
     def capture(self, data: Union[RawImage, bytes]) -> List[RawSample]:
         if isinstance(data, RawImage):
-            data = data.data
+            return self.__capture_raw_image_with_crop(data)
         elif isinstance(data, bytes):
-            data = data
+            return self.__capture_encoded_image(data)
         else:
             raise Error(0xfe6034d4, "Wrong type of data")
+
+    def __capture_encoded_image(self, data: bytes) -> List[RawSample]:
         void_result = list()
 
         exception = make_exception()
@@ -107,6 +109,35 @@ class Capturer(ComplexObject):
 
         check_exception(exception, self._dll_handle)
 
+        result = list()
+        for el in void_result:
+            result.append(RawSample(self._dll_handle, c_void_p(el)))
+
+        return result
+
+    def __capture_raw_image_with_crop(self, image: RawImage) -> List[RawSample]:
+        void_result = list()
+
+        cdata: CapiData = image.make_c_api_data()
+
+        exception = make_exception()
+
+        self._dll_handle.Capturer_capture_raw_image_with_crop(
+            self._impl,
+            cdata.data,
+            cdata.width,
+            cdata.height,
+            cdata.format,
+            cdata.with_crop,
+            cdata.crop_info_offset_x,
+            cdata.crop_info_offset_y,
+            cdata.crop_info_data_image_width,
+            cdata.crop_info_data_image_height,
+            py_object(void_result),
+            assign_pointers_vector_func,
+            exception)
+
+        check_exception(exception, self._dll_handle)
         result = list()
         for el in void_result:
             result.append(RawSample(self._dll_handle, c_void_p(el)))
@@ -161,18 +192,59 @@ class Capturer(ComplexObject):
             right_eye_x: float,
             right_eye_y: float) -> RawSample:
         if isinstance(data, RawImage):
-            data = data.data
+            return self.__manual_capture_raw_image(data, left_eye_x, left_eye_y, right_eye_x, right_eye_y)
         elif isinstance(data, bytes):
-            data = data
+            return self.__manual_capture_encoded_image(data, left_eye_x, left_eye_y, right_eye_x, right_eye_y)
         else:
             raise Error(0x15736ad6, "Wrong type of data")
 
+
+    def __manual_capture_encoded_image(
+            self,
+            data:  bytes,
+            left_eye_x: float,
+            left_eye_y: float,
+            right_eye_x: float,
+            right_eye_y: float) -> RawSample:
         exception = make_exception()
 
         sample_impl = self._dll_handle.Capturer_manualCapture_encoded_image_eyes_points(
             self._impl,
             c_char_p(data),
             c_uint32(len(data)),
+            c_float(left_eye_x),
+            c_float(left_eye_y),
+            c_float(right_eye_x),
+            c_float(right_eye_y),
+            exception)
+
+        check_exception(exception, self._dll_handle)
+
+        return RawSample(self._dll_handle, c_void_p(sample_impl))
+
+    def __manual_capture_raw_image(
+            self,
+            image: RawImage,
+            left_eye_x: float,
+            left_eye_y: float,
+            right_eye_x: float,
+            right_eye_y: float) -> RawSample:
+
+        cdata: CapiData = image.make_c_api_data()
+
+        exception = make_exception()
+
+        sample_impl = self._dll_handle.Capturer_manualCapture_raw_image_eyes_points_with_crop(
+            self._impl,
+            cdata.data,
+            cdata.width,
+            cdata.height,
+            cdata.format,
+            cdata.with_crop,
+            cdata.crop_info_offset_x,
+            cdata.crop_info_offset_y,
+            cdata.crop_info_data_image_width,
+            cdata.crop_info_data_image_height,
             c_float(left_eye_x),
             c_float(left_eye_y),
             c_float(right_eye_x),

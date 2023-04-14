@@ -178,11 +178,20 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
+    def Capturer_capture_raw_image_with_crop(self, *args, **kwargs):
+        self.__dll_handle['{}Capturer_capture_raw_image_with_crop'.format(self.__namespace)](*args, **kwargs)
+
     def Capturer_capture_encoded_image(self, *args, **kwargs):
         self.__dll_handle['{}Capturer_capture_encoded_image'.format(self.__namespace)](*args, **kwargs)
 
     def Capturer_manualCapture_encoded_image_eyes_points(self, *args, **kwargs):
         func = self.__dll_handle['{}Capturer_manualCapture_encoded_image_eyes_points'.format(self.__namespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def Capturer_manualCapture_raw_image_eyes_points_with_crop(self, *args, **kwargs):
+        func = self.__dll_handle['{}Capturer_manualCapture_raw_image_eyes_points_with_crop'.format(self.__namespace)]
         func.restype = c_void_p
 
         return func(*args, **kwargs)
@@ -590,7 +599,7 @@ class DllHandle:
 
     def getKeys(self, *args, **kwargs):
         func = self.__dll_handle['{}getKeys'.format(self.__contextNamespace)]
-        func.restype = POINTER(c_char_p)
+        func.restype = POINTER(POINTER(c_char_p) * args[1])
         return func(*args, **kwargs)
 
     def getStr(self, *args, **kwargs):

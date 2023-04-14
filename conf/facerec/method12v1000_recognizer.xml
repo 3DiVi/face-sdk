@@ -14,6 +14,14 @@
 <use_cuda>0</use_cuda>
 <gpu_index>0</gpu_index>
 
+<fit_score>1</fit_score>
+<use_custom_score_formula>0</use_custom_score_formula>
+
+<target_score>85</target_score>
+<target_far>0.0000002</target_far>
+<target_frr>0.01</target_frr>
+<score_formula>(1-(log10(far)+8)/8)</score_formula>
+
 <roc>
 5.915810108185
 0.000000000000

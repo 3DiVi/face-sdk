@@ -1,4 +1,6 @@
 import os
+from sys import platform
+
 import cv2
 
 from face_sdk_3divi import FacerecService, Config
@@ -15,9 +17,14 @@ def detect(img_path):
     return detected
 
 
+if platform == "win32":
+    default_dll_path = "bin/facerec.dll"
+else:
+    default_dll_path = "lib/libfacerec.so"
+
 face_sdk_3divi_dir = "../.."
 service = FacerecService.create_service(
-    os.path.join(face_sdk_3divi_dir, "lib/libfacerec.so"),
+    os.path.join(face_sdk_3divi_dir, default_dll_path),
     os.path.join(face_sdk_3divi_dir, "conf/facerec"))
 print('Service created')
 

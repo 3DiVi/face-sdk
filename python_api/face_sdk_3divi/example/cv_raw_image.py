@@ -19,14 +19,11 @@ class CVRawImage(RawImage):
 
     def __init__(self, image):
         self._mat = image
-        ret, im_bmp = cv2.imencode('.bmp', self._mat)
-        assert ret, "A image was not encoded"
-        data = im_bmp.tobytes()
 
         super().__init__(self._mat.shape[1],
                          self._mat.shape[0],
                          self.get_format(),
-                         data)
+                         self._mat.tobytes())
 
     ##
     # \~English
