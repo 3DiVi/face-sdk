@@ -59,7 +59,7 @@ class _DetectPictureState extends State<DetectPicture> {
 
   void showInSnackBar(String message) {
     // ignore: deprecated_member_use
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(message), behavior: SnackBarBehavior.floating,));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), behavior: SnackBarBehavior.floating,));
   }
 
   Future<XFile?> takePicture() async {

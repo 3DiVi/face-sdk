@@ -441,7 +441,7 @@ public:
 			Flag to toggle the Recognizer::verifyMatch method in the created recognizer.
 
 		\param[in]  processing_less_memory_consumption
-			Flag to toggle the Recognizer::processing member 
+			Flag to toggle the Recognizer::processing member
 			function optimizations that consume a lot of RAM when creating the recognizer (see the docs).
 
 		\return
@@ -462,7 +462,7 @@ public:
 			Флаг для включения / выключения метода Recognizer::verifyMatch в создаваемом разпознавателе.
 
 		\param[in]  processing_less_memory_consumption
-			Флаг для выключения оптимизаций метода Recognizer::processing, 
+			Флаг для выключения оптимизаций метода Recognizer::processing,
 			потребляющих много оперативной памяти при создании распознавателя (см. документацию).
 
 		\return
@@ -530,7 +530,7 @@ public:
 			Creates a VideoWorker object.
 			Thread-safe.<br>
 			When VideoWorker is created with <i>matching_thread=0</i> and <i>processing_thread=0</i>,
-			then the standard Capturer license is used. <br>Depending on the settings, VideoWorker uses either the 
+			then the standard Capturer license is used. <br>Depending on the settings, VideoWorker uses either the
 			<i>VideoClient</i> license (face tracking on video streams) or the <i>VideoClientExt</i> license (face tracking, template
 			creation and matching with the database).
 
@@ -1272,6 +1272,13 @@ public:
 	void convertYUV2ARGB(
 		const RawImage image,
 		const bool downscale_x2,
+		void* const result_buffer);
+
+
+	void convertYUV2RGB(
+		const RawImage image,
+		const bool downscale_x2,
+		const int base_angle,
 		void* const result_buffer);
 
 
@@ -2229,6 +2236,35 @@ void FacerecService::convertYUV2ARGB(
 		cdata.crop_info_data_image_width,
 		cdata.crop_info_data_image_height,
 		downscale_x2,
+		result_buffer,
+		&exception);
+
+	checkException(exception, *_dll_handle);
+}
+
+inline
+void FacerecService::convertYUV2RGB(
+	const RawImage image,
+	const bool downscale_x2,
+	const int base_angle,
+	void* const result_buffer)
+{
+	void* exception = NULL;
+
+	const RawImage::CapiData cdata = image.makeCapiData();
+
+	_dll_handle->RawImage_convertYUV2RGB(
+		cdata.data,
+		cdata.width,
+		cdata.height,
+		cdata.format,
+		cdata.with_crop,
+		cdata.crop_info_offset_x,
+		cdata.crop_info_offset_y,
+		cdata.crop_info_data_image_width,
+		cdata.crop_info_data_image_height,
+		downscale_x2,
+		base_angle,
 		result_buffer,
 		&exception);
 

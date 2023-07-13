@@ -63,7 +63,7 @@ class _VerifyFacesState extends State<VerifyFaces> {
                     height: 45.0,
                     margin: const EdgeInsets.fromLTRB(10.0, 8.0, 10.0, 0.0),
                     child: Text(
-                      res!.score > 0.5 ?
+                      res!.score > 0.8 ?
                         "Faces are the same.\nMatch score: ${res!.score}":
                         "Faces are the same.\nMatch score: ${res!.score}",
                       textAlign: TextAlign.center,

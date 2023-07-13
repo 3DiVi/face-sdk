@@ -3162,6 +3162,44 @@ namespace capi {
 	\
 	\
 	decl( \
+		void, \
+		RawImage_convertYUV2RGB, \
+		( \
+			const void* image_data, \
+			int32_t image_width, \
+			int32_t image_height, \
+			int32_t image_format, \
+			int32_t image_with_crop, \
+			int32_t image_crop_info_offset_x, \
+			int32_t image_crop_info_offset_y, \
+			int32_t image_crop_info_data_image_width, \
+			int32_t image_crop_info_data_image_height, \
+			int32_t downscale_x2, \
+			int32_t base_angle,  \
+			void* result_buffer, \
+			void** out_exception \
+		), \
+		( \
+			image_data, \
+			image_width, \
+			image_height, \
+			image_format, \
+			image_with_crop, \
+			image_crop_info_offset_x, \
+			image_crop_info_offset_y, \
+			image_crop_info_data_image_width, \
+			image_crop_info_data_image_height, \
+			downscale_x2, \
+			base_angle,  \
+			result_buffer, \
+			out_exception \
+		), \
+		) \
+	\
+	\
+	\
+	\
+	decl( \
 		uint32_t, \
 		apiException_code, \
 		( void* exception ), \

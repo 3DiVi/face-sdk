@@ -155,7 +155,7 @@ void drawAgeGenderMaskQuality(const pbio::Context& data, cv::Mat& image, const s
 		else if(!className.compare("age"))
 			putTextWithRightExpansion(image, "Age: " + std::to_string(obj.at(className).getLong()), text_point, cv::FONT_HERSHEY_DUPLEX, 0.5,cv::Scalar(0,0,255), 1, false);
 		else if(!className.compare("mask"))
-			putTextWithRightExpansion(image, "Mask: " + std::to_string(obj.at(className).at("value").getBool()), text_point, cv::FONT_HERSHEY_DUPLEX, 0.5,cv::Scalar(0,0,255), 1, false);
+			putTextWithRightExpansion(image, "Mask: " + std::to_string(obj.at("has_medical_mask").at("value").getBool()), text_point, cv::FONT_HERSHEY_DUPLEX, 0.5,cv::Scalar(0,0,255), 1, false);
 		else if(!className.compare("quality"))
 		{
 			if (objects_counter <= 6)
@@ -334,7 +334,8 @@ int main(int argc, char **argv)
 			ioData = std::move(capture_result);
 		}
 
-		else if(!unit_type.compare("emotions") || !unit_type.compare("gender") || !unit_type.compare("age") || !unit_type.compare("mask"))
+		else if(!unit_type.compare("emotions") || !unit_type.compare("gender") ||
+				!unit_type.compare("age") || !unit_type.compare("mask"))
 		{
 			auto faceCtx = service->createContext();
 			faceCtx["unit_type"] = unitTypes.at("face").first;
@@ -344,32 +345,10 @@ int main(int argc, char **argv)
 			faceCtx["confidence_threshold"] = 0.4;
 			pbio::ProcessingBlock faceBlock = service->createProcessingBlock(faceCtx);
 
-			auto faceData = service->createContext();
-			auto faceImageCtx = faceData["image"];
+			auto faceImageCtx = ioData["image"];
 			pbio::context_utils::putImage(faceImageCtx, input_rawimg);
-			faceBlock(faceData);
-
-			auto result = service->createContext();
-			for(const auto& obj : faceData.at("objects"))
-			{
-				const auto& rectCtx = obj.at("bbox");
-
-				int x = std::max(static_cast<int>(rectCtx[0].getDouble()*image.size[1]), 0);
-				int y = std::max(static_cast<int>(rectCtx[1].getDouble()*image.size[0]), 0);
-				int width = std::min(static_cast<int>(rectCtx[2].getDouble()*image.size[1]), image.size[1]) - x;
-				int height = std::min(static_cast<int>(rectCtx[3].getDouble()*image.size[0]), image.size[0]) - y;
-				pbio::RawSample::Rectangle rect(x, y, width, height);
-				pbio::RawImage raw_image_crop = input_rawimg.crop(rect);
-
-				auto imgCtx = ioData["image"];	// A shallow copy (reference), auto is deduced to pbio::Context::Ref
-												// to make a deep copy define pbio::Context imgCtx = ioData["image"];
-				pbio::context_utils::putImage(imgCtx, raw_image_crop);
-				processingBlock(ioData);
-
-				ioData["objects"][0]["bbox"] = rectCtx;
-				result["objects"].push_back(ioData["objects"][0]);
-			}
-			ioData = std::move(result);
+			faceBlock(ioData);
+			processingBlock(ioData);
 		}
 		else  // just put the whole image to the Context
 		{

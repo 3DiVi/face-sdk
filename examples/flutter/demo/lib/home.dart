@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
     _facerecService = FaceSdkPlugin.createFacerecService(
         widget._dataDir + "/conf/facerec",
         widget._dataDir + "/license",
-        _libDir + "/" + FaceSdkPlugin.nativeLibName
+        libPath: _libDir + "/" + FaceSdkPlugin.nativeLibName
     );
     setState(() {
       widget._setService(_facerecService);
