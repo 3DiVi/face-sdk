@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<capturer_impl_name>cascade_capturer</capturer_impl_name>
+
+<cascade>
+    <blf_fda_back>common_capturer_blf_fda_back.xml</blf_fda_back>
+    <ssyv_fda_v2>common_capturer_ssyv_fda_v2.xml</ssyv_fda_v2>
+</cascade>
+
+</opencv_storage>

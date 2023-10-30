@@ -79,8 +79,9 @@ struct StructStorageFields
 		video_worker_template_created_callback_t              = 43,
 		video_worker_match_found_callback_t                   = 44,
 		video_worker_tracking_lost_callback_t                 = 45,
+		video_worker_tracking_sti_callback_t                  = 46,
 
-		max_fields_count                                      = 46
+		max_fields_count                                      = 47
 	};
 };
 

@@ -22,7 +22,7 @@ class Service(FacerecService):
             lib_path = "\\bin\\facerec.dll"
 
         dll_path = path_to_dir + lib_path
-        facerec_conf_dir = path_to_dir + "/conf/facerec"
+        facerec_conf_dir = path_to_dir + "/conf/facerec/"
 
         dll_handle = DllHandle(CDLL(dll_path))
 

@@ -27,14 +27,14 @@ public:
 
 	virtual void get(ImageAndDepth& data);
 
-	OpencvSource(const std::string cam_or_url);
+	OpencvSource(const std::string cam_or_url, bool no_repeat_on_empty);
 
 private:
 
 	cv::Ptr<cv::VideoCapture> capturer;
 };
 
-OpencvSource::OpencvSource(const std::string cam_or_url)
+OpencvSource::OpencvSource(const std::string cam_or_url, bool no_repeat_on_empty)
 {
 	MAssert(!cam_or_url.empty(),);
 
@@ -50,7 +50,7 @@ OpencvSource::OpencvSource(const std::string cam_or_url)
 	{
 		// open stream
 		std::cout << "opening stream '" << cam_or_url << "'" << std::endl;
-		capturer = new StreamVideoCapture(cam_or_url);
+		capturer = new StreamVideoCapture(cam_or_url, no_repeat_on_empty);
 	}
 	else
 	{

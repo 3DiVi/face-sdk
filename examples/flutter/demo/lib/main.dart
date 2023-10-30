@@ -195,7 +195,7 @@ class _MyAppState extends State<MyApp> {
       // debugShowCheckedModeBanner: false,
       initialRoute: '/',
       theme: ThemeData(
-        accentColor: Colors.blue,
+        accentColor: Colors.blue, // accentColor => hintColor
         brightness: Brightness.dark,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),

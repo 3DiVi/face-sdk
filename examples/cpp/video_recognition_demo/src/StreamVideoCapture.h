@@ -22,7 +22,7 @@ class StreamVideoCapture : public cv::VideoCapture
 {
 public:
 
-	StreamVideoCapture(const std::string url);
+	StreamVideoCapture(const std::string url, bool no_repeat_on_empty);
 
 	virtual bool open(const std::string url);
 
@@ -43,6 +43,7 @@ private:
 	std::thread _grab_thread;
 	std::atomic<bool> _shutdown;
 	std::mutex _grab_mutex;
+	const bool _no_repeat_on_empty;
 	bool _grab_success;
 	bool _new_grab;
 };

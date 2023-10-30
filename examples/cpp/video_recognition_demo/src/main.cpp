@@ -65,6 +65,9 @@ int main(int argc, char const *argv[])
 		const std::string vw_config_file                 = parser.get<std::string>("--vw_config_file                ", "video_worker_fdatracker_blf_fda.xml");
 		const float       frame_fps_limit                = parser.get<float      >("--frame_fps_limit               ", 25);
 		const float       recognition_far_threshold      = parser.get<float      >("--recognition_far_threshold");
+		const bool		  output_metrics				 = parser.get<std::string>("--output_metrics                ", "no") == "yes" ? true : false;
+		const bool 		  show_windows                   = parser.get<std::string>("--show_windows                  ", "yes") == "yes" ? true : false;
+		const bool		  use_attributes				 = parser.get<std::string>("--use_attributes                ", "yes") == "yes" ? true : false;
 
 		// cehck params
 		MAssert(recognition_far_threshold > 0,);
@@ -88,7 +91,7 @@ int main(int argc, char const *argv[])
 		{
 			const std::string src = sources_names[i];
 
-			sources.push_back(new OpencvSource(src));
+			sources.push_back(new OpencvSource(src, output_metrics));
 
 			std::ostringstream ss;
 			ss << i << " : " << src;
@@ -158,29 +161,30 @@ int main(int argc, char const *argv[])
 					.short_time_identification_distance_threshold(recognition_distance_threshold)
 					.short_time_identification_outdate_time_seconds(30)
 
-					.age_gender_estimation_threads_count(sources.size())
-					.emotions_estimation_threads_count(sources.size())
+					.age_gender_estimation_threads_count(use_attributes ? sources.size() : 0)
+					.emotions_estimation_threads_count(use_attributes ? sources.size() : 0)
 					//.active_liveness_checks_order(checks)
 			);
 
 		// set database
 		video_worker->setDatabase(database.vw_elements);
 
-		for(size_t i = 0; i < sources_names.size(); ++i)
-		{
-			if(fullscreen == "yes")
+		if(show_windows)
+			for(size_t i = 0; i < sources_names.size(); ++i)
 			{
-				cv::namedWindow(
-					sources_names[i],
-					cv::WINDOW_NORMAL);
-				cv::setWindowProperty(
-					sources_names[i],
-					CV_WND_PROP_FULLSCREEN,
-					CV_WINDOW_FULLSCREEN);
-			}
+				if(fullscreen == "yes")
+				{
+					cv::namedWindow(
+						sources_names[i],
+						cv::WINDOW_NORMAL);
+					cv::setWindowProperty(
+						sources_names[i],
+						CV_WND_PROP_FULLSCREEN,
+						CV_WINDOW_FULLSCREEN);
+				}
 
-			imshow(sources_names[i], cv::Mat(100, 100, CV_8UC3, cv::Scalar::all(0)));
-		}
+				imshow(sources_names[i], cv::Mat(100, 100, CV_8UC3, cv::Scalar::all(0)));
+			}
 
 		// prepare buffers for store drawed results
 		std::mutex draw_images_mutex;
@@ -199,7 +203,8 @@ int main(int argc, char const *argv[])
 				i,  // stream_id
 				draw_images_mutex,
 				draw_images[i],
-				frame_fps_limit)));
+				frame_fps_limit,
+				output_metrics)));
 		}
 
 		// draw results until escape presssed
@@ -211,9 +216,10 @@ int main(int argc, char const *argv[])
 				for(size_t i = 0; i < draw_images.size(); ++i)
 					if(!draw_images[i].empty())
 					{
-						cv::imshow(
-							sources_names[i],
-							draw_images[i]);
+						if(show_windows)
+							cv::imshow(
+								sources_names[i],
+								draw_images[i]);
 						draw_images[i] = cv::Mat();
 					}
 

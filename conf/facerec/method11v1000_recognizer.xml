@@ -14,6 +14,7 @@
 <use_cuda>0</use_cuda>
 <gpu_index>0</gpu_index>
 
+
 <fit_score>1</fit_score>
 <use_custom_score_formula>0</use_custom_score_formula>
 

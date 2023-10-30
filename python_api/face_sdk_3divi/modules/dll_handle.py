@@ -337,6 +337,12 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
+    def RawSample_toContext(self, *args, **kwargs):
+        func = self.__dll_handle['{}RawSample_toContext'.format(self.__namespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
     # Recognizer methods
     def Recognizer_processing(self, *args, **kwargs):
         func = self.__dll_handle['{}Recognizer_processing'.format(self.__namespace)]

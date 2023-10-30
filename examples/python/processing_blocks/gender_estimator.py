@@ -37,35 +37,19 @@ def capturer_detection(service, img, estimator_block):
     capturer = service.create_capturer(capturer_config)  # create capturer object
     samples = capturer.capture(input_rawimg)  # capture faces in an image
 
-    ioData = {"objects": []}  # create container for an output data
+    imgCtx = {"blob": img.tobytes(), "dtype": "uint8_t", "format": "NDARRAY",
+              "shape": [dim for dim in img.shape]}
+    ioData = service.create_context({"image": imgCtx})
+    ioData["objects"] = []
 
-    for i, sample in enumerate(samples):  # iteration over detected faces, enumerate is needed to get a sample id
-        frame = sample.get_rectangle()  # get a bbox coordinates from sample
-        x = frame.x if frame.x > 0 else 0  # restrict coordinates values to non-negative
-        y = frame.y if frame.y > 0 else 0
-        face_crop = img[y:y + frame.height, x:x + frame.width]  # crop a face
+    for sample in samples:
+        obj = sample.to_context()
+        ioData["objects"].push_back(obj)
 
-        input_crop: np.ndarray = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)  # convert an image in RGB for correct results
-        cropCtx = {  # put cropped image in container
-            "blob": input_crop.tobytes(),
-            "dtype": "uint8_t",
-            "format": "NDARRAY",
-            "shape": [dim for dim in input_crop.shape]
-        }
-        estimatorCtx = {"image": cropCtx}  # put cropCtx in container which will be passed to an estimator block
-        estimator_block(estimatorCtx)  # call an estimator and pass a container with a cropped image
+    estimator_block(ioData)
 
-        estimatorCtx["objects"][0]["bbox"] = [  # copy bbox coordinates in container to visualize it on image
-            float(frame.x / img.shape[1]),
-            float(frame.y / img.shape[0]),
-            float((frame.x + frame.width) / img.shape[1]),
-            float((frame.y + frame.height) / img.shape[0]),
-        ]
-
-        estimatorCtx["objects"][0]["id"] = i  # overwrite sample id
-        ioData["objects"].append(estimatorCtx["objects"][0])  # copy an estimator output to ioData container
-
-    for obj in ioData["objects"]:  # iteration over objects in ioData container
+    ioDataDict = ioData.to_dict()
+    for obj in ioDataDict["objects"]:  # iteration over objects in ioData container
         print("\n", obj)  # print results in console
         picture = draw_bbox(obj["bbox"], img)  # visualize bboxes on an image
 
@@ -73,10 +57,9 @@ def capturer_detection(service, img, estimator_block):
 
 
 # capturing faces with a face detector block
-def detector_detection(service, img, estimator_block, sdk_path, sdk_onnx_path):
+def detector_detection(service, img, estimator_block, sdk_onnx_path, use_cuda):
     detector_config = {  # detector block configuration parameters
         "unit_type": "FACE_DETECTOR",  # required parameter
-        "model_path": sdk_path + "/share/facedetectors/face.enc",  # required
         "confidence_threshold": 0.5,  # optional
         "iou_threshold": 0.5,  # optional
         "use_cuda": use_cuda,  # optional
@@ -110,8 +93,7 @@ def detector_detection(service, img, estimator_block, sdk_path, sdk_onnx_path):
         face_crop = img[max(0, y - height): min(img_h, y + height),  # crop a face
                     max(0, x - width): min(img_w, x + width)]
 
-        input_crop: np.ndarray = cv2.cvtColor(face_crop,
-                                              cv2.COLOR_BGR2RGB)  # convert an image in RGB for correct results
+        input_crop: np.ndarray = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)  # convert an image in RGB for correct results
         cropCtx = {  # put cropped image in container
             "blob": input_crop.tobytes(),
             "dtype": "uint8_t",
@@ -144,7 +126,6 @@ def gender_estimator(input_image, sdk_path, use_cuda):
 
     gender_config = {  # gender block configuration parameters
         "unit_type": "GENDER_ESTIMATOR",  # required parameter
-        "model_path": sdk_path + "/share/faceanalysis/gender_heavy.enc",  # required
         "use_cuda": use_cuda,  # optional
         "ONNXRuntime": {
             "library_path": sdk_onnx_path  # optional
@@ -158,7 +139,7 @@ def gender_estimator(input_image, sdk_path, use_cuda):
     # choose any of two ways
     picture = capturer_detection(service, img, gender_block)
     # or
-    # picture = detector_detection(service, img, gender_block, sdk_path, sdk_onnx_path)
+    # picture = detector_detection(service, img, gender_block, sdk_onnx_path, use_cuda)
 
     cv2.imshow("result", picture)  # an example of a result image visualizing with opencv
     cv2.waitKey(0)  # wait for a key to be pressed to close the window

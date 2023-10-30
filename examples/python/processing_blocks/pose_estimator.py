@@ -61,7 +61,6 @@ def pose_estimator(input_image, sdk_path, use_cuda):
 
     detector_config = {  # detector block configuration parameters
         "unit_type": "HUMAN_BODY_DETECTOR",  # required parameter
-        "model_path": sdk_path + "/share/bodydetectors/body.enc",  # required
         "confidence_threshold": 0.5,  # optional
         "iou_threshold": 0.5,  # optional
         "use_cuda": use_cuda,  # optional
@@ -72,8 +71,6 @@ def pose_estimator(input_image, sdk_path, use_cuda):
 
     estimator_config = {  # estimator block configuration parameters
         "unit_type": "HUMAN_POSE_ESTIMATOR",  # required parameter
-        "model_path": sdk_path + "/share/humanpose/hpe-td.enc",  # required
-        "label_map": sdk_path + "/share/humanpose/label_map_keypoints.txt",  # required
         "use_cuda": use_cuda,  # optional
         "ONNXRuntime": {
             "library_path": sdk_onnx_path  # optional

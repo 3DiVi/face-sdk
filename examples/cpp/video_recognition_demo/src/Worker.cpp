@@ -6,6 +6,10 @@
 #include "MAssert.h"
 #include "Worker.h"
 
+#include <sstream>
+
+#include <signal.h>
+
 
 #ifndef CV_AA
 #define CV_AA cv::LINE_AA
@@ -18,14 +22,16 @@ Worker::Worker(
 	const int stream_id,
 	std::mutex &draw_image_mutex,
 	cv::Mat &draw_image,
-	const float frame_fps_limit) :
+	const float frame_fps_limit,
+	const bool show_metrics) :
 _draw_image_mutex(draw_image_mutex),
 _draw_image(draw_image),
 _video_worker(video_worker),
 _source(source),
 _frame_min_delay_ms(1000.f / frame_fps_limit),
 _stream_id(stream_id),
-_database(database)
+_database(database),
+_is_metrics_collection_mode(show_metrics)
 {
 	// check arguments
 	MAssert(video_worker,);
@@ -53,11 +59,20 @@ _database(database)
 			StiPersonOutdatedCallback,
 			this);
 
+	_template_created_callback_id = 
+		video_worker->addTemplateCreatedCallbackU(
+			TemplateCreatedCallback,
+			this);
+
 	// start threads
 	_shutdown = false;
 
 	_camera_thread = std::thread(&Worker::CameraThreadFunc, this);
 	_drawing_thread = std::thread(&Worker::DrawingThreadFunc, this);
+
+	if(_is_metrics_collection_mode)
+		_print_log = std::thread(&Worker::PrintThreadFunc, this);
+		this->ts_begin = std::chrono::steady_clock::now();
 }
 
 Worker::~Worker()
@@ -78,6 +93,21 @@ Worker::~Worker()
 		_drawing_thread.join();
 }
 
+void Worker::TemplateCreatedCallback(
+	const pbio::VideoWorker::TemplateCreatedCallbackData &data,
+	void* const userdata)
+{
+	const int stream_id = data.stream_id;
+
+	Worker &worker = *reinterpret_cast<Worker*>(userdata);
+
+	// we care only about the worker._stream_id source
+	// so just ignore any others
+	if(stream_id != worker._stream_id)
+		return;
+
+	worker._template_counter += 1;
+}
 
 // static
 void Worker::TrackingCallback(
@@ -104,6 +134,15 @@ void Worker::TrackingCallback(
 	// so just ignore any others
 	if(stream_id != worker._stream_id)
 		return;
+
+	for(auto& it : data.samples_track_id)
+	{
+		if(it > worker._max_track)
+		{
+			worker._max_track = it;
+			worker._track_counter += 1;
+		}
+	}
 
 	// get the frame with frame_id id
 	SharedImageAndDepth frame;
@@ -146,6 +185,9 @@ void Worker::TrackingCallback(
 		worker._drawing_data.depth = frame.depth;
 		worker._drawing_data.frame_id = frame_id;
 		worker._drawing_data.updated = true;
+
+		worker._face_flag.frame_id = samples.size();
+		worker._face_flag.updated = true;
 
 		// and samples
 		for(size_t i = 0; i < samples.size(); ++i)
@@ -326,6 +368,8 @@ void Worker::MatchFoundCallback(
 		MAssert(!face.lost,);
 
 		face.match_database_index = element_id;
+
+		worker._match_counter += 1;
 	}
 }
 
@@ -407,6 +451,8 @@ void Worker::CameraThreadFunc()
 				// and store it here for further drawing
 				_frames.push(std::make_pair(frame_id, frame));
 			}
+			else if(_is_metrics_collection_mode)
+				::raise(SIGINT);
 		}
 	}
 	catch(const std::exception &e)
@@ -812,6 +858,35 @@ cv::Mat Worker::Draw(
 	}
 
 	return result;
+}
+
+void Worker::PrintThreadFunc()
+{
+	int total_face = 0;
+	for(;;)
+	{
+		if(_shutdown)
+			break;
+		
+		if(_face_flag.updated)
+		{
+			auto end = std::chrono::steady_clock::now();
+			total_face += _face_flag.frame_id;
+			double timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(end - Worker::ts_begin).count();
+			Worker::ts_begin = end;
+
+			std::stringstream sout;
+			sout << " fps " << Worker::_stream_id << ":" << std::to_string(1000000 / std::max<double>(timeDiff, 1.));
+			sout << " face_total " << Worker::_stream_id << ":" << total_face;
+			sout << " face " << Worker::_stream_id << ":" << _face_flag.frame_id;
+			sout << " match_all " << Worker::_stream_id << ":" << Worker::_match_counter;
+			sout << " templates_all " << Worker::_stream_id << ":" << Worker::_template_counter;
+			sout << " tracks_all " << Worker::_stream_id << ":" << Worker::_track_counter << "\n";
+
+			std::cout << sout.str() << std::flush;
+			_face_flag.updated = false;
+		}
+	}
 }
 
 void Worker::DrawingThreadFunc()

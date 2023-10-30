@@ -16,6 +16,7 @@
 #include "ExceptionCheck.h"
 #include "Point.h"
 #include "RawImage.h"
+#include "Context.h"
 #include "SmartPtr.h"
 #include "stl_wraps_impls/WrapOStreamImpl.h"
 #include "stl_wraps_impls/WrapVectorImpl.h"
@@ -858,6 +859,8 @@ public:
 	*/
 	RawSample::Ptr downscaleToPreferredSize() const;
 
+	Context toContext() const;
+
 	//! @cond IGNORED
 	void* getPtr() const;
 	//! @endcond
@@ -1340,6 +1343,20 @@ RawSample::Ptr RawSample::downscaleToPreferredSize() const
 	checkException(exception, *_dll_handle);
 
 	return RawSample::Ptr::make(_dll_handle, raw_sampl_impl);
+}
+
+inline
+Context RawSample::toContext() const
+{
+	void* exception = NULL;
+
+	HContext* handle = _dll_handle->RawSample_toContext(
+			_impl,
+			&exception);
+
+	checkException(exception, *_dll_handle);
+
+	return Context(_dll_handle, handle, false);
 }
 
 

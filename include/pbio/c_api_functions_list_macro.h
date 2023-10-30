@@ -2221,6 +2221,19 @@ namespace capi {
 		), \
 		return ) \
 	\
+	decl( \
+		HContext*, \
+		RawSample_toContext, \
+		( \
+			void* rawsample, \
+			void** out_exception \
+		), \
+		( \
+			rawsample, \
+			out_exception \
+		), \
+		return ) \
+	\
 	\
 	\
 	\

@@ -39,7 +39,6 @@ def body_detector(input_image, sdk_path, use_cuda):
 
     detector_config = {  # detector block configuration parameters
         "unit_type": "HUMAN_BODY_DETECTOR",  # required parameter
-        "model_path": sdk_path + "share/bodydetectors/body.enc",  # required
         "confidence_threshold": 0.3,  # optional
         "iou_threshold": 0.5,  # optional
         "use_cuda": use_cuda,  # optional

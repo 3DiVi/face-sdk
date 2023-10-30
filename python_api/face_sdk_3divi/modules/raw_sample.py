@@ -17,6 +17,7 @@ from .complex_object import ComplexObject
 from .dll_handle import DllHandle
 from .point import Point
 from .raw_image import Format, RawImage, Rectangle
+from .context import Context
 from . import get_repr
 
 
@@ -787,3 +788,15 @@ class RawSample(ComplexObject):
         check_exception(exception, self._dll_handle)
 
         return RawSample(self._dll_handle, c_void_p(rs_impl))
+
+
+    def to_context(self):
+        exception = make_exception()
+
+        ctx_impl = self._dll_handle.RawSample_toContext(
+            self._impl,
+            exception
+        )
+        check_exception(exception, self._dll_handle)
+
+        return Context(self._dll_handle, c_void_p(ctx_impl))

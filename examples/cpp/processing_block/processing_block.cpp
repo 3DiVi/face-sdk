@@ -91,6 +91,21 @@ void drawObjects(const pbio::Context& data, cv::Mat& image, std::string class_fi
 	}
 }
 
+void drawFaceKeypoint(const pbio::Context& data, cv::Mat& image)
+{
+	const auto width = image.size[1];
+	const auto heigth = image.size[0];
+	drawObjects(data, image, std::string("face"));
+
+	for(const auto& obj : data.at("objects"))
+	{
+		for(const auto& point : obj.at("keypoints").at("points"))
+		{
+			cv::circle(image, cv::Point2f(point["x"].getDouble() * image.size[1], point["y"].getDouble() * image.size[0]), 2, {0, 255, 0}, 5);
+		}
+	}
+}
+
 void drawEmotions(const pbio::Context& data, cv::Mat& image)
 {
 	const auto width = image.size[1];
@@ -172,8 +187,8 @@ void drawAgeGenderMaskQuality(const pbio::Context& data, cv::Mat& image, const s
 										0.5, cv::Scalar(0,255,0),1,false);
 				putTextWithRightExpansion(image, "Quality :", cv::Point{width+5+roi.width, height_for_text_and_crop+30}, cv::FONT_HERSHEY_DUPLEX, 
 										0.5, cv::Scalar(0,255,0),1,false);
-				putTextWithRightExpansion(image, std::to_string(obj["quality"]["qaa"]["totalScore"].getLong()),
-										cv::Point{width+75+roi.width, height_for_text_and_crop+30}, cv::FONT_HERSHEY_DUPLEX, 
+				putTextWithRightExpansion(image, std::to_string((int)std::round(obj["quality"]["total_score"].getDouble() * 100)),
+										cv::Point{width+75+roi.width, height_for_text_and_crop+30}, cv::FONT_HERSHEY_DUPLEX,
 										0.5, cv::Scalar(0,255,0),1,false);
 				cv::Mat draw_roi = image(roi);
 				face.copyTo(draw_roi);
@@ -209,17 +224,18 @@ void drawLiveness(const pbio::Context& data, cv::Mat& image)
 	}
 };
 
-const std::map<std::string, std::pair<std::string, std::string>> unitTypes {
-	{"body",{"HUMAN_BODY_DETECTOR", "/bodydetectors/body.enc"}},
-	{"face",{"FACE_DETECTOR", "/facedetectors/face.enc"}},
-	{"objects",{"OBJECT_DETECTOR", "/objectdetectors/det-object.enc"}},
-	{"emotions",{"EMOTION_ESTIMATOR", "/faceanalysis/emotion.enc"}},
-	{"age",{"AGE_ESTIMATOR", "/faceanalysis/age_heavy.enc"}},
-	{"gender",{"GENDER_ESTIMATOR", "/faceanalysis/gender_heavy.enc"}},
-	{"mask",{"MASK_ESTIMATOR", "/faceattributes/mask.enc"}},
-	{"liveness",{"LIVENESS_ESTIMATOR", ""}},
-	{"quality",{"QUALITY_ASSESSMENT_ESTIMATOR", ""}},
-	{"pose",{"HUMAN_POSE_ESTIMATOR", "/humanpose/hpe-td.enc"}},
+const std::map<std::string, std::string> unitTypes {
+	{"body", "HUMAN_BODY_DETECTOR"},
+	{"face", "FACE_DETECTOR"},
+	{"objects", "OBJECT_DETECTOR"},
+	{"face_keypoint", "FACE_FITTER"},
+	{"emotions", "EMOTION_ESTIMATOR"},
+	{"age", "AGE_ESTIMATOR"},
+	{"gender","GENDER_ESTIMATOR"},
+	{"mask", "MASK_ESTIMATOR"},
+	{"liveness", "LIVENESS_ESTIMATOR"},
+	{"quality", "QUALITY_ASSESSMENT_ESTIMATOR"},
+	{"pose", "HUMAN_POSE_ESTIMATOR"},
 };
 
 int main(int argc, char **argv)
@@ -227,7 +243,7 @@ int main(int argc, char **argv)
 	// print usage
 	std::cout << "usage: " << argv[0] <<
 		" [--input_image <path to image>]"
-		" [--unit_type body|pose|objects|emotions|age|gender|mask|liveness|quality]"
+		" [--unit_type body|face|face_keypoint|pose|objects|emotions|age|gender|mask|liveness|quality]"
 		" [--sdk_path ..]"
 		" [--use_cuda]"
 		<< std::endl;
@@ -244,6 +260,8 @@ int main(int argc, char **argv)
 	const std::string input_image_path   = parser.get<std::string>("--input_image");
 	const std::string unit_type          = parser.get<std::string>("--unit_type", "objects");
 	const std::string sdk_dir            = parser.get<std::string>("--sdk_path", "..");
+	const std::string modification            = parser.get<std::string>("--modification", "");
+	const std::string version            = parser.get<std::string>("--version", "");
 
 	auto args = parser.get();
 	bool use_cuda = std::find(args.begin(), args.end(), std::string("--use_cuda")) != args.end();
@@ -273,13 +291,13 @@ int main(int argc, char **argv)
 		if(unitTypes.find(unit_type) == unitTypes.end())
 			throw pbio::Error(0x917ca17f, "unit_type not found");
 
-		configCtx["unit_type"] = unitTypes.at(unit_type).first;
-		configCtx["model_path"] = model_dir + unitTypes.at(unit_type).second;
+		configCtx["unit_type"] = unitTypes.at(unit_type);
 		configCtx["ONNXRuntime"]["library_path"] = lib_dir; // optional, no default value, os-specific default search order if not set
 		configCtx["use_cuda"] = use_cuda;
-
-		if(!unit_type.compare("pose"))
-			configCtx["label_map"] = model_dir + "/humanpose/label_map_keypoints.txt";
+		if (modification != "")
+			configCtx["modification"] = modification;
+		if (version != "")
+			configCtx["version"] = std::stoi(version);
 
 		cv::Mat image;
 		image = cv::imread(input_image_path, cv::IMREAD_COLOR);
@@ -295,11 +313,7 @@ int main(int argc, char **argv)
 
 		auto ioData = service->createContext();
 		if(unit_type == "quality")
-		{
 			configCtx["config_name"] = "quality_assessment.xml";
-			configCtx["sdk_path"] = sdk_dir;
-			configCtx["facerec_conf_dir"] = sdk_dir + "/conf/facerec/";
-		}
 
 		if(unit_type == "liveness")
 		{
@@ -308,38 +322,31 @@ int main(int argc, char **argv)
 			configCtx["facerec_conf_dir"] = sdk_dir + "/conf/facerec/";
 		}
 
+
 		pbio::ProcessingBlock processingBlock = service->createProcessingBlock(configCtx);
 
-		if(unit_type == "quality")
+		if(unit_type == "quality" || (unit_type == "liveness" && modification == "v4"))
 		{
 			// create capturer
 			const pbio::Capturer::Ptr capturer = service->createCapturer("common_capturer_refa_fda_a.xml");
 
 			std::vector<pbio::RawSample::Ptr> samples = capturer->capture(input_rawimg);
-			
-			auto capture_result = service->createContext();
-			auto wholeImageCtx = capture_result["image"];
+			auto wholeImageCtx = ioData["image"];
 			pbio::context_utils::putImage(wholeImageCtx, input_rawimg);
-			auto objectsCtx = capture_result["objects"];
+			auto objectsCtx = ioData["objects"];
 			for(auto &sample: samples)
 			{
-				auto faceData = service->createContext();
-				faceData["image_ptr"] = capture_result["image"];
-
-				//fitter names: fda, mesh, mesh_3d, lbf29, lbf68, esr
-				pbio::context_utils::putRawSample(faceData, sample, "fda", input_rawimg.width, input_rawimg.height);
-				processingBlock(faceData);
-				objectsCtx.push_back(std::move(faceData));
+				objectsCtx.push_back(sample->toContext());
 			}
-			ioData = std::move(capture_result);
+			processingBlock(ioData);
 		}
 
 		else if(!unit_type.compare("emotions") || !unit_type.compare("gender") ||
-				!unit_type.compare("age") || !unit_type.compare("mask"))
+				!unit_type.compare("age") || !unit_type.compare("mask") ||
+				!unit_type.compare("face_keypoint"))
 		{
 			auto faceCtx = service->createContext();
-			faceCtx["unit_type"] = unitTypes.at("face").first;
-			faceCtx["model_path"] = model_dir + unitTypes.at("face").second;
+			faceCtx["unit_type"] = unitTypes.at("face");
 			faceCtx["ONNXRuntime"]["library_path"] = lib_dir;
 			faceCtx["use_cuda"] = use_cuda;
 			faceCtx["confidence_threshold"] = 0.4;
@@ -358,8 +365,7 @@ int main(int argc, char **argv)
 			if(!unit_type.compare("pose")) // first extract body bboxes
 			{
 				auto modelDetectorCtx = service->createContext();
-				modelDetectorCtx["unit_type"] = unitTypes.at("body").first;
-				modelDetectorCtx["model_path"] =  model_dir + unitTypes.at("body").second;
+				modelDetectorCtx["unit_type"] = unitTypes.at("body");
 				modelDetectorCtx["ONNXRuntime"]["library_path"] = lib_dir;
 				modelDetectorCtx["confidence_threshold"] = 0.4;
 				modelDetectorCtx["iou_threshold"] = 0.45;
@@ -376,13 +382,15 @@ int main(int argc, char **argv)
 			drawObjects(ioData, image, "body");
 		else if(!unit_type.compare("face"))
 			drawObjects(ioData, image, "face");
+		else if(!unit_type.compare("face_keypoint"))
+			drawFaceKeypoint(ioData, image);
 		else if(!unit_type.compare("objects"))
 			drawObjects(ioData, image);
 		else if(!unit_type.compare("emotions"))
 			drawEmotions(ioData, image);
 		else if(!unit_type.compare("age") || !unit_type.compare("gender") || !unit_type.compare("mask") || !unit_type.compare("quality"))
 			drawAgeGenderMaskQuality(ioData, image, unit_type);
-		else if(!unit_type.compare("liveness"))
+		else if(unit_type.find("liveness") != std::string::npos)
 			drawLiveness(ioData, image);
 
 		cv::imshow("image", image);

@@ -50,6 +50,7 @@ android {
                 "share/quality_iso/**",
                 "share/face_quality/**",
                 "share/faceanalysis/**",
+                "share/processing_block/**",
                 "share/age_second/**",
                 "share/liveness_2d_v2/**",
                 "share/faceattributes/**",

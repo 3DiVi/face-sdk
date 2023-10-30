@@ -4,7 +4,7 @@
 <face_attribute_impl>version_2.0</face_attribute_impl>
 
 <face_attribute_name>masked_face</face_attribute_name>
-<face_attribute_data>share/faceattributes/mask.enc</face_attribute_data>
+<face_attribute_data>share/processing_block/mask_estimator/light/1.enc</face_attribute_data>
 <score_threshold>0.5</score_threshold>
 
 <use_mobile_gpu>0</use_mobile_gpu>

@@ -13,6 +13,7 @@
 <use_cuda>0</use_cuda>
 <gpu_index>0</gpu_index>
 
+
 <roc>
 1.294199943542
 0.000000000000

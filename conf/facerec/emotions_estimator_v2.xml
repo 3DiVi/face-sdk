@@ -3,7 +3,7 @@
 
 <emotion_impl_name>version_2.0</emotion_impl_name>
 
-<analysis>share/faceanalysis/emotion.enc</analysis>
+<analysis>share/processing_block/emotion_estimator/heavy/1.enc</analysis>
 <use_cuda>false</use_cuda>
 
 </opencv_storage>

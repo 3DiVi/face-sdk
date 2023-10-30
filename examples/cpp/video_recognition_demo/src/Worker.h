@@ -18,6 +18,7 @@
 
 #include <facerec/libfacerec.h>
 #include <pbio/example/CVRawImage.h>
+#include <chrono>
 
 #include "Database.h"
 
@@ -37,7 +38,6 @@ public:
 	static const int draw_border = 5;
 	static const int max_count_in_stripe = 6;
 
-
 	Worker(
 		const Database &database,
 		const pbio::VideoWorker::Ptr video_worker,
@@ -45,7 +45,8 @@ public:
 		const int stream_id,
 		std::mutex &draw_image_mutex,
 		cv::Mat &draw_image,
-		const float frame_fps_limit);
+		const float frame_fps_limit,
+		const bool show_metrics);
 
 	~Worker();
 
@@ -146,6 +147,11 @@ private:
 		const pbio::VideoWorker::StiPersonOutdatedCallbackData &data,
 		void* const userdata);
 
+	static
+	void TemplateCreatedCallback(
+		const pbio::VideoWorker::TemplateCreatedCallbackData &data,
+		void* const userdata);
+
 	// here we grab frames from the sources
 	// and put them in a VideoWorker
 	void CameraThreadFunc();
@@ -159,6 +165,7 @@ private:
 	// here we draw results
 	void DrawingThreadFunc();
 
+	void PrintThreadFunc();
 
 
 	std::mutex &_draw_image_mutex;
@@ -174,11 +181,20 @@ private:
 	int _tracking_lost_callback_id;
 	int _match_found_callback_id;
 	int _sti_person_outdated_callback_id;
+	int _template_created_callback_id;
 
-
+	const bool _is_metrics_collection_mode;
 	std::atomic<bool> _shutdown;
 	std::thread _camera_thread;
 	std::thread _drawing_thread;
+
+	DrawingData _face_flag;
+	std::thread _print_log;
+
+	int _match_counter = 0;
+	int _template_counter = 0;
+	int _track_counter = 0;
+	int _max_track = -1;
 
 	int _frame_min_delay_ms;
 
@@ -188,6 +204,8 @@ private:
 
 	DrawingData _drawing_data;
 	std::mutex _drawing_data_mutex;
+
+	std::chrono::steady_clock::time_point ts_begin;
 };
 
 #endif  // __VIDEO_RECOGNITION_DEMO__WORKER_H__

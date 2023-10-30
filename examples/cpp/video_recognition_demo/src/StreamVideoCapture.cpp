@@ -5,8 +5,9 @@
 #include "StreamVideoCapture.h"
 
 
-StreamVideoCapture::StreamVideoCapture(const std::string url) :
-	stream_url(url)
+StreamVideoCapture::StreamVideoCapture(const std::string url, bool no_repeat_on_empty) :
+	stream_url(url),
+	_no_repeat_on_empty(no_repeat_on_empty)
 {
 	_shutdown = true;
 	_grab_success = false;
@@ -41,7 +42,7 @@ StreamVideoCapture& StreamVideoCapture::operator >> (CV_OUT cv::Mat& image)
 {
 	for (;; std::this_thread::sleep_for(std::chrono::milliseconds((int) grab_sleep)))
 	{
-		if (!isOpened())
+		if (!isOpened() && !_no_repeat_on_empty)
 		{
 			// reopen videocapture
 			stopGrabThread();
@@ -49,7 +50,7 @@ StreamVideoCapture& StreamVideoCapture::operator >> (CV_OUT cv::Mat& image)
 			image = cv::Mat();
 			continue;
 		}
-		else
+		else if(isOpened())
 		{
 			// check wait time
 			const std::chrono::steady_clock::time_point start_wait = std::chrono::steady_clock::now();
@@ -86,6 +87,12 @@ StreamVideoCapture& StreamVideoCapture::operator >> (CV_OUT cv::Mat& image)
 				image = cv::Mat();
 				continue;
 			}
+		}
+		else
+		{
+			release();
+			image = cv::Mat();
+			_shutdown = true;
 		}
 		break;
 	}

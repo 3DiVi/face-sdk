@@ -62,6 +62,9 @@ class Context(ComplexObject):
         self.__weak_ = weak
         return self
 
+    def push_back(self, data):
+        self.__pushBack(data)
+
     def __setStr(self, value: str):
         exception = make_exception()
 
@@ -196,6 +199,16 @@ class Context(ComplexObject):
 
         check_exception(exception, self._dll_handle)
 
+    def to_dict(self):
+        if self.is_array():
+            return [self[i].to_dict() for i in range(len(self))]
+
+        if self.is_object():
+            return {key: self[key].to_dict() for key in self.keys()}
+
+        return self.get_value()
+
+
     @dispatch(dict)
     def parser(self, ctx: dict):
         for key in ctx.keys():
@@ -233,7 +246,7 @@ class Context(ComplexObject):
 
         cout_keys = self.__getLength()
         buf = POINTER(c_char_p)
-        
+
         p_value_array = self._dll_handle.getKeys(self._impl, cout_keys, c_ulong(cout_keys), exception)
         check_exception(exception, self._dll_handle)
 
@@ -325,3 +338,5 @@ class Context(ComplexObject):
             return self.__getDouble()
         if self.is_data_ptr():
             return self.getDataPtr()
+
+        return None

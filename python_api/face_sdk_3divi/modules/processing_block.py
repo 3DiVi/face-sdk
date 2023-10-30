@@ -52,9 +52,7 @@ class ProcessingBlock(ComplexObject):
 
         check_processing_block_exception(exception, self._dll_handle)
 
-        new_keys_dict = set(meta_ctx.keys()) - set(ctx.keys())
-        for key in new_keys_dict:
-            ctx[key] = self.get_output_data(meta_ctx[key])
+        self.get_output_data(ctx, meta_ctx)
 
     def __call_ctx(self, ctx: Context):
         exception = make_exception()
@@ -63,15 +61,18 @@ class ProcessingBlock(ComplexObject):
 
         check_processing_block_exception(exception, self._dll_handle)
 
-    def get_output_data(self, meta_ctx: Context):
-
+    def get_output_data(self, ctx: dict, meta_ctx: Context):
         if meta_ctx.is_array():
-            return [self.get_output_data(meta_ctx[i]) for i in range(len(meta_ctx))]
+            for i in range(len(meta_ctx)):
+                self.get_output_data(ctx[i], meta_ctx[i])
 
         if meta_ctx.is_object():
-            return {key: self.get_output_data(meta_ctx[key]) for key in meta_ctx.keys()}
+            for key in ctx.keys():
+                self.get_output_data(ctx[key], meta_ctx[key])
 
-        return meta_ctx.get_value()
+            new_keys_dict = set(meta_ctx.keys()) - set(ctx.keys())
+            for key in new_keys_dict:
+                ctx[key] = meta_ctx[key].to_dict()
 
 ##
 #  \~English
