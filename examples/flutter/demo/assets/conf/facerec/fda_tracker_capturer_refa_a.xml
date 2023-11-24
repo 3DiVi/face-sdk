@@ -20,7 +20,7 @@
 
 <use_cuda>0</use_cuda>
 <gpu_index>0</gpu_index>
-
+<use_advanced_multithreading>0</use_advanced_multithreading>
 
 <fda_max_bad_count_wait>5</fda_max_bad_count_wait>
 <fda_max_weak_count_wait>30</fda_max_weak_count_wait>
