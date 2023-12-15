@@ -290,13 +290,13 @@ typedef _Context_getOrInsertByKey_dart = Pointer<Void> Function(
 typedef _Context_pushBack_c = Void Function(
     Pointer<Void>,
     Pointer<Void>,
-    Int32,
+    Bool,
     Pointer<Pointer<Void>>);
 
 typedef _Context_pushBack_dart = void Function(
     Pointer<Void>,
     Pointer<Void>,
-    int,
+    bool,
     Pointer<Pointer<Void>>);
 
 typedef _Context_putStr_c = Void Function(
@@ -311,7 +311,7 @@ typedef _Context_putStr_dart = void Function(
 
 typedef _Context_putLong_c = Void Function(
     Pointer<Void>,
-    Int32,
+    Int64,
     Pointer<Pointer<Void>>);
 
 typedef _Context_putLong_dart = void Function(
@@ -331,12 +331,12 @@ typedef _Context_putDouble_dart = void Function(
 
 typedef _Context_putBool_c = Void Function(
     Pointer<Void>,
-    Int32,
+    Bool,
     Pointer<Pointer<Void>>);
 
 typedef _Context_putBool_dart = void Function(
     Pointer<Void>,
-    int,
+    bool,
     Pointer<Pointer<Void>>);
 
 typedef _Context_putDataPtr_c = Pointer<Utf8> Function(
@@ -351,15 +351,15 @@ typedef _Context_putDataPtr_dart = Pointer<Utf8> Function(
     int,
     Pointer<Pointer<Void>>);
 
-typedef _Context_getBool_c = Int32 Function(
+typedef _Context_getBool_c = Bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_getBool_dart = int Function(
+typedef _Context_getBool_dart = bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_getStrSize_c = Int32 Function(
+typedef _Context_getStrSize_c = Uint64 Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
@@ -377,7 +377,7 @@ typedef _Context_getStr_dart = Pointer<Utf8> Function(
     Pointer<Utf8>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_getLong_c = Int32 Function(
+typedef _Context_getLong_c = Int64 Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
@@ -401,71 +401,71 @@ typedef _Context_getDataPtr_dart = Pointer<Uint8> Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isNone_c = Int32 Function(
+typedef _Context_isNone_c = Bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isNone_dart = int Function(
+typedef _Context_isNone_dart = bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isArray_c = Int32 Function(
+typedef _Context_isArray_c = Bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isArray_dart = int Function(
+typedef _Context_isArray_dart = bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isObject_c = Int32 Function(
+typedef _Context_isObject_c = Bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isObject_dart = int Function(
+typedef _Context_isObject_dart = bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isBool_c = Int32 Function(
+typedef _Context_isBool_c = Bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isBool_dart = int Function(
+typedef _Context_isBool_dart = bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isLong_c = Int32 Function(
+typedef _Context_isLong_c = Bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isLong_dart = int Function(
+typedef _Context_isLong_dart = bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isDouble_c = Int32 Function(
+typedef _Context_isDouble_c = Bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isDouble_dart = int Function(
+typedef _Context_isDouble_dart = bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isString_c = Int32 Function(
+typedef _Context_isString_c = Bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isString_dart = int Function(
+typedef _Context_isString_dart = bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isDataPtr_c = Int32 Function(
+typedef _Context_isDataPtr_c = Bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_isDataPtr_dart = int Function(
+typedef _Context_isDataPtr_dart = bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_getLength_c = Int32 Function(
+typedef _Context_getLength_c = Uint64 Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
@@ -485,7 +485,7 @@ typedef _Context_getByIndex_dart = Pointer<Void> Function(
 
 typedef _Context_getKeys_c = Pointer<Pointer<Utf8>> Function(
     Pointer<Void>,
-    Int32,
+    Uint64,
     Pointer<Pointer<Void>>);
 
 typedef _Context_getKeys_dart = Pointer<Pointer<Utf8>> Function(
@@ -547,7 +547,23 @@ typedef _Liveness2DEstimatorConstr_c = Pointer<Void> Function(
     Pointer<Double>, // overridden_values
     Pointer<Pointer<Void>>); // out_exception
 
+typedef _FaceAttributesEstimatorConstr_c = Pointer<Void> Function(
+    Pointer<Void>, // service
+    Pointer<Utf8>, // ini_file
+    Int32, // overridden_count
+    Pointer<Pointer<Utf8>>, // overridden_keys
+    Pointer<Double>, // overridden_values
+    Pointer<Pointer<Void>>); // out_exception
+
 typedef _Liveness2DEstimatorConstr_dart = Pointer<Void> Function(
+    Pointer<Void>, // service
+    Pointer<Utf8>, // ini_file
+    int, // overridden_count
+    Pointer<Pointer<Utf8>>, // overridden_keys
+    Pointer<Double>, // overridden_values
+    Pointer<Pointer<Void>>); // out_exception
+
+typedef _FaceAttributesEstimatorConstr_dart = Pointer<Void> Function(
     Pointer<Void>, // service
     Pointer<Utf8>, // ini_file
     int, // overridden_count
@@ -560,6 +576,15 @@ typedef _Liveness2DEstimator_estimateLiveness = Pointer<Void> Function(
     Pointer<Void>, // raw_sample
     Pointer<Int32>, // verdict
     Pointer<Float>, // score
+    Pointer<Pointer<Void>>); // out_exception
+
+typedef _FaceAttributesEstimator_estimateEyesOpenness = Pointer<Void> Function(
+    Pointer<Void>, // face_attributes_estimator
+    Pointer<Void>, // raw_sample
+    Pointer<Int32>, // left_verdict
+    Pointer<Int32>, // right_verdict
+    Pointer<Float>, // left_score
+    Pointer<Float>, // right_score
     Pointer<Pointer<Void>>); // out_exception
 
 typedef binary_stream_read_func = Void Function(

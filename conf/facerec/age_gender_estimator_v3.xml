@@ -5,7 +5,9 @@
 
 <analysisa>share/processing_block/age_estimator/heavy/1.enc</analysisa>
 <age_use_cuda>false</age_use_cuda>
+<age_use_legacy>false</age_use_legacy>
 <analysisg>share/processing_block/gender_estimator/heavy/1.enc</analysisg>
 <gender_use_cuda>false</gender_use_cuda>
+<gender_use_legacy>false</gender_use_legacy>
 
 </opencv_storage>

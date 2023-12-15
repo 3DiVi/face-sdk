@@ -31,7 +31,7 @@ class ProcessingBlock extends _ComplexObject {
     meta_ctx.placeValues(ctx);
 
     Context outContext = _call_context(meta_ctx);
-    dynamic outMap = get_output_data(outContext);
+    dynamic outMap = outContext.toMap();
 
     outContext.dispose();
 
@@ -49,23 +49,5 @@ class ProcessingBlock extends _ComplexObject {
     tdvCheckException(exception, _dll_handle);
 
     return ctx;
-  }
-
-  dynamic get_output_data(Context ctx) {
-    if (ctx.is_array()) {
-      List res = [];
-      for (int i = 0; i < ctx.len(); i++) {
-        res.add(this.get_output_data(ctx[i]));
-      }
-      return res;
-    }
-    if (ctx.is_object()) {
-      Map res = {};
-      for (final key in ctx.getKeys()) {
-        res[key] = this.get_output_data(ctx[key]);
-      }
-      return res;
-    }
-    return ctx.get_value();
   }
 }

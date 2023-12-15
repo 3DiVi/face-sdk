@@ -5,5 +5,6 @@
 
 <analysis>share/processing_block/emotion_estimator/heavy/1.enc</analysis>
 <use_cuda>false</use_cuda>
+<use_legacy>false</use_legacy>
 
 </opencv_storage>

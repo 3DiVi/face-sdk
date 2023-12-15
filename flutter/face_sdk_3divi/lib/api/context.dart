@@ -44,28 +44,46 @@ class Context extends _ComplexObject {
     return Context(_dll_handle, nullptr);
   }
 
+  void operator []=(dynamic key, data) {
+    this._getOrInsertByKey(key).placeValues(data);
+  }
+
+  void pushBack(Context data) {
+    this._pushBack(data);
+  }
+
+  dynamic toMap(){
+    if (this.is_array()) {
+      List res = [];
+      for (int i = 0; i < this.len(); i++) {
+        res.add(this[i].toMap());
+      }
+      return res;
+    }
+    if (this.is_object()) {
+      Map res = {};
+      for (final key in this.getKeys()) {
+        res[key] = this[key].toMap();
+      }
+      return res;
+    }
+    return this.get_value();
+  }
+
   void placeValues(data) {
     if (data is Map) {
       this._insertDict(data);
-    }
-    if ((data is List) & (data is! Uint8List)) {
+    } else if ((data is List) & (data is! Uint8List)) {
       this._insertList(data);
-    }
-    if (data is int) {
+    }else if (data is int) {
       this._setLong(data);
-    }
-    else {
-      if (data is double) {
-        this._setDouble(data);
-      }
-    }
-    if (data is String) {
+    } else if (data is double) {
+      this._setDouble(data);
+    }else if (data is String) {
       this._setStr(data);
-    }
-    if (data is bool) {
+    }else if (data is bool) {
       this._setBool(data);
-    }
-    if (data is Uint8List) {
+    }else if (data is Uint8List) {
       this._setDataPtr(data);
     }
   }
@@ -146,7 +164,7 @@ class Context extends _ComplexObject {
     constructor(
         this._impl,
         data._impl,
-        1,
+        true,
         exception
     );
 
@@ -205,7 +223,7 @@ class Context extends _ComplexObject {
     final exception = _getException();
     constructor(
         this._impl,
-        val ? 1 : 0,
+        val,
         exception
     );
 
@@ -241,14 +259,14 @@ class Context extends _ComplexObject {
         _Context_getBool_dart>
       (_context_namespace + 'getBool');
     final exception = _getException();
-    int res = constructor(
+    bool res = constructor(
         this._impl,
         exception
     );
 
     tdvCheckException(exception, _dll_handle);
 
-    return res == 1 ? true : false;
+    return res;
   }
 
   String _getStr() {
@@ -373,14 +391,14 @@ class Context extends _ComplexObject {
         _Context_isNone_dart>
       (_context_namespace + 'isNone');
     final exception = _getException();
-    int res = constructor(
+    bool res = constructor(
         this._impl,
         exception
     );
 
     tdvCheckException(exception, _dll_handle);
 
-    return res == 1 ? true : false;
+    return res;
   }
 
   bool is_array() {
@@ -389,14 +407,14 @@ class Context extends _ComplexObject {
         _Context_isArray_dart>
       (_context_namespace + 'isArray');
     final exception = _getException();
-    int res = constructor(
+    bool res = constructor(
         this._impl,
         exception
     );
 
     tdvCheckException(exception, _dll_handle);
 
-    return res == 1 ? true : false;
+    return res;
   }
 
   bool is_object() {
@@ -406,13 +424,13 @@ class Context extends _ComplexObject {
       (_context_namespace + 'isObject');
     final exception = _getException();
 
-    int res = constructor(
+    bool res = constructor(
         this._impl,
         exception);
 
     tdvCheckException(exception, _dll_handle);
 
-    return res == 1 ? true : false;
+    return res;
   }
 
   bool is_bool() {
@@ -421,14 +439,14 @@ class Context extends _ComplexObject {
         _Context_isBool_dart>
       (_context_namespace + 'isBool');
     final exception = _getException();
-    int res = constructor(
+    bool res = constructor(
         this._impl,
         exception
     );
 
     tdvCheckException(exception, _dll_handle);
 
-    return res == 1 ? true : false;
+    return res;
   }
 
   bool is_long() {
@@ -437,14 +455,14 @@ class Context extends _ComplexObject {
         _Context_isLong_dart>
       (_context_namespace + 'isLong');
     final exception = _getException();
-    int res = constructor(
+    bool res = constructor(
         this._impl,
         exception
     );
 
     tdvCheckException(exception, _dll_handle);
 
-    return res == 1 ? true : false;
+    return res;
   }
 
   bool is_double() {
@@ -453,14 +471,14 @@ class Context extends _ComplexObject {
         _Context_isDouble_dart>
       (_context_namespace + 'isDouble');
     final exception = _getException();
-    int res = constructor(
+    bool res = constructor(
         this._impl,
         exception
     );
 
     tdvCheckException(exception, _dll_handle);
 
-    return res == 1 ? true : false;
+    return res;
   }
 
   bool is_string() {
@@ -469,14 +487,14 @@ class Context extends _ComplexObject {
         _Context_isString_dart>
       (_context_namespace + 'isString');
     final exception = _getException();
-    int res = constructor(
+    bool res = constructor(
         this._impl,
         exception
     );
 
     tdvCheckException(exception, _dll_handle);
 
-    return res == 1 ? true : false;
+    return res;
   }
 
   bool is_data_ptr() {
@@ -485,14 +503,14 @@ class Context extends _ComplexObject {
         _Context_isDataPtr_dart>
       (_context_namespace + 'isDataPtr');
     final exception = _getException();
-    int res = constructor(
+    bool res = constructor(
         this._impl,
         exception
     );
 
     tdvCheckException(exception, _dll_handle);
 
-    return res == 1 ? true : false;
+    return res;
   }
 
   dynamic get_value() {

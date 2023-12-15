@@ -288,6 +288,28 @@ class FacerecService extends _ComplexObject{
 
     return Liveness2DEstimator(_dll_handle, livenessEstimatorPointer);
   }
+
+  FaceAttributesEstimator createFaceAttributesEstimator(final String ini_file) {
+    final faceAttributesEstimatorConstructor = _dll_handle.lookupFunction<_FaceAttributesEstimatorConstr_c, _FaceAttributesEstimatorConstr_dart>
+      (_c_namespace + 'FacerecService_createFaceAttributesEstimator');
+    Pointer<Pointer<Utf8>> _emptyPointerStrList = malloc.allocate(1);
+    Pointer<Double> _emptyPointerDouble = malloc.allocate(1);
+    final exception = _getException();
+
+    final faceAttributesEstimatorPointer =  faceAttributesEstimatorConstructor(
+        _impl,
+        (_facerecConfDir + ini_file).toNativeUtf8(),
+        0,
+        _emptyPointerStrList,
+        _emptyPointerDouble,
+        exception
+    );
+
+    checkException(exception, _dll_handle);
+
+    return FaceAttributesEstimator(_dll_handle, faceAttributesEstimatorPointer);
+  }
+
 ///Convert input image to android.graphics.Bitmap.Config.ARGB_8888 format.<br>
 ///	Input must be in YUV_NV21 of YUV_NV12 format.<br>
 ///	Note: actual bytes order is BGRA, it looks like ARGB_8888<br>

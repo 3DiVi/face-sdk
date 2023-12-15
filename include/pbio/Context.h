@@ -271,7 +271,8 @@ public:
 	bool contains(const std::string& key) const {
 		if (isObject())
 		{
-			HContext* handle = dll_handle->TDVContext_getByKey(handle_, key.c_str(), &eh_);
+			/* discard return value as it does not produce new allocation */
+			static_cast<void>(dll_handle->TDVContext_getByKey(handle_, key.c_str(), &eh_));
 			if(eh_)
 			{
 				dll_handle->TDVException_deleteException(eh_);

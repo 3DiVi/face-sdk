@@ -32,6 +32,7 @@ part 'api/video_worker.dart';
 part 'api/context.dart';
 part 'api/processing_block.dart';
 part 'api/liveness2d_estimator.dart';
+part 'api/face_attributes_estimator.dart';
 
 
 
