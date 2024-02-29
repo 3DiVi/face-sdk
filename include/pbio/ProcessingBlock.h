@@ -9,6 +9,8 @@
 #ifndef PROCESSINGBLOCK_H
 #define PROCESSINGBLOCK_H
 
+#ifndef WITHOUT_PROCESSING_BLOCK
+
 #include "Context.h"
 #include "DllHandle.h"
 #include "ExceptionCheck.h"
@@ -81,4 +83,5 @@ private:
 };
 }
 
+#endif // WITHOUT_PROCESSING_BLOCK
 #endif // PROCESSINGBLOCK_H

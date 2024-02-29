@@ -10,7 +10,7 @@ using VDT.FaceRecognition.SDK;
 public class ImageAndDepth
 {
 	public OpenCvSharp.Mat image;
-	public OpenCvSharp.MatOfUShort depth;
+	public OpenCvSharp.Mat<ushort> depth;
 
 	public UInt64 image_timestamp_microsec;
 	public UInt64 depth_timestamp_microsec;
@@ -30,7 +30,7 @@ public class ImageAndDepth
 	public ImageAndDepth()
 	{
 		image = new OpenCvSharp.Mat();
-		depth = new OpenCvSharp.MatOfUShort();
+		depth = new OpenCvSharp.Mat<ushort>();
 		depth_opts = new DepthMapRaw();
 	}
 };

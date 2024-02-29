@@ -47,8 +47,11 @@
 #include "StructStorage.h"
 #include "Config.h"
 #include "ProcessingUnit.h"
+
+#ifndef WITHOUT_PROCESSING_BLOCK
 #include "Context.h"
 #include "ProcessingBlock.h"
+#endif
 
 namespace pbio
 {
@@ -1083,9 +1086,11 @@ public:
 		const int block_type,
 		const char* serializedConfig) const;
 
+#ifndef WITHOUT_PROCESSING_BLOCK
 	Context createContext() const;
 
 	ProcessingBlock createProcessingBlock(const Context& config) const;
+#endif
 
 	//! @endcond
 
@@ -2067,6 +2072,7 @@ ProcessingUnit::Ptr FacerecService::createProcessingUnit(
 	return ProcessingUnit::Ptr::make(_dll_handle, block_type, serializedConfig);
 }
 
+#ifndef WITHOUT_PROCESSING_BLOCK
 inline Context FacerecService::createContext() const
 {
 	return Context(_dll_handle);
@@ -2076,6 +2082,7 @@ inline ProcessingBlock FacerecService::createProcessingBlock(const Context& conf
 {
 	return ProcessingBlock(_impl, _dll_handle, config);
 }
+#endif
 
 //! @endcond
 

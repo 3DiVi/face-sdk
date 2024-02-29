@@ -14,8 +14,10 @@ def help_message():
               " [--input_image2 <path to image>]" \
               " [--sdk_path <path to sdk>]" \
               " [--window <yes/no>]" \
-              " [--output <yes/no>]"
+              " [--output <yes/no>]" \
+              " [--modification <30, 50, 100, 1000>]"
     print(message)
+
 
 def get_crop(obj, image):
     img_w = image.shape[1]
@@ -32,19 +34,22 @@ def get_crop(obj, image):
 
     return crop_image
 
+
 def draw_bbox(obj, img, output, color=(0, 255, 0)):
     rect = obj["bbox"]
     if output == "yes":
-        print(f"BBox coordinates: {int(rect[0].get_value() * img.shape[1])}, {int(rect[1].get_value() * img.shape[0])}, {(int(rect[2].get_value() * img.shape[1]))}, {int(rect[3].get_value() * img.shape[0])}")
+        print(
+            f"BBox coordinates: {int(rect[0].get_value() * img.shape[1])}, {int(rect[1].get_value() * img.shape[0])}, {(int(rect[2].get_value() * img.shape[1]))}, {int(rect[3].get_value() * img.shape[0])}")
     return cv2.rectangle(img, (int(rect[0].get_value() * img.shape[1]), int(rect[1].get_value() * img.shape[0])),
                          (int(rect[2].get_value() * img.shape[1]), int(rect[3].get_value() * img.shape[0])), color, 2)
+
 
 def get_faces(service, face_detector, face_fitter, img):
     input_image: np.ndarray = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     height, width, _ = input_image.shape
 
     imgCtx = {"blob": input_image.tobytes(), "dtype": "uint8_t", "format": "NDARRAY",
-                   "shape": [dim for dim in input_image.shape]}
+              "shape": [dim for dim in input_image.shape]}
     ioData = service.create_context({"image": imgCtx})
 
     face_detector(ioData)
@@ -52,17 +57,18 @@ def get_faces(service, face_detector, face_fitter, img):
 
     return ioData
 
-def recognition_demo(sdk_path, img_path_1, img_path_2, window, output, mode):
+
+def recognition_demo(sdk_path, img_path_1, img_path_2, window, output, mode, modification):
     service = Service.create_service(sdk_path)
     if not os.path.exists(img_path_1):
         raise Exception(f"not exist file {img_path_1}")
     if not os.path.exists(img_path_2):
         raise Exception(f"not exist file {img_path_2}")
 
-    face_detector = service.create_processing_block({"unit_type": "FACE_DETECTOR", "confidence_threshold": 0.3})
-    face_recognizer = service.create_processing_block({"unit_type": "FACE_RECOGNIZER"})
-    face_fitter = service.create_processing_block({"unit_type": "FACE_FITTER", "modification": "tddfa"})
-    matcher = service.create_processing_block({"unit_type": "MATCHER_MODULE"})
+    face_detector = service.create_processing_block(
+        {"unit_type": "FACE_DETECTOR", "modification": "uld", "confidence_threshold": 0.6, "precision_level": 3})
+    face_template_extractor = service.create_processing_block({"unit_type": "FACE_TEMPLATE_EXTRACTOR", "modification": modification})
+    face_fitter = service.create_processing_block({"unit_type": "FACE_FITTER", "modification": "tddfa_faster"})
 
     img1: np.ndarray = cv2.imread(img_path_1, cv2.IMREAD_COLOR)
     img2: np.ndarray = cv2.imread(img_path_2, cv2.IMREAD_COLOR)
@@ -81,19 +87,24 @@ def recognition_demo(sdk_path, img_path_1, img_path_2, window, output, mode):
     if len(ioData2["objects"]) != 1:
         raise Exception(f"many faces on {img_path_2} image")
 
-    face_recognizer(ioData1)
-    face_recognizer(ioData2)
+    face_template_extractor(ioData1)
+    face_template_extractor(ioData2)
 
     if mode == "verify":
-        matcherData = service.create_context({"verification": {"objects": []}})
-        matcherData["verification"]["objects"].push_back(ioData1["objects"][0])
-        matcherData["verification"]["objects"].push_back(ioData2["objects"][0])
+        verification_module = service.create_processing_block(
+            {"unit_type": "VERIFICATION_MODULE", "modification": modification})
 
-        matcher(matcherData)
-        verdict = matcherData["verification"]["result"]["verdict"].get_value()
-        distance = matcherData["verification"]["result"]["distance"].get_value()
+        verification_data = service.create_context({
+            "template1": ioData1["objects"][0]["template"],
+            "template2": ioData2["objects"][0]["template"]
+        })
 
-        color = (0, 255, 0) if verdict else (0, 0, 255)
+        verification_module(verification_data)
+
+        distance = verification_data["result"]["distance"].get_value()
+        score = verification_data["result"]["score"].get_value()
+
+        color = (0, 255, 0) if score >= 0.85 else (0, 0, 255)
         img1 = draw_bbox(ioData1["objects"][0], img1, output, color)
         img2 = draw_bbox(ioData2["objects"][0], img2, output, color)
 
@@ -104,39 +115,51 @@ def recognition_demo(sdk_path, img_path_1, img_path_2, window, output, mode):
         crop2 = cv2.resize(crop2, (320, 480))
 
         print(f"distance = {distance}")
-        print(f"verdict = {verdict}")
+        print(f"score = {score}")
+        print(f"verdict = {score >= 0.85}")
 
         if window == "yes":
             cv2.imshow("result", np.concatenate((crop1, crop2), axis=1))
             cv2.waitKey(0)
             cv2.destroyAllWindows()
     else:
-        matcherData = service.create_context({"search": {"template_index": [], "queries": []}})
-        matcherData["search"]["knn"] = 1
-        matcherData["search"]["type_index"] = "array"
+        matcher_module = service.create_processing_block({"unit_type": "MATCHER_MODULE", "modification": modification})
+        template_index = service.create_processing_block({"unit_type": "TEMPLATE_INDEX", "modification": modification})
+        templates = service.create_context([])
 
-        for obj in ioData1["objects"]:
-            matcherData["search"]["template_index"].push_back(obj)
-        matcherData["search"]["queries"].push_back(ioData2["objects"][0])
-        matcher(matcherData)
+        for object in ioData1["objects"]:
+            templates.push_back(object["template"])
 
-        distance = matcherData["search"]["results"][0]["distance"].get_value()
-        find_index = matcherData["search"]["results"][0]["index"].get_value()
-        verdict = matcherData["search"]["results"][0]["verdict"].get_value()
+        ioData1["templates"] = templates
 
-        print(f"distance = {distance}")
+        template_index(ioData1)
+
+        matcher_data = service.create_context(
+            {"knn": 1, "template_index": ioData1["template_index"], "queries": []})
+
+        matcher_data["queries"].push_back(ioData2["objects"][0])
+
+        matcher_module(matcher_data)
+
+        find_index = matcher_data["results"][0]["index"].get_value()
+        distance = matcher_data["results"][0]["distance"].get_value()
+        score = matcher_data["results"][0]["score"].get_value()
+
         print(f"index = {find_index}")
-        print(f"verdict = {verdict}")
+        print(f"distance = {distance}")
+        print(f"score = {score}")
+        print(f"verdict = {score >= 0.85}")
 
         for i in range(len(ioData1["objects"])):
             obj = ioData1["objects"][i]
-            color = (0, 255, 0) if i == find_index and verdict else (0, 0, 255)
+            color = (0, 255, 0) if i == find_index and score >= 0.85 else (0, 0, 255)
             draw_bbox(obj, img1, output, color)
 
         if window == "yes":
             cv2.imshow("result", img1)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Recognition Demo')
@@ -146,6 +169,7 @@ def parse_args():
     parser.add_argument('--sdk_path', default="../../../", type=str)
     parser.add_argument('--window', default="yes", type=str)
     parser.add_argument('--output', default="no", type=str)
+    parser.add_argument("--modification", default="1000", type=str)
 
     return parser.parse_args()
 
@@ -158,7 +182,8 @@ if __name__ == "__main__":
 
     try:
         if args.mode != "verify" and args.mode != "identify":
-            raise  Exception("there is no modifier " + args.mode)
-        recognition_demo(args.sdk_path, args.input_image, args.input_image2, args.window, args.output, args.mode)
+            raise Exception("there is no modifier " + args.mode)
+        recognition_demo(args.sdk_path, args.input_image, args.input_image2, args.window, args.output, args.mode,
+                         args.modification)
     except Exception as e:
         print(f"Error: {e}.")

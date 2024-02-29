@@ -72,7 +72,7 @@ class Worker
 		//_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator_v2.xml");
 		_emotions_estimator = _service.createEmotionsEstimator("emotions_estimator.xml");
 		_face_quality_estimator = _service.createFaceQualityEstimator("face_quality_estimator.xml");
-		_liveness_2d_estimator =  _service.createLiveness2DEstimator("liveness_2d_estimator_v3.xml");
+		_liveness_2d_estimator = _service.createLiveness2DEstimator("liveness_2d_estimator_v3.xml");
 		_face_mask_estimator = _service.createFaceAttributesEstimator("face_mask_estimator.xml");
 		_eyes_openness_estimator = _service.createFaceAttributesEstimator("eyes_openness_estimator_v2.xml");
 
@@ -96,18 +96,18 @@ class Worker
 
 	bool get_flag(int i)
 	{
-		switch(i)
+		switch (i)
 		{
-			case  0: return _flag_positions;
-			case  1: return _flag_angles;
-			case  2: return _flag_quality;
-			case  3: return _flag_liveness;
-			case  4: return _flag_age_gender;
-			case  5: return _flag_cutting_base;
-			case  6: return _flag_cutting_full;
-			case  7: return _flag_cutting_token;
-			case  8: return _flag_points;
-			case  9: return _flag_face_quality;
+			case 0: return _flag_positions;
+			case 1: return _flag_angles;
+			case 2: return _flag_quality;
+			case 3: return _flag_liveness;
+			case 4: return _flag_age_gender;
+			case 5: return _flag_cutting_base;
+			case 6: return _flag_cutting_full;
+			case 7: return _flag_cutting_token;
+			case 8: return _flag_points;
+			case 9: return _flag_face_quality;
 			case 10: return _flag_angles_vectors;
 			case 11: return _flag_emotions;
 			case 12: return _flag_masked_face;
@@ -119,28 +119,28 @@ class Worker
 
 	void set_flag(int i, bool value)
 	{
-		switch(i)
+		switch (i)
 		{
-			case  0: _flag_positions      = value; return;
-			case  1: _flag_angles         = value; return;
-			case  2: _flag_quality        = value; return;
-			case  3: _flag_liveness       = value; return;
-			case  4: _flag_age_gender     = value; return;
-			case  5: _flag_cutting_base   = value; return;
-			case  6: _flag_cutting_full   = value; return;
-			case  7: _flag_cutting_token  = value; return;
-			case  8: _flag_points         = value; return;
-			case  9: _flag_face_quality   = value; return;
+			case 0: _flag_positions = value; return;
+			case 1: _flag_angles = value; return;
+			case 2: _flag_quality = value; return;
+			case 3: _flag_liveness = value; return;
+			case 4: _flag_age_gender = value; return;
+			case 5: _flag_cutting_base = value; return;
+			case 6: _flag_cutting_full = value; return;
+			case 7: _flag_cutting_token = value; return;
+			case 8: _flag_points = value; return;
+			case 9: _flag_face_quality = value; return;
 			case 10: _flag_angles_vectors = value; return;
-			case 11: _flag_emotions       = value; return;
-			case 12: _flag_masked_face    = value; return;
-			case 13: _flag_eyes_openness  = value; return;
+			case 11: _flag_emotions = value; return;
+			case 12: _flag_masked_face = value; return;
+			case 13: _flag_eyes_openness = value; return;
 		}
 	}
 
 	string flag_name(int i)
 	{
-		switch(i)
+		switch (i)
 		{
 			case 0: return "rectangles";
 			case 1: return "angles";
@@ -167,25 +167,25 @@ class Worker
 	}
 
 	// mouse click callback for flags control
-	static void onMouse(OpenCvSharp.MouseEvent mouseEvent, int x, int y, OpenCvSharp.MouseEvent flags)
+	static void onMouse(OpenCvSharp.MouseEventTypes MouseEventTypes, int x, int y, OpenCvSharp.MouseEventFlags flags, nint userData)
 	{
-		if(mouseEvent != OpenCvSharp.MouseEvent.LButtonDown && mouseEvent != OpenCvSharp.MouseEvent.LButtonDown && mouseEvent != OpenCvSharp.MouseEvent.MButtonDown)
+		if (MouseEventTypes != OpenCvSharp.MouseEventTypes.LButtonDown && MouseEventTypes != OpenCvSharp.MouseEventTypes.LButtonDown && MouseEventTypes != OpenCvSharp.MouseEventTypes.MButtonDown)
 		{
 			return;
 		}
 
 		// if mouse click is in some flag's rectangle
 		// change flag state
-		for(int i = 0; i < flags_count; ++i)
+		for (int i = 0; i < flags_count; ++i)
 		{
 			OpenCvSharp.Rect r = Worker.Instance.flag_rect(i);
 
-			if(x >= r.X && y >= r.Y && x <= r.X + r.Width && y <= r.Y + r.Height)
+			if (x >= r.X && y >= r.Y && x <= r.X + r.Width && y <= r.Y + r.Height)
 				Worker.Instance.set_flag(i, !Worker.Instance.get_flag(i));
 		}
 	}
 
-	void puttext(OpenCvSharp.Mat image, string text, OpenCvSharp.Point2f position)
+	void puttext(OpenCvSharp.Mat image, string text, OpenCvSharp.Point position)
 	{
 		// twice - for better reading
 		// since we are drawing on the frame from webcam
@@ -224,7 +224,7 @@ class Worker
 		// clone the frame for drawing on it
 		OpenCvSharp.Mat draw_image = frame.Clone();
 		// handle each face on the frame separately
-		for(int i = 0; i < samples.Count; ++i)
+		for (int i = 0; i < samples.Count; ++i)
 		{
 			RawSample sample = samples[i];
 
@@ -232,11 +232,11 @@ class Worker
 			RawSample.Rectangle rectangle = sample.getRectangle();
 
 			// set a point to place information for this face
-			OpenCvSharp.Point2f text_point = new OpenCvSharp.Point2f(
+			OpenCvSharp.Point text_point = new OpenCvSharp.Point(
 				rectangle.x + rectangle.width + 3,
 				rectangle.y + 10);
 
-			const float text_line_height = 22;
+			const int text_line_height = 22;
 
 			// draw facial points
 			// red color for all points
@@ -244,12 +244,12 @@ class Worker
 			// yellow for right eye
 			// (yes, there is a mess with left and right eyes in face_sdk api,
 			// but if we fix it now we will lose compatibility with previous versions)
-			if(_flag_points)
+			if (_flag_points)
 			{
 				List<Point> points = sample.getLandmarks();
 				List<Point> iris_points = sample.getIrisLandmarks();
 
-				for(int j = -2; j < points.Count; ++j)
+				for (int j = -2; j < points.Count; ++j)
 				{
 					Point p =
 						j == -2 ?
@@ -268,7 +268,7 @@ class Worker
 
 					OpenCvSharp.Cv2.Circle(
 						draw_image,
-						new OpenCvSharp.Point2f(p.x, p.y),
+						new OpenCvSharp.Point(p.x, p.y),
 						j < 0 ? 4 : 2,
 						color,
 						-1,
@@ -276,31 +276,32 @@ class Worker
 				}
 
 				// draw iris points
-				for(int j = 0; j < iris_points.Count; ++j)
+				for (int j = 0; j < iris_points.Count; ++j)
 				{
 					int ms = 1;
 					OpenCvSharp.Scalar color = new OpenCvSharp.Scalar(0, 255, 255);
 					int oi = j - 20 * Convert.ToInt32(j >= 20);
 					Point pt1 = iris_points[j];
 					Point pt2 = iris_points[(oi < 19 ? j : j - 15) + 1];
-					OpenCvSharp.Point2f cv_pt1 = new OpenCvSharp.Point2f(pt1.x, pt1.y);
-					OpenCvSharp.Point2f cv_pt2 = new OpenCvSharp.Point2f(pt2.x, pt2.y);
+					OpenCvSharp.Point cv_pt1 = new OpenCvSharp.Point(pt1.x, pt1.y);
+					OpenCvSharp.Point cv_pt2 = new OpenCvSharp.Point(pt2.x, pt2.y);
 
-					if(oi < 5)
+					if (oi < 5)
 					{
 						color = new OpenCvSharp.Scalar(0, 165, 255);
-						if(oi == 0)
+						if (oi == 0)
 						{
 							double radius = Math.Sqrt(Math.Pow(pt1.x - pt2.x, 2) + Math.Pow(pt1.y - pt2.y, 2));
 							OpenCvSharp.Cv2.Circle(
 								draw_image,
 								cv_pt1,
-								(int) radius,
+								(int)radius,
 								color,
 								ms,
 								OpenCvSharp.LineTypes.AntiAlias);
 						}
-					}else
+					}
+					else
 					{
 						OpenCvSharp.Cv2.Line(
 							draw_image,
@@ -322,7 +323,7 @@ class Worker
 			}
 
 			// draw rectangle
-			if(_flag_positions)
+			if (_flag_positions)
 			{
 
 				OpenCvSharp.Cv2.Rectangle(
@@ -338,18 +339,18 @@ class Worker
 			}
 
 			// draw age and gender
-			if( _flag_age_gender )
+			if (_flag_age_gender)
 			{
-				AgeGenderEstimator.AgeGender age_gender =	_age_geder_estimator.estimateAgeGender(sample);
+				AgeGenderEstimator.AgeGender age_gender = _age_geder_estimator.estimateAgeGender(sample);
 
 				string age_text = "age: ";
 
-				switch(age_gender.age)
+				switch (age_gender.age)
 				{
-					case AgeGenderEstimator.Age.AGE_KID    : age_text += "kid    "; break;
-					case AgeGenderEstimator.Age.AGE_YOUNG  : age_text += "young  "; break;
-					case AgeGenderEstimator.Age.AGE_ADULT  : age_text += "adult  "; break;
-					case AgeGenderEstimator.Age.AGE_SENIOR : age_text += "senior "; break;
+					case AgeGenderEstimator.Age.AGE_KID: age_text += "kid    "; break;
+					case AgeGenderEstimator.Age.AGE_YOUNG: age_text += "young  "; break;
+					case AgeGenderEstimator.Age.AGE_ADULT: age_text += "adult  "; break;
+					case AgeGenderEstimator.Age.AGE_SENIOR: age_text += "senior "; break;
 				}
 
 				age_text += string.Format("years: {0:G3}", age_gender.age_years);
@@ -371,12 +372,12 @@ class Worker
 			}
 
 			// draw emotions
-			if( _flag_emotions )
+			if (_flag_emotions)
 			{
 				List<EmotionsEstimator.EmotionConfidence> emotions =
 					_emotions_estimator.estimateEmotions(sample);
 
-				for(int j = 0; j < emotions.Count; ++j)
+				for (int j = 0; j < emotions.Count; ++j)
 				{
 					EmotionsEstimator.Emotion emotion = emotions[j].emotion;
 					float confidence = emotions[j].confidence;
@@ -388,23 +389,23 @@ class Worker
 							(int)text_point.Y - (int)text_line_height / 2,
 							(int)(100 * confidence),
 							(int)text_line_height),
-						emotion == EmotionsEstimator.Emotion.EMOTION_NEUTRAL  ? new OpenCvSharp.Scalar(255, 0, 0) :
-						emotion == EmotionsEstimator.Emotion.EMOTION_HAPPY    ? new OpenCvSharp.Scalar(0, 255, 0) :
-						emotion == EmotionsEstimator.Emotion.EMOTION_ANGRY    ? new OpenCvSharp.Scalar(0, 0, 255) :
+						emotion == EmotionsEstimator.Emotion.EMOTION_NEUTRAL ? new OpenCvSharp.Scalar(255, 0, 0) :
+						emotion == EmotionsEstimator.Emotion.EMOTION_HAPPY ? new OpenCvSharp.Scalar(0, 255, 0) :
+						emotion == EmotionsEstimator.Emotion.EMOTION_ANGRY ? new OpenCvSharp.Scalar(0, 0, 255) :
 						emotion == EmotionsEstimator.Emotion.EMOTION_SURPRISE ? new OpenCvSharp.Scalar(0, 255, 255) :
 							new OpenCvSharp.Scalar(0, 0, 0),
 						-1);
 
 					puttext(
 						draw_image,
-						emotion == EmotionsEstimator.Emotion.EMOTION_NEUTRAL  ? "neutral" :
-						emotion == EmotionsEstimator.Emotion.EMOTION_HAPPY    ? "happy" :
-						emotion == EmotionsEstimator.Emotion.EMOTION_ANGRY    ? "angry" :
+						emotion == EmotionsEstimator.Emotion.EMOTION_NEUTRAL ? "neutral" :
+						emotion == EmotionsEstimator.Emotion.EMOTION_HAPPY ? "happy" :
+						emotion == EmotionsEstimator.Emotion.EMOTION_ANGRY ? "angry" :
 						emotion == EmotionsEstimator.Emotion.EMOTION_SURPRISE ? "surprise" :
 						emotion == EmotionsEstimator.Emotion.EMOTION_DISGUSTED ? "disgusted" :
 						emotion == EmotionsEstimator.Emotion.EMOTION_SAD ? "sad" :
 						emotion == EmotionsEstimator.Emotion.EMOTION_SCARED ? "scared" : "?",
-						text_point + new OpenCvSharp.Point2f(100, 0));
+						text_point + new OpenCvSharp.Point(100, 0));
 
 					text_point.Y += text_line_height;
 
@@ -414,9 +415,9 @@ class Worker
 
 
 			// draw angles text
-			if( _flag_angles )
+			if (_flag_angles)
 			{
-				
+
 				string yaw, pitch, roll;
 				yaw = string.Format("yaw: {0}", (0.1f * (int)10 * sample.getAngles().yaw + 0.5f));
 				pitch = string.Format("pitch: {0}", (0.1f * (int)10 * sample.getAngles().pitch + 0.5f));
@@ -435,36 +436,40 @@ class Worker
 			}
 
 			// draw angles vectors
-			if( _flag_angles_vectors )
+			if (_flag_angles_vectors)
 			{
 				RawSample.Angles angles = sample.getAngles();
 
-				float cos_a = (float)Math.Cos( angles.yaw * OpenCvSharp.Cv2.PI / 180 );
-				float sin_a = (float)Math.Sin( angles.yaw * OpenCvSharp.Cv2.PI / 180 );
+				float cos_a = (float)Math.Cos(angles.yaw * OpenCvSharp.Cv2.PI / 180);
+				float sin_a = (float)Math.Sin(angles.yaw * OpenCvSharp.Cv2.PI / 180);
 
-				float cos_b = (float)Math.Cos( angles.pitch * OpenCvSharp.Cv2.PI / 180 );
-				float sin_b = (float)Math.Sin( angles.pitch * OpenCvSharp.Cv2.PI / 180 );
+				float cos_b = (float)Math.Cos(angles.pitch * OpenCvSharp.Cv2.PI / 180);
+				float sin_b = (float)Math.Sin(angles.pitch * OpenCvSharp.Cv2.PI / 180);
 
-				float cos_c = (float)Math.Cos( angles.roll * OpenCvSharp.Cv2.PI / 180 );
-				float sin_c = (float)Math.Sin( angles.roll * OpenCvSharp.Cv2.PI / 180 );
+				float cos_c = (float)Math.Cos(angles.roll * OpenCvSharp.Cv2.PI / 180);
+				float sin_c = (float)Math.Sin(angles.roll * OpenCvSharp.Cv2.PI / 180);
 
 				OpenCvSharp.Point3f[] xyz = {
 					new OpenCvSharp.Point3f(cos_a * cos_c, -sin_c, -sin_a),
 					new OpenCvSharp.Point3f(sin_c, cos_b * cos_c, -sin_b),
 					new OpenCvSharp.Point3f(sin_a, sin_b, cos_a * cos_b) };
 
-				OpenCvSharp.Point2f center = new OpenCvSharp.Point2f(
+				OpenCvSharp.Point center = new OpenCvSharp.Point(
+					(sample.getLeftEye().x + sample.getRightEye().x) * 0.5f,
+					(sample.getLeftEye().y + sample.getRightEye().y) * 0.5f);
+
+				OpenCvSharp.Point2f centerf = new OpenCvSharp.Point(
 					(sample.getLeftEye().x + sample.getRightEye().x) * 0.5f,
 					(sample.getLeftEye().y + sample.getRightEye().y) * 0.5f);
 
 				float length = (rectangle.width + rectangle.height) * 0.3f;
 
-				for(int c = 0; c < 3; ++c)
+				for (int c = 0; c < 3; ++c)
 				{
 					OpenCvSharp.Cv2.Line(
 						draw_image,
 						center,
-						center + new OpenCvSharp.Point2f(xyz[c].X, -xyz[c].Y) * length,
+						center + new OpenCvSharp.Point(xyz[c].X * length, -xyz[c].Y * length),
 						c == 0 ? new OpenCvSharp.Scalar(50, 255, 255) :
 						c == 1 ? new OpenCvSharp.Scalar(50, 255, 50) :
 						c == 2 ? new OpenCvSharp.Scalar(50, 50, 255) : new OpenCvSharp.Scalar(),
@@ -474,7 +479,7 @@ class Worker
 			}
 
 			// draw quality text
-			if( _flag_quality )
+			if (_flag_quality)
 			{
 				QualityEstimator.Quality q =
 					_quality_estimator.estimateQuality(sample);
@@ -501,7 +506,7 @@ class Worker
 			}
 
 			// draw liveness text
-			if( _flag_liveness )
+			if (_flag_liveness)
 			{
 				Liveness2DEstimator.LivenessAndScore liveness_2d_result = _liveness_2d_estimator.estimate(sample);
 				string score_str = Math.Round(liveness_2d_result.score, 3).ToString();
@@ -518,7 +523,7 @@ class Worker
 			}
 
 			// draw face quality
-			if( _flag_face_quality )
+			if (_flag_face_quality)
 			{
 				float quality = _face_quality_estimator.estimateQuality(sample);
 
@@ -529,7 +534,8 @@ class Worker
 			}
 
 			// draw face attribute (masked_face)
-			if(_flag_masked_face) {
+			if (_flag_masked_face)
+			{
 				FaceAttributesEstimator.Attribute attr = _face_mask_estimator.estimate(sample);
 				string score_str = Math.Round(attr.score, 3).ToString();
 				puttext(
@@ -541,7 +547,8 @@ class Worker
 			}
 
 			// draw face attribute (eyes_openness)
-			if(_flag_eyes_openness) {
+			if (_flag_eyes_openness)
+			{
 				FaceAttributesEstimator.Attribute attr = _eyes_openness_estimator.estimate(sample);
 				string left_score_str = Math.Round(attr.left_eye_state.score, 3).ToString();
 				string right_score_str = Math.Round(attr.right_eye_state.score, 3).ToString();
@@ -570,11 +577,11 @@ class Worker
 			}
 
 			// draw face cuts
-			for(int cut_i = 0; cut_i < 3; ++cut_i)
+			for (int cut_i = 0; cut_i < 3; ++cut_i)
 			{
-				if( (cut_i == 0 && ! _flag_cutting_base) ||
-					(cut_i == 1 && ! _flag_cutting_full) ||
-					(cut_i == 2 && ! _flag_cutting_token) )
+				if ((cut_i == 0 && !_flag_cutting_base) ||
+					(cut_i == 1 && !_flag_cutting_full) ||
+					(cut_i == 2 && !_flag_cutting_token))
 				{
 					continue;
 				}
@@ -616,7 +623,7 @@ class Worker
 					img.Rows - img_rect_y,
 					draw_image.Rows - Math.Max(0, text_point.Y));
 
-				if(img_rect_width <= 0 || img_rect_height <= 0)
+				if (img_rect_width <= 0 || img_rect_height <= 0)
 					continue;
 
 				OpenCvSharp.Rect img_rect = new OpenCvSharp.Rect(img_rect_x, img_rect_y, img_rect_width, img_rect_height);
@@ -637,7 +644,7 @@ class Worker
 
 		}
 		// draw checkboxes
-		for(int i = 0; i < flags_count; ++i)
+		for (int i = 0; i < flags_count; ++i)
 		{
 			OpenCvSharp.Rect rect = flag_rect(i);
 			OpenCvSharp.Rect rect2 = new OpenCvSharp.Rect(rect.X + 5, rect.Y + 5, rect.Width - 10, rect.Height - 10);
@@ -645,7 +652,7 @@ class Worker
 			OpenCvSharp.Cv2.Rectangle(draw_image, rect, OpenCvSharp.Scalar.All(255), -1);
 			OpenCvSharp.Cv2.Rectangle(draw_image, rect, OpenCvSharp.Scalar.All(0), 2, OpenCvSharp.LineTypes.AntiAlias);
 
-			if( get_flag(i) )
+			if (get_flag(i))
 			{
 				OpenCvSharp.Cv2.Rectangle(draw_image, rect2, OpenCvSharp.Scalar.All(0), -1, OpenCvSharp.LineTypes.AntiAlias);
 			}
@@ -653,15 +660,15 @@ class Worker
 			puttext(
 				draw_image,
 				flag_name(i),
-				new OpenCvSharp.Point2f(rect.X + rect.Width + 3, rect.Y + rect.Height - 3));
+				new OpenCvSharp.Point(rect.X + rect.Width + 3, rect.Y + rect.Height - 3));
 		}
-		
-		
+
+
 		// show image with drawed information
 		OpenCvSharp.Cv2.ImShow("demo", draw_image);
 
 		// register callback on mouse events
-		OpenCvSharp.Cv2.SetMouseCallback("demo", (OpenCvSharp.CvMouseCallback)onMouse);
+		OpenCvSharp.Cv2.SetMouseCallback("demo", onMouse);
 	}
 
 	public void dispose()
@@ -713,7 +720,7 @@ namespace csharp_demo
 
 			// print values of arguments
 			Console.WriteLine("Arguments:");
-			foreach(var opt in options.GetType().GetProperties())
+			foreach (var opt in options.GetType().GetProperties())
 			{
 				Console.WriteLine("--{0} = {1}", opt.Name, opt.GetValue(options, null));
 			}
@@ -738,17 +745,16 @@ namespace csharp_demo
 				// VideoCapture camera;
 				OpenCvSharp.VideoCapture camera = new OpenCvSharp.VideoCapture();
 
-				
-				for(; camera_id < 10; ++camera_id)
+				for (; camera_id < 10; ++camera_id)
 				{
 					camera.Open(camera_id);
-					camera.Set(OpenCvSharp.CaptureProperty.FrameWidth, desiredFrameWidht);
-					camera.Set(OpenCvSharp.CaptureProperty.FrameHeight, desiredFrameHeight); 
+					camera.Set(OpenCvSharp.VideoCaptureProperties.FrameWidth, desiredFrameWidht);
+					camera.Set(OpenCvSharp.VideoCaptureProperties.FrameHeight, desiredFrameHeight);
 					OpenCvSharp.Mat frame = new OpenCvSharp.Mat();
 					for (int i = 0; i < 10; i++)
 						frame = camera.RetrieveMat();
 
-					if(frame.Empty())
+					if (frame.Empty())
 					{
 						Console.WriteLine("webcam " + camera_id + " not opened");
 						camera.Release();
@@ -759,22 +765,22 @@ namespace csharp_demo
 					}
 				}
 
-				for(;;)
+				for (; ; )
 				{
 					OpenCvSharp.Mat frame;
 
 					//camera.Grab();
 					frame = camera.RetrieveMat();
 
-					if(frame.Empty())
+					if (frame.Empty())
 						break;
-						
+
 					// give a frame to the worker
 					worker.work(frame);
 
-					if(27 == (char) OpenCvSharp.Cv2.WaitKey(10))
+					if (27 == (char)OpenCvSharp.Cv2.WaitKey(10))
 					{
-						camera.Release(); 
+						camera.Release();
 						break;
 					}
 				}
@@ -783,11 +789,11 @@ namespace csharp_demo
 				// otherwise licence error may occur
 				// when create sdk object in next time 
 				worker.dispose();
-			
 			}
-			catch(Exception e)
-			{	
-				Console.WriteLine("! exception catched: '" + e + "' ... exiting");
+			catch (Exception e)
+			{
+				Console.WriteLine($"! exception catched: '{e}' ... exiting");
+
 				return 1;
 			}
 			Console.WriteLine("close program");

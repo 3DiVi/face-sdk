@@ -101,7 +101,7 @@ void drawFaceKeypoint(const pbio::Context& data, cv::Mat& image)
 	{
 		for(const auto& point : obj.at("keypoints").at("points"))
 		{
-			cv::circle(image, cv::Point2f(point["x"].getDouble() * image.size[1], point["y"].getDouble() * image.size[0]), 2, {0, 255, 0}, 5);
+			cv::circle(image, cv::Point2f(point["proj"][0].getDouble() * image.size[1], point["proj"][1].getDouble() * image.size[0]), 2, {0, 255, 0}, 5);
 		}
 	}
 }
@@ -322,10 +322,9 @@ int main(int argc, char **argv)
 			configCtx["facerec_conf_dir"] = sdk_dir + "/conf/facerec/";
 		}
 
-
 		pbio::ProcessingBlock processingBlock = service->createProcessingBlock(configCtx);
 
-		if(unit_type == "quality" || (unit_type == "liveness" && modification == "v4"))
+		if(unit_type == "quality" || (unit_type == "liveness" && modification == "2d"))
 		{
 			// create capturer
 			const pbio::Capturer::Ptr capturer = service->createCapturer("common_capturer_refa_fda_a.xml");
@@ -347,14 +346,21 @@ int main(int argc, char **argv)
 		{
 			auto faceCtx = service->createContext();
 			faceCtx["unit_type"] = unitTypes.at("face");
-			faceCtx["ONNXRuntime"]["library_path"] = lib_dir;
-			faceCtx["use_cuda"] = use_cuda;
-			faceCtx["confidence_threshold"] = 0.4;
+			faceCtx["version"] = static_cast<int64_t>(2);
 			pbio::ProcessingBlock faceBlock = service->createProcessingBlock(faceCtx);
 
 			auto faceImageCtx = ioData["image"];
 			pbio::context_utils::putImage(faceImageCtx, input_rawimg);
 			faceBlock(ioData);
+
+			if (unit_type.compare("face_keypoint"))
+			{
+				auto fitterCtx = service->createContext();
+				fitterCtx["unit_type"] = unitTypes.at("face_keypoint");
+				pbio::ProcessingBlock fitterBlock = service->createProcessingBlock(fitterCtx);
+				fitterBlock(ioData);
+			}
+
 			processingBlock(ioData);
 		}
 		else  // just put the whole image to the Context

@@ -13,7 +13,10 @@ class Service: public pbio::FacerecService
 {
 
 public:
+#ifndef WITHOUT_PROCESSING_BLOCK
 	ProcessingBlock createProcessingBlock(const Context& ctx);
+#endif
+
 	static Service createService(std::string path_to_dir);
 private:
 	typedef LightSmartPtr<import::DllHandle>::tPtr DHPtr;
@@ -25,12 +28,14 @@ private:
 	std::string path_to_dir;
 };
 
+#ifndef WITHOUT_PROCESSING_BLOCK
 inline ProcessingBlock Service::createProcessingBlock(const Context& ctx)
 {
 	Context new_ctx = ctx;
 	new_ctx["@sdk_path"] = path_to_dir;
 	return FacerecService::createProcessingBlock(new_ctx);
 }
+#endif
 
 inline Service Service::createService(std::string path_to_dir)
 {

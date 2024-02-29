@@ -3,9 +3,9 @@
 
 <capturer_impl_name>fld_capturer</capturer_impl_name>
 
-<detector_type>ssyv</detector_type>
-
-<version>3</version>
+<detector_type>pb_fd</detector_type>
+<modification>ssyv</modification>
+<version>4</version>
 
 <confidence_threshold>0.4</confidence_threshold>
 <iou_threshold>0.45</iou_threshold>

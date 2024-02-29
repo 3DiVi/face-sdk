@@ -49,5 +49,7 @@
 	<true/>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Pick a photo from the gallery</string>
+	<key>FLTEnableImpeller</key>
+	<false />
 </dict>
 </plist>

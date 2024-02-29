@@ -15,7 +15,7 @@ using Context = api::Context;
 
 #include "../console_arguments_parser/ConsoleArgumentsParser.h"
 
-void recognitionSample(std::string sdk_path, std::string input_image_path1, std::string input_image_path2, std::string window, std::string output, std::string mode);
+void recognitionSample(std::string sdk_path, std::string input_image_path1, std::string input_image_path2, std::string window, std::string output, std::string mode, std::string modification);
 
 int main(int argc, char **argv)
 {
@@ -26,6 +26,7 @@ int main(int argc, char **argv)
 		" [--sdk_path ..]"
 		" [--window <yes/no>]"
 		" [--output <yes/no>]"
+		" [--modification <30, 50, 100, 1000>]"
 		<< std::endl;
 
 	ConsoleArgumentsParser parser(argc, argv);
@@ -35,12 +36,13 @@ int main(int argc, char **argv)
 	const std::string sdk_dir            = parser.get<std::string>("--sdk_path", "..");
 	const std::string window             = parser.get<std::string>("--window", "yes");
 	const std::string output             = parser.get<std::string>("--output", "no");
+	const std::string modification 		 = parser.get<std::string>("--modification", "1000");
 
 	try{
 		if (mode != "verify" && mode != "identify")
 			throw std::runtime_error("there is no modifier " + mode);
 
-		recognitionSample(sdk_dir, input_image_path, input_image_path2, window, output, mode);
+		recognitionSample(sdk_dir, input_image_path, input_image_path2, window, output, mode, modification);
 	}catch(const std::exception &e){
 		std::cout << "! exception catched: '" << e.what() << "' ... exiting" << std::endl;
 		return 1;
@@ -117,7 +119,7 @@ void checkFileExist(std::string path)
 }
 
 
-api::Context getFaces(api::Service &service, api::ProcessingBlock &faceDetector, api::ProcessingBlock &faceFitter, cv::Mat &image){
+api::Context getFaces(pbio::FacerecService &service, api::ProcessingBlock &faceDetector, api::ProcessingBlock &faceFitter, cv::Mat &image){
 	cv::Mat input_image;
 	cv::cvtColor(image, input_image, cv::COLOR_BGR2RGB);
 
@@ -132,30 +134,28 @@ api::Context getFaces(api::Service &service, api::ProcessingBlock &faceDetector,
 	return ioData;
 }
 
-void recognitionSample(std::string sdk_path, std::string input_image_path1, std::string input_image_path2, std::string window, std::string output, std::string mode)
+void recognitionSample(std::string sdk_path, std::string input_image_path1, std::string input_image_path2, std::string window, std::string output, std::string mode, std::string modification)
 {
 	api::Service service = api::Service::createService(sdk_path);
 
 	Context detectorCtx = service.createContext();
 	Context fitterCtx = service.createContext();
-	Context recognizerCtx = service.createContext();
-	Context matcherCtx = service.createContext();
-
+	Context faceTemplateExtractorCtx = service.createContext();
+	
 	detectorCtx["unit_type"] = "FACE_DETECTOR";
 	detectorCtx["modification"] = "uld";
-	detectorCtx["min_size"] = 50l;
+	detectorCtx["precision_level"] = 3;
 	detectorCtx["confidence_threshold"] = 0.6;
 
 	fitterCtx["unit_type"] = "FACE_FITTER";
 	fitterCtx["modification"] = "tddfa_faster";
 
-	recognizerCtx["unit_type"] = "FACE_RECOGNIZER";
-	matcherCtx["unit_type"] = "MATCHER_MODULE";
+	faceTemplateExtractorCtx["unit_type"] = "FACE_TEMPLATE_EXTRACTOR";
+	faceTemplateExtractorCtx["modification"] = modification;
 
 	api::ProcessingBlock faceDetector = service.createProcessingBlock(detectorCtx);
 	api::ProcessingBlock faceFitter = service.createProcessingBlock(fitterCtx);
-	api::ProcessingBlock recognizerModule = service.createProcessingBlock(recognizerCtx);
-	api::ProcessingBlock matcherModule = service.createProcessingBlock(matcherCtx);
+	api::ProcessingBlock faceTemplateExtractor = service.createProcessingBlock(faceTemplateExtractorCtx);
 
 	checkFileExist(input_image_path1);
 	checkFileExist(input_image_path2);
@@ -179,25 +179,31 @@ void recognitionSample(std::string sdk_path, std::string input_image_path1, std:
 		throw std::runtime_error("many faces on" + input_image_path2 + " image");
 
 	///////////Recognizer////////////////
-	recognizerModule(ioData);
-	recognizerModule(ioData2);
+	faceTemplateExtractor(ioData);
+	faceTemplateExtractor(ioData2);
 	/////////////////////////////////////
-
-	Context matcherData = service.createContext();
 
 	if (mode == "verify")
 	{
-		matcherData["verification"]["objects"].push_back(ioData["objects"][0]);
-		matcherData["verification"]["objects"].push_back(ioData2["objects"][0]);
+		Context verificationConfig = service.createContext();
+		Context verificationData = service.createContext();
 
-		///////////Matcher////////////////
-		matcherModule(matcherData);
+		verificationConfig["unit_type"] = "VERIFICATION_MODULE";
+		verificationConfig["modification"] = modification;
+
+		api::ProcessingBlock verificationModule = service.createProcessingBlock(verificationConfig);
+
+		verificationData["template1"] = ioData["objects"][0]["template"];
+		verificationData["template2"] = ioData2["objects"][0]["template"];
+
+		///////////Verification////////////////
+		verificationModule(verificationData);
 		//////////////////////////////////
 
-		double distance = matcherData["verification"]["result"]["distance"].getDouble();
-		bool verdict = matcherData["verification"]["result"]["verdict"].getBool();
+		double distance = verificationData["result"]["distance"].getDouble();
+		double score = verificationData["result"]["score"].getDouble();
 
-		cv::Scalar color = verdict ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
+		cv::Scalar color = score >= 0.85 ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
 		drawBBox(ioData["objects"][0], image, output, color);
 		drawBBox(ioData2["objects"][0], image2, output, color);
 
@@ -212,7 +218,8 @@ void recognitionSample(std::string sdk_path, std::string input_image_path1, std:
 		crop2.copyTo(result(cv::Rect(crop1.cols, 0, crop2.cols, crop2.rows)));
 
 		std::cout << "distance = " << distance << "\n";
-		std::cout << "verdict = " << (verdict ? "True" : "False") << "\n";
+		std::cout << "verdict = " << (score >= 0.85 ? "True" : "False") << "\n";
+		std::cout << "score = " << score << "\n";
 
 		if (window == "yes"){
 			cv::imshow("result", result);
@@ -222,27 +229,50 @@ void recognitionSample(std::string sdk_path, std::string input_image_path1, std:
 	}
 	else
 	{
-		matcherData["search"]["knn"] = 1l;
-		matcherData["search"]["type_index"] = "array";
+		Context matcherConfig = service.createContext();
+		Context templateIndexConfig = service.createContext();
+		Context templates = service.createContext();
+		Context matcherData = service.createContext();
 
-		matcherData["search"]["template_index"] = ioData["objects"];
-		matcherData["search"]["queries"].push_back(ioData2["objects"][0]);
+		matcherConfig["unit_type"] = "MATCHER_MODULE";
+		matcherConfig["modification"] = modification;
+
+		templateIndexConfig["unit_type"] = "TEMPLATE_INDEX";
+		templateIndexConfig["modification"] = modification;
+
+		api::ProcessingBlock matcherModule = service.createProcessingBlock(matcherConfig);
+		api::ProcessingBlock templateIndex = service.createProcessingBlock(templateIndexConfig);
+
+		for (const Context& object : ioData["objects"])
+		{
+			templates.push_back(object["template"]);
+		}
+
+		ioData["templates"] = std::move(templates);
+
+		templateIndex(ioData);
+
+		matcherData["knn"] = 1l;
+		matcherData["template_index"] = ioData["template_index"];
+		matcherData["queries"].push_back(ioData2["objects"][0]);
 
 		///////////Matcher////////////////
 		matcherModule(matcherData);
 		//////////////////////////////////
 
-		int find_index = static_cast<int>(matcherData["search"]["results"][0]["index"].getLong());
-		double distance = matcherData["search"]["results"][0]["distance"].getDouble();
-		bool verdict = matcherData["search"]["results"][0]["verdict"].getBool();
+		int find_index = static_cast<int>(matcherData["results"][0]["index"].getLong());
+		double distance = matcherData["results"][0]["distance"].getDouble();
+		double score = matcherData["results"][0]["score"].getDouble();
+
 		std::cout << "distance = " << distance <<" \n";
-		std::cout << "verdict = " << verdict <<" \n";
+		std::cout << "verdict = " << (score >= 0.85 ? "True" : "False") <<" \n";
 		std::cout << "index = " << find_index <<" \n";
+		std::cout << "score = " << score << " \n";
 
 		for(int i = 0; i < ioData["objects"].size(); i++)
 		{
 			const api::Context &obj = ioData["objects"][i];
-			cv::Scalar color = (i == find_index && verdict) ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
+			cv::Scalar color = (i == find_index && score >= 0.85) ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
 			drawBBox(obj, image, output, color);
 		}
 

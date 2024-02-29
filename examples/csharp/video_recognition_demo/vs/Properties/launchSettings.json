@@ -1,0 +1,8 @@
+{
+    "profiles": {
+        "csharp_video_recognition_demo": {
+            "commandName": "Project",
+            "commandLineArgs": "0 --config_dir ../../../../../../../conf/facerec --database_dir ../../../../../../../bin/base"
+        }
+    }
+}

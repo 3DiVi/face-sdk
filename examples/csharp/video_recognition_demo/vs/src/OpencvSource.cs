@@ -47,8 +47,8 @@ class OpencvSource : ImageAndDepthSource
 			MAssert.Check(capturer.IsOpened(), "webcam not opened");
 
 			// set resolution
-			capturer.Set(OpenCvSharp.CaptureProperty.FrameWidth, 1280);
-			capturer.Set(OpenCvSharp.CaptureProperty.FrameHeight, 720);
+			capturer.Set(OpenCvSharp.VideoCaptureProperties.FrameWidth, 1280);
+			capturer.Set(OpenCvSharp.VideoCaptureProperties.FrameHeight, 720);
 
 			MAssert.Check(capturer.IsOpened(), "webcam not opened");
 		}

@@ -12,9 +12,10 @@
       <HintPath Condition="Exists('../../../lib/FacerecCSharpWrapper.dll')">../../../lib/FacerecCSharpWrapper.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="OpenCvSharp4" Version="4.8.0.20230708"/>
   </ItemGroup>
+  
 </Project>

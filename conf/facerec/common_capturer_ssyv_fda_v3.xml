@@ -5,7 +5,7 @@
 
 <detector_type>pb_fd</detector_type>
 <modification>ssyv</modification>
-<version>2</version>
+<version>3</version>
 
 <confidence_threshold>0.4</confidence_threshold>
 <iou_threshold>0.45</iou_threshold>

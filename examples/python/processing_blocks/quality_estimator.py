@@ -75,10 +75,10 @@ def quality_estimator(input_image, sdk_path, modification):
     samples = capturer.capture(img_bytes)  # capture faces in an image
 
     image_ctx = {  # put an image in container
-        "blob": img.tobytes(),
+        "blob": image.tobytes(),
         "dtype": "uint8_t",
         "format": "NDARRAY",
-        "shape": [dim for dim in img.shape]
+        "shape": [dim for dim in image.shape]
     }
 
     ioData = service.create_context({"image": image_ctx})

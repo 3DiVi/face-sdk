@@ -4,7 +4,7 @@ part of face_sdk_3divi;
 class Context extends _ComplexObject {
   Context(DynamicLibrary dll_handle, Pointer<Void> impl)
       : super(dll_handle, impl) {
-    if (impl is Pointer<Never>) {
+    if (_impl.address == Pointer.fromAddress(0).address) {
       var constructor = dll_handle.lookupFunction<
           _Context_Construct_c,
           _Context_Constructor_dart>(_context_namespace + 'create');
@@ -71,7 +71,9 @@ class Context extends _ComplexObject {
   }
 
   void placeValues(data) {
-    if (data is Map) {
+    if (data is Context){
+      this._insertContext(data);
+    }else if (data is Map) {
       this._insertDict(data);
     } else if ((data is List) & (data is! Uint8List)) {
       this._insertList(data);
@@ -85,6 +87,21 @@ class Context extends _ComplexObject {
       this._setBool(data);
     }else if (data is Uint8List) {
       this._setDataPtr(data);
+    }
+  }
+
+  void _insertContext(Context data){
+    if (data != this){
+      var exception = _getException();
+
+      final constructor = _dll_handle.lookupFunction<
+        _Context_copy_c,
+        _Context_copy_dart>
+        (_context_namespace + 'copy');
+
+      constructor(data._impl, this._impl, exception);
+
+      tdvCheckException(exception, _dll_handle);
     }
   }
 

@@ -141,7 +141,7 @@ class Worker: IDisposable
 		Dispose();
 	}
 
-	static void puttext(OpenCvSharp.Mat image, string text, OpenCvSharp.Point2f position)
+	static void puttext(OpenCvSharp.Mat image, string text, OpenCvSharp.Point position)
 	{
 		// twice - for better reading
 		// since we are drawing on the frame from webcam
@@ -588,10 +588,10 @@ class Worker: IDisposable
 				RawSample.Rectangle rectangle = face.sample.getRectangle();
 
 				// set a point to place information for this face
-				OpenCvSharp.Point2f text_point = new OpenCvSharp.Point2f(
+				OpenCvSharp.Point text_point = new OpenCvSharp.Point(
 						rectangle.x + rectangle.width + 3,
 						rectangle.y + 10);
-				const float text_line_height = 22;
+				const int text_line_height = 22;
 
 				// choose color
 				OpenCvSharp.Scalar color =
@@ -696,7 +696,7 @@ class Worker: IDisposable
                                 emotion == EmotionsEstimator.Emotion.EMOTION_DISGUSTED ? "disgusted" :
                                 emotion == EmotionsEstimator.Emotion.EMOTION_SAD ? "sad" :
                                 emotion == EmotionsEstimator.Emotion.EMOTION_SCARED ? "scared" : "?",
-								text_point + new OpenCvSharp.Point2f(100, 0));
+								text_point + new OpenCvSharp.Point(100, 0));
 
 						text_point.Y += text_line_height;
 

@@ -38,7 +38,7 @@ class Context(ComplexObject):
 
     @dispatch(str)
     def __getitem__(self, key):
-        return self.__getByKey(key)
+        return self.__getOrInsertByKey(key)
 
     def __setitem__(self, key, value):
         return self.__getOrInsertByKey(key).parser(value)
@@ -240,6 +240,15 @@ class Context(ComplexObject):
     @dispatch(bytes)
     def parser(self, ctx: bytes):
         self.__setDataPtr(ctx)
+
+    @dispatch(object)
+    def parser(self, ctx):
+        assert isinstance(ctx, Context), "the object does not belong to the base types or Context"
+        if ctx is not self:
+            if self.__weak_:
+                exception = make_exception()
+                self._dll_handle.copy(ctx._impl, self._impl, exception)
+                check_exception(exception, self._dll_handle)
 
     def __get_keys(self) -> list:
         exception = make_exception()

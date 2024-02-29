@@ -299,6 +299,16 @@ typedef _Context_pushBack_dart = void Function(
     bool,
     Pointer<Pointer<Void>>);
 
+typedef _Context_copy_c = Void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_copy_dart = void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
 typedef _Context_putStr_c = Void Function(
     Pointer<Void>,
     Pointer<Utf8>,

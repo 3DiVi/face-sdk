@@ -1,6 +1,8 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
+#ifndef WITHOUT_PROCESSING_BLOCK
+
 #if defined(_WIN32)
 #define NOMINMAX
 #endif
@@ -686,4 +688,5 @@ inline void putImage(Context& ctx, unsigned char* data, size_t height, size_t wi
 }
 }
 
+#endif // WITHOUT_PROCESSING_BLOCK
 #endif // CONTEXT_H

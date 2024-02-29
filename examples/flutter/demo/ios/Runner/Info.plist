@@ -43,5 +43,9 @@
 	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>Capture faces</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>The application does not use this feature</string>
+	<key>FLTEnableImpeller</key>
+	<false />
 </dict>
 </plist>

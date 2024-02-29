@@ -31,10 +31,8 @@ def liveness_estimator(input_image, sdk_path):
     sdk_conf_dir = os.path.join(sdk_path, 'conf', 'facerec')
     if platform == "win32":  # for Windows
         sdk_dll_path = os.path.join(sdk_path, 'bin', 'facerec.dll')
-        sdk_onnx_path = os.path.join(sdk_path, 'bin')
     else:  # for Linux
         sdk_dll_path = os.path.join(sdk_path, 'lib', 'libfacerec.so')
-        sdk_onnx_path = os.path.join(sdk_path, 'lib')
 
     service = FacerecService.create_service(  # create FacerecService
         sdk_dll_path,
@@ -43,7 +41,7 @@ def liveness_estimator(input_image, sdk_path):
 
     liveness_config = {  # liveness block configuration parameters
         "unit_type": "LIVENESS_ESTIMATOR",  # required parameter
-        "modification": "v4"
+        "modification": "2d",
     }
     liveness_block = service.create_processing_block(liveness_config)  # create liveness estimation processing block
     capturer = service.create_capturer("common_capturer_refa_fda_a.xml")
@@ -54,7 +52,7 @@ def liveness_estimator(input_image, sdk_path):
         "blob": image.tobytes(),
         "dtype": "uint8_t",
         "format": "NDARRAY",
-        "shape": [dim for dim in img.shape]
+        "shape": [dim for dim in image.shape]
     }
     raw_image = RawImage(image.shape[1], image.shape[0], Format.FORMAT_RGB, image.tobytes())
     ioData = service.create_context(

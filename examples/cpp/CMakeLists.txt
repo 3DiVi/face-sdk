@@ -17,4 +17,7 @@ add_subdirectory(test_calibration)
 add_subdirectory(demo)
 add_subdirectory(video_recognition_demo)
 add_subdirectory(test_videocap)
-add_subdirectory(processing_block)
+
+if(NOT WITHOUT_PROCESSING_BLOCK)
+    add_subdirectory(processing_block)
+endif()
