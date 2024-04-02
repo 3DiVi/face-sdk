@@ -10,7 +10,7 @@ class ProcessingBlock extends _ComplexObject {
     final destructor = _dll_handle.lookupFunction<
         _ProcessingBlock_destroyProcessingBlock_c,
         _ProcessingBlock_destroyProcessingBlock_dart>
-      ('TDVProcessingBlock_destroy');
+      ('TDVProcessingBlock_destroyBlock');
 
     destructor(_impl, exception);
 

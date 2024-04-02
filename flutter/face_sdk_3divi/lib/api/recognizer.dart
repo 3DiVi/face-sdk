@@ -95,11 +95,12 @@ class Recognizer extends _ComplexObject {
     get(_impl, template1._impl, template2._impl, distance, far, frr, score, exception);
     checkException(exception, _dll_handle);
 
+    MatchResult result = MatchResult(distance.value, far.value, frr.value, score.value);
     malloc.free(distance);
     malloc.free(score);
     malloc.free(frr);
     malloc.free(far);
-    return MatchResult(distance.value, far.value, frr.value, score.value);
+    return result;
   }
 ///Load the template.<br>
 ///The format is platform-independent.<br>
@@ -133,7 +134,7 @@ class Recognizer extends _ComplexObject {
     malloc.free(_templatePointerStructure[0]);
     malloc.free(_templatePointerStructure[1]);
     malloc.free(_templatePointerStructure);
-    malloc.free(byteCount);
+    // byteCount not free
 
     return Template(_dll_handle, templPointer);
   }
