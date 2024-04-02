@@ -48,10 +48,6 @@ class Context extends _ComplexObject {
     this._getOrInsertByKey(key).placeValues(data);
   }
 
-  void pushBack(Context data) {
-    this._pushBack(data);
-  }
-
   dynamic toMap(){
     if (this.is_array()) {
       List res = [];
@@ -71,26 +67,26 @@ class Context extends _ComplexObject {
   }
 
   void placeValues(data) {
-    if (data is Context){
-      this._insertContext(data);
-    }else if (data is Map) {
-      this._insertDict(data);
-    } else if ((data is List) & (data is! Uint8List)) {
-      this._insertList(data);
-    }else if (data is int) {
+    if (data is Context) {
+      this._setContext(data);
+    } else if (data is Map) {
+      this.insertMap(data);
+    } else if (data is Uint8List) {
+      this._setDataPtr(data);
+    } else if (data is List) {
+      this.insertList(data);
+    } else if (data is int) {
       this._setLong(data);
     } else if (data is double) {
       this._setDouble(data);
-    }else if (data is String) {
+    } else if (data is String) {
       this._setStr(data);
-    }else if (data is bool) {
+    } else if (data is bool) {
       this._setBool(data);
-    }else if (data is Uint8List) {
-      this._setDataPtr(data);
     }
   }
 
-  void _insertContext(Context data){
+  void _setContext(Context data){
     if (data != this){
       var exception = _getException();
 
@@ -105,13 +101,17 @@ class Context extends _ComplexObject {
     }
   }
 
-  void _insertDict(Map data) {
+  void pushBack(Context data) {
+    this._pushBack(data);
+  }
+
+  void insertMap(Map data) {
     data.forEach((k, v) {
       this._getOrInsertByKey(k).placeValues(v);
     });
   }
 
-  void _insertList(List data) {
+  void insertList(List data) {
     for (final value in data) {
       var ctx = Context(this._dll_handle, nullptr);
       ctx.placeValues(value);
