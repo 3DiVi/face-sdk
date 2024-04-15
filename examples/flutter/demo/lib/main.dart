@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
 
   setService(service){
     _facerecService = service;
-    _recognizer = _facerecService!.createRecognizer("method10v30_recognizer.xml");
+    _recognizer = _facerecService!.createRecognizer("method12v30_recognizer.xml");
   }
 
   setIDTemplate(idTempl, idPhoto){

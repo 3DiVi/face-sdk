@@ -128,7 +128,7 @@ class VideoRecognitionDemo
 			Recognizer recognizer = service.createRecognizer(method_config, true, false, false);
 			float recognition_distance_threshold = Convert.ToSingle(recognizer.getROCCurvePointByFAR(recognition_far_threshold).distance);
 
-			Capturer capturer = service.createCapturer("common_capturer4_lbf_singleface.xml");
+			Capturer capturer = service.createCapturer("common_capturer_blf_fda_front.xml");
 			Database database = new Database(
 				database_dir,
 				recognizer,

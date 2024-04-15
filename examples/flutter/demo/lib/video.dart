@@ -113,7 +113,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
 
     _videoWorker = widget._facerecService.createVideoWorker(
         VideoWorkerParams()
-            .recognizer_ini_file("method10v30_recognizer.xml")
+            .recognizer_ini_file("method12v30_recognizer.xml")
             .video_worker_config(
                 Config("video_worker_fdatracker_blf_fda_front.xml")
                   .overrideParameter("enable_active_liveness", 1)

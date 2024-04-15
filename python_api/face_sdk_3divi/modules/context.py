@@ -1,6 +1,6 @@
 from multipledispatch import dispatch
 from ctypes import c_char_p, c_void_p
-from ctypes import c_int32, c_bool, c_long, c_ulong, c_double, POINTER
+from ctypes import c_int32, c_int64, c_uint64, c_bool, c_double, POINTER
 
 from .exception_check import check_exception, make_exception
 from .complex_object import ComplexObject
@@ -106,7 +106,7 @@ class Context(ComplexObject):
     def __setDataPtr(self, value: bytes):
         exception = make_exception()
 
-        self._dll_handle.putDataPtr(self._impl, c_char_p(value), c_ulong(len(value)), exception)
+        self._dll_handle.putDataPtr(self._impl, c_char_p(value), c_uint64(len(value)), exception)
         check_exception(exception, self._dll_handle)
 
     def getDataPtr(self):
@@ -128,7 +128,7 @@ class Context(ComplexObject):
     def __setLong(self, value: int):
         exception = make_exception()
 
-        self._dll_handle.putLong(self._impl, c_long(value), exception)
+        self._dll_handle.putLong(self._impl, c_int64(value), exception)
 
         check_exception(exception, self._dll_handle)
 
@@ -256,7 +256,7 @@ class Context(ComplexObject):
         cout_keys = self.__getLength()
         buf = POINTER(c_char_p)
 
-        p_value_array = self._dll_handle.getKeys(self._impl, cout_keys, c_ulong(cout_keys), exception)
+        p_value_array = self._dll_handle.getKeys(self._impl, c_uint64(cout_keys), exception)
         check_exception(exception, self._dll_handle)
 
         result = [buf(i)[0].decode() for i in p_value_array[0]]

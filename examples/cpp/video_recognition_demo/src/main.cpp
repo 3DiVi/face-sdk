@@ -125,7 +125,7 @@ int main(int argc, char const *argv[])
 		const Database database(
 			database_list_filepath,
 			*recognizer,
-			*service->createCapturer("common_capturer4_fda_singleface.xml"),
+			*service->createCapturer("common_capturer_blf_fda_front.xml"),
 			recognition_distance_threshold);
 		int active_liveness = enable_active_liveness == "yes" ? 1 : 0;
 		//std::vector<pbio::ActiveLiveness::CheckType> checks{

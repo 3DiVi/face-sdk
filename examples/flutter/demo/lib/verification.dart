@@ -39,7 +39,7 @@ class _VerifyFacesState extends State<VerifyFaces> {
   @override
   void initState() {
     super.initState();
-    _recognizer = widget._facerecService.createRecognizer("method10v30_recognizer.xml");
+    _recognizer = widget._facerecService.createRecognizer("method12v30_recognizer.xml");
     setState(() {
       res = _recognizer.verifyMatch(widget.templ1, widget.templ2);
       widget.callback(res!);

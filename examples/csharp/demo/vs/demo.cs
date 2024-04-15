@@ -68,12 +68,11 @@ class Worker
 				.overrideParameter("downscale_rawsamples_to_preferred_size", 0)
 				.overrideParameter("iris_enabled", 1));
 		_quality_estimator = _service.createQualityEstimator("quality_estimator_iso.xml");
-		_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator.xml");
-		//_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator_v2.xml");
-		_emotions_estimator = _service.createEmotionsEstimator("emotions_estimator.xml");
+		_age_geder_estimator = _service.createAgeGenderEstimator("age_gender_estimator_v3.xml");
+		_emotions_estimator = _service.createEmotionsEstimator("emotions_estimator_v2.xml");
 		_face_quality_estimator = _service.createFaceQualityEstimator("face_quality_estimator.xml");
 		_liveness_2d_estimator = _service.createLiveness2DEstimator("liveness_2d_estimator_v3.xml");
-		_face_mask_estimator = _service.createFaceAttributesEstimator("face_mask_estimator.xml");
+		_face_mask_estimator = _service.createFaceAttributesEstimator("face_mask_estimator_v2.xml");
 		_eyes_openness_estimator = _service.createFaceAttributesEstimator("eyes_openness_estimator_v2.xml");
 
 		_flag_positions = true;

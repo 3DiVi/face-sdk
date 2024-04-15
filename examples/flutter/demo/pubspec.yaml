@@ -42,12 +42,9 @@ flutter:
     - assets/share/face_quality/
     - assets/share/faceanalysis/
     - assets/share/facedetectors/blf/
-    - assets/share/facedetectors/uld/
-    - assets/share/facedetectors/config_lbf/
-    - assets/share/facedetectors/config_lbf_noise/
     - assets/share/faceattributes/
     - assets/share/fda/
-    - assets/share/facerec/recognizers/method10v30/
+    - assets/share/facerec/recognizers/method12v30/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

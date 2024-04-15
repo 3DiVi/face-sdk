@@ -26,11 +26,5 @@ cp -r "$RESULT_DIR/share/faceattributes" "$CUR/share";
 cp -r "$RESULT_DIR/share/fda" "$CUR/share";
 
 cp -r "$RESULT_DIR/share/facedetectors/blf" "$CUR/share/facedetectors";
-cp -r "$RESULT_DIR/share/facedetectors/uld" "$CUR/share/facedetectors";
-cp -r "$RESULT_DIR/share/facedetectors/config_lbf" "$CUR/share/facedetectors";
-cp -r "$RESULT_DIR/share/facedetectors/config_lbf_noise" "$CUR/share/facedetectors";
 
-cp -r "$RESULT_DIR/share/facerec/recognizers/method10v30" "$CUR/share/facerec/recognizers";
-rm "$CUR/share/facerec/recognizers/method10v30/method10v30_1.bin.dt";
-rm "$CUR/share/facerec/recognizers/method10v30/method10v30_2.bin.dt";
-rm "$CUR/share/facerec/recognizers/method10v30/method10v30_3.bin.dt";
+cp -r "$RESULT_DIR/share/facerec/recognizers/method12v30" "$CUR/share/facerec/recognizers";

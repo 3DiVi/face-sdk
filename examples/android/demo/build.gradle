@@ -52,7 +52,7 @@ android {
                 "share/faceanalysis/**",
                 "share/processing_block/age_estimator/**",
                 "share/processing_block/gender_estimator/**",
-                "share/age_second/**",
+                "share/processing_block/mask_estimator/**",
                 "share/liveness_2d_v2/**",
                 "share/faceattributes/**",
                 "share/iris/**",

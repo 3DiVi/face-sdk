@@ -1,7 +1,7 @@
 from ctypes import CDLL
 from ctypes import c_void_p, c_char_p, POINTER
-from ctypes import c_uint32, c_int64, c_int32, c_float
-from ctypes import c_double, c_bool, c_long, c_ulong
+from ctypes import c_uint32, c_int64, c_int32, c_uint64, c_float
+from ctypes import c_double, c_bool
 
 
 class DllHandle:
@@ -600,12 +600,12 @@ class DllHandle:
 
     def getLength(self, *args, **kwargs):
         func = self.__dll_handle['{}getLength'.format(self.__contextNamespace)]
-        func.restype = c_ulong
+        func.restype = c_uint64
         return func(*args, **kwargs)
 
     def getKeys(self, *args, **kwargs):
         func = self.__dll_handle['{}getKeys'.format(self.__contextNamespace)]
-        func.restype = POINTER(POINTER(c_char_p) * args[1])
+        func.restype = POINTER(POINTER(c_char_p) * args[1].value)
         return func(*args, **kwargs)
 
     def getStr(self, *args, **kwargs):
@@ -615,12 +615,12 @@ class DllHandle:
 
     def getStrSize(self, *args, **kwargs):
         func = self.__dll_handle['{}getStrSize'.format(self.__contextNamespace)]
-        func.restype = c_ulong
+        func.restype = c_uint64
         return func(*args, **kwargs)
 
     def getLong(self, *args, **kwargs):
         func = self.__dll_handle['{}getLong'.format(self.__contextNamespace)]
-        func.restype = c_long
+        func.restype = c_int64
         return func(*args, **kwargs)
 
     def getBool(self, *args, **kwargs):

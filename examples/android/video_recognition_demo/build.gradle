@@ -46,14 +46,13 @@ android {
             include (
                 "conf/**",
                 "share/fda/**",
-                "share/facedetectors/config_lbf/**",
                 "share/facedetectors/blf/**",
                 "share/quality/**",
                 "share/quality_iso/**",
                 "share/face_quality/**",
                 "share/facerec/recognizers/method12v30/**",
-                "share/facerec/recognizers/method9v30mask/**",
-                "share/facerec/recognizers/method8v7/**",
+                "share/facerec/recognizers/method12v50/**",
+                "share/facerec/recognizers/method12v100/**",
                 "share/faceattributes/**",
                 "share/faceanalysis/**",
                 "license/**"

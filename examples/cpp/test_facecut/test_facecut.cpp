@@ -57,11 +57,10 @@ int main(int argc, char const *argv[])
 		const pbio::QualityEstimator::Ptr quality_estimator = service->createQualityEstimator("quality_estimator_iso.xml");
 
 		// create age and gender estimator
-		const pbio::AgeGenderEstimator::Ptr age_gender_estimator = service->createAgeGenderEstimator("age_gender_estimator.xml");
-		//const pbio::AgeGenderEstimator::Ptr age_gender_estimator = service->createAgeGenderEstimator("age_gender_estimator_v2.xml");
+		const pbio::AgeGenderEstimator::Ptr age_gender_estimator = service->createAgeGenderEstimator("age_gender_estimator_v3.xml");
 
 		// create emotions estimator
-		const pbio::EmotionsEstimator::Ptr emotions_estimator = service->createEmotionsEstimator("emotions_estimator.xml");
+		const pbio::EmotionsEstimator::Ptr emotions_estimator = service->createEmotionsEstimator("emotions_estimator_v2.xml");
 
 		for(size_t file_i = 0; file_i < image_files.size(); ++file_i)
 		{
@@ -148,10 +147,13 @@ int main(int argc, char const *argv[])
 
 					switch(emotion)
 					{
-						case pbio::EmotionsEstimator::EMOTION_NEUTRAL:  std::cout << "  neutral";  break;
-						case pbio::EmotionsEstimator::EMOTION_HAPPY:    std::cout << "  happy";    break;
-						case pbio::EmotionsEstimator::EMOTION_ANGRY:    std::cout << "  angry";    break;
-						case pbio::EmotionsEstimator::EMOTION_SURPRISE: std::cout << "  surprise"; break;
+						case pbio::EmotionsEstimator::EMOTION_NEUTRAL:      std::cout << "  neutral";      break;
+						case pbio::EmotionsEstimator::EMOTION_HAPPY:        std::cout << "  happy";        break;
+						case pbio::EmotionsEstimator::EMOTION_ANGRY:        std::cout << "  angry";        break;
+						case pbio::EmotionsEstimator::EMOTION_SURPRISE:     std::cout << "  surprise";     break;
+						case pbio::EmotionsEstimator::EMOTION_DISGUSTED:    std::cout << "  disgusted";    break;
+						case pbio::EmotionsEstimator::EMOTION_SCARED:       std::cout << "  scared";       break;
+						case pbio::EmotionsEstimator::EMOTION_SAD:          std::cout << "  sad";          break;
 					}
 
 					std::cout << " " << int(confidence * 100) << "%" << std::endl;

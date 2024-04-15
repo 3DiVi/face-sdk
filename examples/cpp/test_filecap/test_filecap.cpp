@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 		if(argc != 5)
 		{
 			std::cout << "Usage: '" << argv[0] << " <dll_path> <conf_dir_path> <capturer_config_filename> <image_path>'" << std::endl;
-			std::cout << "Example: '" << argv[0] << default_dll_path << " ../conf/facerec common_capturer4.xml ~/Pictures/1.png'" << std::endl;
+			std::cout << "Example: '" << argv[0] << default_dll_path << " ../conf/facerec common_capturer_blf_fda_back.xml ~/Pictures/1.png'" << std::endl;
 			return 0;
 		}
 

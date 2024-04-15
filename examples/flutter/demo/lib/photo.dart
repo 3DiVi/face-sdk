@@ -160,9 +160,8 @@ class _DetectPictureState extends State<DetectPicture> {
   @override
   void initState() {
     super.initState();
-    _capturer = widget._facerecService.createCapturer(Config("common_capturer4_fda_singleface.xml").overrideParameter("score_threshold", 0.4));
-    // _capturer = widget._facerecService.createCapturer(Config("common_capturer_blf_fda_back.xml"));
-    // _capturer = widget._facerecService.createCapturer(Config("common_capturer_blf_fda_front.xml"));
+
+    _capturer = widget._facerecService.createCapturer(Config("common_capturer_blf_fda_front.xml"));
 
     if (widget.cameras == null || widget.cameras.length < 1) {
       print('No camera is found');

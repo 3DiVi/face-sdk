@@ -143,7 +143,7 @@ namespace csharp_processing_block_demo
 					}
 				);
 
-				if (unitType == "quality" || (unitType == "liveness" && options.Modification == "2d"))
+				if (unitType == "quality" || unitType == "liveness")
 				{
 					Capturer capturer = service.createCapturer("common_capturer_refa_fda_a.xml");
 

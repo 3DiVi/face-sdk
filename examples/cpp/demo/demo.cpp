@@ -652,10 +652,10 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 		{
 			if(!_face_attributes_estimator_masked_face)
 			{
-#ifdef LEGACY_METASDK
-				_face_attributes_estimator_masked_face = _service->createFaceAttributesEstimator("face_mask_estimator.xml");
-#else
+#ifdef PROCESSING_BLOCK_API
 				_face_attributes_estimator_masked_face = _service->createFaceAttributesEstimator("face_mask_estimator_v2.xml");
+#else
+				_face_attributes_estimator_masked_face = _service->createFaceAttributesEstimator("face_mask_estimator.xml");
 #endif
 			}
 			pbio::FaceAttributesEstimator::Attribute attr = _face_attributes_estimator_masked_face->estimate(sample);

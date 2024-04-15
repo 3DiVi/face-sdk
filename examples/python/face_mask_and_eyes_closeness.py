@@ -31,7 +31,7 @@ print('Service created')
 capturer = service.create_capturer(Config("common_capturer_blf_fda_back.xml"))
 print('Capturer created')
 
-masked_face_estimator = service.create_face_attributes_estimator("face_mask_estimator.xml")
+masked_face_estimator = service.create_face_attributes_estimator("face_mask_estimator_v2.xml")
 print('Masked face estimator created')
 
 eyes_openness_estimator = service.create_face_attributes_estimator("eyes_openness_estimator_v2.xml")

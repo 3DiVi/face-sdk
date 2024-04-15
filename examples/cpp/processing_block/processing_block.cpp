@@ -324,7 +324,7 @@ int main(int argc, char **argv)
 
 		pbio::ProcessingBlock processingBlock = service->createProcessingBlock(configCtx);
 
-		if(unit_type == "quality" || (unit_type == "liveness" && modification == "2d"))
+		if(unit_type == "quality" || unit_type == "liveness")
 		{
 			// create capturer
 			const pbio::Capturer::Ptr capturer = service->createCapturer("common_capturer_refa_fda_a.xml");

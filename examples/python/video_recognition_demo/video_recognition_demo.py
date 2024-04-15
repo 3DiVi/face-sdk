@@ -50,7 +50,7 @@ def main():
         recognizer = service.create_recognizer(args.method_config, True, True)
         recognition_distance_threshold = recognizer.get_roc_curve_point_by_far(args.recognition_far_threshold).distance
 
-        capturer_config = Config("common_capturer4_fda_singleface.xml")
+        capturer_config = Config("common_capturer_blf_fda_front.xml")
         capturer = service.create_capturer(capturer_config)
 
         # create database
