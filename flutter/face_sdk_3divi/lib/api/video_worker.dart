@@ -555,7 +555,7 @@ class VideoWorker extends _ComplexObject{
     checkException(exception, _dll_handle);
   }
 
-  void  setDataBase(
+  void setDataBase(
       List<DataBaseElement> dataBase,
       {SearchAccelerationType acceleration = SearchAccelerationType.SEARCH_ACCELERATION_1}){
 

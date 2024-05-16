@@ -21,8 +21,8 @@ Run
 
 Windows:
 set PATH=%PATH%;..\..\..\bin
-dotnet publish\csharp_processing_block_demo.dll --sdk_path=../../../ --unit_type=face --modification uld --min_size 50
+dotnet publish\csharp_processing_block_demo.dll --sdk_path=../../../ --unit_type=face --modification uld
 
 
 Linux:
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:../../../lib:/path/to/opencvsharp/native/libs dotnet publish/csharp_processing_block_demo.dll --sdk_path=../../../ --unit_type=face --modification uld --min_size 50
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:../../../lib:/path/to/opencvsharp/native/libs dotnet publish/csharp_processing_block_demo.dll --sdk_path=../../../ --unit_type=face --modification uld

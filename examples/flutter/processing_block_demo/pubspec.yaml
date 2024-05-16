@@ -48,7 +48,6 @@ flutter:
     - assets/share/faceanalysis/
     - assets/share/faceattributes/
     - assets/share/processing_block/face_detector/uld/1/
-    - assets/share/processing_block/quality_face_estimation/estimation/
     - assets/share/processing_block/face_fitter/tddfa_faster/
     - assets/share/quality_iso/
 

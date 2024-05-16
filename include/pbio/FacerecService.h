@@ -1089,6 +1089,16 @@ public:
 #ifndef WITHOUT_PROCESSING_BLOCK
 	Context createContext() const;
 
+	Context createContextFromEncodedImage(const uint8_t* data, uint64_t dataSize) const;
+
+	Context createContextFromEncodedImage(const std::vector<uint8_t>& data) const;
+
+	Context createContextFromEncodedImage(const std::string& data) const;
+
+	Context createContextFromEncodedImage(const std::vector<char>& data) const;
+
+	Context createContextFromFrame(uint8_t* data, int32_t width, int32_t height, Context::Format format = Context::Format::FORMAT_BGR, int32_t baseAngle = 0) const;
+
 	ProcessingBlock createProcessingBlock(const Context& config) const;
 #endif
 
@@ -1281,6 +1291,13 @@ public:
 
 
 	void convertYUV2RGB(
+		const RawImage image,
+		const bool downscale_x2,
+		const int base_angle,
+		void* const result_buffer);
+
+
+	void convertBGRA88882RGB(
 		const RawImage image,
 		const bool downscale_x2,
 		const int base_angle,
@@ -2078,6 +2095,31 @@ inline Context FacerecService::createContext() const
 	return Context(_dll_handle);
 }
 
+inline Context FacerecService::createContextFromEncodedImage(const uint8_t* data, uint64_t dataSize) const
+{
+	return Context(_dll_handle, data, dataSize);
+}
+
+inline Context FacerecService::createContextFromEncodedImage(const std::vector<uint8_t>& data) const
+{
+	return Context(_dll_handle, data.data(), data.size());
+}
+
+inline Context FacerecService::createContextFromEncodedImage(const std::string& data) const
+{
+	return Context(_dll_handle, reinterpret_cast<const uint8_t*>(data.data()), data.size());
+}
+
+inline Context FacerecService::createContextFromEncodedImage(const std::vector<char>& data) const
+{
+	return Context(_dll_handle, reinterpret_cast<const uint8_t*>(data.data()), data.size());
+}
+
+inline Context FacerecService::createContextFromFrame(uint8_t* data, int32_t width, int32_t height, Context::Format format, int32_t baseAngle) const
+{
+	return Context(_dll_handle, data, width, height, format, baseAngle);
+}
+
 inline ProcessingBlock FacerecService::createProcessingBlock(const Context& config) const
 {
 	return ProcessingBlock(_impl, _dll_handle, config);
@@ -2255,6 +2297,35 @@ void FacerecService::convertYUV2RGB(
 	const bool downscale_x2,
 	const int base_angle,
 	void* const result_buffer)
+{
+	void* exception = NULL;
+
+	const RawImage::CapiData cdata = image.makeCapiData();
+
+	_dll_handle->RawImage_convertYUV2RGB(
+		cdata.data,
+		cdata.width,
+		cdata.height,
+		cdata.format,
+		cdata.with_crop,
+		cdata.crop_info_offset_x,
+		cdata.crop_info_offset_y,
+		cdata.crop_info_data_image_width,
+		cdata.crop_info_data_image_height,
+		downscale_x2,
+		base_angle,
+		result_buffer,
+		&exception);
+
+	checkException(exception, *_dll_handle);
+}
+
+inline
+void FacerecService::convertBGRA88882RGB(
+		const RawImage image,
+		const bool downscale_x2,
+		const int base_angle,
+		void* const result_buffer)
 {
 	void* exception = NULL;
 

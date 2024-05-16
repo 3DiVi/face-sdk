@@ -17,7 +17,6 @@ ASSETS="$RESULT_DIR/examples/flutter/processing_block_demo/assets"
 mkdir -p "$ASSETS/share/faceanalysis";
 mkdir -p "$ASSETS/share/processing_block/face_detector/uld";
 mkdir -p "$ASSETS/share/processing_block/face_fitter/tddfa_faster";
-mkdir -p "$ASSETS/share/processing_block/quality_face_estimation/estimation";
 mkdir "$ASSETS/share/faceattributes";
 mkdir "$ASSETS/share/quality_iso";
 
@@ -26,7 +25,6 @@ cp -r "$RESULT_DIR/license" "$ASSETS";
 
 cp -r "$RESULT_DIR/share/processing_block/face_detector/uld" "$ASSETS/share/processing_block/face_detector";
 cp -r "$RESULT_DIR/share/processing_block/face_fitter/tddfa_faster" "$ASSETS/share/processing_block/face_fitter";
-cp -r "$RESULT_DIR/share/processing_block/quality_face_estimation/estimation" "$ASSETS/share/processing_block/quality_face_estimation";
 
 cp -r "$RESULT_DIR/share/faceanalysis" "$ASSETS/share";
 cp -r "$RESULT_DIR/share/faceattributes" "$ASSETS/share";

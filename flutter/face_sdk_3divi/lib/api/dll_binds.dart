@@ -277,6 +277,32 @@ typedef _Context_Destructor_dart = Pointer<Void> Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
+typedef _Context_CreateFromEncodedImage_c = Pointer<Void> Function(
+    Pointer<Uint8>,
+    Uint64,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_CreateFromEncodedImage_dart = Pointer<Void> Function(
+    Pointer<Uint8>,
+    int,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_CreateFromFrame_c = Pointer<Void> Function(
+    Pointer<Uint8>,
+    Int32,
+    Int32,
+    Int32,
+    Int32,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_CreateFromFrame_dart = Pointer<Void> Function(
+    Pointer<Uint8>,
+    int,
+    int,
+    int,
+    int,
+    Pointer<Pointer<Void>>);
+
 typedef _Context_getOrInsertByKey_c = Pointer<Void> Function(
     Pointer<Void>, // context
     Pointer<Utf8>, //
@@ -907,6 +933,22 @@ typedef _RawImage_convertYUV2RGB_dart = void Function(
     int,
     int,
     int,
+    int,
+    int,
+    int,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _RawImage_convertBGRA88882RGB_c = Void Function(
+    Pointer<Void>,
+    Int32,
+    Int32,
+    Int32,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _RawImage_convertBGRA88882RGB_dart = void Function(
+    Pointer<Void>,
     int,
     int,
     int,

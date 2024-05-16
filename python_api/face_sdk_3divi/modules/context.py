@@ -1,10 +1,19 @@
+from enum import Enum
 from multipledispatch import dispatch
 from ctypes import c_char_p, c_void_p
-from ctypes import c_int32, c_int64, c_uint64, c_bool, c_double, POINTER
+from ctypes import c_int32, c_int64, c_uint64, c_bool, c_double, POINTER, c_ubyte, string_at
 
 from .exception_check import check_exception, make_exception
 from .complex_object import ComplexObject
 from .dll_handle import DllHandle
+
+
+class ContextFormat(Enum):
+    FORMAT_BGR = 0
+    FORMAT_RGB = 1
+    FORMAT_BGRA8888 = 2
+    FORMAT_YUV_NV21 = 3
+    FORMAT_YUV_NV12 = 4
 
 
 class Context(ComplexObject):
@@ -20,6 +29,26 @@ class Context(ComplexObject):
             check_exception(exception, handle)
 
         super(Context, self).__init__(handle, the_impl)
+
+    @classmethod
+    def from_image(cls, handle: DllHandle, data: bytes):
+        exception = make_exception()
+
+        the_impl = c_void_p(handle.create_from_encoded_image(data, len(data), exception))
+
+        check_exception(exception, handle)
+
+        return cls(handle, the_impl)
+
+    @classmethod
+    def from_frame(cls, handle: DllHandle, data: bytes, width: int, height: int, format: ContextFormat, base_angle: int):
+        exception = make_exception()
+
+        the_impl = c_void_p(handle.create_from_frame(data, width, height, format.value, base_angle, exception))
+
+        check_exception(exception, handle)
+
+        return cls(handle, the_impl)
 
     def __del__(self):
         if not self.__weak_:
@@ -109,13 +138,21 @@ class Context(ComplexObject):
         self._dll_handle.putDataPtr(self._impl, c_char_p(value), c_uint64(len(value)), exception)
         check_exception(exception, self._dll_handle)
 
-    def getDataPtr(self):
+    def __getDataPtr(self):
         exception = make_exception()
 
         result = self._dll_handle.getDataPtr(self._impl, exception)
 
         check_exception(exception, self._dll_handle)
         return result
+
+    def get_bytes(self, size):
+        byte_ptr = self.__getDataPtr()
+        return string_at(byte_ptr, size)
+
+    @staticmethod
+    def get_bytes_from_ptr(byte_ptr: POINTER(c_ubyte), size: int):
+        return string_at(byte_ptr, size)
 
     def __getBool(self):
         exception = make_exception()
@@ -346,6 +383,6 @@ class Context(ComplexObject):
         if self.is_double():
             return self.__getDouble()
         if self.is_data_ptr():
-            return self.getDataPtr()
+            return self.__getDataPtr()
 
         return None

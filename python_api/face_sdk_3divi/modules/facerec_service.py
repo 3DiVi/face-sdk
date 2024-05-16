@@ -33,7 +33,7 @@ from .config import Config
 from .video_worker import VideoWorker, Params
 from .error import Error
 from .wrap_funcs import write_func
-from .context import Context
+from .context import Context, ContextFormat
 from .processing_block import ProcessingBlock
 
 ## @defgroup PythonAPI
@@ -52,12 +52,18 @@ class FacerecService(ComplexObject):
         super(FacerecService, self).__init__(dll_handle, impl)
         self.__facerec_conf_dir = facerec_conf_dir
 
-    def create_context(self, ctx: dict):
+    def create_context(self, ctx: dict) -> Context:
         meta_ctx = Context(self._dll_handle)
         meta_ctx(ctx)
         return meta_ctx
 
-    def create_processing_block(self, ctx: dict):
+    def create_context_from_encoded_image(self, data: bytes) -> Context:
+        return Context.from_image(self._dll_handle, data)
+
+    def create_context_from_frame(self, data: bytes, width: int, height: int, format: ContextFormat = ContextFormat.FORMAT_BGR, base_angle: int = 0) -> Context:
+        return Context.from_frame(self._dll_handle, data, width, height, format, base_angle)
+
+    def create_processing_block(self, ctx: dict) -> ProcessingBlock:
         exception = make_exception()
         meta_ctx = self.create_context(ctx)
 

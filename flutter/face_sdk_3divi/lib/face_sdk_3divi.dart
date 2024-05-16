@@ -7,13 +7,17 @@ library face_sdk_3divi;
 
 import 'dart:io';
 import 'dart:ffi';
+import 'dart:isolate';
 import "dart:typed_data";
 import 'dart:developer' as developer;
 import 'dart:ui';
 import 'dart:convert' show utf8;
 import 'package:ffi/ffi.dart';
+import 'package:flutter/gestures.dart';
 import 'package:xml/xml.dart';
 import 'package:image/image.dart' as imglib;
+
+import 'utils.dart';
 
 part 'api/active_liveness.dart';
 part 'api/capturer.dart';
@@ -33,7 +37,10 @@ part 'api/context.dart';
 part 'api/processing_block.dart';
 part 'api/liveness2d_estimator.dart';
 part 'api/face_attributes_estimator.dart';
-
+part 'api/async_capturer.dart';
+part 'api/async_recognizer.dart';
+part 'api/async_processing_block.dart';
+part 'api/async_video_worker.dart';
 
 
 /// Base class of FaceSDK flutter plugin for creating FacerecService.

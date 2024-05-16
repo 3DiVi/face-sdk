@@ -19,8 +19,5 @@ xcopy /e /i /y "%RESULT_DIR%\share\faceattributes" "%CUR%\share\faceattributes"
 xcopy /e /i /y "%RESULT_DIR%\share\fda" "%CUR%\share\fda"
 
 xcopy /e /i /y "%RESULT_DIR%\share\facedetectors\blf" "%CUR%\share\facedetectors\blf"
-xcopy /e /i /y "%RESULT_DIR%\share\facedetectors\uld" "%CUR%\share\facedetectors\uld"
-xcopy /e /i /y "%RESULT_DIR%\share\facedetectors\config_lbf" "%CUR%\share\facedetectors\config_lbf"
-xcopy /e /i /y "%RESULT_DIR%\share\facedetectors\config_lbf_noise" "%CUR%\share\facedetectors\config_lbf_noise"
 
-xcopy /e /i /y "%RESULT_DIR%\share\facerec\recognizers\method10v30\*.bin" "%CUR%\share\facerec\recognizers\method10v30"
+xcopy /e /i /y "%RESULT_DIR%\share\facerec\recognizers\method12v30\*.bin" "%CUR%\share\facerec\recognizers\method12v30"

@@ -113,14 +113,25 @@ class Context
 		}
 	};
 
+public:
+	enum Format
+	{
+		FORMAT_BGR = 0,
+		FORMAT_RGB = 1,
+		FORMAT_BGRA8888 = 2,
+		FORMAT_YUV420 = 3,
+		FORMAT_YUV_NV12 = 4,
+		FORMAT_NV21 = 5,
+	};
+
 protected:
 
-	Context(const DHPtr &dll_handle) : dll_handle(dll_handle), weak_(false), eh_(nullptr) {
+	Context(const DHPtr& dll_handle) : dll_handle(dll_handle), weak_(false), eh_(nullptr) {
 		handle_ = dll_handle->TDVContext_create(&eh_);
 		tdvCheckException(dll_handle, eh_);
 	}
 
-	Context(const DHPtr &dll_handle, HContext* handle, bool weak = true) : dll_handle(dll_handle), weak_(weak), eh_(nullptr) {
+	Context(const DHPtr& dll_handle, HContext* handle, bool weak = true) : dll_handle(dll_handle), weak_(weak), eh_(nullptr) {
 		if(weak_)
 			handle_ = handle;
 		else
@@ -128,6 +139,24 @@ protected:
 			handle_ = dll_handle->TDVContext_clone(handle, &eh_);
 			tdvCheckException(dll_handle, eh_);
 		}
+	}
+
+	Context(const DHPtr& dll_handle, const uint8_t* data, uint64_t dataSize) :
+		dll_handle(dll_handle),
+		weak_(false),
+		eh_(nullptr)
+	{
+		handle_ = dll_handle->TDVContext_createFromEncodedImage(data, dataSize, &eh_);
+		tdvCheckException(dll_handle, eh_);
+	}
+
+	Context(const DHPtr& dll_handle, uint8_t* data, int32_t width, int32_t height, Format format, int32_t baseAngle) :
+		dll_handle(dll_handle),
+		weak_(false),
+		eh_(nullptr)
+	{
+		handle_ = dll_handle->TDVContext_createFromFrame(data, width, height, static_cast<int32_t>(format), baseAngle, &eh_);
+		tdvCheckException(dll_handle, eh_);
 	}
 
 	DHPtr dll_handle;
@@ -481,6 +510,8 @@ class ContextRef : public Context {
 public:
 
 	ContextRef(const DHPtr &dll_handle, HContext* handle) : Context(dll_handle ,handle, true) {}
+
+	ContextRef* getContextPtr () const { return new ContextRef(dll_handle, handle_); }
 
 	template <typename T, typename = typename std::enable_if<!std::is_base_of<Context, typename std::decay<T>::type>::value>::type>
 	void operator=(T&& value) {

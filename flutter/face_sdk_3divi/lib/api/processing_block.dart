@@ -17,25 +17,8 @@ class ProcessingBlock extends _ComplexObject {
     tdvCheckException(exception, _dll_handle);
   }
 
-  dynamic process(ctx) {
-    if (ctx is Context) {
-      return this._call_context(ctx);
-    }
-    else if (ctx is Map) {
-      return this._call_dict(ctx);
-    }
-  }
-
-  Map _call_dict(Map ctx) {
-    Context meta_ctx = Context(this._dll_handle, nullptr);
-    meta_ctx.placeValues(ctx);
-
-    Context outContext = _call_context(meta_ctx);
-    dynamic outMap = outContext.toMap();
-
-    outContext.dispose();
-
-    return outMap;
+  void process(Context ctx) {
+    this._call_context(ctx);
   }
 
   Context _call_context(Context ctx) {

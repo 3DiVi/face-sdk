@@ -3213,6 +3213,30 @@ namespace capi {
 	\
 	\
 	decl( \
+		void, \
+		RawImage_convertBGRA88882RGB, \
+		( \
+			void* image_data, \
+			int32_t image_width, \
+			int32_t image_height, \
+			int32_t base_angle,  \
+			void* result_buffer, \
+			void** out_exception \
+		), \
+		( \
+			image_data, \
+			image_width, \
+			image_height, \
+			base_angle,  \
+			result_buffer, \
+			out_exception \
+		), \
+		) \
+	\
+	\
+	\
+	\
+	decl( \
 		uint32_t, \
 		apiException_code, \
 		( void* exception ), \
@@ -3281,6 +3305,7 @@ namespace capi {
 		), \
 		return ) \
 	\
+	\
 	decl( \
 		HContext*, \
 		TDVContext_create, \
@@ -3302,6 +3327,44 @@ namespace capi {
 		), \
 		( \
 			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		HContext*, \
+		TDVContext_createFromEncodedImage, \
+		( \
+			const uint8_t* data, \
+			uint64_t dataSize, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			data, \
+			dataSize, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		HContext*, \
+		TDVContext_createFromFrame, \
+		( \
+			uint8_t* data, \
+			int32_t width, \
+			int32_t height, \
+			int32_t format, \
+			int32_t baseAngle, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			data, \
+			width, \
+			height, \
+			format, \
+			baseAngle, \
 			errorHandler \
 		), \
 		return ) \

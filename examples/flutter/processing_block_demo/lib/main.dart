@@ -65,7 +65,6 @@ class _HomePageState extends State<HomePage> {
   late ProcessingBlock faceDetector;
   late ProcessingBlock fitter;
   late ProcessingBlock qualityAssessment;
-  late ProcessingBlock qualityEstimator;
 
   Image? pickedImage;
   Text? currentStateText;
@@ -129,9 +128,9 @@ class _HomePageState extends State<HomePage> {
       }
     });
 
-    Context result = faceDetector.process(data);
+    faceDetector.process(data);
 
-    if (result["objects"].len() == 0) {
+    if (data["objects"].len() == 0) {
       setState(() {
         currentStateText = const Text("No faces");
       });
@@ -139,11 +138,10 @@ class _HomePageState extends State<HomePage> {
       return;
     }
 
-    result = fitter.process(result);
-    result = qualityAssessment.process(result);
-    result = qualityEstimator.process(result);
+    fitter.process(data);
+    qualityAssessment.process(data);
 
-    Context objects = result["objects"];
+    Context objects = data["objects"];
     Completer<ui.Image> completer = Completer();
     Map<BBox, TextInformation> results = {};
 
@@ -168,7 +166,7 @@ class _HomePageState extends State<HomePage> {
     final Paint paint = Paint()
       ..color = Colors.red
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
+      ..strokeWidth = 10.0;
 
     canvas.drawImage(await completer.future, const Offset(0.0, 0.0), Paint());
 
@@ -181,7 +179,7 @@ class _HomePageState extends State<HomePage> {
 
       canvas.drawRect(Rect.fromLTRB(bbox.x1, bbox.y1, bbox.x2, bbox.y2), paint);
 
-      painter.text = TextSpan(text: buffer.toString(), style: const TextStyle(color: Colors.red));
+      painter.text = TextSpan(text: buffer.toString(), style: const TextStyle(color: Colors.red, fontSize: 100));
 
       painter.layout();
 
@@ -195,6 +193,8 @@ class _HomePageState extends State<HomePage> {
       pickedImage = Image.memory(Uint8List.view(pngBytes!.buffer));
       currentStateText = null;
     });
+
+    data.dispose();
   }
 
   @override
@@ -252,22 +252,28 @@ class _HomePageState extends State<HomePage> {
     getDirs().then((dirs) => createService(dirs[0], dirs[1]));
   }
 
+  @override
+  void dispose() {
+    faceDetector.dispose();
+    fitter.dispose();
+    qualityAssessment.dispose();
+
+    super.dispose();
+  }
+
   void createService(String dataDir, String libDir) {
     service = FaceSdkPlugin.createFacerecService("$dataDir/conf/facerec", "$dataDir/license",
         libPath: "$libDir/${FaceSdkPlugin.nativeLibName}");
 
     faceDetector = service.createProcessingBlock(
-        {"unit_type": "FACE_DETECTOR", "modification": "uld", "model_path": "", "@sdk_path": dataDir, "min_size": 50});
+        {"unit_type": "FACE_DETECTOR", "modification": "uld", "precision_level": 3});
     fitter = service
-        .createProcessingBlock({"unit_type": "FACE_FITTER", "modification": "tddfa_faster", "@sdk_path": dataDir});
+        .createProcessingBlock({"unit_type": "FACE_FITTER", "modification": "tddfa_faster"});
     qualityAssessment = service.createProcessingBlock({
       "unit_type": "QUALITY_ASSESSMENT_ESTIMATOR",
       "modification": "assessment",
-      "config_name": "quality_assessment.xml",
-      "@sdk_path": dataDir
+      "config_name": "quality_assessment.xml"
     });
-    qualityEstimator = service.createProcessingBlock(
-        {"unit_type": "QUALITY_ASSESSMENT_ESTIMATOR", "modification": "estimation", "@sdk_path": dataDir});
 
     setState(() {
       currentStateText = const Text("Initializing finished");

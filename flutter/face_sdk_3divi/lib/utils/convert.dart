@@ -89,6 +89,23 @@ void convertBGRA8888(List<Plane> planes, NativeDataStruct data) {
   }
 }
 
+/// Converts BGRA8888 to RGB format,
+/// the result can be passed to [VideoWorker].
+void convertBGRA8888toRGB(List<Plane> planes, NativeDataStruct data) {
+  final plane = planes[0];
+  int totalBytes = (plane.bytes.length / 4 * 3).toInt();
+
+  if (data.size != totalBytes)
+    data.resize(totalBytes);
+
+  int byteOffset = 0;
+  for (int i = 0; i < plane.bytes.length; i+=4) {
+    data.bytes![byteOffset + 0] = plane.bytes[i + 2];
+    data.bytes![byteOffset + 1] = plane.bytes[i + 1];
+    data.bytes![byteOffset + 2] = plane.bytes[i + 0];
+    byteOffset += 3;
+  }
+}
 
 /// Converts CameraImage in YUV format to BGR Image.
 imglib.Image convertYUV420toImageColor(CameraImage image){

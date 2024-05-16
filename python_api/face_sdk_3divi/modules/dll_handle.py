@@ -1,6 +1,6 @@
 from ctypes import CDLL
 from ctypes import c_void_p, c_char_p, POINTER
-from ctypes import c_uint32, c_int64, c_int32, c_uint64, c_float
+from ctypes import c_uint32, c_int64, c_int32, c_uint64, c_float, c_ubyte
 from ctypes import c_double, c_bool
 
 
@@ -558,6 +558,18 @@ class DllHandle:
     def destroy(self, *args, **kwargs):
         self.__dll_handle['{}destroy'.format(self.__contextNamespace)](*args, **kwargs)
 
+    def create_from_encoded_image(self, *args, **kwargs):
+        func = self.__dll_handle['{}createFromEncodedImage'.format(self.__contextNamespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def create_from_frame(self, *args, **kwargs):
+        func = self.__dll_handle['{}createFromFrame'.format(self.__contextNamespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
     def freePtr(self, *args, **kwargs):
         self.__dll_handle['{}freePtr'.format(self.__contextNamespace)](*args, **kwargs)
 
@@ -630,7 +642,7 @@ class DllHandle:
 
     def getDataPtr(self, *args, **kwargs):
         func = self.__dll_handle['{}getDataPtr'.format(self.__contextNamespace)]
-        func.restype = c_char_p
+        func.restype = POINTER(c_ubyte)
         return func(*args, **kwargs)
 
 
