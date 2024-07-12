@@ -3,7 +3,7 @@ from multipledispatch import dispatch
 from ctypes import c_char_p, c_void_p
 from ctypes import c_int32, c_int64, c_uint64, c_bool, c_double, POINTER, c_ubyte, string_at
 
-from .exception_check import check_exception, make_exception
+from .exception_check import check_processing_block_exception, make_exception
 from .complex_object import ComplexObject
 from .dll_handle import DllHandle
 
@@ -26,7 +26,7 @@ class Context(ComplexObject):
 
             the_impl = c_void_p(handle.create(exception))
 
-            check_exception(exception, handle)
+            check_processing_block_exception(exception, handle)
 
         super(Context, self).__init__(handle, the_impl)
 
@@ -36,7 +36,7 @@ class Context(ComplexObject):
 
         the_impl = c_void_p(handle.create_from_encoded_image(data, len(data), exception))
 
-        check_exception(exception, handle)
+        check_processing_block_exception(exception, handle)
 
         return cls(handle, the_impl)
 
@@ -46,7 +46,7 @@ class Context(ComplexObject):
 
         the_impl = c_void_p(handle.create_from_frame(data, width, height, format.value, base_angle, exception))
 
-        check_exception(exception, handle)
+        check_processing_block_exception(exception, handle)
 
         return cls(handle, the_impl)
 
@@ -56,7 +56,7 @@ class Context(ComplexObject):
 
             self._dll_handle.destroy(self._impl, exception)
 
-            check_exception(exception, self._dll_handle)
+            check_processing_block_exception(exception, self._dll_handle)
 
     def __call__(self, ctx):
         self.parser(ctx)
@@ -99,7 +99,7 @@ class Context(ComplexObject):
 
         self._dll_handle.putStr(self._impl, c_char_p(bytes(value, "ascii")), exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
 
     def __getStr(self):
         exception = make_exception()
@@ -107,7 +107,7 @@ class Context(ComplexObject):
         buff = c_char_p()
         str1 = self._dll_handle.getStr(self._impl, buff, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return str(str1, "ascii")
 
     def __setDouble(self, value: float):
@@ -115,14 +115,14 @@ class Context(ComplexObject):
 
         self._dll_handle.putDouble(self._impl, c_double(value), exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
 
     def __getDouble(self):
         exception = make_exception()
 
         value = self._dll_handle.getDouble(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def __setBool(self, value: bool):
@@ -130,20 +130,20 @@ class Context(ComplexObject):
 
         self._dll_handle.putBool(self._impl, c_bool(value), exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
 
     def __setDataPtr(self, value: bytes):
         exception = make_exception()
 
         self._dll_handle.putDataPtr(self._impl, c_char_p(value), c_uint64(len(value)), exception)
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
 
     def __getDataPtr(self):
         exception = make_exception()
 
         result = self._dll_handle.getDataPtr(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return result
 
     def get_bytes(self, size):
@@ -159,7 +159,7 @@ class Context(ComplexObject):
 
         value = self._dll_handle.getBool(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def __setLong(self, value: int):
@@ -167,14 +167,14 @@ class Context(ComplexObject):
 
         self._dll_handle.putLong(self._impl, c_int64(value), exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
 
     def __getLong(self):
         exception = make_exception()
 
         value = self._dll_handle.getLong(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def __getLength(self):
@@ -182,7 +182,7 @@ class Context(ComplexObject):
 
         value = self._dll_handle.getLength(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def getStrSize(self):
@@ -190,7 +190,7 @@ class Context(ComplexObject):
 
         value = self._dll_handle.getStrSize(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def __getOrInsertByKey(self, key: str):
@@ -198,7 +198,7 @@ class Context(ComplexObject):
 
         new_impl = self._dll_handle.getOrInsertByKey(self._impl, c_char_p(bytes(key, "ascii")), exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
 
         return Context(self._dll_handle, c_void_p(new_impl)).set_weak(True)
 
@@ -207,7 +207,7 @@ class Context(ComplexObject):
 
         new_impl = self._dll_handle.getByKey(self._impl, c_char_p(bytes(key, "ascii")), exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
 
         return Context(self._dll_handle, c_void_p(new_impl)).set_weak(True)
 
@@ -216,7 +216,7 @@ class Context(ComplexObject):
 
         new_impl = self._dll_handle.getByIndex(self._impl, c_int32(key), exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
 
         return Context(self._dll_handle, c_void_p(new_impl)).set_weak(True)
 
@@ -225,7 +225,7 @@ class Context(ComplexObject):
 
         impl = self._dll_handle.clone(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
 
         return Context(self._dll_handle, c_void_p(impl))
 
@@ -234,7 +234,7 @@ class Context(ComplexObject):
 
         self._dll_handle.pushBack(self._impl, data._impl, c_bool(True), exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
 
     def to_dict(self):
         if self.is_array():
@@ -285,7 +285,7 @@ class Context(ComplexObject):
             if self.__weak_:
                 exception = make_exception()
                 self._dll_handle.copy(ctx._impl, self._impl, exception)
-                check_exception(exception, self._dll_handle)
+                check_processing_block_exception(exception, self._dll_handle)
 
     def __get_keys(self) -> list:
         exception = make_exception()
@@ -294,7 +294,7 @@ class Context(ComplexObject):
         buf = POINTER(c_char_p)
 
         p_value_array = self._dll_handle.getKeys(self._impl, c_uint64(cout_keys), exception)
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
 
         result = [buf(i)[0].decode() for i in p_value_array[0]]
 
@@ -312,7 +312,7 @@ class Context(ComplexObject):
 
         value = self._dll_handle.isNone(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def is_array(self) -> bool:
@@ -320,7 +320,7 @@ class Context(ComplexObject):
 
         value = self._dll_handle.isArray(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def is_object(self) -> bool:
@@ -328,7 +328,7 @@ class Context(ComplexObject):
 
         value = self._dll_handle.isObject(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def is_bool(self) -> bool:
@@ -336,7 +336,7 @@ class Context(ComplexObject):
 
         value = self._dll_handle.isBool(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def is_long(self) -> bool:
@@ -344,7 +344,7 @@ class Context(ComplexObject):
 
         value = self._dll_handle.isLong(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def is_double(self) -> bool:
@@ -352,7 +352,7 @@ class Context(ComplexObject):
 
         value = self._dll_handle.isDouble(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def is_string(self) -> bool:
@@ -360,7 +360,7 @@ class Context(ComplexObject):
 
         value = self._dll_handle.isString(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def is_data_ptr(self) -> bool:
@@ -368,7 +368,7 @@ class Context(ComplexObject):
 
         value = self._dll_handle.isDataPtr(self._impl, exception)
 
-        check_exception(exception, self._dll_handle)
+        check_processing_block_exception(exception, self._dll_handle)
         return value
 
     def get_value(self):

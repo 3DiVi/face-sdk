@@ -16,7 +16,7 @@
 		android:id="@+id/aboutText1"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="Video recognition with depth and IR liveness demo for Telpo (v 0.2)\n\nFace SDK version 3.22.0\n"
+		android:text="Video recognition with depth and IR liveness demo for Telpo (v 0.2)\n\nFace SDK version 3.22.1\n"
 		android:layout_below="@+id/aboutLogo"
 		/>
 

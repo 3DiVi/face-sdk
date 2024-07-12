@@ -34,6 +34,8 @@ class DllHandle:
         func = self.__dll_handle['{}getErrorCode'.format(self.__exceptionNamcepsace)]
         func.restype = c_uint32
 
+        return func(*args, **kwargs)
+
     def apiProcessingBlockObject_destructor(self, *args, **kwargs):
         self.__dll_handle['{}deleteException'.format(self.__exceptionNamcepsace)](*args, **kwargs)
 
