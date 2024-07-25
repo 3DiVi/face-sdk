@@ -789,7 +789,13 @@ class RawSample(ComplexObject):
 
         return RawSample(self._dll_handle, c_void_p(rs_impl))
 
-
+    ##
+    # \~English
+    #    \brief will transform RawSample into a container-Context
+    #    \return container-Context
+    # \~Russian
+    #    \brief преобразет RawSample в контейнер-Context
+    #    \return контейнер-Context
     def to_context(self):
         exception = make_exception()
 

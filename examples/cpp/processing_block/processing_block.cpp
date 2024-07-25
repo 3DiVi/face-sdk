@@ -150,7 +150,7 @@ void drawEmotions(const pbio::Context& data, cv::Mat& image)
 			text_point.y += text_line_height / 3;
 		}
 	}
-};
+}
 
 void drawAgeGenderMaskQuality(const pbio::Context& data, cv::Mat& image, const std::string& className)
 {
@@ -196,7 +196,42 @@ void drawAgeGenderMaskQuality(const pbio::Context& data, cv::Mat& image, const s
 			}
 		}
 	}
-};
+}
+
+void drawEyeOpenness(const pbio::Context& data, cv::Mat& image)
+{
+	int width = image.cols;
+	int heigth = image.rows;
+	cv::Mat image_copy = image.clone();
+	
+	drawObjects(data, image, std::string("face"));
+	
+	for(const pbio::Context& object : data.at("objects"))
+	{
+		if(object.at("class").getString().compare("face"))
+		{
+			continue;
+		}
+
+		cv::Point textPoint
+		(
+			std::min(static_cast<int>(object.at("bbox")[2].getDouble() * width), width),
+			std::max(static_cast<int>(object.at("bbox")[1].getDouble() * heigth), 0) + 15
+		);
+
+		putTextWithRightExpansion
+		(
+			image, "Is left eye open: " + std::to_string(object.at("is_left_eye_open").at("value").getBool()),
+			textPoint, cv::FONT_HERSHEY_DUPLEX, 0.5, cv::Scalar(0, 0, 255), 1, false
+		);
+
+		putTextWithRightExpansion
+		(
+			image, "Is right eye open: " + std::to_string(object.at("is_right_eye_open").at("value").getBool()),
+			cv::Point(textPoint.x, textPoint.y + 15), cv::FONT_HERSHEY_DUPLEX, 0.5, cv::Scalar(0, 0, 255), 1, false
+		);
+	}
+}
 
 void drawLiveness(const pbio::Context& data, cv::Mat& image)
 {
@@ -222,7 +257,7 @@ void drawLiveness(const pbio::Context& data, cv::Mat& image)
 			}
 		}
 	}
-};
+}
 
 const std::map<std::string, std::string> unitTypes {
 	{"body", "HUMAN_BODY_DETECTOR"},
@@ -233,6 +268,7 @@ const std::map<std::string, std::string> unitTypes {
 	{"age", "AGE_ESTIMATOR"},
 	{"gender","GENDER_ESTIMATOR"},
 	{"mask", "MASK_ESTIMATOR"},
+	{"eye_openness", "EYE_OPENNESS_ESTIMATOR"},
 	{"liveness", "LIVENESS_ESTIMATOR"},
 	{"quality", "QUALITY_ASSESSMENT_ESTIMATOR"},
 	{"pose", "HUMAN_POSE_ESTIMATOR"},
@@ -243,7 +279,7 @@ int main(int argc, char **argv)
 	// print usage
 	std::cout << "usage: " << argv[0] <<
 		" [--input_image <path to image>]"
-		" [--unit_type body|face|face_keypoint|pose|objects|emotions|age|gender|mask|liveness|quality]"
+		" [--unit_type body|face|face_keypoint|pose|objects|emotions|age|gender|mask|eye_openness|liveness|quality]"
 		" [--sdk_path ..]"
 		" [--use_cuda]"
 		<< std::endl;
@@ -341,7 +377,7 @@ int main(int argc, char **argv)
 		}
 
 		else if(!unit_type.compare("emotions") || !unit_type.compare("gender") ||
-				!unit_type.compare("age") || !unit_type.compare("mask") ||
+				!unit_type.compare("age") || !unit_type.compare("mask") || !unit_type.compare("eye_openness") ||
 				!unit_type.compare("face_keypoint"))
 		{
 			auto faceCtx = service->createContext();
@@ -396,6 +432,8 @@ int main(int argc, char **argv)
 			drawEmotions(ioData, image);
 		else if(!unit_type.compare("age") || !unit_type.compare("gender") || !unit_type.compare("mask") || !unit_type.compare("quality"))
 			drawAgeGenderMaskQuality(ioData, image, unit_type);
+		else if (!unit_type.compare("eye_openness"))
+			drawEyeOpenness(ioData, image);
 		else if(unit_type.find("liveness") != std::string::npos)
 			drawLiveness(ioData, image);
 

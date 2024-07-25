@@ -1,3 +1,11 @@
+/**
+	\file ProcessingBlock.h
+	\~English
+	\brief Context is an interface object for storing data and interacting with methods from the Processing Block API.
+	\~Russian
+	\brief Context - интерфейсный объект для хранения данных и взаимодействия с методами из Processing Block API.
+*/
+
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
@@ -34,6 +42,13 @@ inline void tdvCheckException(const DHPtr& dll_handle, ContextEH*& out_exception
 
 class ContextRef;
 
+
+/**
+	\~English
+	\brief Context is an interface object for storing data and interacting with methods from the Processing Block API.
+	\~Russian
+	\brief Context - интерфейсный объект для хранения данных и взаимодействия с методами из Processing Block API.
+*/
 class Context
 {
 
@@ -159,6 +174,15 @@ protected:
 		tdvCheckException(dll_handle, eh_);
 	}
 
+	Context(const DHPtr& dll_handle, const char* path) :
+		dll_handle(dll_handle),
+		weak_(false),
+		eh_(nullptr)
+	{
+		handle_ = dll_handle->TDVContext_createFromJsonFile(path, &eh_);
+		tdvCheckException(dll_handle, eh_);
+	}
+
 	DHPtr dll_handle;
 	HContext* handle_;
 	bool weak_;
@@ -244,6 +268,14 @@ public:
 
 	operator ContextRef();
 
+	/**
+		\~English
+			\brief adds a value to the container
+			\return this
+		\~Russian
+			\brief добавляет значение в контейнер
+			\return this
+	*/
 	template <typename T, typename = typename std::enable_if<!std::is_base_of<Context, typename std::decay<T>::type>::value>::type>
 	Context& operator=(T&& value) {
 		setValue(std::forward<T>(value));
@@ -253,6 +285,14 @@ public:
 	bool operator==(const Context& other) const
 	{return this->handle_ == other.handle_;}
 
+	/**
+		\~English
+			\brief Get the size of the container.
+			\return the size of the container.
+		\~Russian
+			\brief Получить размер контейнера.
+			\return размер контейнера.
+	*/
 	size_t size() const	{
 		size_t lenght = dll_handle->TDVContext_getLength(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
@@ -283,8 +323,25 @@ public:
 		return ContextArrayIterator<true>(*this, -1);
 	}
 
+	/**
+		\~English
+			\brief indexing by key.
+			\param[in] key
+		\~Russian
+			\brief индексация по ключу.
+			\param[in] key
+	*/
 	Ref operator[](const std::string& key);
 	Ref operator[](const char* key);
+
+	/**
+		\~English
+			\brief indexing by index.
+			\param[in] index
+		\~Russian
+			\brief индексация по индексу.
+			\param[in] index
+	*/
 	Ref operator[](const int index);
 
 	const Ref operator[](const std::string& key) const;
@@ -299,20 +356,59 @@ public:
 	const Ref at(const std::string& key) const;
 	const Ref at(const int index) const;
 
+	/**
+		\~English
+			\brief checks the existence of an element by a specific key
+			\param[in] key
+			\return True if the element exists
+		\~Russian
+			\brief проверяет существование элемента по определённому ключу
+			\param[in] key
+			\return True если элемент существует
+	*/
 	bool contains(const std::string& key) const {
-		if (isObject())
-		{
-			/* discard return value as it does not produce new allocation */
-			static_cast<void>(dll_handle->TDVContext_getByKey(handle_, key.c_str(), &eh_));
-			if(eh_)
-			{
-				dll_handle->TDVException_deleteException(eh_);
-				eh_ = nullptr;
-			}
-			else
-				return true;
-		}
-		return false;
+		bool result = dll_handle->TDVContext_contains(handle_, key.data(), &eh_);
+		tdvCheckException(dll_handle, eh_);
+
+		return result;
+	}
+
+	/**
+		\~English
+			\brief compares two Context objects
+			\param[in] other - container-Context
+			\return True if the objects are the same
+		\~Russian
+			\brief сравнивает два объекта Context
+			\param[in] other - контейнер-Context
+			\return True если объекты одинаковые
+	*/
+	bool compare(const Context& other) const {
+		bool result = dll_handle->TDVContext_compare(handle_, other.handle_, &eh_);
+		tdvCheckException(dll_handle, eh_);
+
+		return result;
+	}
+
+	/**
+		\~English
+			\brief returns a list of keys in the container-Context
+			\return key list
+		\~Russian
+			\brief возвращает список ключей в контейнере-Context
+			\return список ключей
+	*/
+	std::vector<std::string> getKeys(){
+		size_t length = size();
+
+		auto keys = dll_handle->TDVContext_getKeys(handle_, length, &eh_);
+		tdvCheckException(dll_handle, eh_);
+
+		std::vector<std::string> result(length);
+		for (size_t i = 0; i < length; ++i)
+			result.emplace_back(keys[i]);
+
+		return result;
 	}
 
 	ContextArrayIterator<> find(const std::string& key) {
@@ -331,6 +427,14 @@ public:
 		push_back(std::move(elem));
 	}
 
+	/**
+		\~English
+			\brief adds a object to the container.
+			\param[in] data - container-Context
+		\~Russian
+			\brief добавляет объект в контейнер.
+			\param[in] data - контейнер-Context
+	*/
 	void push_back(const Context& data) {
 		dll_handle->TDVContext_pushBack(handle_, data.handle_, true, &eh_);
 		tdvCheckException(dll_handle, eh_);
@@ -341,24 +445,56 @@ public:
 		tdvCheckException(dll_handle, eh_);
 	}
 
+	/**
+		\~English
+			\brief returns a double value from the container
+			\return value
+		\~Russian
+			\brief возвращает значение типа double из контейнера
+			\return значение
+	*/
 	double getDouble() const {
 		double ret = dll_handle->TDVContext_getDouble(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return ret;
 	}
 
+	/**
+		\~English
+			\brief returns a long value from the container
+			\return value
+		\~Russian
+			\brief возвращает значение типа long из контейнера
+			\return значение
+	*/
 	long getLong() const {
 		long ret = dll_handle->TDVContext_getLong(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return ret;
 	}
 
+	/**
+		\~English
+			\brief returns a bool value from the container
+			\return value
+		\~Russian
+			\brief возвращает значение типа bool из контейнера
+			\return значение
+	*/
 	bool getBool() const {
 		bool ret = dll_handle->TDVContext_getBool(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return ret;
 	}
 
+	/**
+		\~English
+			\brief returns a std::string value from the container
+			\return value
+		\~Russian
+			\brief возвращает значение типа std::string из контейнера
+			\return значение
+	*/
 	std::string getString() const {
 		unsigned long str_size = dll_handle->TDVContext_getStrSize(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
@@ -369,36 +505,95 @@ public:
 		return ret; // copy elision (NRVO)
 	}
 
+/**
+		\~English
+			\brief returns a pointer to data from the container
+			\return pointer to data
+		\~Russian
+			\brief возвращает указатель на данные из контейнера
+			\return указатель на данные
+	*/
 	unsigned char* getDataPtr() const {
 		unsigned char* ret = dll_handle->TDVContext_getDataPtr(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return ret;
 	}
 
+	/**
+		\~English
+			\brief adds a value of type string to the container
+			\param[in] str - string value
+		\~Russian
+			\brief добавляет значение типа string в контейнер
+			\param[in] str - значение типа string
+	*/
 	void setString(const char* str) {
 		dll_handle->TDVContext_putStr(handle_, str, &eh_);
 		tdvCheckException(dll_handle, eh_);
 	}
+
+	/**
+		\~English
+			\brief adds a value of type std::string to the container
+			\param[in] str - string value
+		\~Russian
+			\brief добавляет значение типа std::string в контейнер
+			\param[in] str - значение типа string
+	*/
 	void setString(const std::string& str) {
 		dll_handle->TDVContext_putStr(handle_, str.c_str(), &eh_);
 		tdvCheckException(dll_handle, eh_);
 	}
 
+	/**
+		\~English
+			\brief adds a value of type long to the container
+			\param[in] val - long value
+		\~Russian
+			\brief добавляет значение типа long в контейнер
+			\param[in] val - значение типа long
+	*/
 	void setLong(long val) {
 		dll_handle->TDVContext_putLong(handle_, val, &eh_);
 		tdvCheckException(dll_handle, eh_);
 	}
 
+	/**
+		\~English
+			\brief adds a value of type double to the container
+			\param[in] val - double value
+		\~Russian
+			\brief добавляет значение типа double в контейнер
+			\param[in] val - значение типа double
+	*/
 	void setDouble(double val) {
 		dll_handle->TDVContext_putDouble(handle_, val, &eh_);
 		tdvCheckException(dll_handle, eh_);
 	}
 
+	/**
+		\~English
+			\brief adds a value of type bool to the container
+			\param[in] val - bool value
+		\~Russian
+			\brief добавляет значение типа bool в контейнер
+			\param[in] val - значение типа bool
+	*/
 	void setBool(bool val) {
 		dll_handle->TDVContext_putBool(handle_, val, &eh_);
 		tdvCheckException(dll_handle, eh_);
 	}
 
+	/**
+		\~English
+			\brief adds a pointer to the data in the container
+			\param[in] ptr - pointer to data
+			\param[in] copy_sz - the number of copied elements, if 0 is specified, then there will be no copying
+		\~Russian
+			\brief добавляет указатель на данные в контейнер
+			\param[in] ptr - указатель на данные
+			\param[in] copy_sz - количество копируемых элементов, если указан 0 то копирования не будет
+	*/
 	unsigned char* setDataPtr(void* ptr, int copy_sz = 0) {
 		unsigned char* ret{nullptr};
 		if(copy_sz && !ptr)
@@ -415,48 +610,112 @@ public:
 		return ret;
 	}
 
+	/**
+		\~English
+			\brief checks if there are no elements in the container
+			\return True if the container is empty
+		\~Russian
+			\brief проверяет нет ли в контейнере элементов
+			\return True если контейнер пуст
+	*/
 	bool isNone() const {
 		bool value = dll_handle->TDVContext_isNone(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return value;
 	}
 
+	/**
+		\~English
+			\brief checks whether the container is an array
+			\return True if the container is an array
+		\~Russian
+			\brief проверяет является ли контейнере массивом
+			\return True если контейнер является массивом
+	*/
 	bool isArray() const {
 		bool value = dll_handle->TDVContext_isArray(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return value;
 	}
 
+	/**
+		\~English
+			\brief checks whether the container is an object
+			\return True if the container is an object
+		\~Russian
+			\brief проверяет является ли контейнер объектом
+			\return True если контейнер является объектом
+	*/
 	bool isObject() const {
 		bool value = dll_handle->TDVContext_isObject(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return value;
 	}
 
+	/**
+		\~English
+			\brief checks whether the container is a bool type value
+			\return True if the container is a bool type value
+		\~Russian
+			\brief проверяет является ли контейнер значением типа bool
+			\return True если контейнер является значением типа bool
+	*/
 	bool isBool() const {
 		bool val = dll_handle->TDVContext_isBool(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return val;
 	}
 
+	/**
+		\~English
+			\brief проверяет является ли контейнер значением типа long
+			\return True если контейнер является значением типа long
+		\~Russian
+			\brief проверяет является ли контейнер значением типа long
+			\return True если контейнер является значением типа long
+	*/
 	bool isLong() const {
 		bool val = dll_handle->TDVContext_isLong(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return val;
 	}
 
+	/**
+		\~English
+			\brief checks whether the container is a long type double
+			\return True if the container is a double type value
+		\~Russian
+			\brief проверяет является ли контейнер значением типа double
+			\return True если контейнер является значением типа double
+	*/
 	bool isDouble() const {
 		bool val = dll_handle->TDVContext_isDouble(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return val;
 	}
 
+	/**
+		\~English
+			\brief checks whether the container is a long type string
+			\return True if the container is a string type value
+		\~Russian
+			\brief проверяет является ли контейнер значением типа string
+			\return True если контейнер является значением типа string
+	*/
 	bool isString() const {
 		bool val = dll_handle->TDVContext_isString(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return val;
 	}
 
+	/**
+		\~English
+			\brief checks whether the container is a pointer to the data
+			\return True if the container is a pointer to the data
+		\~Russian
+			\brief проверяет является ли контейнер указателем на данные
+			\return True если контейнер является указателем на данные
+	*/
 	bool isDataPtr() const {
 		bool val = dll_handle->TDVContext_isDataPtr(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
@@ -466,8 +725,80 @@ public:
 	HContext* getHandle() {return handle_;}
 	const HContext* getHandle() const {return handle_;}
 
+	/**
+		\~English
+			\brief clears the contents of the container-Context.
+		\~Russian
+			\brief очищает содержимое контейнера-Context.
+	*/
 	void clear() {
 		dll_handle->TDVContext_clear(handle_, &eh_);
+		tdvCheckException(dll_handle,eh_);
+	}
+
+	/**
+		\~English
+			\brief deletes the contents of the container-Context stored by key.
+			\param[in] str.
+		\~Russian
+			\brief удаляет содержимое контейнера-Context хранящиеся по ключу.
+			\param[in] str.
+	*/
+	void erase(const char* str) {
+		dll_handle->TDVContext_erase(handle_, str, &eh_);
+		tdvCheckException(dll_handle,eh_);
+	}
+
+	/**
+		\~English
+			\brief deletes the contents of the container-Context stored by key.
+			\param[in] key.
+		\~Russian
+			\brief удаляет содержимое контейнера-Context хранящиеся по ключу.
+			\param[in] key.
+	*/
+	void erase(const std::string& str) {
+		erase(str.data());
+	}
+
+	/**
+		\~English
+			\brief allocates memory for num elements in the array.
+			\param[in] size - the size of the array.
+		\~Russian
+			\brief выделяет память под num элементов в массиве.
+			\param[in] size - размер массива.
+	*/
+	void reserve(const size_t size) {
+		dll_handle->TDVContext_reserve(handle_, size, &eh_);
+		tdvCheckException(dll_handle,eh_);
+	}
+
+	/**
+		\~English
+			\brief saves the contents of the container to a json file
+			\param[in] path - the path to the file
+		\~Russian
+			\brief сохраняет содержимое контейнера в json файл
+			\param[in] path - путь до файла
+	*/
+	void saveToJsonFile(std::string& path)
+	{
+		dll_handle->TDVContext_saveToJsonFile(handle_, path.c_str(), &eh_);
+		tdvCheckException(dll_handle,eh_);
+	}
+
+	/**
+		\~English
+			\brief saves the contents of the container to a json file
+			\param[in] path - the path to the file
+		\~Russian
+			\brief сохраняет содержимое контейнера в json файл
+			\param[in] path - путь до файла
+	*/
+	void saveToJsonFile(const char* path)
+	{
+		dll_handle->TDVContext_saveToJsonFile(handle_, path, &eh_);
 		tdvCheckException(dll_handle,eh_);
 	}
 

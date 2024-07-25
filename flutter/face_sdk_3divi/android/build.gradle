@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:7.4.1'
     }
 }
 
@@ -29,3 +29,19 @@ android {
     }
 
 }
+
+task copyLibraries() {
+    copy {
+        from "${projectDir}/../assets/lib/arm64-v8a"
+        into "${rootDir}/../assets/lib/arm64-v8a"
+        include "*.so"
+    }
+
+    copy {
+        from "${projectDir}/../assets/lib/armeabi-v7a"
+        into "${rootDir}/../assets/lib/armeabi-v7a"
+        include "*.so"
+    }
+}
+
+preBuild.dependsOn copyLibraries

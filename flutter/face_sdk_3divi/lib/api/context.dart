@@ -53,6 +53,20 @@ class Context extends _ComplexObject {
     malloc.free(dataPointer);
   }
 
+  Context.fromJsonFile(DynamicLibrary dll_handle, String path)
+      : super(dll_handle, nullptr) {
+    var constructor = dll_handle.lookupFunction<_Context_CreateFromJsonFile_c, _Context_CreateFromJsonFile_dart>(
+        _context_namespace + "createFromJsonFile");
+
+    var exception = _getException();
+
+    final newImpl = constructor(path.toNativeUtf8(), exception);
+
+    tdvCheckException(exception, _dll_handle);
+
+    this._impl = newImpl;
+  }
+
   void dispose() {
     if (_isDisposed) return;
 
@@ -69,7 +83,7 @@ class Context extends _ComplexObject {
 
   Context operator [](dynamic key) {
     if (key is String) {
-      return this._getByKey(key);
+      return this._getOrInsertByKey(key);
     } else if (key is int) {
       return this._getByIndex(key);
     }
@@ -130,8 +144,80 @@ class Context extends _ComplexObject {
     }
   }
 
-  void pushBack(Context data) {
-    this._pushBack(data);
+  void clear() {
+    var exception = _getException();
+
+    final constructor = _dll_handle.lookupFunction<_Context_clear_c, _Context_clear_dart>(_context_namespace + 'clear');
+
+    constructor(_impl, exception);
+
+    tdvCheckException(exception, _dll_handle);
+  }
+
+  void erase(String key) {
+    var exception = _getException();
+
+    final constructor = _dll_handle.lookupFunction<_Context_erase_c, _Context_erase_dart>(_context_namespace + 'erase');
+
+    constructor(_impl, key.toNativeUtf8(), exception);
+
+    tdvCheckException(exception, _dll_handle);
+  }
+
+  void reserve(int size) {
+    var exception = _getException();
+
+    final constructor = _dll_handle.lookupFunction<_Context_reserve_c, _Context_reserve_dart>(_context_namespace + 'reserve');
+
+    constructor(_impl, size, exception);
+
+    tdvCheckException(exception, _dll_handle);
+  }
+
+  bool contains(String key) {
+    var exception = _getException();
+
+    final constructor = _dll_handle.lookupFunction<_Context_contains_c, _Context_contains_dart>(_context_namespace + 'contains');
+
+    bool result = constructor(_impl, key.toNativeUtf8(), exception);
+
+    tdvCheckException(exception, _dll_handle);
+
+    return result;
+  }
+
+  bool compare(Context ctx) {
+    var exception = _getException();
+
+    final constructor = _dll_handle.lookupFunction<_Context_compare_c, _Context_compare_dart>(_context_namespace + 'compare');
+
+    bool result = constructor(_impl, ctx._impl, exception);
+
+    tdvCheckException(exception, _dll_handle);
+
+    return result;
+  }
+
+  void saveToJsonFile(String path) {
+    var exception = _getException();
+
+    final constructor = _dll_handle.lookupFunction<_Context_saveToJsonFile_c, _Context_saveToJsonFile_dart>(_context_namespace + 'saveToJsonFile');
+
+    constructor(_impl, path.toNativeUtf8(), exception);
+
+    tdvCheckException(exception, _dll_handle);
+
+  }
+
+  void pushBack(data) {
+    if (data is Context) {
+      this._pushBack(data);
+    } else {
+      var ctx = Context(this._dll_handle, nullptr);
+      ctx.placeValues(data);
+      this._pushBack(ctx);
+      ctx.dispose();
+    }
   }
 
   void insertMap(Map data) {

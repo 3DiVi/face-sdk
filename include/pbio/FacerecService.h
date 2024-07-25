@@ -1087,18 +1087,100 @@ public:
 		const char* serializedConfig) const;
 
 #ifndef WITHOUT_PROCESSING_BLOCK
+	/**
+		\~English
+			\brief creates a container-Context
+			\return container-Context
+		\~Russian
+			\brief создаёт контейнер-Context
+			\return контейнер-Context
+	*/
 	Context createContext() const;
 
+	/**
+		\~English
+			\brief creates a container-Context from an encoded image
+			\param[in] data - pointer to data
+			\param[in] dataSize - the size of the data
+			\return container-Context
+		\~Russian
+			\brief создаёт контейнер-Context из закодированного изображения
+			\param[in] data - указатель на данные
+			\param[in] dataSize - размер данных
+			\return контейнер-Context
+	*/
 	Context createContextFromEncodedImage(const uint8_t* data, uint64_t dataSize) const;
 
+	/**
+		\~English
+			\brief creates a container-Context from an encoded image
+			\param[in] data - image data in vector
+			\return container-Context
+		\~Russian
+			\brief создаёт контейнер-Context из закодированного изображения
+			\param[in] data - данные изображения в векторе
+			\return контейнер-Context
+	*/
 	Context createContextFromEncodedImage(const std::vector<uint8_t>& data) const;
 
+	/**
+		\~English
+			\brief creates a container-Context from an encoded image
+			\param[in] image data in string
+			\return container-Context
+		\~Russian
+			\brief создаёт контейнер-Context из закодированного изображения
+			\param[in] data - данные изображения в строке
+			\return контейнер-Context
+	*/
 	Context createContextFromEncodedImage(const std::string& data) const;
 
 	Context createContextFromEncodedImage(const std::vector<char>& data) const;
 
+	/**
+		\~English
+			\brief creates a container-Context from an image
+			\param[in] data - image bytes
+			\param[in] width - the width of the image in pixels
+			\param[in] height - the height of the image in pixels
+			\param[in] format - image format
+			\param[in] base_angle - the type of angle the purpose of which the image is expanded
+			\return container-Context
+		\~Russian
+			\brief создаёт контейнер-Context из изображения
+			\param[in] data - байты изображения
+			\param[in] width - ширина изображения в пикселях
+			\param[in] height - высота изображения в пикселях
+			\param[in] format - формат изображения
+			\param[in] base_angle - тип угла на значение которого развёрнуто изображение
+			\return контейнер-Context
+	*/
 	Context createContextFromFrame(uint8_t* data, int32_t width, int32_t height, Context::Format format = Context::Format::FORMAT_BGR, int32_t baseAngle = 0) const;
 
+	Context createContextFromJsonFile(const char* path);
+
+	/**
+		\~English
+			\brief creates a container-Context from a json file
+			\param[in] path - path to the json file
+			\return container-Context
+		\~Russian
+			\brief создаёт контейнер-Context из json файла
+			\param[in] path - путь до json файла
+			\return контейнер-Context
+	*/
+	Context createContextFromJsonFile(std::string path);
+
+	/**
+		\~English
+			\brief creates a processing block
+			\param[in] config - container-Context containing the configuration of the processing block
+			\return processing block
+		\~Russian
+			\brief создаёт процессинг блок
+			\param[in] config - контейнер-Context содержащий конфигурацию процессинг-блока
+			\return процессинг-блок
+	*/
 	ProcessingBlock createProcessingBlock(const Context& config) const;
 #endif
 
@@ -2118,6 +2200,16 @@ inline Context FacerecService::createContextFromEncodedImage(const std::vector<c
 inline Context FacerecService::createContextFromFrame(uint8_t* data, int32_t width, int32_t height, Context::Format format, int32_t baseAngle) const
 {
 	return Context(_dll_handle, data, width, height, format, baseAngle);
+}
+
+inline Context FacerecService::createContextFromJsonFile(const char* path)
+{
+	return Context(_dll_handle, path);
+}
+
+inline Context FacerecService::createContextFromJsonFile(std::string path)
+{
+	return Context(_dll_handle, path.c_str());
 }
 
 inline ProcessingBlock FacerecService::createProcessingBlock(const Context& config) const

@@ -52,17 +52,73 @@ class FacerecService(ComplexObject):
         super(FacerecService, self).__init__(dll_handle, impl)
         self.__facerec_conf_dir = facerec_conf_dir
 
-    def create_context(self, ctx: dict) -> Context:
+    ##
+    # \~English
+    #    \brief creates a container-Context from dict
+    #    \param[in] ctx - dict
+    #    \return container-Context
+    # \~Russian
+    #    \brief создаёт контейнер-Context из dict
+    #    \param[in] ctx - dict
+    #    \return контейнер-Context
+    def create_context(self, ctx: dict = {}) -> Context:
         meta_ctx = Context(self._dll_handle)
         meta_ctx(ctx)
         return meta_ctx
 
+    ##
+    # \~English
+    #    \brief creates a container-Context from an encoded image
+    #    \param[in] data - image bytes
+    #    \return container-Context
+    # \~Russian
+    #    \brief создаёт контейнер-Context из закодированного изображения
+    #    \param[in] data - байты изображения
+    #    \return контейнер-Context
     def create_context_from_encoded_image(self, data: bytes) -> Context:
         return Context.from_image(self._dll_handle, data)
 
+    ##
+    # \~English
+    #    \brief creates a container-Context from an image
+    #    \param[in] data - image bytes
+    #    \param[in] width - the width of the image in pixels
+    #    \param[in] height - the height of the image in pixels
+    #    \param[in] format - image format
+    #    \param[in] base_angle - the type of angle the purpose of which the image is expanded
+    #    \return container-Context
+    # \~Russian
+    #    \brief создаёт контейнер-Context из изображения
+    #    \param[in] data - байты изображения
+    #    \param[in] width - ширина изображения в пикселях
+    #    \param[in] height - высота изображения в пикселях
+    #    \param[in] format - формат изображения
+    #    \param[in] base_angle - тип угла на значение которого развёрнуто изображение
+    #    \return контейнер-Context
     def create_context_from_frame(self, data: bytes, width: int, height: int, format: ContextFormat = ContextFormat.FORMAT_BGR, base_angle: int = 0) -> Context:
         return Context.from_frame(self._dll_handle, data, width, height, format, base_angle)
 
+    ##
+    # \~English
+    #    \brief creates a container-Context from a json file
+    #    \param[in] path - the path to the file
+    #    \return container-Context
+    # \~Russian
+    #    \brief создаёт контейнер-Context из json файла
+    #    \param[in] path - путь до файла
+    #    \return контейнер-Context
+    def create_context_from_json_file(self, path: str) -> Context:
+        return Context.from_json_file(self._dll_handle, path)
+
+    ##
+    # \~English
+    #    \brief creates a processing block
+    #    \param[in] container-Context containing the configuration of the processing block
+    #    \return processing block
+    # \~Russian
+    #    \brief создаёт процессинг блок
+    #    \param[in] config - контейнер-Context содержащий конфигурацию процессинг-блока
+    #    \return процессинг-блок
     def create_processing_block(self, ctx: dict) -> ProcessingBlock:
         exception = make_exception()
         meta_ctx = self.create_context(ctx)

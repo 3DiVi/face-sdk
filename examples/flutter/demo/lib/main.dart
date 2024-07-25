@@ -17,29 +17,7 @@ import 'video.dart';
 import 'routes.dart';
 import 'home.dart';
 
-
-
 late List<CameraDescription> cameras;
-late String dataDir;
-
-Future<String> loadAsset() async {
-  final manifestContent = await rootBundle.loadString('AssetManifest.json');
-  final Map<String, dynamic> manifestMap = jsonDecode(manifestContent);
-  Directory doc_directory = await getApplicationDocumentsDirectory();
-  for (String key in manifestMap.keys) {
-    var dbPath = doc_directory.path + '/' + key;
-    if (FileSystemEntity.typeSync(dbPath) == FileSystemEntityType.notFound ||
-        dbPath.contains('conf/facerec') || dbPath.contains('license')) {
-      ByteData data = await rootBundle.load(key);
-      List<int> bytes = data.buffer.asUint8List(
-          data.offsetInBytes, data.lengthInBytes);
-      File file = File(dbPath);
-      file.createSync(recursive: true);
-      await file.writeAsBytes(bytes);
-    }
-  }
-  return doc_directory.path + '/assets';
-}
 
 Future<Null> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +26,6 @@ Future<Null> main() async {
   } on CameraException catch (e) {
     print('Error: $e.code\nError Message: $e.message');
   }
-  dataDir = await loadAsset();
   runApp(Phoenix(child: new MyApp()));
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -171,7 +148,7 @@ class _MyAppState extends State<MyApp> {
       onGenerateRoute: (settings){
         Widget page;
         if (settings.name == routeHome) {
-          page = HomePage(cameras, dataDir, detectIDRoute, setService);
+          page = HomePage(cameras, detectIDRoute, setService);
         }
         else if (settings.name == detectIDRoute){
           page = DetectPicture(cameras, _facerecService!, _recognizer!, 'Take a photo of the document', livenessRoute, setIDTemplate);

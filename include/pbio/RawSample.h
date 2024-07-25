@@ -862,6 +862,14 @@ public:
 	RawSample::Ptr downscaleToPreferredSize() const;
 
 #ifndef WITHOUT_PROCESSING_BLOCK
+	/**
+		\~English
+			\brief will transform RawSample into a container-Context
+			\return container-Context
+		\~Russian
+			\brief преобразет RawSample в контейнер-Context
+			\return контейнер-Context
+	*/
 	Context toContext() const;
 #endif
 

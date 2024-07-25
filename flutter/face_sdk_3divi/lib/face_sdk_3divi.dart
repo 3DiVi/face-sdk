@@ -57,12 +57,8 @@ class FaceSdkPlugin {
 
   /// Create a FacerecService using default library paths: `libfacerec.so`
   /// on Andorid and `facerec.framework/libfacerec.dylib` on iOS.<br>
-  /// To use a custom library path, use the [FacerecService.createService] method.
-  static FacerecService createFacerecService(final String facerecConfDir,
-      final String licenseDir,
-      {String? libPath}) {
-    return FacerecService.createService(
-        facerecConfDir, licenseDir, libPath ?? FaceSdkPlugin.nativeLibName);
+  static Future<FacerecService> createFacerecService() async {
+    return FacerecService.createService();
   }
 }
 

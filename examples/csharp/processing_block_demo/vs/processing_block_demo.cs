@@ -45,6 +45,7 @@ namespace csharp_processing_block_demo
 			{ "age", "AGE_ESTIMATOR" },
 			{ "gender","GENDER_ESTIMATOR" },
 			{ "mask", "MASK_ESTIMATOR" },
+			{ "eye_openness", "EYE_OPENNESS_ESTIMATOR" },
 			{ "liveness", "LIVENESS_ESTIMATOR" },
 			{ "quality", "QUALITY_ASSESSMENT_ESTIMATOR" },
 			{ "pose", "HUMAN_POSE_ESTIMATOR" },
@@ -55,10 +56,10 @@ namespace csharp_processing_block_demo
 			Console.WriteLine
 			(
 				$@"Usage: dotnet csharp_csharp_processing_block_demo.dll {System.Reflection.Assembly.GetExecutingAssembly().Location}
-				 [--input_image <path to image>]
-				 [--unit_type body|face|face_keypoint|pose|objects|emotions|age|gender|mask|liveness|quality]
-				 [--sdk_path ../../../]
-				 [--use_cuda]"
+				[--input_image <path to image>]
+				[--unit_type body|face|face_keypoint|pose|objects|emotions|age|gender|mask|eye_openness|liveness|quality]
+				[--sdk_path ../../../]
+				[--use_cuda]"
 			);
 
 			bool error = false;
@@ -152,7 +153,7 @@ namespace csharp_processing_block_demo
 						ioData["objects"].PushBack(sample.ToContext());
 					}
 				}
-				else if (new List<string> { "emotions", "gender", "age", "mask", "face_keypoint" }.Contains(unitType))
+				else if (new List<string> { "emotions", "gender", "age", "mask", "eye_openness", "face_keypoint" }.Contains(unitType))
 				{
 					ProcessingBlock faceBlock = service.CreateProcessingBlock
 					(
@@ -244,6 +245,11 @@ namespace csharp_processing_block_demo
 					case "mask":
 					case "quality":
 						DrawAgeGenderMaskQuality(ioData, image, unitType);
+
+						break;
+
+					case "eye_openness":
+						DrawEyeOpenness(ioData, image);
 
 						break;
 
@@ -425,6 +431,7 @@ namespace csharp_processing_block_demo
 				}
 			}
 		}
+
 		private static void DrawAgeGenderMaskQuality(Context ioData, Mat image, string classFilter = "")
 		{
 			int width = image.Cols;
@@ -494,6 +501,33 @@ namespace csharp_processing_block_demo
 						objectsCounter++;
 					}
 				}
+			}
+		}
+
+		private static void DrawEyeOpenness(Context ioData, Mat image)
+		{
+			int width = image.Cols;
+			int heigth = image.Rows;
+			Context objects = ioData["objects"];
+
+			DrawObjects(ioData, image, "face");
+
+			for (int i = 0; i < (int)objects.Length(); i++)
+			{
+				Context obj = objects[i];
+
+				if (obj["class"].GetString() != "face")
+				{
+					continue;
+				}
+
+				OpenCvSharp.Point textPoint = new(obj["bbox"][2].GetDouble() * width, obj["bbox"][1].GetDouble() * heigth);
+
+				PutTextWithRightExpansion(image, $"Is left eye open: {obj["is_left_eye_open"]["value"].GetBool()}", textPoint, HersheyFonts.HersheyDuplex, 0.5, new(0, 0, 255), 1);
+
+				textPoint.Y += 15;
+
+				PutTextWithRightExpansion(image, $"Is right eye open: {obj["is_right_eye_open"]["value"].GetBool()}", textPoint, HersheyFonts.HersheyDuplex, 0.5, new(0, 0, 255), 1);
 			}
 		}
 

@@ -76,9 +76,13 @@ class FacerecService extends _ComplexObject {
 
   /// Initializes the facerec library (can be called only once).<br>
   ///<br>
-  /// Use with custom path to facerec library ([dllPath]).<br>
   /// By default it is recommended to use [FaceSdkPlugin.createFacerecService].
-  static FacerecService createService(final String facerecConfDir, final String licenseDir, final String dllPath) {
+  static Future<FacerecService> createService() async {
+    final String dataDirectory = await loadAssets();
+    final String libraryDirectory = await getLibraryDirectory();
+    final String facerecConfDir = "$dataDirectory/conf/facerec";
+    final String licenseDir = "$dataDirectory/license";
+    final String dllPath = "$libraryDirectory/${FaceSdkPlugin.nativeLibName}";
     final DynamicLibrary dylib = DynamicLibrary.open(dllPath);
 
     final createService =
@@ -88,6 +92,7 @@ class FacerecService extends _ComplexObject {
     final pointer =
         createService(facerecConfDir.toNativeUtf8(), licenseDir.toNativeUtf8(), dllPath.toNativeUtf8(), exception);
     checkException(exception, dylib);
+
     return FacerecService(dylib, pointer, facerecConfDir, dllPath);
   }
 
@@ -198,6 +203,10 @@ class FacerecService extends _ComplexObject {
   Context createContextFromFrame(Uint8List data, int width, int height,
       {ContextFormat format = ContextFormat.FORMAT_YUV420, int baseAngle = 0}) {
     return Context.fromFrame(_dll_handle, data, width, height, format, baseAngle);
+  }
+
+  Context createContextFromJsonFile(String path) {
+    return Context.fromJsonFile(_dll_handle, path);
   }
 
   ProcessingBlock createProcessingBlock(Map ctx) {

@@ -500,19 +500,19 @@ class DllHandle:
         return func(*args, **kwargs)
 
     def VideoWorker_removeTrackingCallback(self, *args, **kwargs):
-        func = self.__dll_handle['{}VideoWorker_removeTrackingCallback'.format(self.__namespace)](*args, **kwargs)
+        self.__dll_handle['{}VideoWorker_removeTrackingCallback'.format(self.__namespace)](*args, **kwargs)
 
     def VideoWorker_removeTrackingLostCallback(self, *args, **kwargs):
-        func = self.__dll_handle['{}VideoWorker_removeTrackingLostCallback'.format(self.__namespace)](*args, **kwargs)
+        self.__dll_handle['{}VideoWorker_removeTrackingLostCallback'.format(self.__namespace)](*args, **kwargs)
 
     def VideoWorker_removeTemplateCreatedCallback(self, *args, **kwargs):
-        func = self.__dll_handle['{}VideoWorker_removeTemplateCreatedCallback'.format(self.__namespace)](*args, **kwargs)
+        self.__dll_handle['{}VideoWorker_removeTemplateCreatedCallback'.format(self.__namespace)](*args, **kwargs)
 
     def VideoWorker_removeMatchFoundCallback(self, *args, **kwargs):
-        func = self.__dll_handle['{}VideoWorker_removeMatchFoundCallback'.format(self.__namespace)](*args, **kwargs)
+        self.__dll_handle['{}VideoWorker_removeMatchFoundCallback'.format(self.__namespace)](*args, **kwargs)
 
     def VideoWorker_removeStiPersonOutdatedCallback(self, *args, **kwargs):
-        func = self.__dll_handle['{}VideoWorker_removeStiPersonOutdatedCallback'.format(self.__namespace)](*args, **kwargs)
+        self.__dll_handle['{}VideoWorker_removeStiPersonOutdatedCallback'.format(self.__namespace)](*args, **kwargs)
 
     def VideoWorker_setDatabase(self, *args, **kwargs):
         self.__dll_handle['{}VideoWorker_setDatabase'.format(self.__namespace)](*args, **kwargs)
@@ -572,6 +572,15 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
+    def create_from_json_file(self, *args, **kwargs):
+        func = self.__dll_handle['{}createFromJsonFile'.format(self.__contextNamespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def save_to_json_file(self, *args, **kwargs):
+        func = self.__dll_handle['{}saveToJsonFile'.format(self.__contextNamespace)](*args, **kwargs)
+
     def freePtr(self, *args, **kwargs):
         self.__dll_handle['{}freePtr'.format(self.__contextNamespace)](*args, **kwargs)
 
@@ -584,6 +593,24 @@ class DllHandle:
         func.restype = c_void_p
         return func(*args, **kwargs)
 
+    def clear(self,  *args, **kwargs):
+        self.__dll_handle['{}clear'.format(self.__contextNamespace)](*args, **kwargs)
+
+    def erase(self,  *args, **kwargs):
+        self.__dll_handle['{}erase'.format(self.__contextNamespace)](*args, **kwargs)
+
+    def reserve(self,  *args, **kwargs):
+        self.__dll_handle['{}reserve'.format(self.__contextNamespace)](*args, **kwargs)
+
+    def contains(self, *args, **kwargs):
+        func = self.__dll_handle['{}contains'.format(self.__contextNamespace)]
+        func.restype = c_bool
+        return func(*args, **kwargs)
+
+    def compare(self, *args, **kwargs):
+        func = self.__dll_handle['{}compare'.format(self.__contextNamespace)]
+        func.restype = c_bool
+        return func(*args, **kwargs)
 
     def putStr(self, *args, **kwargs):
         self.__dll_handle['{}putStr'.format(self.__contextNamespace)](*args, **kwargs)

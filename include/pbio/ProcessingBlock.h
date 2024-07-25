@@ -47,6 +47,16 @@ public:
 		return *this;
 	}
 
+	/**
+		\~English
+		\brief
+			Calling the processing block function.
+		\param[in]  сtx Context
+		\~Russian
+		\brief
+			Вызов функции процессинг-блока.
+		\param[in]  сtx Context
+	*/
 	virtual void operator()(pbio::Context& ctx)
 	{
 		dll_handle_->TDVProcessingBlock_processContext(handle_, ctx.getHandle(), &eh_);

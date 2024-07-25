@@ -9,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:face_sdk_3divi/face_sdk_3divi.dart';
 
-import 'loading.dart';
 import 'structs.dart';
 
 void main() {
@@ -86,7 +85,7 @@ class _HomePageState extends State<HomePage> {
     return null;
   }
 
-  void _pickImage() async {
+  Future<void> _pickImage() async {
     final XFile? file = await picker.pickImage(source: ImageSource.gallery);
 
     setState(() {
@@ -101,32 +100,15 @@ class _HomePageState extends State<HomePage> {
       return;
     }
 
-    final image_lib.Decoder? decoder = _createDecoder(file.path);
-
-    if (decoder == null) {
-      setState(() {
-        currentStateText = const Text("Not supported image format");
-      });
-
-      return;
-    }
-
     setState(() {
       currentStateText = const Text("Processing image...");
     });
 
     final Uint8List bytes = await file.readAsBytes();
 
-    final ImageDescriptor descriptor = await ImageDescriptor.encoded(await ImmutableBuffer.fromUint8List(bytes));
-    final Context data = service.createContext({
-      "objects": [],
-      "image": {
-        "blob": decoder.decodeImage(bytes)!.getBytes(format: image_lib.Format.rgb),
-        "dtype": "uint8_t",
-        "format": "NDARRAY",
-        "shape": [descriptor.height, descriptor.width, 3]
-      }
-    });
+    final Context data = service.createContextFromEncodedImage(bytes);
+    final image_width = data["image"]["shape"][1].get_value();
+    final image_height = data["image"]["shape"][0].get_value();
 
     faceDetector.process(data);
 
@@ -152,10 +134,10 @@ class _HomePageState extends State<HomePage> {
       Context bbox = object["bbox"];
       Context quality = object["quality"];
 
-      double x1 = bbox[0].get_value() * descriptor.width;
-      double y1 = bbox[1].get_value() * descriptor.height;
-      double x2 = bbox[2].get_value() * descriptor.width;
-      double y2 = bbox[3].get_value() * descriptor.height;
+      double x1 = bbox[0].get_value() * image_width;
+      double y1 = bbox[1].get_value() * image_height;
+      double x2 = bbox[2].get_value() * image_width;
+      double y2 = bbox[3].get_value() * image_height;
 
       results[BBox(x1: x1, y1: y1, x2: x2, y2: y2)] = TextInformation(quality, quality["total_score"].get_value());
     }
@@ -186,7 +168,7 @@ class _HomePageState extends State<HomePage> {
       painter.paint(canvas, Offset(bbox.x2, bbox.y1));
     });
 
-    ByteData? pngBytes = await (await recorder.endRecording().toImage(descriptor.width, descriptor.height))
+    ByteData? pngBytes = await (await recorder.endRecording().toImage(image_width, image_height))
         .toByteData(format: ImageByteFormat.png);
 
     setState(() {
@@ -249,7 +231,7 @@ class _HomePageState extends State<HomePage> {
       isInitialized = false;
     });
 
-    getDirs().then((dirs) => createService(dirs[0], dirs[1]));
+    initializeFaceSDK();
   }
 
   @override
@@ -257,13 +239,13 @@ class _HomePageState extends State<HomePage> {
     faceDetector.dispose();
     fitter.dispose();
     qualityAssessment.dispose();
+    service.dispose();
 
     super.dispose();
   }
 
-  void createService(String dataDir, String libDir) {
-    service = FaceSdkPlugin.createFacerecService("$dataDir/conf/facerec", "$dataDir/license",
-        libPath: "$libDir/${FaceSdkPlugin.nativeLibName}");
+  Future<void> initializeFaceSDK() async {
+    service = await FaceSdkPlugin.createFacerecService();
 
     faceDetector = service.createProcessingBlock(
         {"unit_type": "FACE_DETECTOR", "modification": "uld", "precision_level": 3});

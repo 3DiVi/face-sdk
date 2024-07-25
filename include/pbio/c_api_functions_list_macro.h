@@ -3372,6 +3372,36 @@ namespace capi {
 	\
 	decl( \
 		HContext*, \
+		TDVContext_createFromJsonFile, \
+		( \
+			const char* path, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			path, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_saveToJsonFile, \
+		( \
+			HContext* ctx, \
+			const char* path, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			path, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		HContext*, \
 		TDVContext_getByIndex, \
 		( \
 			HContext* ctx, \
@@ -3453,6 +3483,80 @@ namespace capi {
 		TDVContext_clear, \
 		( \
 			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_erase, \
+		( \
+			HContext* ctx, \
+			const char* key, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_reserve, \
+		( \
+			HContext* ctx, \
+			const uint64_t size, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_contains, \
+		( \
+			HContext* ctx, \
+			const char* key, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_empty, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_compare, \
+		( \
+			HContext* ctx, \
+			HContext* ctx2, \
 			ContextEH** errorHandler \
 		), \
 		( \

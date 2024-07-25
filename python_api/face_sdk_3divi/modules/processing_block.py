@@ -1,5 +1,5 @@
 ##
-#  \file face_attributes_estimator.py
+#  \file processing_block.py
 #  \~English
 #     \brief ProcessingBlock is an interface object used to work with estimators from Processing Block API.
 #  \~Russian
@@ -35,6 +35,17 @@ class ProcessingBlock(ComplexObject):
 
         check_exception(exception, self._dll_handle)
 
+    ##
+    # \~English
+    #    \brief Calling the processing block function.
+    #
+    #    \param[in] сtx Context or dict.
+    #
+    # \~Russian
+    #    \brief Вызов функции процессинг-блока.
+    #
+    #    \param[in] ctx Context или dict.
+    #
     def __call__(self, ctx: Union[dict, Context]):
         if isinstance(ctx, dict):
             self.__call_dicts(ctx)
@@ -52,7 +63,7 @@ class ProcessingBlock(ComplexObject):
 
         check_processing_block_exception(exception, self._dll_handle)
 
-        self.get_output_data(ctx, meta_ctx)
+        self.__get_output_data(ctx, meta_ctx)
 
     def __call_ctx(self, ctx: Context):
         exception = make_exception()
@@ -61,24 +72,33 @@ class ProcessingBlock(ComplexObject):
 
         check_processing_block_exception(exception, self._dll_handle)
 
-    def get_output_data(self, ctx: dict, meta_ctx: Context):
+    def __get_output_data(self, ctx: dict, meta_ctx: Context):
         if meta_ctx.is_array():
             for i in range(len(meta_ctx)):
-                self.get_output_data(ctx[i], meta_ctx[i])
+                self.__get_output_data(ctx[i], meta_ctx[i])
 
         if meta_ctx.is_object():
             for key in ctx.keys():
-                self.get_output_data(ctx[key], meta_ctx[key])
+                self.__get_output_data(ctx[key], meta_ctx[key])
 
             new_keys_dict = set(meta_ctx.keys()) - set(ctx.keys())
             for key in new_keys_dict:
                 ctx[key] = meta_ctx[key].to_dict()
 
+# @}
+
+## @defgroup LegacyProcessingBlock
+#  @{
+
 ##
 #  \~English
 #     \brief Interface object used to work with Legacy Processing Block API. Shouldn't be used anymore.
+#        \warning
+#        This is a deprecated version (see the new Age and Gender estimators in Processing Block API). It's support will end in 2024.
 #  \~Russian
-#     \brief Интерфейсный объект для взаимодействия с методами из Processing Block API.
+#     \brief Интерфейсный объект для взаимодействия с методами из устаревшего Processing Block API.
+#        \warning
+#        Это устаревшая версия (см. новые блоки в Processing Block API). Поддержка будет прекращена в 2024 году.
 
 class LegacyProcessingBlock(ComplexObject):
     @staticmethod
@@ -134,3 +154,5 @@ class LegacyProcessingBlock(ComplexObject):
 
     def __del__(self):
         self._dll_handle.TDVProcessingBlock_destroy(self._impl)
+
+# @}

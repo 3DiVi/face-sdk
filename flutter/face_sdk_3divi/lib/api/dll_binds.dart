@@ -303,6 +303,24 @@ typedef _Context_CreateFromFrame_dart = Pointer<Void> Function(
     int,
     Pointer<Pointer<Void>>);
 
+typedef _Context_CreateFromJsonFile_c = Pointer<Void> Function(
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_CreateFromJsonFile_dart = Pointer<Void> Function(
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_saveToJsonFile_c = Void Function(
+    Pointer<Void>, // context
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_saveToJsonFile_dart = void Function(
+    Pointer<Void>, // context
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
 typedef _Context_getOrInsertByKey_c = Pointer<Void> Function(
     Pointer<Void>, // context
     Pointer<Utf8>, //
@@ -334,6 +352,55 @@ typedef _Context_copy_dart = void Function(
     Pointer<Void>,
     Pointer<Void>,
     Pointer<Pointer<Void>>);
+
+typedef _Context_clear_c = Void Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_clear_dart = void Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_erase_c = Void Function(
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_erase_dart = void Function(
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_reserve_c = Void Function(
+    Pointer<Void>,
+    Int64,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_reserve_dart = void Function(
+    Pointer<Void>,
+    int,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_contains_c = Bool Function(
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_contains_dart = bool Function(
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_compare_c = Bool Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_compare_dart = bool Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
 
 typedef _Context_putStr_c = Void Function(
     Pointer<Void>,
