@@ -198,6 +198,54 @@ void drawAgeGenderMaskQuality(const pbio::Context& data, cv::Mat& image, const s
 	}
 }
 
+void drawGlasses(const pbio::Context& data, cv::Mat& image)
+{
+	drawObjects(data, image, std::string("face"));
+
+	const int width = image.size[1];
+	const int heigth = image.size[0];
+
+	for (const pbio::Context& object : data["objects"])
+	{
+		if (object.at("class").getString().compare("face"))
+		{
+			continue;
+		}
+
+		cv::Point text_point{std::min(static_cast<int>(object.at("bbox")[2].getDouble() * width), width),
+							 std::max(static_cast<int>(object.at("bbox")[1].getDouble() * heigth), 0) + 15};
+		const pbio::Context& glasses = object.at("glasses");
+		bool value = glasses.at("value").getBool();
+		double confidence = glasses.at("confidence").getDouble();
+
+		putTextWithRightExpansion
+		(
+			image,
+			"Glasses: " + std::to_string(value),
+			text_point,
+			cv::FONT_HERSHEY_DUPLEX,
+			0.5,
+			cv::Scalar(0,0,255),
+			1,
+			false
+		);
+
+		text_point.y += 15;
+
+		putTextWithRightExpansion
+		(
+			image,
+			"Confidence: " + std::to_string(confidence),
+			text_point,
+			cv::FONT_HERSHEY_DUPLEX,
+			0.5,
+			cv::Scalar(0,0,255),
+			1,
+			false
+		);
+	}
+}
+
 void drawEyeOpenness(const pbio::Context& data, cv::Mat& image)
 {
 	int width = image.cols;
@@ -268,18 +316,25 @@ const std::map<std::string, std::string> unitTypes {
 	{"age", "AGE_ESTIMATOR"},
 	{"gender","GENDER_ESTIMATOR"},
 	{"mask", "MASK_ESTIMATOR"},
+	{"glasses", "GLASSES_ESTIMATOR"},
 	{"eye_openness", "EYE_OPENNESS_ESTIMATOR"},
 	{"liveness", "LIVENESS_ESTIMATOR"},
 	{"quality", "QUALITY_ASSESSMENT_ESTIMATOR"},
 	{"pose", "HUMAN_POSE_ESTIMATOR"},
 };
 
+pbio::Context createFaceDetector(pbio::FacerecService& service);
+
+pbio::Context createFaceFitter(pbio::FacerecService& service);
+
+std::string getImageData(const std::string& imagePath);
+
 int main(int argc, char **argv)
 {
 	// print usage
 	std::cout << "usage: " << argv[0] <<
 		" [--input_image <path to image>]"
-		" [--unit_type body|face|face_keypoint|pose|objects|emotions|age|gender|mask|eye_openness|liveness|quality]"
+		" [--unit_type body|face|face_keypoint|pose|objects|emotions|age|gender|mask|glasses|eye_openness|liveness|quality]"
 		" [--sdk_path ..]"
 		" [--use_cuda]"
 		<< std::endl;
@@ -333,21 +388,11 @@ int main(int argc, char **argv)
 		if (modification != "")
 			configCtx["modification"] = modification;
 		if (version != "")
-			configCtx["version"] = std::stoi(version);
+			configCtx["version"] = std::stoll(version);
 
-		cv::Mat image;
-		image = cv::imread(input_image_path, cv::IMREAD_COLOR);
-		if(image.empty())
-		{
-			std::cerr << "OpenCV Error! Cannot read image file: " << input_image_path << std::endl;
-			std::exit(1);
-		}
-		// RGB image is required
-		cv::Mat input_image;
-		cv::cvtColor(image, input_image, cv::COLOR_BGR2RGB);
-		pbio::RawImage input_rawimg(input_image.cols, input_image.rows, pbio::RawImage::Format::FORMAT_RGB, input_image.data);
+		cv::Mat image = cv::imread(input_image_path, cv::IMREAD_COLOR);
+		pbio::Context ioData = service->createContextFromEncodedImage(getImageData(input_image_path));
 
-		auto ioData = service->createContext();
 		if(unit_type == "quality")
 			configCtx["config_name"] = "quality_assessment.xml";
 
@@ -362,32 +407,20 @@ int main(int argc, char **argv)
 
 		if(unit_type == "quality" || unit_type == "liveness")
 		{
-			// create capturer
-			const pbio::Capturer::Ptr capturer = service->createCapturer("common_capturer_refa_fda_a.xml");
-
-			std::vector<pbio::RawSample::Ptr> samples = capturer->capture(input_rawimg);
-			auto wholeImageCtx = ioData["image"];
-			pbio::context_utils::putImage(wholeImageCtx, input_rawimg);
-			auto objectsCtx = ioData["objects"];
-			for(auto &sample: samples)
-			{
-				objectsCtx.push_back(sample->toContext());
-			}
+			pbio::ProcessingBlock faceDetector = service->createProcessingBlock(createFaceDetector(*service));
+			pbio::ProcessingBlock faceFitter = service->createProcessingBlock(createFaceFitter(*service));
+			
+			faceDetector(ioData);
+			faceFitter(ioData);
 			processingBlock(ioData);
 		}
-
 		else if(!unit_type.compare("emotions") || !unit_type.compare("gender") ||
-				!unit_type.compare("age") || !unit_type.compare("mask") || !unit_type.compare("eye_openness") ||
-				!unit_type.compare("face_keypoint"))
+				!unit_type.compare("age") || !unit_type.compare("mask") || !unit_type.compare("glasses") ||
+				!unit_type.compare("eye_openness") || !unit_type.compare("face_keypoint"))
 		{
-			auto faceCtx = service->createContext();
-			faceCtx["unit_type"] = unitTypes.at("face");
-			faceCtx["version"] = static_cast<int64_t>(2);
-			pbio::ProcessingBlock faceBlock = service->createProcessingBlock(faceCtx);
+			pbio::ProcessingBlock faceDetector = service->createProcessingBlock(createFaceDetector(*service));
 
-			auto faceImageCtx = ioData["image"];
-			pbio::context_utils::putImage(faceImageCtx, input_rawimg);
-			faceBlock(ioData);
+			faceDetector(ioData);
 
 			if (unit_type.compare("face_keypoint"))
 			{
@@ -399,11 +432,8 @@ int main(int argc, char **argv)
 
 			processingBlock(ioData);
 		}
-		else  // just put the whole image to the Context
+		else
 		{
-			auto imgCtx = ioData["image"];
-			pbio::context_utils::putImage(imgCtx, input_rawimg);
-			ioData["image"] = imgCtx;
 			if(!unit_type.compare("pose")) // first extract body bboxes
 			{
 				auto modelDetectorCtx = service->createContext();
@@ -415,6 +445,7 @@ int main(int argc, char **argv)
 				pbio::ProcessingBlock  bodyDetector = service->createProcessingBlock(modelDetectorCtx);
 				bodyDetector(ioData);
 			}
+
 			processingBlock(ioData);
 		}
 
@@ -432,6 +463,8 @@ int main(int argc, char **argv)
 			drawEmotions(ioData, image);
 		else if(!unit_type.compare("age") || !unit_type.compare("gender") || !unit_type.compare("mask") || !unit_type.compare("quality"))
 			drawAgeGenderMaskQuality(ioData, image, unit_type);
+		else if (!unit_type.compare("glasses"))
+			drawGlasses(ioData, image);
 		else if (!unit_type.compare("eye_openness"))
 			drawEyeOpenness(ioData, image);
 		else if(unit_type.find("liveness") != std::string::npos)
@@ -457,3 +490,38 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+pbio::Context createFaceDetector(pbio::FacerecService& service)
+{
+	pbio::Context config = service.createContext();
+
+	config["unit_type"] = "FACE_DETECTOR";
+	config["modification"] = "ssyv";
+	config["version"] = static_cast<int64_t>(2);
+	
+	return config;
+}
+
+pbio::Context createFaceFitter(pbio::FacerecService& service)
+{
+	pbio::Context config = service.createContext();
+
+	config["unit_type"] = "FACE_FITTER";
+	config["modification"] = "fda";
+
+	return config;
+}
+
+std::string getImageData(const std::string& imagePath)
+{
+	std::ifstream file(imagePath, std::ios::binary);
+	std::ostringstream os;
+
+	if (!file.is_open())
+	{
+		throw std::runtime_error("Can't read image: " + imagePath);
+	}
+
+	os << file.rdbuf();
+
+	return os.str();
+}

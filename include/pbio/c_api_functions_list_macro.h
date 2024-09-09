@@ -3587,7 +3587,7 @@ namespace capi {
 		TDVContext_putLong, \
 		( \
 			HContext* ctx, \
-			long val, \
+			int64_t val, \
 			ContextEH** errorHandler \
 		), \
 		( \

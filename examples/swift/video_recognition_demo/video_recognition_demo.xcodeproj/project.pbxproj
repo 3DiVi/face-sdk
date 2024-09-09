@@ -33,6 +33,8 @@
 		AA0AABB1269D6CA5007BF703 /* Recognizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = AA0AABA4269D6CA5007BF703 /* Recognizer.mm */; };
 		AA0AABB5269D6CB9007BF703 /* facerec.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AA0AABB3269D6CB9007BF703 /* facerec.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AA0AABBD269D7850007BF703 /* share in Resources */ = {isa = PBXBuildFile; fileRef = AA0AABBC269D7850007BF703 /* share */; };
+		AA3632242C81E893009187A3 /* Context.mm in Sources */ = {isa = PBXBuildFile; fileRef = AA3632202C81E892009187A3 /* Context.mm */; };
+		AA3632252C81E893009187A3 /* ProcessingBlock.mm in Sources */ = {isa = PBXBuildFile; fileRef = AA3632212C81E893009187A3 /* ProcessingBlock.mm */; };
 		AA9CAFFE293F5F1200905FE4 /* onnxruntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AA9CAFFC293F5F1200905FE4 /* onnxruntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -92,6 +94,10 @@
 		AA0AABB3269D6CB9007BF703 /* facerec.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = facerec.framework; path = ../../../facerec.framework; sourceTree = "<group>"; };
 		AA0AABB7269D6D49007BF703 /* video_recognition_demo-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "video_recognition_demo-Bridging-Header.h"; sourceTree = "<group>"; };
 		AA0AABBC269D7850007BF703 /* share */ = {isa = PBXFileReference; lastKnownFileType = folder; name = share; path = ../../../../share; sourceTree = "<group>"; };
+		AA3632202C81E892009187A3 /* Context.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Context.mm; sourceTree = "<group>"; };
+		AA3632212C81E893009187A3 /* ProcessingBlock.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ProcessingBlock.mm; sourceTree = "<group>"; };
+		AA3632222C81E893009187A3 /* ProcessingBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProcessingBlock.h; sourceTree = "<group>"; };
+		AA3632232C81E893009187A3 /* Context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Context.h; sourceTree = "<group>"; };
 		AA9CAFFC293F5F1200905FE4 /* onnxruntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = onnxruntime.framework; path = ../../../onnxruntime.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -148,6 +154,10 @@
 		AA0AAB8C269D6CA5007BF703 /* swift_api */ = {
 			isa = PBXGroup;
 			children = (
+				AA3632232C81E893009187A3 /* Context.h */,
+				AA3632202C81E892009187A3 /* Context.mm */,
+				AA3632222C81E893009187A3 /* ProcessingBlock.h */,
+				AA3632212C81E893009187A3 /* ProcessingBlock.mm */,
 				AA0AAB8D269D6CA5007BF703 /* VideoWorker.h */,
 				AA0AAB8E269D6CA5007BF703 /* RawSample.h */,
 				AA0AAB8F269D6CA5007BF703 /* Capturer.mm */,
@@ -262,10 +272,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0AABAF269D6CA5007BF703 /* RawImage.mm in Sources */,
+				AA3632242C81E893009187A3 /* Context.mm in Sources */,
 				AA0AABA8269D6CA5007BF703 /* Point.mm in Sources */,
 				AA0AAB83269D6C74007BF703 /* UserClass.swift in Sources */,
 				AA0AABAC269D6CA5007BF703 /* RawSample.mm in Sources */,
 				AA0AABB0269D6CA5007BF703 /* SwiftCallback.swift in Sources */,
+				AA3632252C81E893009187A3 /* ProcessingBlock.mm in Sources */,
 				AA0AABB1269D6CA5007BF703 /* Recognizer.mm in Sources */,
 				AA0AABAB269D6CA5007BF703 /* ExceptionCheck.mm in Sources */,
 				AA0AAB63269D6B65007BF703 /* ViewController.swift in Sources */,
@@ -407,7 +419,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = FYK5GXTH62;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					../../../swift_api,
@@ -432,7 +444,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = FYK5GXTH62;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					../../../swift_api,

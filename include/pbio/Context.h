@@ -23,7 +23,6 @@
 
 #include <pbio/DllHandle.h>
 #include <pbio/RawImage.h>
-#include <pbio/RawSample.h>
 
 
 namespace pbio {

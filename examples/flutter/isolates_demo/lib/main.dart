@@ -63,7 +63,8 @@ class _MyAppState extends State<MyApp> {
     _qaa = await _service!.createAsyncProcessingBlock({
       "unit_type": "QUALITY_ASSESSMENT_ESTIMATOR",
       "modification": "assessment",
-      "config_name": "quality_assessment.xml"
+      "config_name": "quality_assessment.xml",
+      "version": 1,
     });
     verification =
         await _service!.createAsyncProcessingBlock({"unit_type": "VERIFICATION_MODULE", "modification": "30"});

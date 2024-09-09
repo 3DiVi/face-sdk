@@ -254,7 +254,8 @@ class _HomePageState extends State<HomePage> {
     qualityAssessment = service.createProcessingBlock({
       "unit_type": "QUALITY_ASSESSMENT_ESTIMATOR",
       "modification": "assessment",
-      "config_name": "quality_assessment.xml"
+      "config_name": "quality_assessment.xml",
+      "version": 1,
     });
 
     setState(() {

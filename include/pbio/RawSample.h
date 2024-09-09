@@ -17,7 +17,7 @@
 #include "Point.h"
 #include "RawImage.h"
 #ifndef WITHOUT_PROCESSING_BLOCK
-#include "Context.h"
+#include "pbio/Context.h"
 #endif
 #include "SmartPtr.h"
 #include "stl_wraps_impls/WrapOStreamImpl.h"
@@ -870,7 +870,7 @@ public:
 			\brief преобразет RawSample в контейнер-Context
 			\return контейнер-Context
 	*/
-	Context toContext() const;
+	pbio::Context toContext() const;
 #endif
 
 	//! @cond IGNORED
@@ -1359,7 +1359,7 @@ RawSample::Ptr RawSample::downscaleToPreferredSize() const
 
 #ifndef WITHOUT_PROCESSING_BLOCK
 inline
-Context RawSample::toContext() const
+pbio::Context RawSample::toContext() const
 {
 	void* exception = NULL;
 
@@ -1369,7 +1369,7 @@ Context RawSample::toContext() const
 
 	checkException(exception, *_dll_handle);
 
-	return Context(_dll_handle, handle, false);
+	return pbio::Context(_dll_handle, handle, false);
 }
 #endif
 

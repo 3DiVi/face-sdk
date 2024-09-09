@@ -47,16 +47,13 @@ android {
             include (
                 "conf/**",
                 "share/fda/**",
-                "share/facedetectors/config_lbf/**",
+                "share/processing_block/face_detector/ssyv_light/**",
                 "share/face_quality/**",
                 "share/facerec/depth_liveness/**",
                 "share/ir_liveness/**",
-                "share/facerec/recognizers/method10v30/**",
-                "share/facerec/recognizers/method9v30mask/**",
-		        "share/facerec/recognizers/method12v30/**",
+                "share/facerec/recognizers/method12v30/**",
                 "license/**"
             )
-            exclude ('share/facerec/recognizers/**/*dt')
         }
         into "$projectDir/src/main/assets/"
     }

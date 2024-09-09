@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Data.SqlTypes;
@@ -18,10 +19,10 @@ public class Options
 	[Option("input_image")]
 	public string InputImage { get; set; }
 
-	[Option("unit_type", Default = "objects", HelpText = "body|face|face_keypoint|pose|objects|emotions|age|gender|mask|liveness|quality")]
+	[Option("unit_type", Default = "objects", HelpText = "body|face|face_keypoint|pose|objects|emotions|age|gender|mask|glasses|liveness|quality")]
 	public string UnitType { get; set; }
 
-	[Option("version", Default = 1)]
+	[Option("version", Default = 0)]
 	public int Version { get; set; }
 
 	[Option("modification", Default = "")]
@@ -45,6 +46,7 @@ namespace csharp_processing_block_demo
 			{ "age", "AGE_ESTIMATOR" },
 			{ "gender","GENDER_ESTIMATOR" },
 			{ "mask", "MASK_ESTIMATOR" },
+			{ "glasses", "GLASSES_ESTIMATOR" },
 			{ "eye_openness", "EYE_OPENNESS_ESTIMATOR" },
 			{ "liveness", "LIVENESS_ESTIMATOR" },
 			{ "quality", "QUALITY_ASSESSMENT_ESTIMATOR" },
@@ -57,7 +59,7 @@ namespace csharp_processing_block_demo
 			(
 				$@"Usage: dotnet csharp_csharp_processing_block_demo.dll {System.Reflection.Assembly.GetExecutingAssembly().Location}
 				[--input_image <path to image>]
-				[--unit_type body|face|face_keypoint|pose|objects|emotions|age|gender|mask|eye_openness|liveness|quality]
+				[--unit_type body|face|face_keypoint|pose|objects|emotions|age|gender|mask|glasses|eye_openness|liveness|quality]
 				[--sdk_path ../../../]
 				[--use_cuda]"
 			);
@@ -101,8 +103,11 @@ namespace csharp_processing_block_demo
 
 				configContext["unit_type"] = unitTypes[unitType];
 				configContext["use_cuda"] = options.UseCuda;
-				configContext["version"] = options.Version;
-				configContext["@sdk_path"] = options.SdkPath;
+
+				if (options.Version != 0)
+				{
+					configContext["version"] = options.Version;
+				}
 
 				if (unitType == "quality")
 				{
@@ -121,69 +126,28 @@ namespace csharp_processing_block_demo
 				}
 
 				ProcessingBlock block = service.CreateProcessingBlock(configContext);
-				Dictionary<object, object> imageContext = new();
+				Context ioData = service.CreateContextFromEncodedImage(GetImageData(options.InputImage));
 				Mat image = Cv2.ImRead(options.InputImage);
-				RawImage rawImage = new(image.Cols, image.Rows, RawImage.Format.FORMAT_BGR, GetImageData(image));
-				Mat rgbImage = new();
-
-				if (image.Empty())
-				{
-					throw new Exception($"Can't read image file: {options.InputImage}");
-				}
-
-				Cv2.CvtColor(image, rgbImage, ColorConversionCodes.BGR2RGB);
-
-				MatToBsm(ref imageContext, rgbImage);
-
-				Context ioData = service.CreateContext
-				(
-					new Dictionary<object, object>
-					{
-						{ "objects", new Dictionary<object, object>() },
-						{ "image", imageContext }
-					}
-				);
 
 				if (unitType == "quality" || unitType == "liveness")
 				{
-					Capturer capturer = service.createCapturer("common_capturer_refa_fda_a.xml");
+					ProcessingBlock faceDetector = service.CreateProcessingBlock(CreateFaceDetector(service));
+					ProcessingBlock faceFitter = service.CreateProcessingBlock(CreateFaceFitter(service));
 
-					foreach (RawSample sample in capturer.capture(rawImage))
-					{
-						ioData["objects"].PushBack(sample.ToContext());
-					}
+					faceDetector.Invoke(ioData);
+					faceFitter.Invoke(ioData);
 				}
-				else if (new List<string> { "emotions", "gender", "age", "mask", "eye_openness", "face_keypoint" }.Contains(unitType))
+				else if (new List<string> { "emotions", "gender", "age", "mask", "glasses", "eye_openness", "face_keypoint" }.Contains(unitType))
 				{
-					ProcessingBlock faceBlock = service.CreateProcessingBlock
-					(
-						new Dictionary<object, object>
-						{
-							{ "unit_type", unitTypes["face"] },
-							{ "modification", "ssyv" },
-							{ "version", 3 },
-							{ "use_cuda", options.UseCuda },
-							{ "ONNXRuntime", configContext["ONNXRuntime"] },
-							{ "confidence_threshold", 0.4 }
-						}
-					);
+					ProcessingBlock faceDetector = service.CreateProcessingBlock(CreateFaceDetector(service));
 
-					faceBlock.Invoke(ioData);
+					faceDetector.Invoke(ioData);
 
 					if (unitType != "face_keypoint")
 					{
-						ProcessingBlock fitter = service.CreateProcessingBlock
-						(
-							new Dictionary<object, object>
-							{
-								{ "unit_type", "FACE_FITTER" },
-								{ "modification", "tddfa" },
-								{ "use_cuda", options.UseCuda },
-								{ "ONNXRuntime", configContext["ONNXRuntime"] },
-							}
-						);
+						ProcessingBlock faceFitter = service.CreateProcessingBlock(CreateFaceFitter(service));
 
-						fitter.Invoke(ioData);
+						faceFitter.Invoke(ioData);
 					}
 				}
 				else if (unitType == "pose")
@@ -245,6 +209,11 @@ namespace csharp_processing_block_demo
 					case "mask":
 					case "quality":
 						DrawAgeGenderMaskQuality(ioData, image, unitType);
+
+						break;
+
+					case "glasses":
+						DrawGlasses(ioData, image);
 
 						break;
 
@@ -504,6 +473,54 @@ namespace csharp_processing_block_demo
 			}
 		}
 
+		private static void DrawGlasses(Context ioData, Mat image)
+		{
+			int width = image.Cols;
+			int heigth = image.Rows;
+			Context objects = ioData["objects"];
+
+			DrawObjects(ioData, image, "face");
+
+			for (int i = 0; i < (int)objects.Length(); i++)
+			{
+				Context obj = objects[i];
+
+				if (obj["class"].GetString() != "face")
+				{
+					continue;
+				}
+
+				Context glasses = obj["glasses"];
+				OpenCvSharp.Point textPoint = new
+				(
+					Math.Min(obj["bbox"][2].GetDouble() * width, width),
+					Math.Max(obj["bbox"][1].GetDouble() * heigth, 0) + 15
+				);
+
+				PutTextWithRightExpansion
+				(
+					image, $"Glasses: {glasses["value"].GetBool()}",
+					textPoint, 
+					HersheyFonts.HersheyDuplex, 
+					0.5, 
+					new(0, 0, 255), 
+					1
+				);
+
+				textPoint.Y += 15;
+
+				PutTextWithRightExpansion
+				(
+					image, $"Confidence: {glasses["confidence"].GetDouble()}",
+					textPoint, 
+					HersheyFonts.HersheyDuplex, 
+					0.5, 
+					new(0, 0, 255), 
+					1
+				);
+			}
+		}
+
 		private static void DrawEyeOpenness(Context ioData, Mat image)
 		{
 			int width = image.Cols;
@@ -617,17 +634,9 @@ namespace csharp_processing_block_demo
 			bsmCtx["dtype"] = CvTypeToStr[inputImage.Depth()];
 		}
 
-		private static byte[] GetImageData(Mat image)
+		private static byte[] GetImageData(string imagePath)
 		{
-			int length = image.Cols * image.Rows * image.Channels();
-			byte[] result = new byte[length];
-
-			unsafe
-			{
-				Marshal.Copy((IntPtr)image.DataPointer, result, 0, length);
-			}
-
-			return result;
+			return File.ReadAllBytes(imagePath);
 		}
 
 		private static string ToSnakeCase(string text)
@@ -662,6 +671,25 @@ namespace csharp_processing_block_demo
 			}
 
 			return stringBuilder.ToString();
+		}
+
+		private static Dictionary<object, object> CreateFaceDetector(FacerecService service)
+		{
+			return new Dictionary<object, object>
+			{
+				{ "unit_type", "FACE_DETECTOR" },
+				{ "modification", "ssyv" },
+				{ "version", 2 }
+			};
+		}
+
+		private static Dictionary<object, object> CreateFaceFitter(FacerecService service)
+		{
+			return new Dictionary<object, object>
+			{
+				{ "unit_type", "FACE_FITTER" },
+				{ "modification", "fda" }
+			};
 		}
 	}
 }

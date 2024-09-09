@@ -314,7 +314,7 @@ class VideoWorker extends _ComplexObject{
 
     List<double> qss = [];
     for (int i = 0; i < samples_count; i++){
-      double buf = Pointer<Float>.fromAddress(sample_quality.address + i * sizeOf<Pointer<Float>>()).value;
+      double buf = sample_quality[i];
       qss.add(buf);
     }
 
@@ -326,10 +326,9 @@ class VideoWorker extends _ComplexObject{
 
     for (int i = 0; i < samples_count; ++i) {
       ActiveLivenessStatus status = new ActiveLivenessStatus();
-      status.check_type = ActiveLivenessCheckType.values[Pointer<Int32>.fromAddress(ALType.address + i * sizeOf<Pointer<Int32>>()).value];
-      status.progress_level = Pointer<Float>.fromAddress(ALScore.address + i * sizeOf<Pointer<Float>>()).value;
-      status.verdict = ActiveLiveness.values[Pointer<Int32>.fromAddress(
-          ALConf.address + i * sizeOf<Pointer<Int32>>()).value];
+      status.check_type = ActiveLivenessCheckType.values[ALType[i]];
+      status.progress_level = ALScore[i];
+      status.verdict = ActiveLiveness.values[ALConf[i]];
 
       if(status.progress_level > 1 || status.progress_level < 0 || (status.progress_level > 0 && status.progress_level < 1e-20) ||
           (status.verdict == ActiveLiveness.ALL_CHECKS_PASSED && status.progress_level != 1)) {
@@ -430,14 +429,14 @@ class VideoWorker extends _ComplexObject{
     List<VWSearchResult> search_results = [];
 
     for (int i = 0; i < search_result_count; ++i) {
-      final person_id = Pointer<Int32>.fromAddress(all_person_id.address + i * sizeOf<Pointer<Int32>>()).value;
-      final element_id = Pointer<Int32>.fromAddress(all_element_id.address + i * sizeOf<Pointer<Int32>>()).value;
+      final person_id = all_person_id[i];
+      final element_id = all_element_id[i];
 
       MatchResult match_result = new MatchResult(
-          Pointer<Float>.fromAddress(all_distance.address + i * sizeOf<Pointer<Float>>()).value,
-          Pointer<Float>.fromAddress(all_far.address + i * sizeOf<Pointer<Float>>()).value,
-          Pointer<Float>.fromAddress(all_frr.address + i * sizeOf<Pointer<Float>>()).value,
-          Pointer<Float>.fromAddress(all_score.address + i * sizeOf<Pointer<Float>>()).value,
+          all_distance[i],
+          all_far[i],
+          all_frr[i],
+          all_score[i],
       );
 
       search_results.add(VWSearchResult(person_id, element_id, match_result));

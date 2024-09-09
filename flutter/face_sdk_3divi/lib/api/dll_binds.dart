@@ -445,7 +445,7 @@ typedef _Context_putBool_dart = void Function(
 typedef _Context_putDataPtr_c = Pointer<Utf8> Function(
     Pointer<Void>,
     Pointer<Uint8>,
-    UnsignedLong,
+    Uint64,
     Pointer<Pointer<Void>>);
 
 typedef _Context_putDataPtr_dart = Pointer<Utf8> Function(

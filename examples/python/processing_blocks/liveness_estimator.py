@@ -42,6 +42,7 @@ def liveness_estimator(input_image, sdk_path):
 
     liveness_config = {  # liveness block configuration parameters
         "unit_type": "LIVENESS_ESTIMATOR",  # required parameter
+        "modification": "2d_additional_check",
         "model_path": "",  # required
         "sdk_path": sdk_path,  # optional
         "capturer_config_name": "common_capturer_uld_fda.xml",  # optional

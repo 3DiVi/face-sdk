@@ -19,9 +19,7 @@
 <iris_config_filepath>conf/facerec/iris_fitter.xml</iris_config_filepath>
 
 <base_angle>1</base_angle>
-<min_size>20</min_size>
-<max_size>1000</max_size>
-<min_neighbors>1</min_neighbors>
+<num_threads>1</num_threads>
 
 <min_detection_period>0.3</min_detection_period>
 <max_detection_period>0</max_detection_period>
@@ -29,7 +27,15 @@
 <max_processed_width>200</max_processed_width>
 <max_processed_height>200</max_processed_height>
 
-<lbf_detector_file>share/facedetectors/config_lbf/lbf_detector.data</lbf_detector_file>
+<detector_sub_type>pb_fd</detector_sub_type>
+<modification>ssyv_light</modification>
+<version>1</version>
+
+<confidence_threshold>0.6</confidence_threshold>
+<iou_threshold>0.3</iou_threshold>
+
+<use_cuda>0</use_cuda>
+<gpu_index>0</gpu_index>
 
 
 <depth_data_flag>0</depth_data_flag>
