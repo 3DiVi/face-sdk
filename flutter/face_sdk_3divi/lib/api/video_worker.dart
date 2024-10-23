@@ -1,9 +1,6 @@
 part of face_sdk_3divi;
 
-
-class VWSearchResult
-{
-
+class VWSearchResult {
   late int person_id;
   late int element_id;
 
@@ -11,12 +8,12 @@ class VWSearchResult
 
   VWSearchResult(this.person_id, this.element_id, this.match_result);
 
-  String toString(){
+  String toString() {
     return "person_id: $person_id, element_id: $element_id, match_result: $match_result";
   }
 }
 
-class DataBaseElement{
+class DataBaseElement {
   late int element_id;
   late int person_id;
   late Template face_template;
@@ -27,13 +24,13 @@ class DataBaseElement{
 }
 
 /// Parameters of the VideoWorker constructor.
-class VideoWorkerParams{
+class VideoWorkerParams {
   late Config _video_worker_config;
   String _recognizer_ini_file = "";
   int _streams_count = 0;
   int _processing_threads_count = 0;
   int _matching_threads_count = 0;
-  int _age_gender_estimation_threads_count =0;
+  int _age_gender_estimation_threads_count = 0;
   int _emotions_estimation_threads_count = 0;
   int _short_time_identification_enabled = 0;
   double _short_time_identification_distance_threshold = 0;
@@ -41,74 +38,74 @@ class VideoWorkerParams{
   List<ActiveLivenessCheckType> _active_liveness_checks_order = [];
 
   /// Set the VideoWorker configuration file with optionally overridden parameters.
-  VideoWorkerParams video_worker_config(Config value){
+  VideoWorkerParams video_worker_config(Config value) {
     _video_worker_config = value;
     return this;
   }
 
   /// Set the name of the configuration file for Recognizer that will be used inside VideoWorker.
-  VideoWorkerParams recognizer_ini_file(String value){
+  VideoWorkerParams recognizer_ini_file(String value) {
     _recognizer_ini_file = value;
     return this;
   }
 
   /// Set the number of video streams.
-  VideoWorkerParams streams_count(int value){
+  VideoWorkerParams streams_count(int value) {
     _streams_count = value;
     return this;
   }
 
   /// Set the number of threads for creating templates.
-  VideoWorkerParams processing_threads_count(int value){
+  VideoWorkerParams processing_threads_count(int value) {
     _processing_threads_count = value;
     return this;
   }
 
   /// Set the number of threads for matching templates with the database.
-  VideoWorkerParams matching_threads_count(int value){
+  VideoWorkerParams matching_threads_count(int value) {
     _matching_threads_count = value;
     return this;
   }
 
   /// Set the number of threads for age_gender estimation.
-  VideoWorkerParams age_gender_estimation_threads_count(int value){
+  VideoWorkerParams age_gender_estimation_threads_count(int value) {
     _age_gender_estimation_threads_count = value;
     return this;
   }
 
   /// Set the number of threads for estimation of emotions.
-  VideoWorkerParams emotions_estimation_threads_count(int value){
+  VideoWorkerParams emotions_estimation_threads_count(int value) {
     _emotions_estimation_threads_count = value;
     return this;
   }
 
   /// Set the flag enabling "short time identification".
-  VideoWorkerParams short_time_identification_enabled(bool value){
-    _short_time_identification_enabled = value ? 1: 0;
+  VideoWorkerParams short_time_identification_enabled(bool value) {
+    _short_time_identification_enabled = value ? 1 : 0;
     return this;
   }
 
   /// Set the recognition distance threshold for "short time identification".
-  VideoWorkerParams short_time_identification_distance_threshold(double value){
+  VideoWorkerParams short_time_identification_distance_threshold(double value) {
     _short_time_identification_distance_threshold = value;
     return this;
   }
 
   /// Set outdate_time in seconds for "short time identification".
-  VideoWorkerParams short_time_identification_outdate_time_seconds(double value){
+  VideoWorkerParams short_time_identification_outdate_time_seconds(double value) {
     _short_time_identification_outdate_time_seconds = value;
     return this;
   }
 
   /// Set the order for checking the active liveness
-  VideoWorkerParams active_liveness_checks_order(List<ActiveLivenessCheckType> value){
+  VideoWorkerParams active_liveness_checks_order(List<ActiveLivenessCheckType> value) {
     _active_liveness_checks_order = value;
     return this;
   }
 }
 
 /// Tracking callback data.
-class TrackingCallbackData{
+class TrackingCallbackData {
   /// Integer id of the video stream (0 <= stream_id < streams_count).
   int stream_id = -1;
 
@@ -136,20 +133,20 @@ class TrackingCallbackData{
   /// Face active liveness check status. See [ActiveLivenessStatus] for details.<br>
   ///	(samples_active_liveness_status.size() == samples.size())
   List<ActiveLivenessStatus> samples_active_liveness_status = [];
-  //   List[Verdict] samples_good_light_and_blur;<br>
-  //   samples_good_angles: List[Verdict]<br>
-  //   samples_good_face_size: List[Verdict]<br>
-  //   samples_detector_confirmed: List[Verdict]<br>
-  //   samples_depth_liveness_confirmed: List[depth_liveness_estimator.Liveness]<br>
-  //   samples_ir_liveness_confirmed: List[ir_liveness_estimator.Liveness]<br>
-  //   samples_track_age_gender_set: List[bool]<br>
-  //   samples_track_age_gender: List[AgeGender]<br>
-  //   samples_track_emotions_set: List[bool]<br>
-  //   samples_track_emotions: List[EmotionConfidence]<br>
+//   List[Verdict] samples_good_light_and_blur;<br>
+//   samples_good_angles: List[Verdict]<br>
+//   samples_good_face_size: List[Verdict]<br>
+//   samples_detector_confirmed: List[Verdict]<br>
+//   samples_depth_liveness_confirmed: List[depth_liveness_estimator.Liveness]<br>
+//   samples_ir_liveness_confirmed: List[ir_liveness_estimator.Liveness]<br>
+//   samples_track_age_gender_set: List[bool]<br>
+//   samples_track_age_gender: List[AgeGender]<br>
+//   samples_track_emotions_set: List[bool]<br>
+//   samples_track_emotions: List[EmotionConfidence]<br>
 }
 
 /// TemplateCreated callback data.
-class TemplateCreatedCallbackData{
+class TemplateCreatedCallbackData {
   /// Integer id of the video stream (0 <= stream_id < streams_count).
   int stream_id = -1;
 
@@ -166,9 +163,8 @@ class TemplateCreatedCallbackData{
   late Template templ;
 }
 
-
 /// TrackingLost callback data.
-class TrackingLostCallbackData{
+class TrackingLostCallbackData {
   /// Integer id of the video stream (0 <= stream_id < streams_count).
   int stream_id = -1;
 
@@ -207,9 +203,8 @@ class TrackingLostCallbackData{
   int sti_person_id = -1;
 }
 
-
 /// TrackingMatchFound callback data.
-class TrackingMatchFoundCallbackData{
+class TrackingMatchFoundCallbackData {
   int stream_id = -1;
   int frame_id = 0;
 
@@ -220,17 +215,16 @@ class TrackingMatchFoundCallbackData{
 }
 
 /// StiPersonOutdated callback data.
-class StiPersonOutdatedCallbackData{
+class StiPersonOutdatedCallbackData {
   int stream_id = -1;
   int sti_person_id = -1;
 }
-
 
 /// Class containing tracking data ([TrackingCallbackData],
 /// [TemplateCreatedCallbackData], [TrackingLostCallbackData]).<br>
 ///<br>
 /// Returned when calling the [VideoWorker.poolTrackResults] method.
-class TrackingData{
+class TrackingData {
   TrackingCallbackData tracking_callback_data = new TrackingCallbackData();
   TemplateCreatedCallbackData template_created_callback_data = new TemplateCreatedCallbackData();
   TrackingLostCallbackData tracking_lost_callback_data = new TrackingLostCallbackData();
@@ -238,68 +232,59 @@ class TrackingData{
   StiPersonOutdatedCallbackData sti_person_outdated_callback_data = new StiPersonOutdatedCallbackData();
 }
 
-
 /// VideoWorker is an interface object for tracking, processing and matching faces.<br>
 ///<br>
 /// We recommend you to use VideoWorker instead of Capturer for face tracking on video streams. When VideoWorker is created with
 /// <i>matching_thread=0</i> and <i>processing_thread=0</i>, then the standard Capturer license is used.
-class VideoWorker extends _ComplexObject{
+class VideoWorker extends _ComplexObject {
   late _StructStorage_get_int64_dart _getInt64;
   late _StructStorage_get_double_dart _getDouble;
   late _StructStorage_get_pointer_dart _getPointer;
   late _VWPollResults_dart _poll;
   List<ActiveLivenessStatus> _last_al = [];
 
-  VideoWorker(DynamicLibrary dll_handle, Pointer<Void> impl):
-        super(dll_handle, impl){
-    final setVW = dll_handle.lookupFunction<_VWSetThisVW_c, _VWSetThisVW_dart>
-      (_c_namespace + 'VideoWorker_setThisVW');
+  VideoWorker(DynamicLibrary dll_handle, Pointer<Void> impl) : super(dll_handle, impl) {
+    final setVW = dll_handle.lookupFunction<_VWSetThisVW_c, _VWSetThisVW_dart>(_c_namespace + 'VideoWorker_setThisVW');
     Pointer<Pointer<Void>> exception = _getException();
     Pointer<Pointer<Int32>> _emptyPointer = malloc.allocate(10);
     setVW(impl, _emptyPointer.cast(), exception);
     checkException(exception, dll_handle);
-    _getInt64 = dll_handle.lookupFunction<_StructStorage_get_int64_c, _StructStorage_get_int64_dart>
-      (_c_namespace + 'StructStorage_get_int64');
-    _getDouble = dll_handle.lookupFunction<_StructStorage_get_double_c, _StructStorage_get_double_dart>
-      (_c_namespace + 'StructStorage_get_double');
-    _getPointer = dll_handle.lookupFunction<_StructStorage_get_pointer_c, _StructStorage_get_pointer_dart>
-      (_c_namespace + 'StructStorage_get_pointer');
-    _poll = _dll_handle.lookupFunction<_VWPollResults_c, _VWPollResults_dart>
-      (_c_namespace + 'VideoWorker_poolTrackResults');
+    _getInt64 = dll_handle.lookupFunction<_StructStorage_get_int64_c, _StructStorage_get_int64_dart>(_c_namespace + 'StructStorage_get_int64');
+    _getDouble = dll_handle.lookupFunction<_StructStorage_get_double_c, _StructStorage_get_double_dart>(_c_namespace + 'StructStorage_get_double');
+    _getPointer = dll_handle.lookupFunction<_StructStorage_get_pointer_c, _StructStorage_get_pointer_dart>(_c_namespace + 'StructStorage_get_pointer');
+    _poll = _dll_handle.lookupFunction<_VWPollResults_c, _VWPollResults_dart>(_c_namespace + 'VideoWorker_poolTrackResults');
   }
 
-  int getInt64(Pointer<Void> pointer, int field){
+  int getInt64(Pointer<Void> pointer, int field) {
     Pointer<Pointer<Void>> exception = _getException();
     final result = _getInt64(pointer, field, exception);
     checkException(exception, _dll_handle);
     return result;
   }
 
-  double getDouble(Pointer<Void> pointer, int field){
+  double getDouble(Pointer<Void> pointer, int field) {
     Pointer<Pointer<Void>> exception = _getException();
     final result = _getDouble(pointer, field, exception);
     checkException(exception, _dll_handle);
     return result;
   }
 
-  Pointer<Void> getPointer(Pointer<Void> pointer, int field){
+  Pointer<Void> getPointer(Pointer<Void> pointer, int field) {
     Pointer<Pointer<Void>> exception = _getException();
     final result = _getPointer(pointer, field, exception);
     checkException(exception, _dll_handle);
     return result;
   }
 
-  Pointer<Void> poll(Pointer<Void> pointer, int value){
+  Pointer<Void> poll(Pointer<Void> pointer, int value) {
     Pointer<Pointer<Void>> exception = _getException();
     final result = _poll(pointer, value, exception);
     checkException(exception, _dll_handle);
     return result;
   }
 
-
   // TODO: reafactor this
-  TrackingCallbackData _parseTrackingCallback(Pointer<Void> trackingCallbackPointer){
-
+  TrackingCallbackData _parseTrackingCallback(Pointer<Void> trackingCallbackPointer) {
     final stream_id = getInt64(trackingCallbackPointer, StructStorageFields.video_worker_stream_id_t);
 
     final frame_id = getInt64(trackingCallbackPointer, StructStorageFields.video_worker_frame_id_t);
@@ -313,7 +298,7 @@ class VideoWorker extends _ComplexObject{
     Pointer<Float> sample_quality = getPointer(trackingCallbackPointer, StructStorageFields.video_worker_samples_quality_t).cast();
 
     List<double> qss = [];
-    for (int i = 0; i < samples_count; i++){
+    for (int i = 0; i < samples_count; i++) {
       double buf = sample_quality[i];
       qss.add(buf);
     }
@@ -330,10 +315,11 @@ class VideoWorker extends _ComplexObject{
       status.progress_level = ALScore[i];
       status.verdict = ActiveLiveness.values[ALConf[i]];
 
-      if(status.progress_level > 1 || status.progress_level < 0 || (status.progress_level > 0 && status.progress_level < 1e-20) ||
+      if (status.progress_level > 1 ||
+          status.progress_level < 0 ||
+          (status.progress_level > 0 && status.progress_level < 1e-20) ||
           (status.verdict == ActiveLiveness.ALL_CHECKS_PASSED && status.progress_level != 1)) {
-        if (_last_al.length != 0)
-          status = _last_al[i];
+        if (_last_al.length != 0) status = _last_al[i];
       }
 
       al.add(status);
@@ -397,11 +383,9 @@ class VideoWorker extends _ComplexObject{
     data.last_frame_id = last_frame_id;
     data.best_quality = best_quality;
     data.best_quality_frame_id = best_quality_frame_id;
-    if (best_quality_sample_impl != nullptr)
-      data.best_quality_sample = RawSample(_dll_handle, best_quality_sample_impl);
+    if (best_quality_sample_impl != nullptr) data.best_quality_sample = RawSample(_dll_handle, best_quality_sample_impl);
 
-    if (best_quality_template_impl != nullptr)
-      data.best_quality_templ = Template(_dll_handle, best_quality_template_impl);
+    if (best_quality_template_impl != nullptr) data.best_quality_templ = Template(_dll_handle, best_quality_template_impl);
 
     data.track_id = track_id;
     data.sti_person_id = sti_person_id;
@@ -410,7 +394,6 @@ class VideoWorker extends _ComplexObject{
   }
 
   TrackingMatchFoundCallbackData _parseTrackingMatchFoundCallback(Pointer<Void> trackingMatchFoundCallbackPointer) {
-
     final stream_id = getInt64(trackingMatchFoundCallbackPointer, StructStorageFields.video_worker_stream_id_t);
     final frame_id = getInt64(trackingMatchFoundCallbackPointer, StructStorageFields.video_worker_frame_id_t);
     final quality = getDouble(trackingMatchFoundCallbackPointer, StructStorageFields.video_worker_samples_quality_t);
@@ -433,10 +416,10 @@ class VideoWorker extends _ComplexObject{
       final element_id = all_element_id[i];
 
       MatchResult match_result = new MatchResult(
-          all_distance[i],
-          all_far[i],
-          all_frr[i],
-          all_score[i],
+        all_distance[i],
+        all_far[i],
+        all_frr[i],
+        all_score[i],
       );
 
       search_results.add(VWSearchResult(person_id, element_id, match_result));
@@ -447,18 +430,15 @@ class VideoWorker extends _ComplexObject{
     data.frame_id = frame_id;
     data.quality = quality;
 
-    if (sample_impl != nullptr)
-      data.sample = RawSample(_dll_handle, sample_impl);
+    if (sample_impl != nullptr) data.sample = RawSample(_dll_handle, sample_impl);
 
-    if (template_impl != nullptr)
-      data.templ = Template(_dll_handle, template_impl);
+    if (template_impl != nullptr) data.templ = Template(_dll_handle, template_impl);
     data.search_results = search_results;
-
 
     return data;
   }
 
-  StiPersonOutdatedCallbackData _parseStiPersonOutdatedCallbackData(Pointer<Void> stiPersonOutdatedCallbackPointer){
+  StiPersonOutdatedCallbackData _parseStiPersonOutdatedCallbackData(Pointer<Void> stiPersonOutdatedCallbackPointer) {
     final stream_id = getInt64(stiPersonOutdatedCallbackPointer, StructStorageFields.video_worker_stream_id_t);
     final sti_person_id = getInt64(stiPersonOutdatedCallbackPointer, StructStorageFields.video_worker_sti_person_id_t);
 
@@ -473,45 +453,44 @@ class VideoWorker extends _ComplexObject{
   ///<br>
   /// Returns the last [TrackingCallbackData], [TemplateCreatedCallbackData],
   /// [TrackingLostCallbackData] structs.
-  TrackingData poolTrackResults(){
+  TrackingData poolTrackResults() {
     TrackingData trackData = new TrackingData();
 
     final storage = poll(_impl, 1);
 
-    if(storage.address == nullptr.address) {
+    if (storage.address == nullptr.address) {
       // developer.log("Storage nullpointer", name: 'my.app.category');
       return trackData;
     }
 
     final track_callback = getPointer(storage, StructStorageFields.video_worker_tracking_callback_t);
 
-    if(track_callback.address != nullptr.address) {
+    if (track_callback.address != nullptr.address) {
       final td = _parseTrackingCallback(track_callback);
       trackData.tracking_callback_data = td;
     }
 
     final templ_create_callback = getPointer(storage, StructStorageFields.video_worker_template_created_callback_t);
 
-    if(templ_create_callback.address != nullptr.address){
+    if (templ_create_callback.address != nullptr.address) {
       trackData.template_created_callback_data = _parseTemplateCreatedCallback(templ_create_callback);
     }
 
     final lost_callback = getPointer(storage, StructStorageFields.video_worker_tracking_lost_callback_t);
 
-    if(lost_callback.address != nullptr.address){
+    if (lost_callback.address != nullptr.address) {
       trackData.tracking_lost_callback_data = _parseTrackingLostCallback(lost_callback);
     }
 
     final match_found_callback = getPointer(storage, StructStorageFields.video_worker_match_found_callback_t);
-    if(match_found_callback.address != nullptr.address){
+    if (match_found_callback.address != nullptr.address) {
       trackData.tracking_match_found_callback_data = _parseTrackingMatchFoundCallback(match_found_callback);
     }
 
     final sti_person_callback = getPointer(storage, StructStorageFields.video_worker_tracking_sti_callback_t);
-    if(sti_person_callback.address != nullptr.address){
+    if (sti_person_callback.address != nullptr.address) {
       trackData.sti_person_outdated_callback_data = _parseStiPersonOutdatedCallbackData(sti_person_callback);
     }
-
 
     return trackData;
   }
@@ -521,45 +500,27 @@ class VideoWorker extends _ComplexObject{
   /// Tracking results can be obtained via [VideoWorker.poolTrackResults].<br>
   /// Return integer id for this frame, unique for this video stream.<br>
   /// This id will be used to identify this frame in the callbacks.
-  int addVideoFrame(RawImageF image, int timestamp_microsec){
-    final addVF = _dll_handle.lookupFunction<_VWaddVideoFrame_c, _VWaddVideoFrame_dart>
-      (_c_namespace + 'VideoWorker_addVideoFrameWithTimestamp_with_crop');
+  int addVideoFrame(RawImageF image, int timestamp_microsec) {
+    final addVF = _dll_handle.lookupFunction<_VWaddVideoFrame_c, _VWaddVideoFrame_dart>(_c_namespace + 'VideoWorker_addVideoFrameWithTimestamp_with_crop');
     Pointer<Pointer<Void>> exception = _getException();
 
-    int res = addVF(
-      _impl,
-      image.data.cast(),
-      image.width,
-      image.height,
-      image.format.index,
-      image.with_crop,
-      image.crop_info_offset_x,
-      image.crop_info_offset_y,
-      image.crop_info_data_image_width,
-      image.crop_info_data_image_height,
-      0,
-      timestamp_microsec,
-      exception);
+    int res = addVF(_impl, image.data.cast(), image.width, image.height, image.format.index, image.with_crop, image.crop_info_offset_x,
+        image.crop_info_offset_y, image.crop_info_data_image_width, image.crop_info_data_image_height, 0, timestamp_microsec, exception);
     checkException(exception, _dll_handle);
 
     return res;
   }
 
   /// Reset tracker state.
-  void resetTrackerOnStream(){
-    final reset = _dll_handle.lookupFunction<_VWresetTrackerOnStream_c, _VWresetTrackerOnStream_dart>
-      (_c_namespace + 'VideoWorker_resetTrackerOnStream');
+  void resetTrackerOnStream() {
+    final reset = _dll_handle.lookupFunction<_VWresetTrackerOnStream_c, _VWresetTrackerOnStream_dart>(_c_namespace + 'VideoWorker_resetTrackerOnStream');
     Pointer<Pointer<Void>> exception = _getException();
     reset(_impl, 0, exception);
     checkException(exception, _dll_handle);
   }
 
-  void setDataBase(
-      List<DataBaseElement> dataBase,
-      {SearchAccelerationType acceleration = SearchAccelerationType.SEARCH_ACCELERATION_1}){
-
-    final set_db = _dll_handle.lookupFunction<_VWsetDataBase, _VWsetDataBase_dart>
-      (_c_namespace + 'VideoWorker_setDatabase');
+  void setDataBase(List<DataBaseElement> dataBase, {SearchAccelerationType acceleration = SearchAccelerationType.SEARCH_ACCELERATION_1}) {
+    final set_db = _dll_handle.lookupFunction<_VWsetDataBase, _VWsetDataBase_dart>(_c_namespace + 'VideoWorker_setDatabase');
 
     final data_base_size = dataBase.length;
     Pointer<Uint64> element_ids_v = malloc.allocate(data_base_size * sizeOf<Uint64>());
@@ -567,8 +528,7 @@ class VideoWorker extends _ComplexObject{
     Pointer<Float> thresholds_v = malloc.allocate(data_base_size * sizeOf<Float>());
     Pointer<Pointer<Void>> templates_v = malloc.allocate(data_base_size * sizeOf<Pointer<Pointer<Void>>>());
 
-
-    for (var i = 0; i < data_base_size; i++){
+    for (var i = 0; i < data_base_size; i++) {
       element_ids_v[i] = dataBase[i].element_id;
       person_ids_v[i] = dataBase[i].person_id;
       thresholds_v[i] = dataBase[i].distance_threshold;
@@ -576,22 +536,12 @@ class VideoWorker extends _ComplexObject{
     }
 
     Pointer<Pointer<Void>> exception = _getException();
-    set_db(
-        _impl,
-        acceleration.index,
-        data_base_size,
-        element_ids_v,
-        person_ids_v,
-        templates_v,
-        thresholds_v,
-        exception);
+    set_db(_impl, acceleration.index, data_base_size, element_ids_v, person_ids_v, templates_v, thresholds_v, exception);
     checkException(exception, _dll_handle);
 
     malloc.free(element_ids_v);
     malloc.free(person_ids_v);
     malloc.free(thresholds_v);
     malloc.free(templates_v);
-
   }
-
 }

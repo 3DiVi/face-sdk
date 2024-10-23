@@ -14,8 +14,7 @@ class AsyncRecognizer {
     ReceivePort receivePort = ReceivePort();
     int result = 0;
 
-    _sendPort.send(
-        {"event": _RecognizerEvents.PROCESSING, "sendPort": receivePort.sendPort, "rawSample": sample._impl.address});
+    _sendPort.send({"event": _RecognizerEvents.PROCESSING, "sendPort": receivePort.sendPort, "rawSample": sample._impl.address});
 
     result = await receivePort.first;
 
@@ -41,16 +40,14 @@ class AsyncRecognizer {
   Future<Template> loadTemplate(Uint8List binary_stream) async {
     ReceivePort receivePort = ReceivePort();
 
-    _sendPort.send(
-        {"event": _RecognizerEvents.LOAD_TEMPLATE, "sendPort": receivePort.sendPort, "binary_stream": binary_stream});
+    _sendPort.send({"event": _RecognizerEvents.LOAD_TEMPLATE, "sendPort": receivePort.sendPort, "binary_stream": binary_stream});
 
     int result = await receivePort.first;
 
     return Template(DynamicLibrary.open(_dllPath), Pointer<Void>.fromAddress(result));
   }
 
-  Future<TemplateIndex> createIndex(
-      List<Template> templates, int search_threads_count, int reserve_queries_count) async {
+  Future<TemplateIndex> createIndex(List<Template> templates, int search_threads_count, int reserve_queries_count) async {
     ReceivePort receivePort = ReceivePort();
 
     List<int> pointers = [];
@@ -87,8 +84,7 @@ class AsyncRecognizer {
     List<Map<String, dynamic>> data = await receivePort.first;
 
     for (Map<String, dynamic> mapData in data) {
-      result.add(SearchResult(
-          mapData["i"], MatchResult(mapData["distance"]!, mapData["fa_r"]!, mapData["fr_r"]!, mapData["score"]!)));
+      result.add(SearchResult(mapData["i"], MatchResult(mapData["distance"]!, mapData["fa_r"]!, mapData["fr_r"]!, mapData["score"]!)));
     }
 
     return result;
@@ -118,8 +114,7 @@ class AsyncRecognizer {
       List<SearchResult> searchResults = [];
 
       for (Map<String, dynamic> mapData in listMapData) {
-        searchResults.add(SearchResult(
-            mapData["i"], MatchResult(mapData["distance"]!, mapData["fa_r"]!, mapData["fr_r"]!, mapData["score"]!)));
+        searchResults.add(SearchResult(mapData["i"], MatchResult(mapData["distance"]!, mapData["fa_r"]!, mapData["fr_r"]!, mapData["score"]!)));
       }
 
       result.add(searchResults);
@@ -128,8 +123,8 @@ class AsyncRecognizer {
     return result;
   }
 
-  static Future<AsyncRecognizer> create(Pointer<Void> implementation, String facerecConfDir, String dllPath,
-      String ini_file, bool processing, bool matching, bool processing_less_memory_consumption) async {
+  static Future<AsyncRecognizer> create(Pointer<Void> implementation, String facerecConfDir, String dllPath, String ini_file, bool processing, bool matching,
+      bool processing_less_memory_consumption) async {
     ReceivePort receivePort = ReceivePort();
 
     Isolate isolate = await Isolate.spawn(_isolateImplementation, {
@@ -166,20 +161,15 @@ class AsyncRecognizer {
 
   static Future<void> _isolateImplementation(Map<String, dynamic> initialization) async {
     DynamicLibrary dylib = DynamicLibrary.open(initialization["dllPath"]);
-    FacerecService service = FacerecService(
-        DynamicLibrary.open(initialization["dllPath"]),
-        Pointer<Void>.fromAddress(initialization["implementation"]),
-        initialization["facerecConfDir"],
-        initialization["dllPath"]);
+    FacerecService service = FacerecService(DynamicLibrary.open(initialization["dllPath"]), Pointer<Void>.fromAddress(initialization["implementation"]),
+        initialization["facerecConfDir"], initialization["dllPath"]);
 
     ReceivePort receivePort = ReceivePort();
     bool processing = initialization["processing"];
     bool matching = initialization["matching"];
     bool processing_less_memory_consumption = initialization["processing_less_memory_consumption"];
     Recognizer recognizer = service.createRecognizer(initialization["ini_file"],
-        processing: processing,
-        matching: matching,
-        processing_less_memory_consumption: processing_less_memory_consumption);
+        processing: processing, matching: matching, processing_less_memory_consumption: processing_less_memory_consumption);
 
     (initialization["sendPort"] as SendPort).send(receivePort.sendPort);
 
@@ -245,13 +235,7 @@ class AsyncRecognizer {
           for (SearchResult searchResult in data) {
             MatchResult matchResult = searchResult.match_result;
 
-            result.add({
-              "i": searchResult.i,
-              "distance": matchResult.distance,
-              "fa_r": matchResult.fa_r,
-              "fr_r": matchResult.fr_r,
-              "score": matchResult.score
-            });
+            result.add({"i": searchResult.i, "distance": matchResult.distance, "fa_r": matchResult.fa_r, "fr_r": matchResult.fr_r, "score": matchResult.score});
           }
 
           sendPort.send(result);
@@ -269,8 +253,7 @@ class AsyncRecognizer {
 
           pointers.forEach((pointer) => queries_templates.add(Template(dylib, Pointer<Void>.fromAddress(pointer))));
 
-          List<List<SearchResult>> data =
-              recognizer.search(queries_templates, templateIndex, k, acceleration: acceleration);
+          List<List<SearchResult>> data = recognizer.search(queries_templates, templateIndex, k, acceleration: acceleration);
 
           for (List<SearchResult> searchResults in data) {
             List<Map<String, dynamic>> temp = [];
@@ -278,13 +261,7 @@ class AsyncRecognizer {
             for (SearchResult searchResult in searchResults) {
               MatchResult matchResult = searchResult.match_result;
 
-              temp.add({
-                "i": searchResult.i,
-                "distance": matchResult.distance,
-                "fa_r": matchResult.fa_r,
-                "fr_r": matchResult.fr_r,
-                "score": matchResult.score
-              });
+              temp.add({"i": searchResult.i, "distance": matchResult.distance, "fa_r": matchResult.fa_r, "fr_r": matchResult.fr_r, "score": matchResult.score});
             }
 
             result.add(temp);

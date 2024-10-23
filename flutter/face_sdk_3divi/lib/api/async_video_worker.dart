@@ -10,8 +10,7 @@ class AsyncVideoWorker {
 
   AsyncVideoWorker._create(this._isolate, this._sendPort, this._dllPath);
 
-  static Future<AsyncVideoWorker> create(
-      Pointer<Void> implementation, String facerecConfDir, String dllPath, VideoWorkerParams params) async {
+  static Future<AsyncVideoWorker> create(Pointer<Void> implementation, String facerecConfDir, String dllPath, VideoWorkerParams params) async {
     ReceivePort receivePort = ReceivePort();
 
     Isolate isolate = await Isolate.spawn(_isolateImplementation, {
@@ -70,8 +69,7 @@ class AsyncVideoWorker {
     await receivePort.first;
   }
 
-  Future<void> setDataBase(List<DataBaseElement> dataBase,
-      {SearchAccelerationType acceleration = SearchAccelerationType.SEARCH_ACCELERATION_1}) async {
+  Future<void> setDataBase(List<DataBaseElement> dataBase, {SearchAccelerationType acceleration = SearchAccelerationType.SEARCH_ACCELERATION_1}) async {
     ReceivePort receivePort = ReceivePort();
     List<Map<String, dynamic>> data = [];
 
@@ -86,12 +84,7 @@ class AsyncVideoWorker {
       data.add(elementData);
     });
 
-    _sendPort.send({
-      "event": _VideoWorkerEvents.SET_DATA_BASE,
-      "sendPort": receivePort.sendPort,
-      "data": data,
-      "acceleration": acceleration
-    });
+    _sendPort.send({"event": _VideoWorkerEvents.SET_DATA_BASE, "sendPort": receivePort.sendPort, "data": data, "acceleration": acceleration});
 
     await receivePort.first;
   }
@@ -110,10 +103,8 @@ class AsyncVideoWorker {
     result.tracking_callback_data = _parseTrackingCallbackData(data["tracking_callback_data"]);
     result.template_created_callback_data = _parseTemplateCreatedCallbackData(data["template_created_callback_data"]);
     result.tracking_lost_callback_data = _parseTrackingLostCallbackData(data["tracking_lost_callback_data"]);
-    result.tracking_match_found_callback_data =
-        _parseTrackingMatchFoundCallbackData(data["tracking_match_found_callback_data"]);
-    result.sti_person_outdated_callback_data =
-        _parseStiPersonOutdatedCallbackData(data["sti_person_outdated_callback_data"]);
+    result.tracking_match_found_callback_data = _parseTrackingMatchFoundCallbackData(data["tracking_match_found_callback_data"]);
+    result.sti_person_outdated_callback_data = _parseStiPersonOutdatedCallbackData(data["sti_person_outdated_callback_data"]);
 
     return result;
   }
@@ -137,8 +128,8 @@ class AsyncVideoWorker {
 
   static Future<void> _isolateImplementation(Map<String, dynamic> initialization) async {
     DynamicLibrary dylib = DynamicLibrary.open(initialization["dllPath"]);
-    FacerecService service = FacerecService(dylib, Pointer<Void>.fromAddress(initialization["implementation"]),
-        initialization["facerecConfDir"], initialization["dllPath"]);
+    FacerecService service =
+        FacerecService(dylib, Pointer<Void>.fromAddress(initialization["implementation"]), initialization["facerecConfDir"], initialization["dllPath"]);
     VideoWorkerParams params = VideoWorkerParams();
     Config config = Config(initialization["configFilepath"]);
     Map<String, double> overriddenParams = initialization["overriddenParams"];
@@ -152,10 +143,8 @@ class AsyncVideoWorker {
     params._age_gender_estimation_threads_count = initialization["_age_gender_estimation_threads_count"];
     params._emotions_estimation_threads_count = initialization["_emotions_estimation_threads_count"];
     params._short_time_identification_enabled = initialization["_short_time_identification_enabled"];
-    params._short_time_identification_distance_threshold =
-        initialization["_short_time_identification_distance_threshold"];
-    params._short_time_identification_outdate_time_seconds =
-        initialization["_short_time_identification_outdate_time_seconds"];
+    params._short_time_identification_distance_threshold = initialization["_short_time_identification_distance_threshold"];
+    params._short_time_identification_outdate_time_seconds = initialization["_short_time_identification_outdate_time_seconds"];
     params._active_liveness_checks_order = initialization["_active_liveness_checks_order"];
     params._video_worker_config = config;
 
@@ -206,8 +195,8 @@ class AsyncVideoWorker {
           List<DataBaseElement> dataBase = [];
 
           data.forEach((element) {
-            dataBase.add(DataBaseElement(element["element_id"], element["person_id"],
-                Template(dylib, Pointer<Void>.fromAddress(element["face_template"])), element["distance_threshold"]));
+            dataBase.add(DataBaseElement(element["element_id"], element["person_id"], Template(dylib, Pointer<Void>.fromAddress(element["face_template"])),
+                element["distance_threshold"]));
           });
 
           videoWorker.setDataBase(dataBase, acceleration: acceleration);
@@ -261,11 +250,7 @@ class AsyncVideoWorker {
             "_samples_weak": data.tracking_callback_data._samples_weak,
             "samples_quality": data.tracking_callback_data.samples_quality,
             "samples": samplePointers,
-            "samples_active_liveness_status": {
-              "verdict": verdict,
-              "check_type": check_type,
-              "progress_level": progress_level
-            }
+            "samples_active_liveness_status": {"verdict": verdict, "check_type": check_type, "progress_level": progress_level}
           };
 
           result["template_created_callback_data"] = {
@@ -275,10 +260,8 @@ class AsyncVideoWorker {
           };
 
           if (data.template_created_callback_data.stream_id != -1) {
-            result["template_created_callback_data"]["sample"] =
-                data.template_created_callback_data.sample._impl.address;
-            result["template_created_callback_data"]["template"] =
-                data.template_created_callback_data.templ._impl.address;
+            result["template_created_callback_data"]["sample"] = data.template_created_callback_data.sample._impl.address;
+            result["template_created_callback_data"]["template"] = data.template_created_callback_data.templ._impl.address;
           }
 
           result["tracking_lost_callback_data"] = {

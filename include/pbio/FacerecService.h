@@ -478,6 +478,13 @@ public:
 		const bool processing_less_memory_consumption = false) const;
 
 
+	Recognizer::Ptr createResizableRecognizer(
+	const char* ini_file,
+	const bool processing = true,
+	const bool matching = true,
+	const bool processing_less_memory_consumption = false) const;
+
+
 	/**
 		\~English
 		\brief
@@ -1688,6 +1695,35 @@ Recognizer::Ptr FacerecService::createRecognizer(
 
 
 inline
+Recognizer::Ptr FacerecService::createResizableRecognizer(
+	const char* ini_file,
+	const bool processing,
+	const bool matching,
+	const bool processing_less_memory_consumption) const
+{
+	const std::string file_path = _facerec_conf_dir + ini_file;
+
+	void* exception = NULL;
+
+	pbio::facerec::RecognizerImpl* const recognizer_impl =
+		_dll_handle->FacerecService_createResizableRecognizer2(
+			_impl,
+			file_path.c_str(),
+			0,
+			NULL,
+			NULL,
+			(int) processing,
+			(int) matching,
+			(int) processing_less_memory_consumption,
+			&exception);
+
+	checkException(exception, *_dll_handle);
+
+	return Recognizer::Ptr::make(_dll_handle, recognizer_impl);
+}
+
+
+inline
 Recognizer::Ptr FacerecService::createRecognizer(
 	const pbio::FacerecService::Config recognizer_config,
 	const bool processing,
@@ -2440,7 +2476,6 @@ void FacerecService::convertBGRA88882RGB(
 
 	checkException(exception, *_dll_handle);
 }
-
 
 }  // pbio namespace
 

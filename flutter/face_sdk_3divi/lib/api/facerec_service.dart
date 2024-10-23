@@ -39,23 +39,6 @@ class Config {
   }
 }
 
-void _overrideXML(String path, Map overriddenParams) {
-  final vw_config_xml = XmlDocument.parse(File(path).readAsStringSync());
-  overriddenParams.forEach((key, value) {
-    var elem = vw_config_xml.getElement("opencv_storage")!.getElement(key);
-    if (elem == null) {
-      final builder = new XmlBuilder();
-      // builder.processing('xml', 'version="1.0"');
-      builder.element(key, isSelfClosing: false, nest: value.toString());
-      final t = builder.buildFragment().root.lastChild;
-      if (t != null && !t.toString().contains('.')) vw_config_xml.getElement("opencv_storage")!.children.add(t.copy());
-    } else {
-      elem.innerText = value.toString();
-    }
-  });
-  File(path).writeAsStringSync(vw_config_xml.toXmlString(pretty: true, indent: ' '));
-}
-
 /// Interface object for creating other objects.
 class FacerecService extends _ComplexObject {
   String _facerecConfDir;
@@ -65,14 +48,6 @@ class FacerecService extends _ComplexObject {
       : _facerecConfDir = facerecConfDir + '/',
         _dllPath = dllPath,
         super(dll_handle, impl);
-
-  ///Get version of face recognition library.
-  String _getVersion() {
-    final get_ver = _dll_handle.lookupFunction<_facerecConstructor, _facerecConstructor>(_c_namespace + 'get_version');
-    // File file = MemoryFileSystem().file('test.dart')
-    //get_ver()
-    return "";
-  }
 
   /// Initializes the facerec library (can be called only once).<br>
   ///<br>
@@ -207,6 +182,41 @@ class FacerecService extends _ComplexObject {
 
   Context createContextFromJsonFile(String path) {
     return Context.fromJsonFile(_dll_handle, path);
+  }
+
+  Context createContextFromCameraImage(CameraImage image, int baseAngle) {
+    int width = image.width;
+    int height = image.height;
+    ContextFormat format;
+    Uint8List data = getRawData(image.planes);
+
+    switch (image.format.group) {
+      case ImageFormatGroup.unknown:
+        throw Exception("Unknown image format");
+
+      case ImageFormatGroup.yuv420:
+        format = ContextFormat.FORMAT_YUV420;
+
+        if (width != image.planes.first.bytesPerRow) {
+          data = _removePaddingFromYUV420_888(data, width, height, image.planes.first.bytesPerRow);
+        }
+
+        break;
+
+      case ImageFormatGroup.bgra8888:
+        format = ContextFormat.FORMAT_BGRA8888;
+
+        break;
+
+      case ImageFormatGroup.jpeg:
+        throw Exception("Unsupported image format jpeg");
+
+      case ImageFormatGroup.nv21:
+        format = ContextFormat.FORMAT_NV21;
+        break;
+    }
+
+    return createContextFromFrame(data, width, height, format: format, baseAngle: baseAngle);
   }
 
   ProcessingBlock createProcessingBlock(Map ctx) {
@@ -364,7 +374,7 @@ class FacerecService extends _ComplexObject {
     checkException(exception, _dll_handle);
   }
 
-  RawImageF convertYUV2RGB(RawImageF image, {int baseAngle = 0, NativeDataStruct? reusableData}) {
+  RawImageF convertYUV2RGB(RawImageF image, {required int baseAngle, NativeDataStruct? reusableData}) {
     final exception = _getException();
     final convertYUV2RGBConstructor =
         _dll_handle.lookupFunction<_RawImage_convertYUV2RGB_c, _RawImage_convertYUV2RGB_dart>(
@@ -388,14 +398,14 @@ class FacerecService extends _ComplexObject {
     }
 
     NativeDataStruct data = NativeDataStruct();
-    final int byteCount = width * height * 3;
+    final int totalBytes = width * height * 3;
 
     if (reusableData != null) {
-      if (reusableData.size != byteCount) {
-        reusableData.resize(byteCount);
+      if (reusableData.size != totalBytes) {
+        reusableData.resize(totalBytes);
       }
     } else {
-      data.resize(byteCount);
+      data.resize(totalBytes);
     }
 
     RawImageF result =
@@ -421,7 +431,53 @@ class FacerecService extends _ComplexObject {
     return result;
   }
 
-  RawImageF convertBGRA88882RGB(RawImageF image, {int baseAngle = 0, NativeDataStruct? reusableData}) {
+  RawImageF _convertYUV2RGB(Pointer<Uint8> imageData, int imageWidth, int imageHeight, Format format,
+      {required int baseAngle, NativeDataStruct? reusableData}) {
+    final exception = _getException();
+    final convertYUV2RGBConstructor =
+        _dll_handle.lookupFunction<_RawImage_convertYUV2RGB_c, _RawImage_convertYUV2RGB_dart>(
+            _c_namespace + 'RawImage_convertYUV2RGB');
+    int width;
+    int height;
+
+    switch (baseAngle) {
+      case 1:
+      case 2:
+        width = imageHeight;
+        height = imageWidth;
+
+        break;
+
+      default:
+        width = imageWidth;
+        height = imageHeight;
+
+        break;
+    }
+
+    NativeDataStruct data = NativeDataStruct();
+    final int totalBytes = width * height * 3;
+
+    if (reusableData != null) {
+      if (reusableData.size != totalBytes) {
+        reusableData.resize(totalBytes);
+      }
+    } else {
+      data.resize(totalBytes);
+    }
+
+    RawImageF result =
+        RawImageF(width, height, Format.FORMAT_RGB, (reusableData == null ? data : reusableData).pointer!.cast());
+
+    convertYUV2RGBConstructor(imageData.cast(), imageWidth, imageHeight, format.index, 0, -1, -1, -1, -1, 0, baseAngle,
+        result.data.cast(), exception);
+
+    checkException(exception, _dll_handle);
+
+    return result;
+  }
+
+  RawImageF convertBGRA88882RGB(RawImageF image, {required int baseAngle, NativeDataStruct? reusableData}) {
     final exception = _getException();
     final convertBGRA88882RGBConstructor =
         _dll_handle.lookupFunction<_RawImage_convertBGRA88882RGB_c, _RawImage_convertBGRA88882RGB_dart>(
@@ -445,14 +501,14 @@ class FacerecService extends _ComplexObject {
     }
 
     NativeDataStruct data = NativeDataStruct();
-    final int byteCount = width * height * 3;
+    final int totalBytes = width * height * 3;
 
     if (reusableData != null) {
-      if (reusableData.size != byteCount) {
-        reusableData.resize(byteCount);
+      if (reusableData.size != totalBytes) {
+        reusableData.resize(totalBytes);
       }
     } else {
-      data.resize(byteCount);
+      data.resize(totalBytes);
     }
 
     RawImageF result =
@@ -460,6 +516,103 @@ class FacerecService extends _ComplexObject {
 
     convertBGRA88882RGBConstructor(
         image.data.cast(), image.width, image.height, baseAngle, result.data.cast(), exception);
+
+    checkException(exception, _dll_handle);
+
+    return result;
+  }
+
+  RawImageF createRawImageFromCameraImage(CameraImage image, int baseAngle, {NativeDataStruct? reusableData}) {
+    const YUV_420_888 = 0x00000023;
+
+    int width = image.width;
+    int height = image.height;
+    RawImageF result;
+
+    if (reusableData != null) {
+      int totalBytes = width * height * 3;
+
+      if (reusableData.size != totalBytes) {
+        reusableData.resize(totalBytes);
+      }
+    }
+
+    switch (image.format.group) {
+      case ImageFormatGroup.unknown:
+        throw Exception("Unknown image format");
+
+      case ImageFormatGroup.yuv420:
+        Pointer<Uint8> yuv420Data = getRawDataPointer(image.planes);
+
+        if (image.format.raw == YUV_420_888 && width != image.planes.first.bytesPerRow) {
+          Pointer<Uint8> temp =
+              _removePaddingFromYUV420_888Pointer(yuv420Data, width, height, image.planes.first.bytesPerRow);
+
+          malloc.free(yuv420Data);
+
+          yuv420Data = temp;
+        }
+
+        result = _convertYUV2RGB(yuv420Data, width, height, Format.FORMAT_YUV_NV21,
+            baseAngle: baseAngle, reusableData: reusableData);
+
+        malloc.free(yuv420Data);
+
+        break;
+
+      case ImageFormatGroup.bgra8888:
+        NativeDataStruct data = NativeDataStruct();
+
+        convertRAW(image.planes, data);
+
+        RawImageF temp = RawImageF(image.width, image.height, Format.FORMAT_BGR, data.pointer!.cast());
+
+        result = convertBGRA88882RGB(temp, baseAngle: baseAngle, reusableData: reusableData);
+
+        break;
+
+      case ImageFormatGroup.jpeg:
+        throw Exception("Unsupported image format jpeg");
+
+      case ImageFormatGroup.nv21:
+        throw Exception("Unsupported image format nv21");
+    }
+
+    return result;
+  }
+
+  Uint8List _removePaddingFromYUV420_888(Uint8List data, int width, int height, int bytesPerRow) {
+    final exception = _getException();
+    int resultSize = 2 * width * height - 2;
+    Pointer<Uint8> result = malloc.allocate<Uint8>(resultSize);
+    Pointer<Uint8> dataPointer = malloc.allocate<Uint8>(data.length);
+
+    dataPointer.asTypedList(data.length).setAll(0, data);
+
+    final convert = _dll_handle.lookupFunction<_convertYUV420_888ToNV21_c, _convertYUV420_888ToNV21_dart>(
+        "${_c_namespace}TDV_convertYUV420_888ToNV21");
+
+    convert(dataPointer, width, height, bytesPerRow, result, resultSize, exception);
+
+    data = Uint8List.fromList(result.asTypedList(resultSize));
+
+    malloc.free(result);
+    malloc.free(dataPointer);
+
+    checkException(exception, _dll_handle);
+
+    return data;
+  }
+
+  Pointer<Uint8> _removePaddingFromYUV420_888Pointer(Pointer<Uint8> data, int width, int height, int bytesPerRow) {
+    final exception = _getException();
+    int resultSize = 2 * width * height - 2;
+    Pointer<Uint8> result = malloc.allocate<Uint8>(resultSize);
+
+    final convert = _dll_handle.lookupFunction<_convertYUV420_888ToNV21_c, _convertYUV420_888ToNV21_dart>(
+        "${_c_namespace}TDV_convertYUV420_888ToNV21");
+
+    convert(data, width, height, bytesPerRow, result, resultSize, exception);
 
     checkException(exception, _dll_handle);
 

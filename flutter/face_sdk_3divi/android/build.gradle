@@ -6,10 +6,6 @@ buildscript {
         google()
         jcenter()
     }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.1'
-    }
 }
 
 rootProject.allprojects {
@@ -22,12 +18,13 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 21
     }
 
+    namespace = "com.example.face_sdk_3divi"
 }
 
 task copyLibraries() {

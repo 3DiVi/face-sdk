@@ -19,3 +19,4 @@ import 'package:path_provider/path_provider.dart';
 
 part 'utils/convert.dart';
 part 'utils/assets.dart';
+part 'utils/camera_utils.dart';

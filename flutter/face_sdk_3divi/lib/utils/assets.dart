@@ -8,8 +8,8 @@ Future<String> loadAssets() async {
   for (String key in manifestMap.keys) {
     String assetPath = key;
 
-    if (assetPath.contains("packages/face_sdk_3divi/")) {
-      assetPath = assetPath.replaceFirst("packages/face_sdk_3divi/", "");
+    if (assetPath.contains("packages/face_sdk_3divi_models/")) {
+      assetPath = assetPath.replaceFirst("packages/face_sdk_3divi_models/", "");
     }
 
     String dbPath = "${documentsDirectory.path}/$assetPath";

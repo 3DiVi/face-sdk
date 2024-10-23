@@ -114,18 +114,7 @@ class _DetectPictureState extends State<DetectPicture> {
               });
               _cropImg = await cutFaceFromImageBytes(imageBytes, rect);
               if (rss.length == 1) {
-                final ImageDescriptor descriptor =
-                    await ImageDescriptor.encoded(await ImmutableBuffer.fromUint8List(imageBytes));
-
-                Context data = widget._service.createContext({
-                  "objects": [],
-                  "image": {
-                    "blob": decoder.decodeImage(imageBytes)!.getBytes(format: image_lib.Format.rgb),
-                    "dtype": "uint8_t",
-                    "format": "NDARRAY",
-                    "shape": [descriptor.height, descriptor.width, 3]
-                  }
-                });
+                Context data = widget._service.createContextFromEncodedImage(imageBytes);
 
                 data["objects"].pushBack(rss[0].toContext());
 

@@ -1,20 +1,22 @@
-# FaceSDK Plugin
+# 3DiVi FaceSDK Plugin
 
+This plugin offers a trial of the core functionalities of 3DiVi Face SDK, featuring advanced Face Recognition technology ranked highly by NIST. Key features include:
 
-## Features
-* Face detection
-* Face recognition
+* Face Detection
+* Facial Keypoints Detection
+* Face Verification (1:1)
 
+Please, note that this package contains only a demo license, so your runtime usage is limited in time. For a trial license, please [contact us](https://3divi.ai/products/software/face-sdk?utm_source=flutter&utm_medium=plugin&utm_campaign=site).
 
 ## Installation
-First, add `face_sdk_3divi` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
+First, add `face_sdk_3divi` and `face_sdk_3divi_models` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
 
 ### Requirements
 Physical device with minimal Android API level 21(Android 5.0) or iOS 10.0
 
 
 ### Android
-* Create flutter project with Java
+* Create Flutter project with Java
 * Add imports to your ```android/app/src/main/java/com.../MainActivity.java```
 ```java
 import android.content.pm.ApplicationInfo;
@@ -120,7 +122,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Creating main Face SDK component
-  // With FacerecService you can create other Face SDK components. Such as ProcessingBlock, Context, Recognizer, Capturer
+  // With FacerecService you can create other Face SDK components, such as ProcessingBlock, Context, Recognizer, Capturer
   FacerecService service = await FaceSdkPlugin.createFacerecService();
 }
 ```
@@ -128,7 +130,7 @@ Future<void> main() async {
 ```dart
 import 'package:face_sdk_3divi/face_sdk_3divi.dart';
 
-// AsyncProcessingBlock uses isolate
+// AsyncProcessingBlock uses Isolate
 
 // Creating AsyncProcessingBlock component for detecting faces
 Future<AsyncProcessingBlock> createFaceDetector(FacerecService service) async {
@@ -185,7 +187,14 @@ import 'package:face_sdk_3divi/face_sdk_3divi.dart';
 * @param image Image for camera plugin
 * @param baseAngle Native camera image rotation(0 - no rotation, 1 - 90°, 2 - 270°, 3 - 180°)
 */
-Context? detect(CameraImage image, FacerecService service, AsyncProcessingBlock faceDetector, AsyncProcessingBlock faceFitter, int baseAngle) {
+Context? createTemplate(
+    CameraImage image, 
+    FacerecService service, 
+    AsyncProcessingBlock faceDetector, 
+    AsyncProcessingBlock faceFitter, 
+    AsyncProcessingBlock faceTemplateExtractor, 
+    int baseAngle
+) {
     NativeDataStruct nativeData = NativeDataStruct(); // hold image bytes
     ContextFormat format; // image format
 
@@ -230,11 +239,14 @@ Context? detect(CameraImage image, FacerecService service, AsyncProcessingBlock 
       }
 
       await faceFitter.process(data); // construct face landmarks
+      
+      await faceTemplateExtractor.process(data); // extract face template
     } catch (e) {
       print("Exception: $e");
     }
     
-    // data contains information in format
+    // data Context information format
+    // please note, all x and y are normalized coordinates with respect to image width/height
     /*
     {
         "objects": [{
@@ -242,6 +254,14 @@ Context? detect(CameraImage image, FacerecService service, AsyncProcessingBlock 
             "class": "face",
             "confidence": {"double",  "minimum": 0,  "maximum": 1},
             "bbox": [x1, y2, x2, y2],
+            "template": {
+                "face_template_extractor_{modification}_{version}": {
+                    "format": "NDARRAY",
+                    "blob": "data pointer",
+                    "dtype": "uint8_t",
+                    "shape": [size]
+                }
+            }
             "keypoints": {
                 "left_eye_brow_left":   {"proj" : [x, y]},
                 "left_eye_brow_up":     {"proj" : [x, y]},
@@ -274,252 +294,17 @@ Context? detect(CameraImage image, FacerecService service, AsyncProcessingBlock 
 }
 ```
 
+## Support
+Please do not hesitate to [contact us](https://3divi.ai/resources/support) if you need any assistance or want to report a bug / suggest an improvement.
 
-### Example
-```dart
-import 'package:camera/camera.dart';
-import 'package:face_sdk_3divi/face_sdk_3divi.dart';
-import 'package:face_sdk_3divi/utils.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter/services.dart'
-    show DeviceOrientation, MethodChannel, PlatformException, SystemChrome, rootBundle;
-import 'dart:io';
-import 'dart:convert';
-import "dart:typed_data";
-
-// Creating AsyncProcessingBlock component for detecting faces
-Future<AsyncProcessingBlock> createFaceDetector(FacerecService service) async {
-  return await service.createAsyncProcessingBlock({"unit_type": "FACE_DETECTOR", "modification": "blf_front"});
-}
-
-// Creating AsyncProcessingBlock component for constructing face landmarks after detecting
-Future<AsyncProcessingBlock> createFaceFitter(FacerecService service) async {
-  return await service.createAsyncProcessingBlock({"unit_type": "FACE_FITTER", "modification": "tddfa_faster"});
-}
-
-// Creating AsyncProcessingBlock component for extracting face template after detecting and constructing face landmarks
-// With this templates you can recognize faces
-Future<AsyncProcessingBlock> createTemplateExtractor(FacerecService service) async {
-  return await service.createAsyncProcessingBlock({"unit_type": "FACE_TEMPLATE_EXTRACTOR", "modification": "30"});
-}
-
-// Creating AsyncProcessingBlock component for recognizing faces
-Future<AsyncProcessingBlock> createVerificationModule(FacerecService service) async {
-  return await service.createAsyncProcessingBlock({"unit_type": "VERIFICATION_MODULE", "modification": "30"});
-}
-
-late List<CameraDescription> cameras;
-late FacerecService service; // Main Face SDK component for creating other components
-late AsyncProcessingBlock faceDetector;
-late AsyncProcessingBlock faceFitter;
-late AsyncProcessingBlock faceTemplateExtractor;
-late AsyncProcessingBlock verificationModule;
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  try {
-    cameras = await availableCameras();
-  } on CameraException catch (e) {
-    print("Error: ${e.code}\nError Message: ${e.description}");
-  }
-
-  // Creating main Face SDK component
-  // With FacerecService you can create other Face SDK components. Such as ProcessingBlock, Context, Recognizer, Capturer
-  service = await FaceSdkPlugin.createFacerecService(); // 
-
-  faceDetector = await createFaceDetector(service);
-  faceFitter = await createFaceFitter(service);
-  faceTemplateExtractor = await createTemplateExtractor(service);
-  verificationModule = await createVerificationModule(service);
-
-  runApp(const MaterialApp(home: App()));
-
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
-}
-
-class App extends StatefulWidget {
-  const App({super.key});
-
-  @override
-  AppState createState() => AppState();
-}
-
-class AppState extends State<App> {
-  late CameraController _controller;
-  Context? _firstTemplate;
-  bool _processing = false;
-  int _baseAngle = 0;
-
-  Future<void> _processStream(CameraImage image) async {
-    if (_processing || !mounted) {
-      return;
-    }
-
-    _processing = true;
-
-    NativeDataStruct nativeData = NativeDataStruct(); // hold image bytes
-    ContextFormat format; // image format
-
-    convertRAW(image.planes, nativeData); // fill nativeData struct
-
-    switch (image.format.group) {
-      case ImageFormatGroup.yuv420:
-        format = ContextFormat.FORMAT_YUV420;
-        break;
-
-      case ImageFormatGroup.bgra8888:
-        format = ContextFormat.FORMAT_BGRA8888;
-        break;
-
-      default:
-        print("Unsupported format");
-
-        _processing = false;
-
-        return;
-    }
-
-    Context data = service.createContextFromFrame(nativeData.bytes!, image.width, image.height,
-        format: format, baseAngle: _baseAngle); // creates JSON-like container with data for processing
-
-    try {
-      await faceDetector.process(data); // detect faces
-
-      // all detected objects stored in data["objects"] array
-
-      if (data["objects"].len() > 1) {
-        data.dispose(); // release resources
-
-        print("More than 1 face detected");
-
-        _processing = false;
-
-        return;
-      } else if (data["objects"].len() == 0) {
-        data.dispose(); // release resources
-
-        print("No face detected");
-
-        _processing = false;
-
-        return;
-      }
-
-      await faceFitter.process(data); // construct face landmarks
-      await faceTemplateExtractor.process(data); // extract face template
-
-      Context template = service.createContext(data["objects"][0]["template"]); // copy template
-
-      if (_firstTemplate == null) {
-        _firstTemplate = template;
-
-        print("Template created");
-      } else {
-        Context verificationData = service.createContext({"template1": _firstTemplate!, "template2": template}); // create context with 2 templates for verification process
-
-        await verificationModule.process(verificationData); // verify
-
-        Context result = verificationData["result"]; // get result as context
-        double score = result["score"].get_value(); // recognition score
-
-        print("Match score: $score. Is same persons: ${score > 0.9 ? "true" : "false"}");
-        
-        print(result.toMap()); // context can be converted to map
-
-        verificationData.dispose(); // release resources
-        template.dispose(); // release resources
-      }
-    } catch (e) {
-      print("Exception: $e");
-    }
-
-    data.dispose(); // release resources
-
-    _processing = false;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (cameras.isEmpty) {
-      print("No camera is found");
-    } else {
-      CameraDescription? camera;
-
-      for (CameraDescription description in cameras) {
-        if (description.lensDirection == CameraLensDirection.front) {
-          camera = description;
-
-          break;
-        }
-      }
-
-      if (camera == null) {
-        print("No front-facing camera found");
-
-        camera = cameras.first;
-      }
-
-      _controller = CameraController(camera, ResolutionPreset.high);
-      _controller.initialize().then((_) {
-        if (!mounted) {
-          return;
-        }
-
-        setState(() {});
-
-        _controller.startImageStream(_processStream);
-      });
-    }
-
-    if (_controller.description.sensorOrientation == 90) {
-      _baseAngle = 1; // camera image rotation angle enum
-    } else if (_controller.description.sensorOrientation == 270) {
-      _baseAngle = 2; // camera image rotation angle enum
-    }
-
-    if (Platform.isIOS) {
-      _baseAngle = 0; // camera image rotation angle enum
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
-      return Container();
-    }
-
-    return PopScope(
-        child: Scaffold(
-            body: Stack(
-          children: [
-            Center(
-              child: Padding(padding: const EdgeInsets.all(1.0), child: CameraPreview(_controller)),
-            )
-          ],
-        )));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose(); // release resources
-    faceDetector.dispose(); // release resources
-    faceFitter.dispose(); // release resources
-    faceTemplateExtractor.dispose(); // release resources
-    verificationModule.dispose(); // release resources
-    _firstTemplate?.dispose(); // release resources
-    service.dispose(); // release resources
-
-    super.dispose();
-  }
-}
-```
-
-For a more information see [here](https://github.com/3DiVi/face-sdk)
-For a more examples see [here](https://github.com/3DiVi/face-sdk/tree/master/examples/flutter)
+## Advanced SDK
+Advanced SDK version is presented [here](https://3divi.ai/products/software/face-sdk?utm_source=flutter&utm_medium=plugin&utm_campaign=site).
+It offers a comprehensive suite of features, including:
+* Face Identification (1:N)
+* Liveness / Face Antispoofing algorithms to prevent fraud
+* Face Image Quality  to enhance recognition accuracy
+* Age, Gender and Emotions Estimation
+* Face Recognition on server side
+* Flexible licensing 
+* Advance Tech Support
+* and much more !

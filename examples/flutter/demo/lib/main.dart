@@ -2,13 +2,9 @@ import 'dart:async';
 import 'dart:ui';
 import 'dart:io';
 import 'dart:math' as math;
-import 'dart:convert';
-import "dart:typed_data";
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:face_sdk_3divi/face_sdk_3divi.dart';
 

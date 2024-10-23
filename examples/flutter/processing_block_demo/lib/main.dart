@@ -69,22 +69,6 @@ class _HomePageState extends State<HomePage> {
   Text? currentStateText;
   bool isInitialized = false;
 
-  image_lib.Decoder? _createDecoder(String fileName) {
-    if (fileName.endsWith(".png")) {
-      return image_lib.PngDecoder();
-    }
-
-    List<String> jpgExtensions = [".jpg", ".jpeg", ".JPG", ".JPEG", ".jpe", ".JPE"];
-
-    for (String extension in jpgExtensions) {
-      if (fileName.endsWith(extension)) {
-        return image_lib.JpegDecoder();
-      }
-    }
-
-    return null;
-  }
-
   Future<void> _pickImage() async {
     final XFile? file = await picker.pickImage(source: ImageSource.gallery);
 
@@ -161,11 +145,11 @@ class _HomePageState extends State<HomePage> {
 
       canvas.drawRect(Rect.fromLTRB(bbox.x1, bbox.y1, bbox.x2, bbox.y2), paint);
 
-      painter.text = TextSpan(text: buffer.toString(), style: const TextStyle(color: Colors.red, fontSize: 100));
+      painter.text = TextSpan(text: buffer.toString(), style: const TextStyle(color: Colors.red, fontSize: 30));
 
       painter.layout();
 
-      painter.paint(canvas, Offset(bbox.x2, bbox.y1));
+      painter.paint(canvas, Offset(bbox.x2 + 5, bbox.y1));
     });
 
     ByteData? pngBytes = await (await recorder.endRecording().toImage(image_width, image_height))

@@ -10,11 +10,9 @@ import 'dart:ffi';
 import 'dart:isolate';
 import "dart:typed_data";
 import 'dart:developer' as developer;
-import 'dart:ui';
 import 'dart:convert' show utf8;
+import 'package:camera/camera.dart';
 import 'package:ffi/ffi.dart';
-import 'package:flutter/gestures.dart';
-import 'package:xml/xml.dart';
 import 'package:image/image.dart' as imglib;
 
 import 'utils.dart';

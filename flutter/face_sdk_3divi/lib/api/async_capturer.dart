@@ -10,8 +10,7 @@ class AsyncCapturer {
 
   AsyncCapturer._create(this._isolate, this._sendPort, this._dllPath);
 
-  static Future<AsyncCapturer> create(
-      Pointer<Void> implementation, String facerecConfDir, String dllPath, Config config) async {
+  static Future<AsyncCapturer> create(Pointer<Void> implementation, String facerecConfDir, String dllPath, Config config) async {
     ReceivePort receivePort = ReceivePort();
 
     Isolate isolate = await Isolate.spawn(_isolateImplementation, {
@@ -85,11 +84,8 @@ class AsyncCapturer {
   }
 
   static Future<void> _isolateImplementation(Map<String, dynamic> initialization) async {
-    FacerecService service = FacerecService(
-        DynamicLibrary.open(initialization["dllPath"]),
-        Pointer<Void>.fromAddress(initialization["implementation"]),
-        initialization["facerecConfDir"],
-        initialization["dllPath"]);
+    FacerecService service = FacerecService(DynamicLibrary.open(initialization["dllPath"]), Pointer<Void>.fromAddress(initialization["implementation"]),
+        initialization["facerecConfDir"], initialization["dllPath"]);
     Config config = Config(initialization["configFilepath"]);
     Map<String, double> overriddenParams = initialization["overriddenParams"];
 

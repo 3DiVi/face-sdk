@@ -177,6 +177,10 @@ void process(
 				context,
 				service,
 				service->createRecognizer(recognizer_config, true, false)) );
+	}
+
+	for(int i = 0; i < use_cpu_cores_count; i++)
+	{
 		threads[i] = shared_ptr<thread>( new thread(*workers[i]) );
 	}
 

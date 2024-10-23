@@ -450,6 +450,12 @@ public:
 		const int reserve_queries_count = 0) const;
 
 
+	TemplatesIndex::Ptr createResizableIndex(
+		const uint64_t templates_count,
+		const int search_threads_count = 1,
+		const int reserve_queries_count = 0) const;
+
+
 	/**
 		\~English
 		\brief
@@ -746,6 +752,30 @@ TemplatesIndex::Ptr Recognizer::createIndex(
 			_impl,
 			templates.size(),
 			&templates_impls[0],
+			search_threads_count,
+			&exception);
+
+	checkException(exception, *_dll_handle);
+
+	const TemplatesIndex::Ptr result = TemplatesIndex::Ptr::make(_dll_handle, result_impl);
+
+	result->reserveSearchMemory(reserve_queries_count);
+
+	return result;
+}
+
+
+inline TemplatesIndex::Ptr Recognizer::createResizableIndex(
+		const uint64_t templates_count,
+		const int search_threads_count,
+		const int reserve_queries_count) const
+{
+	void* exception = NULL;
+
+	void* const result_impl =
+		_dll_handle->Recognizer_createResizableIndex(
+			_impl,
+			templates_count,
 			search_threads_count,
 			&exception);
 

@@ -1,4 +1,4 @@
-package com.example.processing_block_demo;
+package com.example.face_sdk_3divi_processing_block_demo;
 
 import android.content.pm.ApplicationInfo;
 import androidx.annotation.NonNull;

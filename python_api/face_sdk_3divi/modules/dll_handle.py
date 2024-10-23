@@ -156,6 +156,12 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
+    def FacerecService_createResizableRecognizer2(self, *args, **kwargs):
+        func = self.__dll_handle['{}FacerecService_createResizableRecognizer2'.format(self.__namespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
     def FacerecService_loadRawSample(self, *args, **kwargs):
         func = self.__dll_handle['{}FacerecService_loadRawSample'.format(self.__namespace)]
         func.restype = c_void_p
@@ -376,6 +382,12 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
+    def Recognizer_createResizableIndex(self, *args, **kwargs):
+        func = self.__dll_handle['{}Recognizer_createResizableIndex'.format(self.__namespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
     def Recognizer_getMethodName(self, *args, **kwargs):
         self.__dll_handle['{}Recognizer_getMethodName'.format(self.__namespace)](*args, **kwargs)
 
@@ -420,6 +432,42 @@ class DllHandle:
     def TemplatesIndex_at(self, *args, **kwargs):
         func = self.__dll_handle['{}TemplatesIndex_at'.format(self.__namespace)]
         func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def ResizableTemplatesIndex_at_by_uuid(self, *args, **kwargs):
+        func = self.__dll_handle['{}ResizableTemplatesIndex_at_by_uuid'.format(self.__namespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def ResizableTemplatesIndex_at_by_index(self, *args, **kwargs):
+        func = self.__dll_handle['{}ResizableTemplatesIndex_at_by_index'.format(self.__namespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def ResizableTemplatesIndex_add_2(self, *args, **kwargs):
+        func = self.__dll_handle['{}ResizableTemplatesIndex_add_2'.format(self.__namespace)]
+        func.restype = None
+
+        return func(*args, **kwargs)
+
+    def ResizableTemplatesIndex_remove_2(self, *args, **kwargs):
+        func = self.__dll_handle['{}ResizableTemplatesIndex_remove_2'.format(self.__namespace)]
+        func.restype = None
+
+        return func(*args, **kwargs)
+
+    def ResizableTemplatesIndex_capacity(self, *args, **kwargs):
+        func = self.__dll_handle['{}ResizableTemplatesIndex_capacity'.format(self.__namespace)]
+        func.restype = c_uint64
+
+        return func(*args, **kwargs)
+
+    def ResizableTemplatesIndex_concatenate(self, *args, **kwargs):
+        func = self.__dll_handle['{}ResizableTemplatesIndex_concatenate'.format(self.__namespace)]
+        func.restype = None
 
         return func(*args, **kwargs)
 

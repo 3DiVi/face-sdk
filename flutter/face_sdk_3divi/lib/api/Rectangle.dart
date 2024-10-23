@@ -1,15 +1,13 @@
 part of face_sdk_3divi;
 
-
 /// Rectangle in an image.
-class Rectangle
-{
+class Rectangle {
   ///Constructor.
-    Rectangle(int x, int y, int width, int height):
-          x = x,
-          y = y,
-          width = width,
-          height =height;
+  Rectangle(int x, int y, int width, int height)
+      : x = x,
+        y = y,
+        width = width,
+        height = height;
 
   /// X coordinate of the top-left corner.
   int x;
@@ -23,7 +21,7 @@ class Rectangle
   /// Height of the rectangle.
   int height;
 
-  String toString(){
+  String toString() {
     return "x: $x, y: $y, width: $width, height: $height";
   }
 }

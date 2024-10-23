@@ -30,6 +30,13 @@ public:
 	}
 
 
+	light_shared_ptr(light_shared_ptr&& a) noexcept :
+		light_shared_ptr()
+	{
+		(*this) = std::move(a);
+	}
+
+
 	~light_shared_ptr()
 	{
 		if(ptr)
@@ -57,6 +64,26 @@ public:
 		{
 			ptr->increment_refcounter();
 		}
+
+		return *this;
+	}
+
+
+	light_shared_ptr& operator=(light_shared_ptr&& a) noexcept
+	{
+		if (ptr == a.ptr)
+		{
+			return *this;
+		}
+
+		if (ptr)
+		{
+			ptr->decrement_refcounter();
+		}
+
+		ptr = a.ptr;
+
+		a.ptr = nullptr;
 
 		return *this;
 	}

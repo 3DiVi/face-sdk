@@ -157,11 +157,12 @@ conditions of this SLA:
     omission or willful misconduct.
      
 10.GOVERNING LAW AND DISPUTES. This SLA is governed by and 
-    construed in accordance with the laws of the Russian Federation. The parties shall do 
-    their utmost to prevent and eliminate mutual disputes or controversies arising out 
-    of this agreement or related to this agreement and to resolve these problems 
-    especially through their contact persons or other authorized representatives. 
-    The parties have agreed that in case of legal proceedings between the parties the 
-    competent court is the court with territorial jurisdiction of the Licensor.
+    construed in accordance with the laws of the  country, where the owner of the exclusive
+    rights is registered. The parties shall do their utmost to prevent and eliminate mutual 
+    disputes or controversies arising out of this agreement or related to this agreement 
+    and to resolve these problems especially through their contact persons or other 
+    authorized representatives. The parties have agreed that in case of legal proceedings 
+    between the parties the competent court is the court with territorial jurisdiction of the 
+    Licensor.
 
 

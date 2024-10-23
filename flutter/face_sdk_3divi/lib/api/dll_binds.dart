@@ -1024,3 +1024,6 @@ typedef _RawImage_convertBGRA88882RGB_dart = void Function(
 
 typedef _objDestructor_c = Void Function(Pointer<Void>);
 typedef _objDestructor_dart = void Function(Pointer<Void>);
+
+typedef _convertYUV420_888ToNV21_c = Void Function(Pointer<Uint8>, Int32, Int32, Int32, Pointer<Uint8>, Uint64, Pointer<Pointer<Void>>);
+typedef _convertYUV420_888ToNV21_dart = void Function(Pointer<Uint8>, int, int, int, Pointer<Uint8>, int, Pointer<Pointer<Void>>);

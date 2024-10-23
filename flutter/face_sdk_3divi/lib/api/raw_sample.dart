@@ -21,7 +21,7 @@ class PointerBuffer<T extends NativeType> {
     _sizePointer = malloc.allocate(sizeOf<Int32>());
     _sizePointer.value = -1;
 
-    _dataPointer = malloc.allocate(sizeOf<Pointer<T>>());
+    _dataPointer = malloc.allocate(sizeOf<Pointer<Void>>());
 
     ptr = malloc.allocate(sizeOf<Int64>() * 3);
     Int64List ptrData = ptr.cast<Int64>().asTypedList(3);
@@ -38,7 +38,7 @@ class PointerBuffer<T extends NativeType> {
     _sizePointer = malloc.allocate(sizeOf<Int32>());
     _sizePointer.value = length;
 
-    _dataPointer = malloc.allocate(sizeOf<Pointer<T>>());
+    _dataPointer = malloc.allocate(sizeOf<Pointer<Void>>());
     _dataPointer.value = malloc.allocate(elementSize * length);
 
     if(_dataPointer.value.address == nullptr.address)
@@ -361,8 +361,8 @@ class RawSample extends _ComplexObject {
 
     checkException(exception, _dll_handle);
 
-    int width = widthPtr.value;
-    int height = heightPtr.value;
+    // int width = widthPtr.value;
+    // int height = heightPtr.value;
 
     Uint8List list = buffer.dataPtr<Uint8>().asTypedList(buffer.length);
     Uint8List outData = Uint8List.fromList(list);

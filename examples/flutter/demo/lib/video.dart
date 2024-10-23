@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'dart:async';
-import 'dart:math' as math;
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +8,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:face_sdk_3divi/face_sdk_3divi.dart';
 import 'package:face_sdk_3divi/utils.dart';
 
-import 'bndbox.dart';
-
-
 typedef void setLivenssStatus(bool isPassed, Template templ, Image? img, double mirror);
-
 
 class VideoProcessing extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -25,14 +20,12 @@ class VideoProcessing extends StatefulWidget {
   VideoProcessing(this.cameras, this._facerecService, this._recognizer, this.nextRoute, this.callback);
 
   @override
-  _VideoProcessingState createState() => new _VideoProcessingState();
+  _VideoProcessingState createState() => _VideoProcessingState();
 }
-
-
 
 class _VideoProcessingState extends State<VideoProcessing> {
   late CameraController controller;
-  NativeDataStruct _data = new NativeDataStruct();
+  NativeDataStruct _data = NativeDataStruct();
   RawImageF? _ri;
 
   late VideoWorker _videoWorker;
@@ -56,15 +49,13 @@ class _VideoProcessingState extends State<VideoProcessing> {
   bool livenessPassed = false;
   bool livenessFailed = false;
 
-
   void _processStream(CameraImage img) async {
-    if(!mounted)
-      return;
+    if (!mounted) return;
     final RenderBox renderBox = _pictureKey.currentContext?.findRenderObject() as RenderBox;
     widgetPosition = renderBox.localToGlobal(Offset.zero);
     widgetSize = renderBox.size;
 
-    int startTime = new DateTime.now().millisecondsSinceEpoch;
+    int startTime = DateTime.now().millisecondsSinceEpoch;
     setState(() {
       _lastImgTimestamp = startTime;
       _lastImg = img;
@@ -74,11 +65,11 @@ class _VideoProcessingState extends State<VideoProcessing> {
   @override
   void initState() {
     super.initState();
-    if (widget.cameras == null || widget.cameras.length < 1) {
-      print('No camera is found');
+    if (widget.cameras.length < 1) {
+      print("No camera is found");
     } else {
       final camera = widget.cameras[1];
-      controller = new CameraController(
+      controller = CameraController(
         camera,
         ResolutionPreset.high,
       );
@@ -86,23 +77,22 @@ class _VideoProcessingState extends State<VideoProcessing> {
         if (!mounted) {
           return;
         }
+
         setState(() {});
+
         controller.startImageStream(_processStream);
       });
     }
+
     if (controller.description.sensorOrientation == 90) {
-      baseAngle = 1;
       mirror = 1;
     }
-    else if (controller.description.sensorOrientation == 270) {
-      baseAngle = 2;
-    }
+
+    baseAngle = getBaseAngle(controller);
 
     double apply_horizontal_flip = 0;
-    if (Platform.isIOS){
-      if (controller.description.lensDirection == CameraLensDirection.front)
-        apply_horizontal_flip = 1;
-      baseAngle = 0;
+    if (Platform.isIOS && controller.description.lensDirection == CameraLensDirection.front) {
+      apply_horizontal_flip = 1;
     }
 
     List<ActiveLivenessCheckType> checks = [
@@ -111,46 +101,30 @@ class _VideoProcessingState extends State<VideoProcessing> {
       ActiveLivenessCheckType.TURN_DOWN
     ];
 
-    _videoWorker = widget._facerecService.createVideoWorker(
-        VideoWorkerParams()
-            .recognizer_ini_file("method12v30_recognizer.xml")
-            .video_worker_config(
-                Config("video_worker_fdatracker_blf_fda_front.xml")
-                  .overrideParameter("enable_active_liveness", 1)
-                  .overrideParameter("base_angle", baseAngle.toDouble())
-                  .overrideParameter("active_liveness.apply_horizontal_flip", apply_horizontal_flip)
-                )
-            .streams_count(1)
-            .processing_threads_count(0)
-            .matching_threads_count(0)
-            .emotions_estimation_threads_count(1)
-            .active_liveness_checks_order(checks)
-    );
+    _videoWorker = widget._facerecService.createVideoWorker(VideoWorkerParams()
+        .recognizer_ini_file("method12v30_recognizer.xml")
+        .video_worker_config(Config("video_worker_fdatracker_blf_fda_front.xml")
+            .overrideParameter("enable_active_liveness", 1)
+            .overrideParameter("base_angle", baseAngle.toDouble())
+            .overrideParameter("active_liveness.apply_horizontal_flip", apply_horizontal_flip))
+        .streams_count(1)
+        .processing_threads_count(0)
+        .matching_threads_count(0)
+        .emotions_estimation_threads_count(1)
+        .active_liveness_checks_order(checks));
   }
 
   Stream<List<dynamic>> addVF(int prev_time) async* {
     final time = _lastImgTimestamp;
     var img = _lastImg;
-    if (!mounted || img == null){
+    if (!mounted || img == null) {
       await Future.delayed(const Duration(milliseconds: 50));
       yield* addVF(time);
     }
     img = img!;
     if (prev_time != _lastImgTimestamp) {
-      Format format = Format.FORMAT_RGB;
-      if (img.format.group == ImageFormatGroup.yuv420) {
-        format = Format.FORMAT_YUV_NV21;
-        convertRAW(img.planes, _data);
-      }
-      else if (img.format.group == ImageFormatGroup.bgra8888) {
-        format = Format.FORMAT_BGR;
-        convertBGRA8888(img.planes, _data);
-      }
-      else {
-        print("Unsupported image format");
-        convertRAW(img.planes, _data);
-      }
-      _ri = RawImageF(img.width, img.height, format, _data.pointer!.cast());
+      _ri = widget._facerecService.createRawImageFromCameraImage(img, 0, reusableData: _data);
+
       _videoWorker.addVideoFrame(_ri!, time);
     }
 
@@ -159,7 +133,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
   }
 
   Stream<String> pool() async* {
-    if (!mounted){
+    if (!mounted) {
       await Future.delayed(const Duration(milliseconds: 50));
       yield* pool();
     }
@@ -168,7 +142,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
     List<dynamic> detections = [];
     var angles;
     if (callbackData.tracking_callback_data.samples.length > 0) {
-      for(var i = 0; i < rawSamples.length; i+=1) {
+      for (var i = 0; i < rawSamples.length; i += 1) {
         rect = rawSamples[i].getRectangle();
         angles = rawSamples[i].getAngles();
         detections.add({
@@ -188,8 +162,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
     int progress = livenessProgress;
     if (!livenessFailed && !livenessPassed) {
       if (callbackData.tracking_callback_data.samples.length == 1) {
-        var status = callbackData.tracking_callback_data
-            .samples_active_liveness_status[0];
+        var status = callbackData.tracking_callback_data.samples_active_liveness_status[0];
         if (status.verdict == ActiveLiveness.WAITING_FACE_ALIGN) {
           activeLivenessAction = 'Please, look at the camera';
           if (angles.yaw > 10)
@@ -198,20 +171,16 @@ class _VideoProcessingState extends State<VideoProcessing> {
             activeLivenessAction += ' (turn face ←)';
           else if (angles.pitch > 10)
             activeLivenessAction += ' (turn face ↓)';
-          else if (angles.pitch < -10)
-            activeLivenessAction += ' (turn face ↑)';
-        }
-        else if (status.verdict == ActiveLiveness.CHECK_FAIL) {
+          else if (angles.pitch < -10) activeLivenessAction += ' (turn face ↑)';
+        } else if (status.verdict == ActiveLiveness.CHECK_FAIL) {
           activeLivenessAction = 'Active liveness check FAILED';
           livenessFailed = true;
           _videoWorker.resetTrackerOnStream();
-        }
-        else if (status.verdict == ActiveLiveness.ALL_CHECKS_PASSED) {
+        } else if (status.verdict == ActiveLiveness.ALL_CHECKS_PASSED) {
           activeLivenessAction = 'Active liveness check PASSED';
           livenessPassed = true;
           _videoWorker.resetTrackerOnStream();
-        }
-        else if (status.verdict == ActiveLiveness.IN_PROGRESS) {
+        } else if (status.verdict == ActiveLiveness.IN_PROGRESS) {
           if (status.check_type == ActiveLivenessCheckType.BLINK)
             activeLivenessAction = 'Blink';
           else if (status.check_type == ActiveLivenessCheckType.SMILE)
@@ -222,30 +191,23 @@ class _VideoProcessingState extends State<VideoProcessing> {
             activeLivenessAction = 'Turn face left';
           } else if (status.check_type == ActiveLivenessCheckType.TURN_RIGHT) {
             activeLivenessAction = 'Turn face right';
-          } else if (status.check_type == ActiveLivenessCheckType.TURN_UP)
-            activeLivenessAction = 'Turn face up';
-        }
-        else if (status.verdict == ActiveLiveness.NOT_COMPUTED)
-          activeLivenessAction = 'Active liveness disabled';
+          } else if (status.check_type == ActiveLivenessCheckType.TURN_UP) activeLivenessAction = 'Turn face up';
+        } else if (status.verdict == ActiveLiveness.NOT_COMPUTED) activeLivenessAction = 'Active liveness disabled';
 
         progress = (status.progress_level * 100).toInt();
-      }
-      else if (callbackData.tracking_callback_data.samples.length > 1) {
+      } else if (callbackData.tracking_callback_data.samples.length > 1) {
         progress = 0;
         activeLivenessAction = "Leave one face in the frame ";
-      }
-      else {
+      } else {
         progress = 0;
         activeLivenessAction = "";
       }
     }
 
-    if(templ == null && callbackData.tracking_lost_callback_data.best_quality_templ != null){
+    if (templ == null && callbackData.tracking_lost_callback_data.best_quality_templ != null) {
       templ = callbackData.tracking_lost_callback_data.best_quality_templ!;
-      if (livenessFailed || livenessPassed)
-        _isLivenessSet = true;
-    }
-    else if (templ == null && callbackData.tracking_lost_callback_data.best_quality_sample != null){
+      if (livenessFailed || livenessPassed) _isLivenessSet = true;
+    } else if (templ == null && callbackData.tracking_lost_callback_data.best_quality_sample != null) {
       templ = widget._recognizer.processing(callbackData.tracking_lost_callback_data.best_quality_sample!);
     }
 
@@ -253,95 +215,89 @@ class _VideoProcessingState extends State<VideoProcessing> {
     setState(() {
       _recognitions = detections;
       livenessProgress = progress;
+      
       if (templ != null && !_isLivenessSet) {
-        if (livenessPassed)
-          widget.callback(true, templ!, cutFaceFromCameraImage(bestImage!, bestRect), mirror);
-        if (livenessFailed)
-          widget.callback(false, templ!, cutFaceFromCameraImage(bestImage!, bestRect), mirror);
+        if (livenessPassed) widget.callback(true, templ!, cutFaceFromCameraImage(bestImage!, bestRect), mirror);
+        if (livenessFailed) widget.callback(false, templ!, cutFaceFromCameraImage(bestImage!, bestRect), mirror);
 
-        if (livenessFailed || livenessPassed)
-          _isLivenessSet = true;
+        if (livenessFailed || livenessPassed) _isLivenessSet = true;
       }
     });
-
 
     yield activeLivenessAction;
     await Future.delayed(const Duration(milliseconds: 50));
     yield* pool();
   }
 
-  Widget bboxDrawer(){
+  Widget bboxDrawer() {
     return Container();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (controller == null || !controller.value.isInitialized) {
+    if (!controller.value.isInitialized) {
       return Container();
     }
-    return new WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
-        body: Stack(
-          children: [
-            Center(
-              child: Padding(
+    return PopScope(
+        child: Scaffold(
+      body: Stack(
+        children: [
+          Center(
+            child: Padding(
                 key: _pictureKey,
                 child: CameraPreview(controller, child: bboxDrawer()),
-                padding: const EdgeInsets.all(1.0)
-              ),
-            ),
-            StreamBuilder(
+                padding: const EdgeInsets.all(1.0)),
+          ),
+          StreamBuilder(
               stream: pool(),
-              builder: (context, snapshot){
+              builder: (context, snapshot) {
                 return Transform.translate(
                     offset: Offset(0, 100),
-                    child: Text(activeLivenessAction,
-                        style: new TextStyle(fontSize: 20, backgroundColor: Colors.black))
-                );
-              }
-            ),
-            StreamBuilder(
-                stream: addVF(0),
-                builder: (context, snapshot){return Text("");},
-            ),
-            Container(
-              margin: EdgeInsets.only(left:30,right:30),
-              alignment:Alignment.bottomCenter,
-              child: LinearPercentIndicator( //leaner progress bar
-                // animation: false,
-                // animationDuration: 30,
-                lineHeight: 20.0,
-                percent:livenessProgress/100,
-                restartAnimation: true,
-                center: Text(
-                  livenessProgress.toString() + "%",
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
-                ),
-                linearStrokeCap: LinearStrokeCap.roundAll,
-                progressColor: Colors.blue[400],
-                backgroundColor: Colors.grey[300],
-              ),
-            ),
-          ],
-        ),
-        floatingActionButton: new Visibility(
-          visible: _isLivenessSet,
-          child: FloatingActionButton(
-            heroTag: "btn5",
-            child:  Icon(Icons.navigate_next),
-            onPressed: (){setState(() {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushNamed(widget.nextRoute);
-            });},
+                    child:
+                        Text(activeLivenessAction, style: TextStyle(fontSize: 20, backgroundColor: Colors.black)));
+              }),
+          StreamBuilder(
+            stream: addVF(0),
+            builder: (context, snapshot) {
+              return Text("");
+            },
           ),
+          Container(
+            margin: EdgeInsets.only(left: 30, right: 30),
+            alignment: Alignment.bottomCenter,
+            child: LinearPercentIndicator(
+              //leaner progress bar
+              // animation: false,
+              // animationDuration: 30,
+              lineHeight: 20.0,
+              percent: livenessProgress / 100,
+              restartAnimation: true,
+              center: Text(
+                livenessProgress.toString() + "%",
+                style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w600, color: Colors.black),
+              ),
+              linearStrokeCap: LinearStrokeCap.roundAll,
+              progressColor: Colors.blue[400],
+              backgroundColor: Colors.grey[300],
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: Visibility(
+        visible: _isLivenessSet,
+        child: FloatingActionButton(
+          heroTag: "btn5",
+          child: Icon(Icons.navigate_next),
+          onPressed: () {
+            setState(() {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushNamed(widget.nextRoute);
+            });
+          },
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      )
-    );
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    ));
   }
 
   @override

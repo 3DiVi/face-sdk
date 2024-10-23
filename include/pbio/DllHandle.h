@@ -194,7 +194,7 @@ private:
 		if(!result)
 		{
 			throw pbio::Error(0x5146c155, "Error in pbio::FacerecService::createService"
-				" can't fynd symbol '" + std::string(name) + "' in dll '" + _dll_path + "', error code: 0x5146c155");
+				" can't find symbol '" + std::string(name) + "' in dll '" + _dll_path + "', error code: 0x5146c155");
 		}
 
 		return result;

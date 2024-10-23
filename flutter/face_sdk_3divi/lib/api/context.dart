@@ -81,6 +81,10 @@ class Context extends _ComplexObject {
     _isDisposed = true;
   }
 
+  Context at(String key) {
+    return _getByKey(key);
+  }
+
   Context operator [](dynamic key) {
     if (key is String) {
       return this._getOrInsertByKey(key);

@@ -9,17 +9,11 @@ class AsyncProcessingBlock {
 
   AsyncProcessingBlock._create(this._isolate, this._sendPort);
 
-  static Future<AsyncProcessingBlock> create(
-      Pointer<Void> implementation, String facerecConfDir, String dllPath, Map context) async {
+  static Future<AsyncProcessingBlock> create(Pointer<Void> implementation, String facerecConfDir, String dllPath, Map context) async {
     ReceivePort receivePort = ReceivePort();
 
-    Isolate isolate = await Isolate.spawn(_isolateImplementation, {
-      "implementation": implementation.address,
-      "facerecConfDir": facerecConfDir,
-      "dllPath": dllPath,
-      "sendPort": receivePort.sendPort,
-      "context": context
-    });
+    Isolate isolate = await Isolate.spawn(_isolateImplementation,
+        {"implementation": implementation.address, "facerecConfDir": facerecConfDir, "dllPath": dllPath, "sendPort": receivePort.sendPort, "context": context});
 
     SendPort sendPort = await receivePort.first;
 
@@ -57,8 +51,8 @@ class AsyncProcessingBlock {
 
   static Future<void> _isolateImplementation(Map<String, dynamic> initialization) async {
     DynamicLibrary dylib = DynamicLibrary.open(initialization["dllPath"]);
-    FacerecService service = FacerecService(dylib, Pointer<Void>.fromAddress(initialization["implementation"]),
-        initialization["facerecConfDir"], initialization["dllPath"]);
+    FacerecService service =
+        FacerecService(dylib, Pointer<Void>.fromAddress(initialization["implementation"]), initialization["facerecConfDir"], initialization["dllPath"]);
 
     ReceivePort receivePort = ReceivePort();
     ProcessingBlock block = service.createProcessingBlock(initialization["context"]);

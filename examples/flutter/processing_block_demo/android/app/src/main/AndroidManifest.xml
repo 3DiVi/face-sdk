@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.processing_block_demo">
+    package="com.example.face_sdk_3divi_processing_block_demo">
    <application
         android:label="processing_block_demo"
         android:name="${applicationName}"

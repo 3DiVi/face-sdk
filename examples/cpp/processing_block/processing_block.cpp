@@ -4,14 +4,23 @@
 
 #include <map>
 #include <set>
+#include <fstream>
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
+#if defined(_WIN32)
+#include <windows.h>
+#endif
+
 #include <facerec/libfacerec.h>
 
 #include "../console_arguments_parser/ConsoleArgumentsParser.h"
+
+void getScreenResolution(int& width, int& height);
+
+void fitResize(int width, int height, cv::Mat& image, float widthToHeight);
 
 static const std::vector<std::pair<std::string,std::string>> bone_map = {
 		{"right_ankle","right_knee"},
@@ -470,6 +479,15 @@ int main(int argc, char **argv)
 		else if(unit_type.find("liveness") != std::string::npos)
 			drawLiveness(ioData, image);
 
+		int width;
+		int height;
+
+		getScreenResolution(width, height);
+
+		float widthToHeight = static_cast<float>(image.cols) / image.rows;
+
+		fitResize(width, height, image, widthToHeight);
+
 		cv::imshow("image", image);
 		cv::waitKey();
 
@@ -524,4 +542,80 @@ std::string getImageData(const std::string& imagePath)
 	os << file.rdbuf();
 
 	return os.str();
+}
+
+void getScreenResolution(int& width, int& height)
+{
+    const int padding = 100;
+
+#ifdef _WIN32
+    width = static_cast<int>(GetSystemMetrics(SM_CXSCREEN));
+    height = static_cast<int>(GetSystemMetrics(SM_CYSCREEN));
+#else
+    char* array[8];
+    char screen_size[64];
+    char* token = nullptr;
+
+    FILE* cmd = popen("xdpyinfo | awk '/dimensions/ {print $2}'", "r");
+
+    if (!cmd)
+    {
+        return;
+    }
+
+    while (fgets(screen_size, sizeof(screen_size), cmd) != NULL);
+    pclose(cmd);
+
+    token = strtok(screen_size, "x\n");
+
+    if (!token)
+    {
+        return;
+    }
+
+    for (int i = 0; token != nullptr; i++)
+    {
+        array[i] = token;
+
+        token = strtok(NULL, "x\n");
+    }
+
+    width = atoi(array[0]);
+    height = atoi(array[1]);
+#endif
+
+    width -= padding;
+    height -= padding;
+}
+
+void fitResize(int width, int height, cv::Mat& image, float widthToHeight)
+{
+    const int step = 100;
+
+    if (image.cols > width)
+    {
+        int newHeight = height;
+
+        while (newHeight >= height)
+        {
+            width -= step;
+
+            newHeight = width / widthToHeight;
+        }
+
+        cv::resize(image, image, cv::Size(width, newHeight));
+    }
+    else
+    {
+        int newWidth = width;
+
+        while (newWidth >= width)
+        {
+            height -= step;
+
+            newWidth = height * widthToHeight;
+        }
+
+        cv::resize(image, image, cv::Size(newWidth, height));
+    }
 }

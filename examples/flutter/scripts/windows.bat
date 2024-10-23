@@ -20,4 +20,4 @@ xcopy /e /i /y "%RESULT_DIR%\share\fda" "%CUR%\share\fda"
 
 xcopy /e /i /y "%RESULT_DIR%\share\facedetectors\blf" "%CUR%\share\facedetectors\blf"
 
-xcopy /e /i /y "%RESULT_DIR%\share\facerec\recognizers\method12v30\*.bin" "%CUR%\share\facerec\recognizers\method12v30"
+xcopy /e /i /y "%RESULT_DIR%\share\facerec\recognizers\method12v30\*.enc" "%CUR%\share\facerec\recognizers\method12v30"

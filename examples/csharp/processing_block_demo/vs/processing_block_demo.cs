@@ -8,6 +8,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using CommandLine;
 using OpenCvSharp;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 using VDT.FaceRecognition.SDK;
 
@@ -52,6 +54,12 @@ namespace csharp_processing_block_demo
 			{ "quality", "QUALITY_ASSESSMENT_ESTIMATOR" },
 			{ "pose", "HUMAN_POSE_ESTIMATOR" },
 		};
+
+		private const int SM_CXSCREEN = 0;
+    	private const int SM_CYSCREEN = 1;
+
+		[DllImport("user32.dll")]
+    	public static extern int GetSystemMetrics(int nIndex);
 
 		static int Main(string[] args)
 		{
@@ -227,6 +235,15 @@ namespace csharp_processing_block_demo
 
 						break;
 				}
+
+				int width = 0;
+				int height = 0;
+
+				GetScreenResolution(ref width, ref height);
+
+				float widthToHeight = ((float)image.Cols) / ((float)image.Rows);
+
+				FitResize(width, height, ref image, widthToHeight);
 
 				Cv2.ImShow("image", image);
 				Cv2.WaitKey();
@@ -690,6 +707,84 @@ namespace csharp_processing_block_demo
 				{ "unit_type", "FACE_FITTER" },
 				{ "modification", "fda" }
 			};
+		}
+
+		private static void GetScreenResolution(ref int width, ref int height)
+		{
+			const int padding = 100;
+
+			if (OperatingSystem.IsWindows())
+			{
+				width = GetSystemMetrics(SM_CXSCREEN);
+				height = GetSystemMetrics(SM_CYSCREEN);
+			}
+			else
+			{
+				try
+				{
+					Process process = new Process();
+					process.StartInfo.FileName = "xdpyinfo";
+					process.StartInfo.UseShellExecute = false;
+					process.StartInfo.RedirectStandardOutput = true;
+					process.StartInfo.CreateNoWindow = true;
+
+					process.Start();
+
+					string output = process.StandardOutput.ReadToEnd();
+					process.WaitForExit();
+
+					var match = Regex.Match(output, @"dimensions:\s+(\d+)x(\d+)");
+
+					if (match.Success)
+					{
+						width = int.Parse(match.Groups[1].Value);
+						height = int.Parse(match.Groups[2].Value);
+					}
+					else
+					{
+						Console.WriteLine("Could not determine screen resolution.");
+					}
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine($"Error: {ex.Message}");
+				}
+			}
+
+			width -= padding;
+			height -= padding;
+		}
+
+		private static void FitResize(int width, int height, ref Mat image, float widthToHeight)
+		{
+			const int step = 100;
+
+			if (image.Cols > width)
+			{
+				int newHeight = height;
+
+				while (newHeight >= height)
+				{
+					width -= step;
+
+					newHeight = (int)(width / widthToHeight);
+				}
+
+				image = image.Resize(new Size(width, newHeight));
+			}
+			else
+			{
+				int newWidth = width;
+
+				while (newWidth >= width)
+				{
+					height -= step;
+
+					newWidth = (int)(height * widthToHeight);
+				}
+
+				image = image.Resize(new Size(newWidth, height));
+			}
 		}
 	}
 }

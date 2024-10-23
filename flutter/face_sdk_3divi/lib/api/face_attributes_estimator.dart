@@ -11,13 +11,12 @@ class EyesOpennessResult {
 }
 
 class FaceAttributesEstimator extends _ComplexObject {
-  FaceAttributesEstimator(DynamicLibrary dll_handle, Pointer<Void> impl) :
-        super(dll_handle, impl);
+  FaceAttributesEstimator(DynamicLibrary dll_handle, Pointer<Void> impl) : super(dll_handle, impl);
 
   /// Create a template from detected face [sample] (from Capturer of VideoWorker).
-  EyesOpennessResult estimateEyesOpenness(final RawSample sample){
-    final process = _dll_handle.lookupFunction<_FaceAttributesEstimator_estimateEyesOpenness, _FaceAttributesEstimator_estimateEyesOpenness>
-      (_c_namespace + 'FaceAttributesEstimator_estimateEyesOpenness');
+  EyesOpennessResult estimateEyesOpenness(final RawSample sample) {
+    final process = _dll_handle.lookupFunction<_FaceAttributesEstimator_estimateEyesOpenness, _FaceAttributesEstimator_estimateEyesOpenness>(
+        _c_namespace + 'FaceAttributesEstimator_estimateEyesOpenness');
 
     Pointer<Int32> leftVerdictPtr = malloc.allocate<Int32>(sizeOf<Pointer<Int32>>());
     Pointer<Int32> rightVerdictPtr = malloc.allocate<Int32>(sizeOf<Pointer<Int32>>());
@@ -25,14 +24,7 @@ class FaceAttributesEstimator extends _ComplexObject {
     Pointer<Float> rightScorePtr = malloc.allocate<Float>(sizeOf<Pointer<Float>>());
 
     final exception = _getException();
-    process(
-        _impl,
-        sample._impl,
-        leftVerdictPtr,
-        rightVerdictPtr,
-        leftScorePtr,
-        rightScorePtr,
-        exception);
+    process(_impl, sample._impl, leftVerdictPtr, rightVerdictPtr, leftScorePtr, rightScorePtr, exception);
 
     checkException(exception, _dll_handle);
 

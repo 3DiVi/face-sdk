@@ -23,6 +23,7 @@ from .depth_liveness_estimator import DepthLivenessEstimator
 from .ir_liveness_estimator import IRLivenessEstimator
 from .liveness_2d_estimator import Liveness2DEstimator
 from .face_attributes_estimator import FaceAttributesEstimator
+from .resizable_recognizer import ResizableRecognizer
 from .wrap_funcs import read_func
 from .complex_object import ComplexObject
 from .recognizer import Recognizer
@@ -819,3 +820,37 @@ class FacerecService(ComplexObject):
         check_exception(exception, self._dll_handle)
 
         return RawSample(self._dll_handle, c_void_p(raw_sampl_impl))
+
+    def create_resizable_recognizer(self, recognizer_config: Union[str, Config], matching: bool = True, processing: bool = True,
+                          processing_less_memory_consumption: bool = False) -> ResizableRecognizer:
+        rec_overridden_keys = []
+        rec_overridden_values = []
+
+        if isinstance(recognizer_config, str):
+            file_path = recognizer_config
+        else:
+            file_path = recognizer_config.config_filepath
+            rec_overridden_keys, rec_overridden_values = recognizer_config.prepare()
+
+        exception = make_exception()
+
+        rec_overridden_keys_buf = (c_char_p * len(rec_overridden_keys))()
+        rec_overridden_values_buf = (c_double * len(rec_overridden_values))(*rec_overridden_values)
+
+        for i in range(len(rec_overridden_keys)):
+            rec_overridden_keys_buf[i] = c_char_p(rec_overridden_keys[i].encode())
+
+        recognizer_impl = self._dll_handle.FacerecService_createResizableRecognizer2(
+            self._impl,
+            POINTER(c_char_p)(create_string_buffer((self.__facerec_conf_dir + file_path).encode())),
+            c_int32(len(rec_overridden_keys)),
+            rec_overridden_keys_buf if len(rec_overridden_keys_buf) else None,
+            rec_overridden_values_buf if len(rec_overridden_values_buf) else None,
+            c_int(processing),
+            c_int(matching),
+            c_int(processing_less_memory_consumption),
+            exception)
+
+        check_exception(exception, self._dll_handle)
+
+        return ResizableRecognizer(self._dll_handle, c_void_p(recognizer_impl))

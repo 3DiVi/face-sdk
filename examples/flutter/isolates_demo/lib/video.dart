@@ -1,9 +1,8 @@
 import 'dart:ffi';
-import 'dart:math';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:async';
-import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -11,8 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:face_sdk_3divi/face_sdk_3divi.dart';
 import 'package:face_sdk_3divi/utils.dart';
 import 'package:image/image.dart' as image_lib;
-
-import 'bndbox.dart';
 
 typedef void setLivenessStatus(bool isPassed, Context template, Image image, double mirror);
 
@@ -32,7 +29,7 @@ class VideoProcessing extends StatefulWidget {
 
 class _VideoProcessingState extends State<VideoProcessing> {
   late CameraController controller;
-  image_lib.PngEncoder pngEncoder = image_lib.PngEncoder(level: 0, filter: 0);
+  image_lib.PngEncoder pngEncoder = image_lib.PngEncoder(level: 0);
   AsyncVideoWorker? _videoWorker;
   AsyncProcessingBlock? liveness;
   GlobalKey _pictureKey = GlobalKey();
@@ -47,6 +44,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
   ui.Size? widgetSize;
   NativeDataStruct data = NativeDataStruct();
   NativeDataStruct reusableData = NativeDataStruct();
+  List<RawImageF> _targets = [];
   Widget? bboxWidget;
   Image? bboxImage;
   bool flipX = true;
@@ -85,7 +83,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
         break;
     }
 
-    Uint8List? bytes = await addVF(image);
+    Uint8List? bytes = await addVideoFrame(image);
 
     if (bytes == null) {
       bboxWidget = null;
@@ -95,7 +93,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
       return;
     }
 
-    RawSample? sample = await pool(bytes);
+    RawSample? sample = await pool();
 
     if (sample == null) {
       bboxWidget = null;
@@ -134,16 +132,10 @@ class _VideoProcessingState extends State<VideoProcessing> {
         controller.startImageStream(_processStream);
       });
     }
-    if (controller.description.sensorOrientation == 90) {
-      baseAngle = 1;
-      mirror = 1;
-    } else if (controller.description.sensorOrientation == 270) {
-      baseAngle = 2;
-    }
+
+    baseAngle = getBaseAngle(controller);
 
     if (Platform.isIOS) {
-      baseAngle = 0;
-
       flipX = false;
     }
 
@@ -160,7 +152,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
     });
   }
 
-  Future<Uint8List?> addVF(CameraImage cameraImage) async {
+  Future<Uint8List?> addVideoFrame(CameraImage cameraImage) async {
     if (!mounted) {
       await Future.delayed(const Duration(milliseconds: 10));
 
@@ -171,34 +163,26 @@ class _VideoProcessingState extends State<VideoProcessing> {
       reusableData.resize(cameraImage.width * cameraImage.height * 3);
     }
 
-    RawImageF target;
+    RawImageF target = widget._service.createRawImageFromCameraImage(cameraImage, baseAngle);
 
-    convertRAW(cameraImage.planes, data);
+    if (_targets.length > 300) {
+      for (int i = 0; i < 150; i++) {
+        _targets[i].dispose();
+      }
 
-    if (cameraImage.format.group == ImageFormatGroup.yuv420) {
-      RawImageF image = RawImageF(cameraImage.width, cameraImage.height, Format.FORMAT_YUV_NV21, data.pointer!.cast());
-
-      target = widget._service.convertYUV2RGB(image, baseAngle: baseAngle, reusableData: reusableData);
-    }
-    else if (cameraImage.format.group == ImageFormatGroup.bgra8888) {
-      RawImageF image = RawImageF(cameraImage.width, cameraImage.height, Format.FORMAT_BGR, data.pointer!.cast());
-
-      target = widget._service.convertBGRA88882RGB(image, baseAngle: baseAngle, reusableData: reusableData);
-    }
-    else {
-      print("Unsupported format");
-
-      return null;
+      _targets.removeRange(0, 150);
     }
 
     await _videoWorker!.addVideoFrame(target, DateTime.now().microsecondsSinceEpoch);
 
     await Future.delayed(const Duration(milliseconds: 10));
 
+    _targets.add(target);
+
     return target.data.cast<Uint8>().asTypedList(cameraImage.width * cameraImage.height * 3);
   }
 
-  Future<RawSample?> pool(Uint8List bytes) async {
+  Future<RawSample?> pool() async {
     if (_videoWorker == null || liveness == null || !mounted) {
       await Future.delayed(const Duration(milliseconds: 50));
 
@@ -270,10 +254,11 @@ class _VideoProcessingState extends State<VideoProcessing> {
 
       Context template = widget._service.createContext(data["objects"][0]["template"]);
       Rectangle bbox = sample.getRectangle();
-      final image_lib.Image image = image_lib.Image.fromBytes(width, height, bytes,
-          channels: image_lib.Channels.rgb, format: image_lib.Format.rgb);
+      final image_lib.Image image = image_lib.Image.fromBytes(
+          width: width, height: height, bytes: bytes.buffer, numChannels: 3, order: image_lib.ChannelOrder.rgb);
 
-      List<int> png = pngEncoder.encodeImage(image_lib.copyCrop(image, bbox.x, bbox.y, bbox.width, bbox.height));
+      List<int> png =
+          pngEncoder.encode(image_lib.copyCrop(image, x: bbox.x, y: bbox.y, width: bbox.width, height: bbox.height));
 
       widget.callback(livenessPassed, template, Image.memory(png as Uint8List), mirror);
     }
@@ -344,41 +329,46 @@ class _VideoProcessingState extends State<VideoProcessing> {
       return Container();
     }
 
-    return WillPopScope(
-        onWillPop: () async => false,
+    return PopScope(
         child: Scaffold(
-          body: Stack(
-            children: [
-              Center(
-                child: Padding(
-                    key: _pictureKey,
-                    padding: const EdgeInsets.all(1.0),
-                    child: Transform.flip(flipX: flipX, child: CameraPreview(controller))),
-              ),
-              Container(child: bboxDrawer())
-            ],
+      body: Stack(
+        children: [
+          Center(
+            child: Padding(
+              key: _pictureKey,
+              padding: const EdgeInsets.all(1.0),
+              child: CameraPreview(controller)),
           ),
-          floatingActionButton: Visibility(
-            visible: _isLivenessSet,
-            child: FloatingActionButton(
-              heroTag: "btn5",
-              child: Icon(Icons.navigate_next),
-              onPressed: () {
-                setState(() {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pushNamed(widget.nextRoute);
-                });
-              },
-            ),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        ));
+          Container(child: bboxDrawer())
+        ],
+      ),
+      floatingActionButton: Visibility(
+        visible: _isLivenessSet,
+        child: FloatingActionButton(
+          heroTag: "btn5",
+          child: Icon(Icons.navigate_next),
+          onPressed: () {
+            setState(() {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushNamed(widget.nextRoute);
+            });
+          },
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    ));
   }
 
   @override
   void dispose() {
     controller.dispose();
-    _videoWorker?.dispose();
+    _videoWorker?.dispose().whenComplete(() {
+      for (RawImageF target in _targets) {
+        target.dispose();
+      }
+
+      _targets.clear();
+    });
     liveness?.dispose();
 
     super.dispose();

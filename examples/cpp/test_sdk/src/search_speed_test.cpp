@@ -64,6 +64,8 @@ void test(
 		}
 	}
 
+	TMASSERT(all_templates.size() > 0, "Can't load templates");
+
 	// queries and dataset split
 	std::vector<pbio::Template::Ptr> templates;
 	std::vector<pbio::Template::Ptr> queries;

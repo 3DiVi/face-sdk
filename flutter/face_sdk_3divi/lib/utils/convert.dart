@@ -1,6 +1,5 @@
 part of utils;
 
-
 /// Image storage structure for [VideoWorker].
 ///
 /// Used when interacting with the [convertRAW] and [convertYUV420toImageColor]
@@ -24,35 +23,31 @@ class NativeDataStruct {
   }
 
   void resize(int byteCount) {
-    if(isValid)
-      malloc.free(pointer!);
+    if (isValid) malloc.free(pointer!);
 
     pointer = malloc.allocate<Uint8>(byteCount);
 
-    if(pointer!.address == nullptr.address)
-      throw Exception("NativeDataStruct.resize: Failed to allocate a $byteCount bytes");
+    if (pointer!.address == nullptr.address) throw Exception("NativeDataStruct.resize: Failed to allocate a $byteCount bytes");
 
     bytes = pointer!.asTypedList(byteCount);
   }
 
   void write(Uint8List data) {
-    if(isValid) {
-      if(data.length != bytes!.length)
-        throw Exception("Size data not equals size NativeDataStruct");
+    if (isValid) {
+      if (data.length != bytes!.length) throw Exception("Size data not equals size NativeDataStruct");
 
       bytes!.setAll(0, data);
     }
   }
 
   void dispose() {
-    if(isValid) {
+    if (isValid) {
       malloc.free(pointer!);
       pointer = null;
       bytes = null;
     }
   }
 }
-
 
 /// Concatenates planes into one array, which can be passed to [VideoWorker].
 void convertRAW(List<Plane> planes, NativeDataStruct data) {
@@ -61,8 +56,7 @@ void convertRAW(List<Plane> planes, NativeDataStruct data) {
     totalBytes += planes[i].bytes.length;
   }
 
-  if (data.size != totalBytes)
-    data.resize(totalBytes);
+  if (data.size != totalBytes) data.resize(totalBytes);
 
   int byteOffset = 0;
   for (int i = 0; i < planes.length; ++i) {
@@ -77,16 +71,54 @@ void convertBGRA8888(List<Plane> planes, NativeDataStruct data) {
   final plane = planes[0];
   int totalBytes = (plane.bytes.length / 4 * 3).toInt();
 
-  if (data.size != totalBytes)
-    data.resize(totalBytes);
+  if (data.size != totalBytes) data.resize(totalBytes);
 
   int byteOffset = 0;
-  for (int i = 0; i < plane.bytes.length; i+=4) {
+  for (int i = 0; i < plane.bytes.length; i += 4) {
     data.bytes![byteOffset + 0] = plane.bytes[i + 0];
     data.bytes![byteOffset + 1] = plane.bytes[i + 1];
     data.bytes![byteOffset + 2] = plane.bytes[i + 2];
     byteOffset += 3;
   }
+}
+
+Uint8List getRawData(List<Plane> planes) {
+  int totalBytes = 0;
+  int offset = 0;
+
+  for (int i = 0; i < planes.length; ++i) {
+    totalBytes += planes[i].bytes.length;
+  }
+
+  Uint8List result = Uint8List(totalBytes);
+
+  for (Plane plane in planes) {
+    result.setAll(offset, plane.bytes);
+
+    offset += plane.bytes.length;
+  }
+
+  return result;
+}
+
+Pointer<Uint8> getRawDataPointer(List<Plane> planes) {
+  int totalBytes = 0;
+  int offset = 0;
+
+  for (int i = 0; i < planes.length; ++i) {
+    totalBytes += planes[i].bytes.length;
+  }
+
+  Pointer<Uint8> result = malloc.allocate(totalBytes);
+  Uint8List list = result.asTypedList(totalBytes);
+
+  for (Plane plane in planes) {
+    list.setAll(offset, plane.bytes);
+
+    offset += plane.bytes.length;
+  }
+
+  return result;
 }
 
 /// Converts BGRA8888 to RGB format,
@@ -95,11 +127,10 @@ void convertBGRA8888toRGB(List<Plane> planes, NativeDataStruct data) {
   final plane = planes[0];
   int totalBytes = (plane.bytes.length / 4 * 3).toInt();
 
-  if (data.size != totalBytes)
-    data.resize(totalBytes);
+  if (data.size != totalBytes) data.resize(totalBytes);
 
   int byteOffset = 0;
-  for (int i = 0; i < plane.bytes.length; i+=4) {
+  for (int i = 0; i < plane.bytes.length; i += 4) {
     data.bytes![byteOffset + 0] = plane.bytes[i + 2];
     data.bytes![byteOffset + 1] = plane.bytes[i + 1];
     data.bytes![byteOffset + 2] = plane.bytes[i + 0];
@@ -108,33 +139,33 @@ void convertBGRA8888toRGB(List<Plane> planes, NativeDataStruct data) {
 }
 
 /// Converts CameraImage in YUV format to BGR Image.
-imglib.Image convertYUV420toImageColor(CameraImage image){
-  const shift = (0xFF << 24);
+imglib.Image convertYUV420toImageColor(CameraImage image) {
   final int width = image.width;
   final int height = image.height;
   final int uvRowStride = image.planes[1].bytesPerRow;
   final int uvPixelStride = image.planes[1].bytesPerPixel!;
 
-  var img = imglib.Image(width, height); // Create Image buffer
+  imglib.Image img = imglib.Image(width: width, height: height); // Create Image buffer
 
   // Fill image buffer with plane[0] from YUV420_888
-  for(int x=0; x < width; x++) {
-    for(int y=0; y < height; y++) {
-      final int uvIndex = uvPixelStride * (x/2).floor() + uvRowStride*(y/2).floor();
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      final int uvIndex = uvPixelStride * (x / 2).floor() + uvRowStride * (y / 2).floor();
       final int index = y * width + x;
 
       final yp = image.planes[0].bytes[index];
       final up = image.planes[1].bytes[uvIndex];
       final vp = image.planes[2].bytes[uvIndex];
+
       // Calculate pixel color
       int r = (yp + vp * 1436 / 1024 - 179).round().clamp(0, 255);
-      int g = (yp - up * 46549 / 131072 + 44 -vp * 93604 / 131072 + 91).round().clamp(0, 255);
+      int g = (yp - up * 46549 / 131072 + 44 - vp * 93604 / 131072 + 91).round().clamp(0, 255);
       int b = (yp + up * 1814 / 1024 - 227).round().clamp(0, 255);
-      // color: 0x FF  FF  FF  FF
-      //           A   B   G   R
-      img.data[index] = shift | (b << 16) | (g << 8) | r;
+
+      img.setPixelRgb(x, y, r, g, b);
     }
   }
+
   return img;
 }
 
@@ -143,12 +174,7 @@ imglib.Image convertBGRA8888toImageColor(CameraImage image) {
   var data = NativeDataStruct();
 
   convertBGRA8888(image.planes, data);
-  imglib.Image img1 = imglib.Image.fromBytes(
-      image.width,
-      image.height,
-      data.bytes!,
-      format: imglib.Format.bgr
-  );
+  imglib.Image img1 = imglib.Image.fromBytes(width: image.width, height: image.height, bytes: data.bytes!.buffer, order: imglib.ChannelOrder.bgr);
 
   return img1;
 }
@@ -161,23 +187,22 @@ imglib.Image convertCameraImageToImageColor(CameraImage image) {
     return convertBGRA8888toImageColor(image);
 }
 
-
 imglib.Image cutFaceFromImage(imglib.Image img, Rectangle rect) {
-  return imglib.copyCrop(img, rect.x, rect.y, rect.width, rect.height);
+  return imglib.copyCrop(img, x: rect.x, y: rect.y, width: rect.width, height: rect.height);
 }
 
 /// Cuts out the face from the CameraImage
-Image cutFaceFromCameraImage(CameraImage image, Rectangle rect){
+Image cutFaceFromCameraImage(CameraImage image, Rectangle rect) {
   final imglib.Image img1 = convertCameraImageToImageColor(image);
   final imglib.Image img2 = cutFaceFromImage(img1, rect);
 
-  imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0, filter: 0);
+  imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0);
 
   late List<int> png;
   if (image.format.group == ImageFormatGroup.yuv420) {
-    png = pngEncoder.encodeImage(imglib.copyRotate(img2, -90));
-  }else {
-    png = pngEncoder.encodeImage(img2);
+    png = pngEncoder.encode(imglib.copyRotate(img2, angle: -90));
+  } else {
+    png = pngEncoder.encode(img2);
   }
   return Image.memory((png as Uint8List));
 }
@@ -187,12 +212,9 @@ Future<imglib.Image> cutFaceImageFromImageBytes(Uint8List imgBytes, Rectangle re
   var img = await decodeImageFromList(imgBytes);
   final bytes = await img.toByteData(format: ImageByteFormat.rawRgba);
 
-  Uint8List _bytes = bytes!.buffer.asUint8List(
-      bytes.offsetInBytes, bytes.lengthInBytes);
-  imglib.Image bufImage = imglib.Image.fromBytes(
-      img.width, img.height, _bytes, format: imglib.Format.rgba);
-  final img2 = imglib.copyCrop(
-      bufImage, rect.x, rect.y, rect.width, rect.height);
+  Uint8List _bytes = bytes!.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+  imglib.Image bufImage = imglib.Image.fromBytes(width: img.width, height: img.height, bytes: _bytes.buffer, order: imglib.ChannelOrder.rgba);
+  final img2 = imglib.copyCrop(bufImage, x: rect.x, y: rect.y, width: rect.width, height: rect.height);
 
   return img2;
 }
@@ -201,7 +223,7 @@ Future<imglib.Image> cutFaceImageFromImageBytes(Uint8List imgBytes, Rectangle re
 Future<Image> cutFaceFromImageBytes(Uint8List imgBytes, Rectangle rect) async {
   final img2 = await cutFaceImageFromImageBytes(imgBytes, rect);
 
-  imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0, filter: 0);
-  List<int> png = pngEncoder.encodeImage(img2);
+  imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0);
+  List<int> png = pngEncoder.encode(img2);
   return Image.memory((png as Uint8List));
 }

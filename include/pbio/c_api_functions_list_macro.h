@@ -1602,6 +1602,23 @@ namespace capi {
 		return ) \
 	\
 	decl( \
+		pbio::facerec::TemplatesIndexImpl*, \
+		Recognizer_createResizableIndex, \
+		( \
+			void* recognizer, \
+			int64_t templates_count, \
+			int32_t search_threads_count, \
+			void** out_exception \
+		), \
+		( \
+			recognizer, \
+			templates_count, \
+			search_threads_count, \
+			out_exception \
+		), \
+		return ) \
+	\
+	decl( \
 		void, \
 		Recognizer_search, /* #old */ \
 		( \
@@ -2786,6 +2803,172 @@ namespace capi {
 	\
 	\
 	decl( \
+		pbio::facerec::RecognizerImpl*, \
+		FacerecService_createResizableRecognizer2, \
+		( \
+			void* service, \
+			const char* ini_file, \
+			const int32_t overridden_count, \
+			char const* const* const overridden_keys, \
+			double const* const overridden_values, \
+			const int32_t processing, \
+			const int32_t matching, \
+			const int32_t processing_less_memory_consumption, \
+			void** out_exception \
+		), \
+		( \
+			service, \
+			ini_file, \
+			overridden_count, \
+			overridden_keys, \
+			overridden_values, \
+			processing, \
+			matching, \
+			processing_less_memory_consumption, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		ResizableTemplatesIndex_add_1, \
+		( \
+			void* templatesIndex, \
+			const pbio::facerec::TemplateImpl* templ, \
+			const char* uuid, \
+			void** out_exception \
+		), \
+		( \
+			templatesIndex, \
+			templ, \
+			uuid, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		ResizableTemplatesIndex_add_2, \
+		( \
+			void* templatesIndex, \
+			const pbio::facerec::TemplateImpl** templs, \
+			const char** uuids, \
+			uint64_t size, \
+			void** out_exception \
+		), \
+		( \
+			templatesIndex, \
+			templs, \
+			uuids, \
+			size, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		ResizableTemplatesIndex_remove_1, \
+		( \
+			void* templatesIndex, \
+			const char* uuid, \
+			void** out_exception \
+		), \
+		( \
+			templatesIndex, \
+			uuid, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		ResizableTemplatesIndex_concatenate, \
+		( \
+			void* templatesIndex, \
+			void* otherIndex, \
+			void** out_exception \
+		), \
+		( \
+			templatesIndex, \
+			otherIndex, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		pbio::facerec::TemplateImpl*, \
+		ResizableTemplatesIndex_at_by_uuid, \
+		( \
+			void* templatesIndex, \
+			const char* uuid, \
+			void** out_exception \
+		), \
+		( \
+			templatesIndex, \
+			uuid, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		ResizableTemplatesIndex_at_by_index, \
+		( \
+			void* templatesIndex, \
+			int64_t index, \
+			void* stream, \
+			pbio::facerec::capi::binary_stream_write_func_type binary_stream_write_func, \
+			void** out_exception \
+		), \
+		( \
+			templatesIndex, \
+			index, \
+			stream, \
+			binary_stream_write_func, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		uint64_t, \
+		ResizableTemplatesIndex_capacity, \
+		( \
+			void* templatesIndex, \
+			void** out_exception \
+		), \
+		( \
+			templatesIndex, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		ResizableTemplatesIndex_remove_2, \
+		( \
+			void* templatesIndex, \
+			const char** uuids, \
+			uint64_t size, \
+			void** out_exception \
+		), \
+		( \
+			templatesIndex, \
+			uuids, \
+			size, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
 		pbio::facerec::VideoWorkerImpl*, \
 		FacerecService_createVideoWorker, /* #old */ \
 		( \
@@ -3271,7 +3454,31 @@ namespace capi {
 			block_ptr, \
 			out_exception \
 		), \
-		return )
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDV_convertYUV420_888ToNV21, \
+		( \
+			const uint8_t* data, \
+			int32_t width, \
+			int32_t height, \
+			int32_t bytesPerRow, \
+			uint8_t* result, \
+			uint64_t resultSize, \
+			void** errorHandler \
+		), \
+		( \
+			data, \
+			width, \
+			height, \
+			bytesPerRow, \
+			result, \
+			resultSize, \
+			errorHandler \
+		), \
+		)
 
 // decl suppose to be a macro: decl(rtype, name, typed_args, args, return)
 #define __TDV_METASDK_FLIST(decl) \
