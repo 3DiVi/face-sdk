@@ -111,10 +111,9 @@ class _DetectPictureState extends State<DetectPicture> {
                 "widget": {"w": widthPreviewImage, "h": heightPreviewImage},
                 "picture": {"w": img.width, "h": img.height}
               });
-              _cropImg = await cutFaceFromImageBytes(img_bytes, rect);
               if (rss.length ==  1) {
                 templs.add(widget._recognizer.processing(rss[i]));
-                widget.callback(templs[0], _cropImg);
+                widget.callback(templs[0], Image.memory(rss[i].cutFaceImage(ImageFormatCode.IMAGE_FORMAT_PNG, FaceCutType.FACE_CUT_BASE)));
                 controller.dispose();
               }
               rss[i].dispose();

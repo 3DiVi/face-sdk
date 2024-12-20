@@ -150,14 +150,14 @@ class Context(ComplexObject):
             ctx.parser(data)
             self.__pushBack(ctx)
 
-    def __setStr(self, value: str):
+    def set_string(self, value: str):
         exception = make_exception()
 
         self._dll_handle.putStr(self._impl, c_char_p(bytes(value, "ascii")), exception)
 
         check_processing_block_exception(exception, self._dll_handle)
 
-    def __getStr(self):
+    def get_string(self):
         exception = make_exception()
 
         buff = c_char_p()
@@ -166,14 +166,14 @@ class Context(ComplexObject):
         check_processing_block_exception(exception, self._dll_handle)
         return str(str1, "ascii")
 
-    def __setDouble(self, value: float):
+    def set_double(self, value: float):
         exception = make_exception()
 
         self._dll_handle.putDouble(self._impl, c_double(value), exception)
 
         check_processing_block_exception(exception, self._dll_handle)
 
-    def __getDouble(self):
+    def get_double(self):
         exception = make_exception()
 
         value = self._dll_handle.getDouble(self._impl, exception)
@@ -181,20 +181,20 @@ class Context(ComplexObject):
         check_processing_block_exception(exception, self._dll_handle)
         return value
 
-    def __setBool(self, value: bool):
+    def set_bool(self, value: bool):
         exception = make_exception()
 
         self._dll_handle.putBool(self._impl, c_bool(value), exception)
 
         check_processing_block_exception(exception, self._dll_handle)
 
-    def __setDataPtr(self, value: bytes):
+    def set_bytes(self, value: bytes):
         exception = make_exception()
 
         self._dll_handle.putDataPtr(self._impl, c_char_p(value), c_uint64(len(value)), exception)
         check_processing_block_exception(exception, self._dll_handle)
 
-    def __getDataPtr(self):
+    def get_data_ptr(self):
         exception = make_exception()
 
         result = self._dll_handle.getDataPtr(self._impl, exception)
@@ -213,7 +213,7 @@ class Context(ComplexObject):
     #    \param[in] size размер строки байтов.
     #    \return строку байтов.
     def get_bytes(self, size):
-        byte_ptr = self.__getDataPtr()
+        byte_ptr = self.get_data_ptr()
         return string_at(byte_ptr, size)
 
     ##
@@ -231,7 +231,7 @@ class Context(ComplexObject):
     def get_bytes_from_ptr(byte_ptr: POINTER(c_ubyte), size: int):
         return string_at(byte_ptr, size)
 
-    def __getBool(self):
+    def get_bool(self):
         exception = make_exception()
 
         value = self._dll_handle.getBool(self._impl, exception)
@@ -239,14 +239,14 @@ class Context(ComplexObject):
         check_processing_block_exception(exception, self._dll_handle)
         return value
 
-    def __setLong(self, value: int):
+    def set_long(self, value: int):
         exception = make_exception()
 
         self._dll_handle.putLong(self._impl, c_int64(value), exception)
 
         check_processing_block_exception(exception, self._dll_handle)
 
-    def __getLong(self):
+    def get_long(self):
         exception = make_exception()
 
         value = self._dll_handle.getLong(self._impl, exception)
@@ -428,23 +428,23 @@ class Context(ComplexObject):
 
     @dispatch(str)
     def parser(self, ctx: str):
-        self.__setStr(ctx)
+        self.set_string(ctx)
 
     @dispatch(int)
     def parser(self, ctx: int):
-        self.__setLong(ctx)
+        self.set_long(ctx)
 
     @dispatch(float)
     def parser(self, ctx: float):
-        self.__setDouble(ctx)
+        self.set_double(ctx)
 
     @dispatch(bool)
     def parser(self, ctx: bool):
-        self.__setBool(ctx)
+        self.set_bool(ctx)
 
     @dispatch(bytes)
     def parser(self, ctx: bytes):
-        self.__setDataPtr(ctx)
+        self.set_bytes(ctx)
 
     @dispatch(object)
     def parser(self, ctx):
@@ -613,15 +613,15 @@ class Context(ComplexObject):
         if self.is_none():
             return None
         if self.is_bool():
-            return self.__getBool()
+            return self.get_bool()
         if self.is_string():
-            return self.__getStr()
+            return self.get_string()
         if self.is_long():
-            return self.__getLong()
+            return self.get_long()
         if self.is_double():
-            return self.__getDouble()
+            return self.get_double()
         if self.is_data_ptr():
-            return self.__getDataPtr()
+            return self.get_data_ptr()
 
         return None
 

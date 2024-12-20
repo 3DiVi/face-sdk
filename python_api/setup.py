@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 from os import path
 
-__version__ = '3.24.1'
+__version__ = '3.24.2'
 __author__ = '3DiVi'
 __url__ = 'https://face.3divi.com/'
 

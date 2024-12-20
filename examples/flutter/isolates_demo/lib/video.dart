@@ -43,8 +43,6 @@ class _VideoProcessingState extends State<VideoProcessing> {
   Offset? widgetPosition;
   ui.Size? widgetSize;
   NativeDataStruct data = NativeDataStruct();
-  NativeDataStruct reusableData = NativeDataStruct();
-  List<RawImageF> _targets = [];
   Widget? bboxWidget;
   Image? bboxImage;
   bool flipX = true;
@@ -83,9 +81,9 @@ class _VideoProcessingState extends State<VideoProcessing> {
         break;
     }
 
-    Uint8List? bytes = await addVideoFrame(image);
+    RawImageF? frame = await addVideoFrame(image);
 
-    if (bytes == null) {
+    if (frame == null) {
       bboxWidget = null;
 
       isReady = true;
@@ -111,7 +109,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
       });
     }
 
-    processFrame(width, height, bytes, sample);
+    await processFrame(width, height, frame, sample);
   }
 
   @override
@@ -122,7 +120,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
     } else {
       final CameraDescription camera = widget.cameras[1];
 
-      controller = CameraController(camera, ResolutionPreset.high);
+      controller = CameraController(camera, ResolutionPreset.high, enableAudio: false);
       controller.initialize().then((_) {
         if (!mounted) {
           return;
@@ -152,34 +150,20 @@ class _VideoProcessingState extends State<VideoProcessing> {
     });
   }
 
-  Future<Uint8List?> addVideoFrame(CameraImage cameraImage) async {
+  Future<RawImageF?> addVideoFrame(CameraImage cameraImage) async {
     if (!mounted) {
       await Future.delayed(const Duration(milliseconds: 10));
 
       return null;
     }
 
-    if (!data.isValid) {
-      reusableData.resize(cameraImage.width * cameraImage.height * 3);
-    }
-
     RawImageF target = widget._service.createRawImageFromCameraImage(cameraImage, baseAngle);
-
-    if (_targets.length > 300) {
-      for (int i = 0; i < 150; i++) {
-        _targets[i].dispose();
-      }
-
-      _targets.removeRange(0, 150);
-    }
 
     await _videoWorker!.addVideoFrame(target, DateTime.now().microsecondsSinceEpoch);
 
     await Future.delayed(const Duration(milliseconds: 10));
 
-    _targets.add(target);
-
-    return target.data.cast<Uint8>().asTypedList(cameraImage.width * cameraImage.height * 3);
+    return target;
   }
 
   Future<RawSample?> pool() async {
@@ -199,7 +183,9 @@ class _VideoProcessingState extends State<VideoProcessing> {
     return rawSamples.first;
   }
 
-  Future<void> processFrame(int width, int height, Uint8List bytes, RawSample sample) async {
+  Future<void> processFrame(int width, int height, RawImageF? frame, RawSample sample) async {
+    final bytes = frame?.data.cast<Uint8>().asTypedList(width * height * 3);
+
     if (!isProcessFrameReady) {
       sample.dispose();
 
@@ -255,7 +241,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
       Context template = widget._service.createContext(data["objects"][0]["template"]);
       Rectangle bbox = sample.getRectangle();
       final image_lib.Image image = image_lib.Image.fromBytes(
-          width: width, height: height, bytes: bytes.buffer, numChannels: 3, order: image_lib.ChannelOrder.rgb);
+          width: width, height: height, bytes: bytes!.buffer, numChannels: 3, order: image_lib.ChannelOrder.rgb);
 
       List<int> png =
           pngEncoder.encode(image_lib.copyCrop(image, x: bbox.x, y: bbox.y, width: bbox.width, height: bbox.height));
@@ -265,6 +251,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
 
     data.dispose();
     sample.dispose();
+    frame?.dispose();
 
     isProcessFrameReady = true;
   }
@@ -362,13 +349,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
   @override
   void dispose() {
     controller.dispose();
-    _videoWorker?.dispose().whenComplete(() {
-      for (RawImageF target in _targets) {
-        target.dispose();
-      }
-
-      _targets.clear();
-    });
+    _videoWorker?.dispose();
     liveness?.dispose();
 
     super.dispose();

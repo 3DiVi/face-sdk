@@ -1,4 +1,6 @@
-import 'dart:ui';
+import 'dart:ffi';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
@@ -7,6 +9,7 @@ import 'package:camera/camera.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:face_sdk_3divi/face_sdk_3divi.dart';
 import 'package:face_sdk_3divi/utils.dart';
+import 'package:image/image.dart' as image_lib;
 
 typedef void setLivenssStatus(bool isPassed, Template templ, Image? img, double mirror);
 
@@ -25,19 +28,16 @@ class VideoProcessing extends StatefulWidget {
 
 class _VideoProcessingState extends State<VideoProcessing> {
   late CameraController controller;
-  NativeDataStruct _data = NativeDataStruct();
   RawImageF? _ri;
 
   late VideoWorker _videoWorker;
   Offset? widgetPosition;
-  Size? widgetSize;
+  ui.Size? widgetSize;
   GlobalKey _pictureKey = GlobalKey();
   int _lastImgTimestamp = 0;
   CameraImage? _lastImg;
-  CameraImage? bestImage;
   int livenessProgress = 0;
   String activeLivenessAction = " ";
-  List<dynamic> _recognitions = [];
   Template? templ;
   bool _isLivenessSet = false;
   int baseAngle = 0;
@@ -48,6 +48,11 @@ class _VideoProcessingState extends State<VideoProcessing> {
   double best_quality = -100000000;
   bool livenessPassed = false;
   bool livenessFailed = false;
+  RawSample? bestSample;
+  Uint8List? bestImage;
+  int trackId = -1;
+  late Stream<void> streamAddVW;
+  late Stream<void> streamPoolVW;
 
   void _processStream(CameraImage img) async {
     if (!mounted) return;
@@ -69,10 +74,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
       print("No camera is found");
     } else {
       final camera = widget.cameras[1];
-      controller = CameraController(
-        camera,
-        ResolutionPreset.high,
-      );
+      controller = CameraController(camera, ResolutionPreset.high, enableAudio: false);
       controller.initialize().then((_) {
         if (!mounted) {
           return;
@@ -105,58 +107,63 @@ class _VideoProcessingState extends State<VideoProcessing> {
         .recognizer_ini_file("method12v30_recognizer.xml")
         .video_worker_config(Config("video_worker_fdatracker_blf_fda_front.xml")
             .overrideParameter("enable_active_liveness", 1)
-            .overrideParameter("base_angle", baseAngle.toDouble())
             .overrideParameter("active_liveness.apply_horizontal_flip", apply_horizontal_flip))
         .streams_count(1)
         .processing_threads_count(0)
         .matching_threads_count(0)
         .emotions_estimation_threads_count(1)
         .active_liveness_checks_order(checks));
+
+    Duration interval = Duration(milliseconds: 50);
+    streamAddVW = Stream<void>.periodic(interval, addVF);
+    streamPoolVW = Stream<void>.periodic(interval, pool);
   }
 
-  Stream<List<dynamic>> addVF(int prev_time) async* {
-    final time = _lastImgTimestamp;
-    var img = _lastImg;
-    if (!mounted || img == null) {
-      await Future.delayed(const Duration(milliseconds: 50));
-      yield* addVF(time);
+  void addVF(int value)
+  {
+    if (!mounted) {
+      return;
     }
-    img = img!;
-    if (prev_time != _lastImgTimestamp) {
-      _ri = widget._facerecService.createRawImageFromCameraImage(img, 0, reusableData: _data);
+
+    var img = _lastImg;
+    final time = _lastImgTimestamp;
+
+    if (img != null) {
+
+      _ri = widget._facerecService.createRawImageFromCameraImage(img, baseAngle);
 
       _videoWorker.addVideoFrame(_ri!, time);
-    }
 
-    await Future.delayed(const Duration(milliseconds: 50));
-    yield* addVF(time);
+      _ri?.dispose();
+    }
   }
 
-  Stream<String> pool() async* {
+  void pool(int value) {
     if (!mounted) {
-      await Future.delayed(const Duration(milliseconds: 50));
-      yield* pool();
+      return;
     }
     final callbackData = _videoWorker.poolTrackResults();
     final rawSamples = callbackData.tracking_callback_data.samples;
-    List<dynamic> detections = [];
+    bool updated = false;
+
     var angles;
     if (callbackData.tracking_callback_data.samples.length > 0) {
-      for (var i = 0; i < rawSamples.length; i += 1) {
+      for (var i = 0; i < rawSamples.length; i++) {
         rect = rawSamples[i].getRectangle();
         angles = rawSamples[i].getAngles();
-        detections.add({
-          "rect": {"x": rect.x, "y": rect.y, "w": rect.width, "h": rect.height},
-          "widget": {"w": widgetSize!.height, "h": widgetSize!.width},
-          "picture": {"w": _ri!.width, "h": _ri!.height},
-          "offset": {"x": widgetPosition!.dx, "y": widgetPosition!.dy}
-        });
       }
 
-      if (best_quality < callbackData.tracking_callback_data.samples_quality[0]) {
+      if (best_quality < callbackData.tracking_callback_data.samples_quality[0] ||
+          trackId != rawSamples.first.getID()) {
         best_quality = callbackData.tracking_callback_data.samples_quality[0];
-        bestImage = _lastImg;
-        bestRect = rect;
+        trackId = rawSamples.first.getID();
+        bestImage = rawSamples.first.cutFaceImage(ImageFormatCode.IMAGE_FORMAT_PNG, FaceCutType.FACE_CUT_BASE);
+
+        bestSample?.dispose();
+
+        bestSample = rawSamples.first;
+
+        updated = true;
       }
     }
     int progress = livenessProgress;
@@ -211,22 +218,33 @@ class _VideoProcessingState extends State<VideoProcessing> {
       templ = widget._recognizer.processing(callbackData.tracking_lost_callback_data.best_quality_sample!);
     }
 
-    rawSamples.forEach((element) => element.dispose());
-    setState(() {
-      _recognitions = detections;
-      livenessProgress = progress;
-      
-      if (templ != null && !_isLivenessSet) {
-        if (livenessPassed) widget.callback(true, templ!, cutFaceFromCameraImage(bestImage!, bestRect), mirror);
-        if (livenessFailed) widget.callback(false, templ!, cutFaceFromCameraImage(bestImage!, bestRect), mirror);
+    if (updated) {
+      for (int i = 1; i < rawSamples.length; i++) {
+        rawSamples[i].dispose();
+      }
+    } else {
+      rawSamples.forEach((element) => element.dispose());
+    }
 
-        if (livenessFailed || livenessPassed) _isLivenessSet = true;
+    setState(() {
+      livenessProgress = progress;
+
+      if (!_isLivenessSet && (livenessFailed || livenessPassed)) {
+        templ = widget._recognizer.processing(bestSample!);
+
+        if (livenessPassed) {
+          widget.callback(true, templ!, Image.memory(bestImage!), mirror);
+        }
+
+        if (livenessFailed) {
+          widget.callback(false, templ!, Image.memory(bestImage!), mirror);
+        }
+
+        _isLivenessSet = true;
+
+        bestSample!.dispose();
       }
     });
-
-    yield activeLivenessAction;
-    await Future.delayed(const Duration(milliseconds: 50));
-    yield* pool();
   }
 
   Widget bboxDrawer() {
@@ -249,15 +267,14 @@ class _VideoProcessingState extends State<VideoProcessing> {
                 padding: const EdgeInsets.all(1.0)),
           ),
           StreamBuilder(
-              stream: pool(),
+              stream: streamPoolVW,
               builder: (context, snapshot) {
                 return Transform.translate(
                     offset: Offset(0, 100),
-                    child:
-                        Text(activeLivenessAction, style: TextStyle(fontSize: 20, backgroundColor: Colors.black)));
+                    child: Text(activeLivenessAction, style: TextStyle(fontSize: 20, backgroundColor: Colors.black)));
               }),
           StreamBuilder(
-            stream: addVF(0),
+            stream: streamAddVW,
             builder: (context, snapshot) {
               return Text("");
             },

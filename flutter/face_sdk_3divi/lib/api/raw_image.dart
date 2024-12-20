@@ -34,16 +34,21 @@ class RawImageF {
   int crop_info_offset_y = -1;
   int crop_info_data_image_width = -1;
   int crop_info_data_image_height = -1;
+  bool freed = false;
 
   /// Constructor for an image without cropping.
   RawImageF(this.width, this.height, this.format, this.data);
 
   bool get isValid {
-    return data.address != nullptr.address;
+    return !freed && data.address != nullptr.address;
   }
 
   void dispose() {
-    if (isValid) malloc.free(data);
+    if (isValid) {
+      malloc.free(data);
+
+      freed = true;
+    }
   }
 
   static RawImageF emptyBuffer(int width, int height, {Format format = Format.FORMAT_RGB}) {

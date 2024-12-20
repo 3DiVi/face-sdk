@@ -432,7 +432,7 @@ class FacerecService extends _ComplexObject {
   }
 
   RawImageF _convertYUV2RGB(Pointer<Uint8> imageData, int imageWidth, int imageHeight, Format format,
-      {required int baseAngle, NativeDataStruct? reusableData}) {
+      {required int baseAngle}) {
     final exception = _getException();
     final convertYUV2RGBConstructor =
         _dll_handle.lookupFunction<_RawImage_convertYUV2RGB_c, _RawImage_convertYUV2RGB_dart>(
@@ -458,16 +458,9 @@ class FacerecService extends _ComplexObject {
     NativeDataStruct data = NativeDataStruct();
     final int totalBytes = width * height * 3;
 
-    if (reusableData != null) {
-      if (reusableData.size != totalBytes) {
-        reusableData.resize(totalBytes);
-      }
-    } else {
-      data.resize(totalBytes);
-    }
+    data.resize(totalBytes);
 
-    RawImageF result =
-        RawImageF(width, height, Format.FORMAT_RGB, (reusableData == null ? data : reusableData).pointer!.cast());
+    RawImageF result = RawImageF(width, height, Format.FORMAT_RGB, data.pointer!.cast());
 
     convertYUV2RGBConstructor(imageData.cast(), imageWidth, imageHeight, format.index, 0, -1, -1, -1, -1, 0, baseAngle,
         result.data.cast(), exception);
@@ -477,7 +470,7 @@ class FacerecService extends _ComplexObject {
     return result;
   }
 
-  RawImageF convertBGRA88882RGB(RawImageF image, {required int baseAngle, NativeDataStruct? reusableData}) {
+  RawImageF convertBGRA88882RGB(RawImageF image, {required int baseAngle}) {
     final exception = _getException();
     final convertBGRA88882RGBConstructor =
         _dll_handle.lookupFunction<_RawImage_convertBGRA88882RGB_c, _RawImage_convertBGRA88882RGB_dart>(
@@ -503,16 +496,9 @@ class FacerecService extends _ComplexObject {
     NativeDataStruct data = NativeDataStruct();
     final int totalBytes = width * height * 3;
 
-    if (reusableData != null) {
-      if (reusableData.size != totalBytes) {
-        reusableData.resize(totalBytes);
-      }
-    } else {
-      data.resize(totalBytes);
-    }
+    data.resize(totalBytes);
 
-    RawImageF result =
-        RawImageF(width, height, Format.FORMAT_RGB, (reusableData == null ? data : reusableData).pointer!.cast());
+    RawImageF result = RawImageF(width, height, Format.FORMAT_RGB, data.pointer!.cast());
 
     convertBGRA88882RGBConstructor(
         image.data.cast(), image.width, image.height, baseAngle, result.data.cast(), exception);
@@ -522,20 +508,12 @@ class FacerecService extends _ComplexObject {
     return result;
   }
 
-  RawImageF createRawImageFromCameraImage(CameraImage image, int baseAngle, {NativeDataStruct? reusableData}) {
+  RawImageF createRawImageFromCameraImage(CameraImage image, int baseAngle) {
     const YUV_420_888 = 0x00000023;
 
     int width = image.width;
     int height = image.height;
     RawImageF result;
-
-    if (reusableData != null) {
-      int totalBytes = width * height * 3;
-
-      if (reusableData.size != totalBytes) {
-        reusableData.resize(totalBytes);
-      }
-    }
 
     switch (image.format.group) {
       case ImageFormatGroup.unknown:
@@ -553,8 +531,7 @@ class FacerecService extends _ComplexObject {
           yuv420Data = temp;
         }
 
-        result = _convertYUV2RGB(yuv420Data, width, height, Format.FORMAT_YUV_NV21,
-            baseAngle: baseAngle, reusableData: reusableData);
+        result = _convertYUV2RGB(yuv420Data, width, height, Format.FORMAT_YUV_NV21, baseAngle: baseAngle);
 
         malloc.free(yuv420Data);
 
@@ -567,7 +544,9 @@ class FacerecService extends _ComplexObject {
 
         RawImageF temp = RawImageF(image.width, image.height, Format.FORMAT_BGR, data.pointer!.cast());
 
-        result = convertBGRA88882RGB(temp, baseAngle: baseAngle, reusableData: reusableData);
+        result = convertBGRA88882RGB(temp, baseAngle: baseAngle);
+
+        temp.dispose();
 
         break;
 

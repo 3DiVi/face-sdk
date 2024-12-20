@@ -120,14 +120,21 @@ class FacerecService(ComplexObject):
     #    \brief создаёт процессинг блок
     #    \param[in] config - контейнер-Context содержащий конфигурацию процессинг-блока
     #    \return процессинг-блок
-    def create_processing_block(self, ctx: dict) -> ProcessingBlock:
-        exception = make_exception()
-        meta_ctx = self.create_context(ctx)
+    def create_processing_block(self, ctx: Union[Context, dict]) -> ProcessingBlock:
+        if isinstance(ctx, Context):
+            return self.__create_processing_block(ctx)
+        elif isinstance(ctx, dict):
+            return self.__create_processing_block(self.create_context(ctx))
+        else:
+            raise Error(0x7b6b8148, "Wrong type of data")
 
-        impl = self._dll_handle.FacerecService_ProcessingBlock_createProcessingBlock(self._impl, meta_ctx._impl, exception)
+    def __create_processing_block(self, ctx: Context):
+        exception = make_exception()
+
+        impl = self._dll_handle.FacerecService_ProcessingBlock_createProcessingBlock(self._impl, ctx._impl,
+                                                                                     exception)
 
         check_exception(exception, self._dll_handle)
-
         return ProcessingBlock(self._dll_handle, c_void_p(impl))
 
     ##
