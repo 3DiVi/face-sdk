@@ -113,6 +113,16 @@ class DllHandle:
         func.restype = c_void_p
         return func(*args, **kwargs)
 
+    def FacerecService_createDynamicTemplateIndex_1(self, *args, **kwargs):
+        func = self.__dll_handle['{}FacerecService_createDynamicTemplateIndex_1'.format(self.__namespace)]
+        func.restype = c_void_p
+        return func(*args, **kwargs)
+
+    def FacerecService_createDynamicTemplateIndex_2(self, *args, **kwargs):
+        func = self.__dll_handle['{}FacerecService_createDynamicTemplateIndex_2'.format(self.__namespace)]
+        func.restype = c_void_p
+        return func(*args, **kwargs)
+
     def TDVFaceAttributesEstimator_createByConfig(self, *args, **kwargs):
         func = self.__dll_handle['TDVFaceAttributesEstimator_createByConfig']
         func.restype = c_void_p
@@ -137,7 +147,6 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
-
     def TDVProcessingBlock_getException(self, *args, **kwargs):
         func = self.__dll_handle['TDVProcessingBlock_getException']
         func.restype = c_void_p
@@ -152,12 +161,6 @@ class DllHandle:
 
     def FacerecService_createRecognizer2(self, *args, **kwargs):
         func = self.__dll_handle['{}FacerecService_createRecognizer2'.format(self.__namespace)]
-        func.restype = c_void_p
-
-        return func(*args, **kwargs)
-
-    def FacerecService_createResizableRecognizer2(self, *args, **kwargs):
-        func = self.__dll_handle['{}FacerecService_createResizableRecognizer2'.format(self.__namespace)]
         func.restype = c_void_p
 
         return func(*args, **kwargs)
@@ -365,7 +368,8 @@ class DllHandle:
         self.__dll_handle['{}Recognizer_verifyMatch_v2'.format(self.__namespace)](*args, **kwargs)
 
     def Recognizer_getROCCurvePointByDistanceThreshold_v2(self, *args, **kwargs):
-        self.__dll_handle['{}Recognizer_getROCCurvePointByDistanceThreshold_v2'.format(self.__namespace)](*args, **kwargs)
+        self.__dll_handle['{}Recognizer_getROCCurvePointByDistanceThreshold_v2'.format(self.__namespace)](*args,
+                                                                                                          **kwargs)
 
     def Recognizer_getROCCurvePointByFAR_v2(self, *args, **kwargs):
         self.__dll_handle['{}Recognizer_getROCCurvePointByFAR_v2'.format(self.__namespace)](*args, **kwargs)
@@ -416,6 +420,34 @@ class DllHandle:
     def Template_save(self, *args, **kwargs):
         self.__dll_handle['{}Template_save'.format(self.__namespace)](*args, **kwargs)
 
+    # Template method
+    def ContextTemplate_getMethodName(self, *args, **kwargs):
+        self.__dll_handle['{}ContextTemplate_getMethodName'.format(self.__namespace)](*args, **kwargs)
+
+    def ContextTemplate_save(self, *args, **kwargs):
+        self.__dll_handle['{}ContextTemplate_save'.format(self.__namespace)](*args, **kwargs)
+
+    def ContextTemplate_size(self, *args, **kwargs):
+        func = self.__dll_handle['{}ContextTemplate_size'.format(self.__namespace)]
+        func.restype = c_int32
+
+        return func(*args, **kwargs)
+
+    def ContextTemplate_loadTemplate(self, *args, **kwargs):
+        func = self.__dll_handle['{}ContextTemplate_loadTemplate'.format(self.__namespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def ContextTemplate_convert(self, *args, **kwargs):
+        func = self.__dll_handle['{}ContextTemplate_convert'.format(self.__namespace)]
+        func.restype = c_void_p
+
+        return func(*args, **kwargs)
+
+    def ContextTemplate_destructor(self, *args, **kwargs):
+        self.__dll_handle['{}ContextTemplate_destructor'.format(self.__namespace)](*args, **kwargs)
+
     # TemplatesIndex method
     def TemplatesIndex_getMethodName(self, *args, **kwargs):
         self.__dll_handle['{}TemplatesIndex_getMethodName'.format(self.__namespace)](*args, **kwargs)
@@ -435,38 +467,65 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
-    def ResizableTemplatesIndex_at_by_uuid(self, *args, **kwargs):
-        func = self.__dll_handle['{}ResizableTemplatesIndex_at_by_uuid'.format(self.__namespace)]
+    def DynamicTemplateIndex_at_by_uuid(self, *args, **kwargs):
+        func = self.__dll_handle['{}DynamicTemplateIndex_at_by_uuid'.format(self.__namespace)]
         func.restype = c_void_p
 
         return func(*args, **kwargs)
 
-    def ResizableTemplatesIndex_at_by_index(self, *args, **kwargs):
-        func = self.__dll_handle['{}ResizableTemplatesIndex_at_by_index'.format(self.__namespace)]
+    def DynamicTemplateIndex_at_by_index(self, *args, **kwargs):
+        func = self.__dll_handle['{}DynamicTemplateIndex_at_by_index'.format(self.__namespace)]
         func.restype = c_void_p
 
         return func(*args, **kwargs)
 
-    def ResizableTemplatesIndex_add_2(self, *args, **kwargs):
-        func = self.__dll_handle['{}ResizableTemplatesIndex_add_2'.format(self.__namespace)]
-        func.restype = None
+    def DynamicTemplateIndex_get(self, *args, **kwargs):
+        func = self.__dll_handle['{}DynamicTemplateIndex_get'.format(self.__namespace)]
+        func.restype = c_void_p
 
         return func(*args, **kwargs)
 
-    def ResizableTemplatesIndex_remove_2(self, *args, **kwargs):
-        func = self.__dll_handle['{}ResizableTemplatesIndex_remove_2'.format(self.__namespace)]
-        func.restype = None
+    def DynamicTemplateIndex_getMethodName(self, *args, **kwargs):
+        func = self.__dll_handle['{}DynamicTemplateIndex_getMethodName'.format(self.__namespace)](*args, **kwargs)
 
-        return func(*args, **kwargs)
+    def DynamicTemplateIndex_add_1(self, *args, **kwargs):
+        self.__dll_handle['{}DynamicTemplateIndex_add_1'.format(self.__namespace)](*args, **kwargs)
 
-    def ResizableTemplatesIndex_capacity(self, *args, **kwargs):
-        func = self.__dll_handle['{}ResizableTemplatesIndex_capacity'.format(self.__namespace)]
+    def DynamicTemplateIndex_add_2(self, *args, **kwargs):
+        self.__dll_handle['{}DynamicTemplateIndex_add_2'.format(self.__namespace)](*args, **kwargs)
+
+    def DynamicTemplateIndex_add_3(self, *args, **kwargs):
+        self.__dll_handle['{}DynamicTemplateIndex_add_3'.format(self.__namespace)](*args, **kwargs)
+
+    def DynamicTemplateIndex_add_4(self, *args, **kwargs):
+        self.__dll_handle['{}DynamicTemplateIndex_add_4'.format(self.__namespace)](*args, **kwargs)
+
+    def DynamicTemplateIndex_remove_1(self, *args, **kwargs):
+        self.__dll_handle['{}DynamicTemplateIndex_remove_1'.format(self.__namespace)](*args, **kwargs)
+
+    def DynamicTemplateIndex_remove_2(self, *args, **kwargs):
+        self.__dll_handle['{}DynamicTemplateIndex_remove_2'.format(self.__namespace)](*args, **kwargs)
+
+    def DynamicTemplateIndex_size(self, *args, **kwargs):
+        func = self.__dll_handle['{}DynamicTemplateIndex_size'.format(self.__namespace)]
         func.restype = c_uint64
 
         return func(*args, **kwargs)
 
-    def ResizableTemplatesIndex_concatenate(self, *args, **kwargs):
-        func = self.__dll_handle['{}ResizableTemplatesIndex_concatenate'.format(self.__namespace)]
+    def DynamicTemplateIndex_capacity(self, *args, **kwargs):
+        func = self.__dll_handle['{}DynamicTemplateIndex_capacity'.format(self.__namespace)]
+        func.restype = c_uint64
+
+        return func(*args, **kwargs)
+
+    def DynamicTemplateIndex_concatenate(self, *args, **kwargs):
+        func = self.__dll_handle['{}DynamicTemplateIndex_concatenate'.format(self.__namespace)]
+        func.restype = None
+
+        return func(*args, **kwargs)
+
+    def DynamicTemplateIndex_destructor(self, *args, **kwargs):
+        func = self.__dll_handle['{}DynamicTemplateIndex_destructor'.format(self.__namespace)]
         func.restype = None
 
         return func(*args, **kwargs)
@@ -598,7 +657,6 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
-
     def create(self, *args, **kwargs):
         func = self.__dll_handle['{}create'.format(self.__contextNamespace)]
         func.restype = c_void_p
@@ -632,7 +690,6 @@ class DllHandle:
     def freePtr(self, *args, **kwargs):
         self.__dll_handle['{}freePtr'.format(self.__contextNamespace)](*args, **kwargs)
 
-
     def copy(self, *args, **kwargs):
         self.__dll_handle['{}copy'.format(self.__contextNamespace)](*args, **kwargs)
 
@@ -641,13 +698,13 @@ class DllHandle:
         func.restype = c_void_p
         return func(*args, **kwargs)
 
-    def clear(self,  *args, **kwargs):
+    def clear(self, *args, **kwargs):
         self.__dll_handle['{}clear'.format(self.__contextNamespace)](*args, **kwargs)
 
-    def erase(self,  *args, **kwargs):
+    def erase(self, *args, **kwargs):
         self.__dll_handle['{}erase'.format(self.__contextNamespace)](*args, **kwargs)
 
-    def reserve(self,  *args, **kwargs):
+    def reserve(self, *args, **kwargs):
         self.__dll_handle['{}reserve'.format(self.__contextNamespace)](*args, **kwargs)
 
     def contains(self, *args, **kwargs):
@@ -677,10 +734,18 @@ class DllHandle:
         func.restype = c_char_p
         return func(*args, **kwargs)
 
+    def putDynamicTemplateIndex(self, *args, **kwargs):
+        func = self.__dll_handle['{}putDynamicTemplateIndex'.format(self.__contextNamespace)]
+        func.restype = None
+        return func(*args, **kwargs)
+
+    def putContextTemplate(self, *args, **kwargs):
+        func = self.__dll_handle['{}putContextTemplate'.format(self.__contextNamespace)]
+        func.restype = None
+        return func(*args, **kwargs)
+
     def pushBack(self, *args, **kwargs):
         self.__dll_handle['{}pushBack'.format(self.__contextNamespace)](*args, **kwargs)
-
-
 
     def getDouble(self, *args, **kwargs):
         func = self.__dll_handle['{}getDouble'.format(self.__contextNamespace)]
@@ -722,6 +787,15 @@ class DllHandle:
         func.restype = POINTER(c_ubyte)
         return func(*args, **kwargs)
 
+    def getDynamicTemplateIndex(self, *args, **kwargs):
+        func = self.__dll_handle['{}getDynamicTemplateIndex'.format(self.__contextNamespace)]
+        func.restype = c_void_p
+        return func(*args, **kwargs)
+
+    def getContextTemplate(self, *args, **kwargs):
+        func = self.__dll_handle['{}getContextTemplate'.format(self.__contextNamespace)]
+        func.restype = c_void_p
+        return func(*args, **kwargs)
 
     def getByIndex(self, *args, **kwargs):
         func = self.__dll_handle['{}getByIndex'.format(self.__contextNamespace)]
@@ -775,5 +849,15 @@ class DllHandle:
 
     def isDataPtr(self, *args, **kwargs):
         func = self.__dll_handle['{}isDataPtr'.format(self.__contextNamespace)]
+        func.restype = c_bool
+        return func(*args, **kwargs)
+
+    def isDynamicTemplateIndex(self, *args, **kwargs):
+        func = self.__dll_handle['{}isDynamicTemplateIndex'.format(self.__contextNamespace)]
+        func.restype = c_bool
+        return func(*args, **kwargs)
+
+    def isContextTemplate(self, *args, **kwargs):
+        func = self.__dll_handle['{}isContextTemplate'.format(self.__contextNamespace)]
         func.restype = c_bool
         return func(*args, **kwargs)

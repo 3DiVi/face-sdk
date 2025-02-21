@@ -13,6 +13,7 @@ import 'dart:developer' as developer;
 import 'dart:convert' show utf8;
 import 'package:camera/camera.dart';
 import 'package:ffi/ffi.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image/image.dart' as imglib;
 
 import 'utils.dart';
@@ -39,6 +40,8 @@ part 'api/async_capturer.dart';
 part 'api/async_recognizer.dart';
 part 'api/async_processing_block.dart';
 part 'api/async_video_worker.dart';
+part 'api/context_template.dart';
+part 'api/dynamic_template_index.dart';
 
 
 /// Base class of FaceSDK flutter plugin for creating FacerecService.

@@ -120,6 +120,7 @@ private:
 	friend class Recognizer;
 	friend class VideoWorker;
 	friend class TemplatesIndex;
+	friend class DynamicTemplateIndex;
 	friend class object_with_ref_counter<Template>;
 };
 

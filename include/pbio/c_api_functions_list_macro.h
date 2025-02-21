@@ -1482,6 +1482,98 @@ namespace capi {
 		) \
 	\
 	\
+	decl( \
+		void, \
+		ContextTemplate_getMethodName, \
+		( \
+			void* templ, \
+			void* name_stream, \
+			pbio::facerec::capi::binary_stream_write_func_type binary_stream_write_func, \
+			void** out_exception \
+		), \
+		( \
+			templ, \
+			name_stream, \
+			binary_stream_write_func, \
+			out_exception \
+		), \
+		) \
+	\
+	\
+	decl( \
+		void, \
+		ContextTemplate_save, \
+		( \
+			void* templ, \
+			void* binary_stream, \
+			pbio::facerec::capi::binary_stream_write_func_type binary_stream_write_func, \
+			void** out_exception \
+		), \
+		( \
+			templ, \
+			binary_stream, \
+			binary_stream_write_func, \
+			out_exception \
+		), \
+		) \
+	\
+	\
+	decl( \
+		void*, \
+		ContextTemplate_loadTemplate, \
+		( \
+			void* binaryStream, \
+			pbio::facerec::capi::binary_stream_read_func_type binaryStreamReadFunction, \
+			void** outException \
+		), \
+		( \
+			binaryStream, \
+			binaryStreamReadFunction, \
+			outException \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		int32_t, \
+		ContextTemplate_size, \
+		( \
+			void* templ, \
+			void** outException \
+		), \
+		( \
+			templ, \
+			outException \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void*, \
+		ContextTemplate_convert, \
+		( \
+			void* context, \
+			void** outException \
+		), \
+		( \
+			context, \
+			outException \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		ContextTemplate_destructor, \
+		( \
+			void* implementation \
+		), \
+		( \
+			implementation \
+		), \
+		return ) \
+	\
+	\
 	\
 	\
 	\
@@ -2803,44 +2895,54 @@ namespace capi {
 	\
 	\
 	decl( \
-		pbio::facerec::RecognizerImpl*, \
-		FacerecService_createResizableRecognizer2, \
+		void*, \
+		FacerecService_createDynamicTemplateIndex_1, \
 		( \
 			void* service, \
-			const char* ini_file, \
-			const int32_t overridden_count, \
-			char const* const* const overridden_keys, \
-			double const* const overridden_values, \
-			const int32_t processing, \
-			const int32_t matching, \
-			const int32_t processing_less_memory_consumption, \
-			void** out_exception \
+			const void** contextTemplates, \
+			const char** uuids, \
+			uint64_t size, \
+			const HContext* config, \
+			void** outException \
 		), \
 		( \
 			service, \
-			ini_file, \
-			overridden_count, \
-			overridden_keys, \
-			overridden_values, \
-			processing, \
-			matching, \
-			processing_less_memory_consumption, \
-			out_exception \
+			contextTemplates, \
+			uuids, \
+			size, \
+			config, \
+			outException \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void*, \
+		FacerecService_createDynamicTemplateIndex_2, \
+		( \
+			void* service, \
+			const HContext* config, \
+			void** outException \
+		), \
+		( \
+			service, \
+			config, \
+			outException \
 		), \
 		return ) \
 	\
 	\
 	decl( \
 		void, \
-		ResizableTemplatesIndex_add_1, \
+		DynamicTemplateIndex_add_1, \
 		( \
-			void* templatesIndex, \
+			void* templateIndex, \
 			const pbio::facerec::TemplateImpl* templ, \
 			const char* uuid, \
 			void** out_exception \
 		), \
 		( \
-			templatesIndex, \
+			templateIndex, \
 			templ, \
 			uuid, \
 			out_exception \
@@ -2850,16 +2952,16 @@ namespace capi {
 	\
 	decl( \
 		void, \
-		ResizableTemplatesIndex_add_2, \
+		DynamicTemplateIndex_add_2, \
 		( \
-			void* templatesIndex, \
-			const pbio::facerec::TemplateImpl** templs, \
+			void* templateIndex, \
+			pbio::facerec::TemplateImpl** templs, \
 			const char** uuids, \
 			uint64_t size, \
 			void** out_exception \
 		), \
 		( \
-			templatesIndex, \
+			templateIndex, \
 			templs, \
 			uuids, \
 			size, \
@@ -2870,14 +2972,16 @@ namespace capi {
 	\
 	decl( \
 		void, \
-		ResizableTemplatesIndex_remove_1, \
+		DynamicTemplateIndex_add_3, \
 		( \
-			void* templatesIndex, \
+			void* templateIndex, \
+			const void* contextTemplate, \
 			const char* uuid, \
 			void** out_exception \
 		), \
 		( \
-			templatesIndex, \
+			templateIndex, \
+			contextTemplate, \
 			uuid, \
 			out_exception \
 		), \
@@ -2886,14 +2990,64 @@ namespace capi {
 	\
 	decl( \
 		void, \
-		ResizableTemplatesIndex_concatenate, \
+		DynamicTemplateIndex_add_4, \
 		( \
-			void* templatesIndex, \
+			void* templateIndex, \
+			const void** contextTemplates, \
+			const char** uuids, \
+			uint64_t size, \
+			void** out_exception \
+		), \
+		( \
+			templateIndex, \
+			contextTemplates, \
+			uuids, \
+			size, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		DynamicTemplateIndex_remove_1, \
+		( \
+			void* templateIndex, \
+			const char* uuid, \
+			void** out_exception \
+		), \
+		( \
+			templateIndex, \
+			uuid, \
+			out_exception \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		uint64_t, \
+		DynamicTemplateIndex_size, \
+		( \
+			void* templateIndex, \
+			void** outException \
+		), \
+		( \
+			templateIndex, \
+			outException \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		DynamicTemplateIndex_concatenate, \
+		( \
+			void* templateIndex, \
 			void* otherIndex, \
 			void** out_exception \
 		), \
 		( \
-			templatesIndex, \
+			templateIndex, \
 			otherIndex, \
 			out_exception \
 		), \
@@ -2901,15 +3055,15 @@ namespace capi {
 	\
 	\
 	decl( \
-		pbio::facerec::TemplateImpl*, \
-		ResizableTemplatesIndex_at_by_uuid, \
+		void*, \
+		DynamicTemplateIndex_at_by_uuid, \
 		( \
-			void* templatesIndex, \
+			void* templateIndex, \
 			const char* uuid, \
 			void** out_exception \
 		), \
 		( \
-			templatesIndex, \
+			templateIndex, \
 			uuid, \
 			out_exception \
 		), \
@@ -2918,16 +3072,16 @@ namespace capi {
 	\
 	decl( \
 		void, \
-		ResizableTemplatesIndex_at_by_index, \
+		DynamicTemplateIndex_at_by_index, \
 		( \
-			void* templatesIndex, \
+			void* templateIndex, \
 			int64_t index, \
 			void* stream, \
 			pbio::facerec::capi::binary_stream_write_func_type binary_stream_write_func, \
 			void** out_exception \
 		), \
 		( \
-			templatesIndex, \
+			templateIndex, \
 			index, \
 			stream, \
 			binary_stream_write_func, \
@@ -2937,14 +3091,30 @@ namespace capi {
 	\
 	\
 	decl( \
-		uint64_t, \
-		ResizableTemplatesIndex_capacity, \
+		void*, \
+		DynamicTemplateIndex_get, \
 		( \
-			void* templatesIndex, \
+			void* templateIndex, \
+			int64_t index, \
+			void** outException \
+		), \
+		( \
+			templateIndex, \
+			index, \
+			outException \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		uint64_t, \
+		DynamicTemplateIndex_capacity, \
+		( \
+			void* templateIndex, \
 			void** out_exception \
 		), \
 		( \
-			templatesIndex, \
+			templateIndex, \
 			out_exception \
 		), \
 		return ) \
@@ -2952,20 +3122,50 @@ namespace capi {
 	\
 	decl( \
 		void, \
-		ResizableTemplatesIndex_remove_2, \
+		DynamicTemplateIndex_remove_2, \
 		( \
-			void* templatesIndex, \
+			void* templateIndex, \
 			const char** uuids, \
 			uint64_t size, \
 			void** out_exception \
 		), \
 		( \
-			templatesIndex, \
+			templateIndex, \
 			uuids, \
 			size, \
 			out_exception \
 		), \
 		return ) \
+	\
+	\
+	decl( \
+		void, \
+		DynamicTemplateIndex_getMethodName, \
+		( \
+			void* templateIndex, \
+			void* name_stream, \
+			pbio::facerec::capi::binary_stream_write_func_type binary_stream_write_func, \
+			void** out_exception \
+		), \
+		( \
+			templateIndex, \
+			name_stream, \
+			binary_stream_write_func, \
+			out_exception \
+		), \
+		) \
+	\
+	\
+	decl( \
+		void, \
+		DynamicTemplateIndex_destructor, \
+		( \
+			void* templateIndex \
+		), \
+		( \
+			templateIndex \
+		), \
+		) \
 	\
 	\
 	decl( \
@@ -3842,7 +4042,7 @@ namespace capi {
 		TDVContext_allocDataPtr, \
 		( \
 			HContext* ctx, \
-			unsigned long size, \
+			uint64_t size, \
 			ContextEH** errorHandler \
 		), \
 		( \
@@ -3859,7 +4059,7 @@ namespace capi {
 		( \
 			HContext* ctx, \
 			unsigned char* val, \
-			unsigned long copy_sz, \
+			uint64_t copy_sz, \
 			ContextEH** errorHandler \
 		), \
 		( \
@@ -3877,13 +4077,45 @@ namespace capi {
 		( \
 			HContext* ctx, \
 			const unsigned char* val, \
-			unsigned long copy_sz, \
+			uint64_t copy_sz, \
 			ContextEH** errorHandler \
 		), \
 		( \
 			ctx, \
 			val, \
 			copy_sz, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_putDynamicTemplateIndex, \
+		( \
+			HContext* context, \
+			void* value, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			context, \
+			value, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_putContextTemplate, \
+		( \
+			HContext* context, \
+			void* value, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			context, \
+			value, \
 			errorHandler \
 		), \
 		return ) \
@@ -3908,7 +4140,7 @@ namespace capi {
 	\
 	\
 	decl( \
-		unsigned long, \
+		uint64_t, \
 		TDVContext_getLength, \
 		( \
 			HContext* ctx, \
@@ -3926,7 +4158,7 @@ namespace capi {
 		TDVContext_getKeys, \
 		( \
 			HContext* ctx, \
-			unsigned long length, \
+			uint64_t length, \
 			ContextEH** errorHandler \
 		), \
 		( \
@@ -4050,6 +4282,34 @@ namespace capi {
 	\
 	\
 	decl( \
+		bool, \
+		TDVContext_isDynamicTemplateIndex, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
+		TDVContext_isContextTemplate, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
 		const char*, \
 		TDVContext_getStr, \
 		( \
@@ -4066,7 +4326,7 @@ namespace capi {
 	\
 	\
 	decl( \
-		unsigned long, \
+		uint64_t, \
 		TDVContext_getStrSize, \
 		( \
 			HContext* ctx, \
@@ -4092,7 +4352,7 @@ namespace capi {
 	\
 	\
 	decl( \
-		long, \
+		int64_t, \
 		TDVContext_getLong, \
 		( \
 			HContext* ctx, \
@@ -4136,6 +4396,34 @@ namespace capi {
 	decl( \
 		unsigned char*, \
 		TDVContext_getDataPtr, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void*, \
+		TDVContext_getDynamicTemplateIndex, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void*, \
+		TDVContext_getContextTemplate, \
 		( \
 			HContext* ctx, \
 			ContextEH** errorHandler \

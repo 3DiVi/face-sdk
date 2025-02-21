@@ -9,6 +9,12 @@ Pointer<Pointer<Void>> _getException() {
   return exception;
 }
 
+
+class TDVException implements Exception {
+  String message;
+  TDVException(this.message);
+}
+
 void checkException(Pointer<Pointer<Void>> exception, DynamicLibrary dll_handle) {
   if (exception.value.address != nullptr.address) {
     final check_exception_code = dll_handle.lookupFunction<_exceptionCode_c, _exceptionCode_dart>(_c_namespace + 'apiException_code');
@@ -21,7 +27,7 @@ void checkException(Pointer<Pointer<Void>> exception, DynamicLibrary dll_handle)
     final res_ex_content = check_exception_what(exception.value).toDartString();
     developer.log("Check ex2 " + res_ex_content, name: 'my.app.category');
     if (res_ex != 0) {
-      throw ("Error 0x$res_ex. Text: $res_ex_content");
+      throw new TDVException("Error 0x$res_ex. Text: $res_ex_content");
     }
   }
 
@@ -40,7 +46,7 @@ void tdvCheckException(Pointer<Pointer<Void>> exception, DynamicLibrary dll_hand
     final res_ex_content = check_exception_message(exception.value).toDartString();
     developer.log("Check context ex2 " + res_ex_content, name: 'my.app.category');
     if (res_ex != 0) {
-      throw ("Error 0x$res_ex. Text: $res_ex_content");
+      throw new TDVException("Error 0x$res_ex. Text: $res_ex_content");
     }
   }
 

@@ -131,16 +131,7 @@ public:
 	*/
 	void reserveSearchMemory(const int queries_count) const;
 
-	void add(pbio::Template::Ptr templ, const std::string& uuid);
-
-	void remove(const std::string& uuid);
-
-	void remove(const std::vector<std::string>& uuids);
-
-	void concat(TemplatesIndex::Ptr otherIndex);
-
 private:
-
 	TemplatesIndex(
 		const DHPtr &dll_handle,
 		void* impl);
@@ -235,51 +226,5 @@ void TemplatesIndex::reserveSearchMemory(const int queries_count) const
 
 	checkException(exception, *_dll_handle);
 }
-
-inline void TemplatesIndex::add(pbio::Template::Ptr templ, const std::string& uuid)
-{
-	void* exception = NULL;
-
-	_dll_handle->ResizableTemplatesIndex_add_1(_impl, static_cast<pbio::facerec::TemplateImpl*>(templ->_impl), uuid.data(), &exception);
-
-	checkException(exception, *_dll_handle);
-}
-
-inline void TemplatesIndex::remove(const std::string& uuid)
-{
-	void* exception = NULL;
-
-	_dll_handle->ResizableTemplatesIndex_remove_1(_impl, uuid.data(), &exception);
-
-	checkException(exception, *_dll_handle);
-}
-
-inline void TemplatesIndex::remove(const std::vector<std::string>& uuids)
-{
-	void* exception = NULL;
-
-	const char** data = new const char*[uuids.size()];
-
-	for (size_t i = 0; i < uuids.size(); i++)
-	{
-		data[i] = uuids[i].data();
-	}
-
-	_dll_handle->ResizableTemplatesIndex_remove_2(_impl, data, uuids.size(), &exception);
-
-	delete[] data;
-
-	checkException(exception, *_dll_handle);
-}
-
-inline void TemplatesIndex::concat(TemplatesIndex::Ptr otherIndex)
-{
-	void* exception = NULL;
-
-	_dll_handle->ResizableTemplatesIndex_concatenate(_impl, otherIndex->_impl, &exception);
-
-	checkException(exception, *_dll_handle);
-}
-
 }  // pbio namespace
 #endif  // __PBIO_API__PBIO__TEMPLATES_INDEX_H_

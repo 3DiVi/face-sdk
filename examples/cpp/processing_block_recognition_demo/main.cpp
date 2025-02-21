@@ -143,12 +143,10 @@ void recognitionSample(std::string sdk_path, std::string input_image_path1, std:
 	Context faceTemplateExtractorCtx = service.createContext();
 	
 	detectorCtx["unit_type"] = "FACE_DETECTOR";
-	detectorCtx["modification"] = "uld";
-	detectorCtx["precision_level"] = 3;
-	detectorCtx["confidence_threshold"] = 0.6;
+	detectorCtx["modification"] = "ssyv";
 
 	fitterCtx["unit_type"] = "FACE_FITTER";
-	fitterCtx["modification"] = "tddfa_faster";
+	fitterCtx["modification"] = "fda";
 
 	faceTemplateExtractorCtx["unit_type"] = "FACE_TEMPLATE_EXTRACTOR";
 	faceTemplateExtractorCtx["modification"] = modification;
@@ -193,8 +191,8 @@ void recognitionSample(std::string sdk_path, std::string input_image_path1, std:
 
 		api::ProcessingBlock verificationModule = service.createProcessingBlock(verificationConfig);
 
-		verificationData["template1"] = ioData["objects"][0]["template"];
-		verificationData["template2"] = ioData2["objects"][0]["template"];
+		verificationData["template1"] = ioData["objects"][0]["face_template"];
+		verificationData["template2"] = ioData2["objects"][0]["face_template"];
 
 		///////////Verification////////////////
 		verificationModule(verificationData);
@@ -245,7 +243,7 @@ void recognitionSample(std::string sdk_path, std::string input_image_path1, std:
 
 		for (const Context& object : ioData["objects"])
 		{
-			templates.push_back(object["template"]);
+			templates.push_back(object["face_template"]);
 		}
 
 		ioData["templates"] = std::move(templates);
@@ -254,7 +252,7 @@ void recognitionSample(std::string sdk_path, std::string input_image_path1, std:
 
 		matcherData["knn"] = 1l;
 		matcherData["template_index"] = ioData["template_index"];
-		matcherData["queries"].push_back(ioData2["objects"][0]);
+		matcherData["queries"] = ioData2["objects"][0]["face_template"]["template"];
 
 		///////////Matcher////////////////
 		matcherModule(matcherData);

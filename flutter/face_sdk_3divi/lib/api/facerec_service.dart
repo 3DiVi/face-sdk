@@ -508,6 +508,47 @@ class FacerecService extends _ComplexObject {
     return result;
   }
 
+  ContextTemplate convertTemplate(Context templateContext) {
+    final exception = _getException();
+    
+    final converter = _dll_handle.lookupFunction<_ContextTemplate_convert_c, _ContextTemplate_convert_dart>(
+        _c_namespace + 'ContextTemplate_convert');
+
+    final impl = converter(templateContext._impl, exception);
+    
+    checkException(exception, _dll_handle);
+    
+    return ContextTemplate(_dll_handle, impl);
+  }
+
+  ContextTemplate loadContextTemplate(Uint8List binary_stream) {
+    final exception = _getException();
+
+    final loadTemplate = _dll_handle.lookupFunction<_ContextTemplate_loadTemplate_c, _ContextTemplate_loadTemplate_dart>(
+        _c_namespace + 'ContextTemplate_loadTemplate');
+
+    Pointer<Pointer<Uint8>> _templatePointerStructure = malloc.allocate(sizeOf<Pointer<Pointer<Uint8>>>() * 2);
+    _templatePointerStructure[0] = malloc.allocate(sizeOf<Pointer<Int32>>());
+    _templatePointerStructure[1] = malloc.allocate(binary_stream.length);
+
+    Pointer<Int32> byteCount = Pointer.fromAddress(_templatePointerStructure[0].address);
+    byteCount.value = 0;
+
+    for (var i = 0; i < binary_stream.length; i++) {
+      _templatePointerStructure[1][i] = binary_stream[i];
+    }
+
+    final impl = loadTemplate(_templatePointerStructure.cast(), Pointer.fromFunction(readFunc), exception);
+
+    checkException(exception, _dll_handle);
+
+    malloc.free(_templatePointerStructure[0]);
+    malloc.free(_templatePointerStructure[1]);
+    malloc.free(_templatePointerStructure);
+
+    return ContextTemplate(_dll_handle, impl);
+  }
+
   RawImageF createRawImageFromCameraImage(CameraImage image, int baseAngle) {
     const YUV_420_888 = 0x00000023;
 
@@ -581,6 +622,53 @@ class FacerecService extends _ComplexObject {
     checkException(exception, _dll_handle);
 
     return data;
+  }
+
+  DynamicTemplateIndex createDynamicTemplateIndexWithTemplates(List<ContextTemplate> templates, List<String> uuids, Map config) {
+    if (templates.length != uuids.length) {
+      throw Exception("templates.length != uuids.length");
+    }
+
+    final exception = _getException();
+
+    Context meta_ctx = this.createContext(config);
+
+    final constructor =
+    _dll_handle.lookupFunction<_createDynamicTemplateIndex_1_c, _createDynamicTemplateIndex_1_dart>(
+        "${_c_namespace}FacerecService_createDynamicTemplateIndex_1");
+    Pointer<Pointer<Void>> templatesImpls = malloc.allocate(sizeOf<Pointer<Void>>() * uuids.length);
+    Pointer<Pointer<Utf8>> uuidsPointers = malloc.allocate(sizeOf<Pointer<Utf8>>() * uuids.length);
+
+    for (int i = 0; i < templates.length; i++) {
+      templatesImpls[i] = templates[i]._impl;
+      uuidsPointers[i] = uuids[i].toNativeUtf8();
+    }
+
+    DynamicTemplateIndex result = DynamicTemplateIndex(
+        _dll_handle, constructor(_impl, templatesImpls, uuidsPointers, templates.length, meta_ctx._impl, exception));
+
+    malloc.free(templatesImpls);
+    malloc.free(uuidsPointers);
+
+    checkException(exception, _dll_handle);
+
+    return result;
+  }
+
+  DynamicTemplateIndex createDynamicTemplateIndex(Map config) {
+    final exception = _getException();
+
+    Context meta_ctx = this.createContext(config);
+
+    final constructor =
+        _dll_handle.lookupFunction<_createDynamicTemplateIndex_2_c, _createDynamicTemplateIndex_2_dart>(
+            "${_c_namespace}FacerecService_createDynamicTemplateIndex_2");
+
+    DynamicTemplateIndex result = DynamicTemplateIndex(_dll_handle, constructor(_impl, meta_ctx._impl, exception));
+
+    checkException(exception, _dll_handle);
+
+    return result;
   }
 
   Pointer<Uint8> _removePaddingFromYUV420_888Pointer(Pointer<Uint8> data, int width, int height, int bytesPerRow) {

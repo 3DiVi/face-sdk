@@ -23,6 +23,7 @@
 
 #include <pbio/DllHandle.h>
 #include <pbio/RawImage.h>
+#include <pbio/DynamicTemplateIndex.h>
 
 
 namespace pbio {
@@ -518,6 +519,18 @@ public:
 		return ret;
 	}
 
+	pbio::DynamicTemplateIndex::Ptr getDynamicTemplateIndex() const {
+		void* index = dll_handle->TDVContext_getDynamicTemplateIndex(handle_, &eh_);
+		tdvCheckException(dll_handle, eh_);
+		return pbio::DynamicTemplateIndex::Ptr::make(dll_handle, index, true);
+	}
+
+	pbio::ContextTemplate::Ptr getContextTemplate() const {
+		void* templ = dll_handle->TDVContext_getContextTemplate(handle_, &eh_);
+		tdvCheckException(dll_handle, eh_);
+		return pbio::ContextTemplate::Ptr::make(dll_handle, templ);
+	}
+
 	/**
 		\~English
 			\brief adds a value of type string to the container
@@ -598,7 +611,7 @@ public:
 		if(copy_sz && !ptr)
 			ret = dll_handle->TDVContext_allocDataPtr(handle_, copy_sz, &eh_);
 		else
-			ret = dll_handle->TDVContext_putDataPtr(handle_, static_cast<unsigned char*>(ptr), copy_sz, &eh_);
+			ret = dll_handle->TDVContext_putDataPtr(handle_, static_cast<unsigned char*>(ptr), static_cast<uint64_t>(copy_sz), &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return ret;
 	}
@@ -607,6 +620,17 @@ public:
 		unsigned char* ret = dll_handle->TDVContext_putConstDataPtr(handle_, static_cast<const unsigned char*>(ptr), copy_sz, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return ret;
+	}
+
+
+	void setDynamicTemplateIndex(DynamicTemplateIndex::Ptr templateIndex) {
+		dll_handle->TDVContext_putDynamicTemplateIndex(handle_, templateIndex->_impl, &eh_);
+		tdvCheckException(dll_handle, eh_);
+	}
+
+	void setContextTemplate(ContextTemplate::Ptr templ) {
+		dll_handle->TDVContext_putContextTemplate(handle_, templ->_impl, &eh_);
+		tdvCheckException(dll_handle, eh_);
 	}
 
 	/**
@@ -717,6 +741,18 @@ public:
 	*/
 	bool isDataPtr() const {
 		bool val = dll_handle->TDVContext_isDataPtr(handle_, &eh_);
+		tdvCheckException(dll_handle, eh_);
+		return val;
+	}
+
+	bool isDynamicTemplateIndex() const {
+		bool val = dll_handle->TDVContext_isDynamicTemplateIndex(handle_, &eh_);
+		tdvCheckException(dll_handle, eh_);
+		return val;
+	}
+
+	bool isContextTemplate() const {
+		bool val = dll_handle->TDVContext_isContextTemplate(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return val;
 	}
@@ -834,6 +870,14 @@ protected:
 		dll_handle->TDVContext_putDataPtr(handle_, static_cast<unsigned char*>(ptr), copy_sz, &eh_);
 		tdvCheckException(dll_handle, eh_);
 	}
+	void setValue(DynamicTemplateIndex::Ptr templateIndex) {
+		dll_handle->TDVContext_putDynamicTemplateIndex(handle_, templateIndex->_impl, &eh_);
+		tdvCheckException(dll_handle, eh_);
+	}
+	void setValue(ContextTemplate::Ptr templ) {
+		dll_handle->TDVContext_putContextTemplate(handle_, templ->_impl, &eh_);
+		tdvCheckException(dll_handle, eh_);
+	}
 };
 
 class ContextRef : public Context {
@@ -904,7 +948,7 @@ template<bool isConst>
 Context::ContextArrayIterator<isConst>& Context::ContextArrayIterator<isConst>::operator++() {
 	if(curr_)
 		delete curr_;
-	index_ = std::min(index_+1, length_);
+	index_ = std::min<size_t>(index_+1, length_);
 	if(isObj_)
 		curr_ = (index_ < length_) ? new Context(base_[keys_->operator[](index_)]) : nullptr;
 	else
@@ -915,7 +959,7 @@ Context::ContextArrayIterator<isConst>& Context::ContextArrayIterator<isConst>::
 template<bool isConst>
 Context::ContextArrayIterator<isConst> Context::ContextArrayIterator<isConst>::operator++(int) {
 	ContextArrayIterator tmp = *this;
-	index_ = std::min(index_+1, length_);
+	index_ = std::min<size_t>(index_+1, length_);
 	if(isObj_)
 		curr_ = (index_ < length_) ? new Context(base_[keys_->operator[](index_)]) : nullptr;
 	else

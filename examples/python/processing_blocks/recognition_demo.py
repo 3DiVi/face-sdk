@@ -66,9 +66,9 @@ def recognition_demo(sdk_path, img_path_1, img_path_2, window, output, mode, mod
         raise Exception(f"not exist file {img_path_2}")
 
     face_detector = service.create_processing_block(
-        {"unit_type": "FACE_DETECTOR", "modification": "uld", "confidence_threshold": 0.6, "precision_level": 3})
+        {"unit_type": "FACE_DETECTOR", "modification": "ssyv"})
     face_template_extractor = service.create_processing_block({"unit_type": "FACE_TEMPLATE_EXTRACTOR", "modification": modification})
-    face_fitter = service.create_processing_block({"unit_type": "FACE_FITTER", "modification": "tddfa_faster"})
+    face_fitter = service.create_processing_block({"unit_type": "FACE_FITTER", "modification": "fda"})
 
     img1: np.ndarray = cv2.imread(img_path_1, cv2.IMREAD_COLOR)
     img2: np.ndarray = cv2.imread(img_path_2, cv2.IMREAD_COLOR)
@@ -95,8 +95,8 @@ def recognition_demo(sdk_path, img_path_1, img_path_2, window, output, mode, mod
             {"unit_type": "VERIFICATION_MODULE", "modification": modification})
 
         verification_data = service.create_context({
-            "template1": ioData1["objects"][0]["template"],
-            "template2": ioData2["objects"][0]["template"]
+            "template1": ioData1["objects"][0]["face_template"],
+            "template2": ioData2["objects"][0]["face_template"]
         })
 
         verification_module(verification_data)
@@ -128,16 +128,16 @@ def recognition_demo(sdk_path, img_path_1, img_path_2, window, output, mode, mod
         templates = service.create_context([])
 
         for object in ioData1["objects"]:
-            templates.push_back(object["template"])
+            templates.push_back(object["face_template"])
 
         ioData1["templates"] = templates
 
         template_index(ioData1)
 
         matcher_data = service.create_context(
-            {"knn": 1, "template_index": ioData1["template_index"], "queries": []})
+            {"knn": 1, "template_index": ioData1["template_index"]})
 
-        matcher_data["queries"].push_back(ioData2["objects"][0])
+        matcher_data["queries"] = ioData2["objects"][0]["face_template"]["template"]
 
         matcher_module(matcher_data)
 

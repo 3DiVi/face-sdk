@@ -4,16 +4,18 @@
 #     \brief FacerecService - Interface object for creating other interface objects.
 #  \~Russian
 #     \brief FacerecService - Интерфейсный объект для создания других интерфейсных объектов.
-
-from ctypes import CDLL
+import ctypes
+from ctypes import CDLL, c_bool, c_uint64
 from ctypes import c_char_p, c_void_p, c_int32, c_uint32, c_float, POINTER
 from ctypes import create_string_buffer
 from ctypes import c_int, c_double
 from ctypes import py_object
+from multipledispatch import dispatch
 
 from io import BytesIO
-from typing import Union
+from typing import Union, List
 
+from .context_template import ContextTemplate
 from .exception_check import check_exception, make_exception
 from .age_gender_estimator import AgeGenderEstimator
 from .emotions_estimator import EmotionsEstimator
@@ -23,7 +25,7 @@ from .depth_liveness_estimator import DepthLivenessEstimator
 from .ir_liveness_estimator import IRLivenessEstimator
 from .liveness_2d_estimator import Liveness2DEstimator
 from .face_attributes_estimator import FaceAttributesEstimator
-from .resizable_recognizer import ResizableRecognizer
+from .dynamic_template_index import DynamicTemplateIndex
 from .wrap_funcs import read_func
 from .complex_object import ComplexObject
 from .recognizer import Recognizer
@@ -36,6 +38,7 @@ from .error import Error
 from .wrap_funcs import write_func
 from .context import Context, ContextFormat
 from .processing_block import ProcessingBlock
+
 
 ## @defgroup PythonAPI
 #  @{
@@ -96,7 +99,8 @@ class FacerecService(ComplexObject):
     #    \param[in] format - формат изображения
     #    \param[in] base_angle - тип угла на значение которого развёрнуто изображение
     #    \return контейнер-Context
-    def create_context_from_frame(self, data: bytes, width: int, height: int, format: ContextFormat = ContextFormat.FORMAT_BGR, base_angle: int = 0) -> Context:
+    def create_context_from_frame(self, data: bytes, width: int, height: int,
+                                  format: ContextFormat = ContextFormat.FORMAT_BGR, base_angle: int = 0) -> Context:
         return Context.from_frame(self._dll_handle, data, width, height, format, base_angle)
 
     ##
@@ -133,7 +137,6 @@ class FacerecService(ComplexObject):
 
         impl = self._dll_handle.FacerecService_ProcessingBlock_createProcessingBlock(self._impl, ctx._impl,
                                                                                      exception)
-
         check_exception(exception, self._dll_handle)
         return ProcessingBlock(self._dll_handle, c_void_p(impl))
 
@@ -674,10 +677,11 @@ class FacerecService(ComplexObject):
             vw_overridden_keys_buf[i] = c_char_p(vw_overridden_keys[i].encode())
 
         if params.recognizer_ini_file and \
-            params.recognizer_config.config_filepath:
+                params.recognizer_config.config_filepath:
             raise Error(0xed877a99, "You must use either recognizer_config or recognizer_ini_file")
 
-        recognizer_config = Config(params.recognizer_ini_file) if params.recognizer_ini_file != "" else params.recognizer_config
+        recognizer_config = Config(
+            params.recognizer_ini_file) if params.recognizer_ini_file != "" else params.recognizer_config
         rec_overridden_keys, rec_overridden_values = recognizer_config.prepare()
 
         rec_overridden_keys_buf = (c_char_p * len(rec_overridden_keys))()
@@ -699,7 +703,8 @@ class FacerecService(ComplexObject):
             c_int32(len(vw_overridden_keys)),
             vw_overridden_keys_buf if len(vw_overridden_keys_buf) else None,
             vw_overridden_values_buf if len(vw_overridden_values_buf) else None,
-            POINTER(c_char_p)(create_string_buffer((self.__facerec_conf_dir + recognizer_config.config_filepath).encode())),
+            POINTER(c_char_p)(
+                create_string_buffer((self.__facerec_conf_dir + recognizer_config.config_filepath).encode())),
             c_int32(len(rec_overridden_keys)),
             rec_overridden_keys_buf if len(rec_overridden_keys_buf) else None,
             rec_overridden_values_buf if len(rec_overridden_values_buf) else None,
@@ -828,36 +833,63 @@ class FacerecService(ComplexObject):
 
         return RawSample(self._dll_handle, c_void_p(raw_sampl_impl))
 
-    def create_resizable_recognizer(self, recognizer_config: Union[str, Config], matching: bool = True, processing: bool = True,
-                          processing_less_memory_consumption: bool = False) -> ResizableRecognizer:
-        rec_overridden_keys = []
-        rec_overridden_values = []
 
-        if isinstance(recognizer_config, str):
-            file_path = recognizer_config
-        else:
-            file_path = recognizer_config.config_filepath
-            rec_overridden_keys, rec_overridden_values = recognizer_config.prepare()
-
+    @dispatch(list, list, Context)
+    def create_dynamic_template_index(self, templates: List[ContextTemplate], uuids: List[str],
+                                        config: Context):
         exception = make_exception()
 
-        rec_overridden_keys_buf = (c_char_p * len(rec_overridden_keys))()
-        rec_overridden_values_buf = (c_double * len(rec_overridden_values))(*rec_overridden_values)
+        templates_buf = (c_void_p * len(templates))()
+        uuids_buf = (c_char_p * len(uuids))()
 
-        for i in range(len(rec_overridden_keys)):
-            rec_overridden_keys_buf[i] = c_char_p(rec_overridden_keys[i].encode())
+        for i in range(len(templates)):
+            templates_buf[i] = templates[i]._impl
+            uuids_buf[i] = c_char_p(uuids[i].encode())
 
-        recognizer_impl = self._dll_handle.FacerecService_createResizableRecognizer2(
+        implementation = self._dll_handle.FacerecService_createDynamicTemplateIndex_1(
             self._impl,
-            POINTER(c_char_p)(create_string_buffer((self.__facerec_conf_dir + file_path).encode())),
-            c_int32(len(rec_overridden_keys)),
-            rec_overridden_keys_buf if len(rec_overridden_keys_buf) else None,
-            rec_overridden_values_buf if len(rec_overridden_values_buf) else None,
-            c_int(processing),
-            c_int(matching),
-            c_int(processing_less_memory_consumption),
+            templates_buf,
+            uuids_buf,
+            c_uint64(len(templates)),
+            config._impl,
+            exception
+        )
+
+        check_exception(exception, self._dll_handle)
+
+        return DynamicTemplateIndex(self._dll_handle, c_void_p(implementation))
+
+    @dispatch(Context)
+    def create_dynamic_template_index(self, config: Context):
+        exception = make_exception()
+
+        implementation = self._dll_handle.FacerecService_createDynamicTemplateIndex_2(
+            self._impl,
+            config._impl,
+            exception
+        )
+
+        check_exception(exception, self._dll_handle)
+
+        return DynamicTemplateIndex(self._dll_handle, c_void_p(implementation))
+
+    def load_context_template(self, binary_stream: BytesIO) -> ContextTemplate:
+        exception = make_exception()
+
+        result_impl = self._dll_handle.ContextTemplate_loadTemplate(
+            py_object(binary_stream),
+            read_func,
             exception)
 
         check_exception(exception, self._dll_handle)
 
-        return ResizableRecognizer(self._dll_handle, c_void_p(recognizer_impl))
+        return ContextTemplate(self._dll_handle, c_void_p(result_impl))
+
+    def convert_template(self, template_context: Context) -> ContextTemplate:
+        exception = make_exception()
+
+        result_impl = self._dll_handle.ContextTemplate_convert(template_context._impl, exception)
+
+        check_exception(exception, self._dll_handle)
+
+        return ContextTemplate(self._dll_handle, c_void_p(result_impl))

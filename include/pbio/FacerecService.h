@@ -478,12 +478,20 @@ public:
 		const bool processing_less_memory_consumption = false) const;
 
 
-	Recognizer::Ptr createResizableRecognizer(
-	const char* ini_file,
-	const bool processing = true,
-	const bool matching = true,
-	const bool processing_less_memory_consumption = false) const;
+#ifndef WITHOUT_PROCESSING_BLOCK
+	DynamicTemplateIndex::Ptr createDynamicTemplateIndex(
+		const std::vector<pbio::ContextTemplate::Ptr>& templates,
+		const std::vector<std::string>& uuids,
+		const Context& config) const;
 
+	DynamicTemplateIndex::Ptr createDynamicTemplateIndex(const Context& config) const;
+
+	ContextTemplate::Ptr loadContextTemplate(std::istream& stream) const;
+
+	ContextTemplate::Ptr loadContextTemplate(pbio::stl_wraps::WrapIStream &stream) const;
+
+	ContextTemplate::Ptr convertTemplate(const pbio::Context& templateContext) const;
+#endif
 
 	/**
 		\~English
@@ -1693,35 +1701,80 @@ Recognizer::Ptr FacerecService::createRecognizer(
 	return Recognizer::Ptr::make(_dll_handle, recognizer_impl);
 }
 
-
-inline
-Recognizer::Ptr FacerecService::createResizableRecognizer(
-	const char* ini_file,
-	const bool processing,
-	const bool matching,
-	const bool processing_less_memory_consumption) const
+#ifndef WITHOUT_PROCESSING_BLOCK
+inline DynamicTemplateIndex::Ptr FacerecService::createDynamicTemplateIndex(
+	const std::vector<pbio::ContextTemplate::Ptr>& templates,
+	const std::vector<std::string>& uuids,
+	const Context& config
+) const
 {
-	const std::string file_path = _facerec_conf_dir + ini_file;
+	void* exception = nullptr;
 
-	void* exception = NULL;
+	std::vector<const void*> tempTemplates;
+	std::vector<const char*> tempUuids;
 
-	pbio::facerec::RecognizerImpl* const recognizer_impl =
-		_dll_handle->FacerecService_createResizableRecognizer2(
-			_impl,
-			file_path.c_str(),
-			0,
-			NULL,
-			NULL,
-			(int) processing,
-			(int) matching,
-			(int) processing_less_memory_consumption,
-			&exception);
+	tempTemplates.reserve(templates.size());
+	tempUuids.reserve(uuids.size());
+
+	std::transform
+	(
+		templates.begin(), templates.end(), std::back_inserter(tempTemplates),
+		[](pbio::ContextTemplate::Ptr templ) { return templ->_impl; }
+	);
+	std::transform(uuids.begin(), uuids.end(), std::back_inserter(tempUuids), [](const std::string& uuid) { return uuid.data(); });
+
+	void* indexImplementation = _dll_handle->FacerecService_createDynamicTemplateIndex_1
+	(
+		_impl,
+		tempTemplates.data(),
+		tempUuids.data(),
+		templates.size(),
+		config.getHandle(),
+		&exception
+	);
 
 	checkException(exception, *_dll_handle);
 
-	return Recognizer::Ptr::make(_dll_handle, recognizer_impl);
+	return DynamicTemplateIndex::Ptr::make(_dll_handle, indexImplementation);
 }
 
+inline DynamicTemplateIndex::Ptr FacerecService::createDynamicTemplateIndex(const Context& config) const
+{
+	void* exception = nullptr;
+
+	void* indexImplementation = _dll_handle->FacerecService_createDynamicTemplateIndex_2(_impl, config.getHandle(), &exception);
+
+	checkException(exception, *_dll_handle);
+
+	return DynamicTemplateIndex::Ptr::make(_dll_handle, indexImplementation);
+}
+
+inline ContextTemplate::Ptr FacerecService::loadContextTemplate(std::istream& stream) const
+{
+	pbio::stl_wraps::WrapIStreamImpl streamWrap(stream);
+	return loadContextTemplate(streamWrap);
+}
+
+inline ContextTemplate::Ptr FacerecService::loadContextTemplate(pbio::stl_wraps::WrapIStream& stream) const
+{
+	void* exception = nullptr;
+	void* templateImplementation = _dll_handle->ContextTemplate_loadTemplate(&stream, pbio::stl_wraps::WrapIStream::read_func, &exception);
+
+	checkException(exception, *_dll_handle);
+
+	return ContextTemplate::Ptr::make(_dll_handle, templateImplementation);
+}
+
+inline ContextTemplate::Ptr FacerecService::convertTemplate(const pbio::Context& templateContext) const
+{
+	void* exception = nullptr;
+	void* templateImplementation = _dll_handle->ContextTemplate_convert(templateContext.handle_, &exception);
+
+	checkException(exception, *_dll_handle);
+
+	return ContextTemplate::Ptr::make(_dll_handle, templateImplementation);
+}
+#endif
 
 inline
 Recognizer::Ptr FacerecService::createRecognizer(

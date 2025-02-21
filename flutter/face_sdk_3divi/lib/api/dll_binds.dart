@@ -442,6 +442,26 @@ typedef _Context_putBool_dart = void Function(
     bool,
     Pointer<Pointer<Void>>);
 
+typedef _Context_putContextTemplate_c = Void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_putContextTemplate_dart = void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_putDynamicTemplateIndex_c = Void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_putDynamicTemplateIndex_dart = void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
 typedef _Context_putDataPtr_c = Pointer<Utf8> Function(
     Pointer<Void>,
     Pointer<Uint8>,
@@ -501,6 +521,22 @@ typedef _Context_getDataPtr_c = Pointer<Uint8> Function(
     Pointer<Pointer<Void>>);
 
 typedef _Context_getDataPtr_dart = Pointer<Uint8> Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_getContextTemplate_c = Pointer<Void> Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_getContextTemplate_dart = Pointer<Void> Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_getDynamicTemplateIndex_c = Pointer<Void> Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_getDynamicTemplateIndex_dart = Pointer<Void> Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
@@ -565,6 +601,22 @@ typedef _Context_isDataPtr_c = Bool Function(
     Pointer<Pointer<Void>>);
 
 typedef _Context_isDataPtr_dart = bool Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_isContextTemplate_c = Bool Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_isContextTemplate_dart = bool Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_isDynamicTemplateIndex_c = Bool Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_isDynamicTemplateIndex_dart = bool Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
@@ -800,6 +852,40 @@ typedef _Template_get_method_name_dart = void Function(
     Pointer<NativeFunction<binary_stream_write_func>>, // binary_stream_write_func
     Pointer<Pointer<Void>>); // out_exception
 
+typedef _ContextTemplate_save_c = Void Function(
+    Pointer<Void>, // templ
+    Pointer<Void>, // binary_stream
+    Pointer<NativeFunction<binary_stream_write_func>>, // binary_stream_write_func
+    Pointer<Pointer<Void>>); // out_exception
+
+typedef _ContextTemplate_save_dart = void Function(
+    Pointer<Void>, // templ
+    Pointer<Void>, // binary_stream
+    Pointer<NativeFunction<binary_stream_write_func>>, // binary_stream_write_func
+    Pointer<Pointer<Void>>); // out_exception
+
+typedef _ContextTemplate_loadTemplate_c = Pointer<Void> Function(
+    Pointer<Void>, // binary_stream
+    Pointer<NativeFunction<binary_stream_read_func>>, // binary_stream_read_func
+    Pointer<Pointer<Void>>); // out_exception
+
+typedef _ContextTemplate_loadTemplate_dart = Pointer<Void> Function(
+    Pointer<Void>, // binary_stream
+    Pointer<NativeFunction<binary_stream_read_func>>, // binary_stream_read_func
+    Pointer<Pointer<Void>>); // out_exception
+
+typedef _ContextTemplate_get_method_name_c = Void Function(
+    Pointer<Void>, // templ
+    Pointer<Void>, // binary_stream
+    Pointer<NativeFunction<binary_stream_write_func>>, // binary_stream_write_func
+    Pointer<Pointer<Void>>); // out_exception
+
+typedef _ContextTemplate_get_method_name_dart = void Function(
+    Pointer<Void>, // templ
+    Pointer<Void>, // binary_stream
+    Pointer<NativeFunction<binary_stream_write_func>>, // binary_stream_write_func
+    Pointer<Pointer<Void>>); // out_exception
+
 // TemplateIndex Inference
 
 typedef _Templates_index_size_c = Int64 Function(
@@ -830,6 +916,153 @@ typedef _Templates_index_reserve_search_memory_dart = void Function(
     int, // queries_count
 
     Pointer<Pointer<Void>>); // out_exception
+
+// DynamicTemplateIndex
+typedef _DynamicTemplateIndex_size_c = Int64 Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_size_dart = int Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_capacity_c = Int64 Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_capacity_dart = int Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_get_method_name_c = Void Function(
+    Pointer<Void>, // templ
+    Pointer<Void>, // binary_stream
+    Pointer<NativeFunction<binary_stream_write_func>>, // binary_stream_write_func
+    Pointer<Pointer<Void>>); // out_exception
+
+typedef _DynamicTemplateIndex_get_method_name_dart = void Function(
+    Pointer<Void>, // templ
+    Pointer<Void>, // binary_stream
+    Pointer<NativeFunction<binary_stream_write_func>>, // binary_stream_write_func
+    Pointer<Pointer<Void>>); // out_exception
+
+typedef _DynamicTemplateIndex_at_by_index_c = Void Function(
+    Pointer<Void>,
+    Int64,
+    Pointer<Void>,
+    Pointer<NativeFunction<binary_stream_write_func>>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_at_by_index_dart = void Function(
+    Pointer<Void>,
+    int,
+    Pointer<Void>,
+    Pointer<NativeFunction<binary_stream_write_func>>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_at_by_uuid_c = Pointer<Void> Function(
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_at_by_uuid_dart = Pointer<Void> Function(
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_get_c = Pointer<Void> Function(
+    Pointer<Void>,
+    Int64,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_get_dart = Pointer<Void> Function(
+    Pointer<Void>,
+    int,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_add_1_c = Void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_add_1_dart = void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_add_2_c = Void Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>,
+    Pointer<Pointer<Utf8>>,
+    Uint64,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_add_2_dart = void Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>,
+    Pointer<Pointer<Utf8>>,
+    int,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_add_3_c = Void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_add_3_dart = void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_add_4_c = Void Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>,
+    Pointer<Pointer<Utf8>>,
+    Uint64,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_add_4_dart = void Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>,
+    Pointer<Pointer<Utf8>>,
+    int,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_remove_1_c = Void Function(
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_remove_1_dart = void Function(
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_remove_2_c = Void Function(
+    Pointer<Void>,
+    Pointer<Pointer<Utf8>>,
+    Uint64,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_remove_2_dart = void Function(
+    Pointer<Void>,
+    Pointer<Pointer<Utf8>>,
+    int,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_concat_c = Void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_concat_dart = void Function(
+    Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
 
 // Others
 
@@ -1022,8 +1255,26 @@ typedef _RawImage_convertBGRA88882RGB_dart = void Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
+typedef _ContextTemplate_convert_c = Pointer<Void> Function(Pointer<Void>, Pointer<Pointer<Void>>);
+typedef _ContextTemplate_convert_dart = Pointer<Void> Function(Pointer<Void>, Pointer<Pointer<Void>>);
+
 typedef _objDestructor_c = Void Function(Pointer<Void>);
 typedef _objDestructor_dart = void Function(Pointer<Void>);
 
+typedef _contextTemplateDestructor_c = Void Function(Pointer<Void>);
+typedef _contextTemplateDestructor_dart = void Function(Pointer<Void>);
+
+typedef _DynamicTemplateIndexDestructor_c = Void Function(Pointer<Void>);
+typedef _DynamicTemplateIndexDestructor_dart = void Function(Pointer<Void>);
+
 typedef _convertYUV420_888ToNV21_c = Void Function(Pointer<Uint8>, Int32, Int32, Int32, Pointer<Uint8>, Uint64, Pointer<Pointer<Void>>);
 typedef _convertYUV420_888ToNV21_dart = void Function(Pointer<Uint8>, int, int, int, Pointer<Uint8>, int, Pointer<Pointer<Void>>);
+
+typedef _createDynamicTemplateIndex_1_c = Pointer<Void> Function(Pointer<Void>, Pointer<Pointer<Void>>, Pointer<Pointer<Utf8>>, Int64, Pointer<Void>, Pointer<Pointer<Void>>);
+typedef _createDynamicTemplateIndex_1_dart = Pointer<Void> Function(Pointer<Void>, Pointer<Pointer<Void>>, Pointer<Pointer<Utf8>>, int, Pointer<Void>, Pointer<Pointer<Void>>);
+
+typedef _createDynamicTemplateIndex_2_c = Pointer<Void> Function(Pointer<Void>, Pointer<Void>, Pointer<Pointer<Void>>);
+typedef _createDynamicTemplateIndex_2_dart = Pointer<Void> Function(Pointer<Void>, Pointer<Void>, Pointer<Pointer<Void>>);
+
+typedef _contextTemplate_size_c = Int32 Function(Pointer<Void>, Pointer<Pointer<Void>>);
+typedef _contextTemplate_size_dart = int Function(Pointer<Void>, Pointer<Pointer<Void>>);

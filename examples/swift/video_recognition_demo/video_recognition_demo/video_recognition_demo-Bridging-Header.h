@@ -7,5 +7,7 @@
 #import "CallbackData.h"
 #import "ExceptionCheck.h"
 #import "Context.h"
+#import "ContextTemplate.h"
+#import "DynamicTemplateIndex.h"
 #import "ProcessingBlock.h"
 

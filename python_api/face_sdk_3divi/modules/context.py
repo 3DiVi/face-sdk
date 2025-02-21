@@ -13,6 +13,9 @@ from ctypes import c_int32, c_int64, c_uint64, c_bool, c_double, POINTER, c_ubyt
 from .exception_check import check_processing_block_exception, make_exception
 from .complex_object import ComplexObject
 from .dll_handle import DllHandle
+from .dynamic_template_index import DynamicTemplateIndex
+from .context_template import ContextTemplate
+
 
 ## @defgroup PythonAPI
 #  @{
@@ -194,6 +197,20 @@ class Context(ComplexObject):
         self._dll_handle.putDataPtr(self._impl, c_char_p(value), c_uint64(len(value)), exception)
         check_processing_block_exception(exception, self._dll_handle)
 
+    def __setDynamicTemplateIndex(self, value: DynamicTemplateIndex):
+        exception = make_exception()
+
+        self._dll_handle.putDynamicTemplateIndex(self._impl, value._impl, exception)
+
+        check_processing_block_exception(exception, self._dll_handle)
+
+    def __setContextTemplate(self, value: ContextTemplate):
+        exception = make_exception()
+
+        self._dll_handle.putContextTemplate(self._impl, value._impl, exception)
+
+        check_processing_block_exception(exception, self._dll_handle)
+
     def get_data_ptr(self):
         exception = make_exception()
 
@@ -202,6 +219,23 @@ class Context(ComplexObject):
         check_processing_block_exception(exception, self._dll_handle)
         return result
 
+    def __getDynamicTemplateIndex(self):
+        exception = make_exception()
+
+        result = self._dll_handle.getDynamicTemplateIndex(self._impl, exception)
+
+        check_processing_block_exception(exception, self._dll_handle)
+
+        return DynamicTemplateIndex(self._dll_handle, c_void_p(result), True)
+
+    def __getContextTemplate(self):
+        exception = make_exception()
+
+        result = self._dll_handle.getContextTemplate(self._impl, exception)
+
+        check_processing_block_exception(exception, self._dll_handle)
+
+        return ContextTemplate(self._dll_handle, c_void_p(result))
 
     ##
     # \~English
@@ -446,6 +480,14 @@ class Context(ComplexObject):
     def parser(self, ctx: bytes):
         self.set_bytes(ctx)
 
+    @dispatch(DynamicTemplateIndex)
+    def parser(self, ctx: DynamicTemplateIndex):
+        self.__setDynamicTemplateIndex(ctx)
+
+    @dispatch(ContextTemplate)
+    def parser(self, ctx: ContextTemplate):
+        self.__setContextTemplate(ctx)
+
     @dispatch(object)
     def parser(self, ctx):
         assert isinstance(ctx, Context), "the object does not belong to the base types or Context"
@@ -602,6 +644,24 @@ class Context(ComplexObject):
         check_processing_block_exception(exception, self._dll_handle)
         return value
 
+    def is_dynamic_template_index(self) -> bool:
+        exception = make_exception()
+
+        value = self._dll_handle.isDynamicTemplateIndex(self._impl, exception)
+
+        check_processing_block_exception(exception, self._dll_handle)
+
+        return value
+
+    def is_context_template(self) -> bool:
+        exception = make_exception()
+
+        value = self._dll_handle.isContextTemplate(self._impl, exception)
+
+        check_processing_block_exception(exception, self._dll_handle)
+
+        return value
+
     ##
     # \~English
     #    \brief returns the value contained in the container
@@ -622,6 +682,10 @@ class Context(ComplexObject):
             return self.get_double()
         if self.is_data_ptr():
             return self.get_data_ptr()
+        if self.is_dynamic_template_index():
+            return self.__getDynamicTemplateIndex()
+        if self.is_context_template():
+            return self.__getContextTemplate()
 
         return None
 

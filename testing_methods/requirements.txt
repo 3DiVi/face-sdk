@@ -1,0 +1,5 @@
+matplotlib==3.10.0
+tqdm==4.67.1
+numpy==1.26.0
+opencv-python==4.8.0.76
+pandas==2.2.3

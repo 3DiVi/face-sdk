@@ -133,6 +133,10 @@ class Context extends _ComplexObject {
       this._setStr(data);
     } else if (data is bool) {
       this._setBool(data);
+    } else if (data is ContextTemplate) {
+      this._setContextTemplate(data);
+    } else if (data is DynamicTemplateIndex) {
+      this._setDynamicTemplateIndex(data);
     }
   }
 
@@ -318,6 +322,22 @@ class Context extends _ComplexObject {
     tdvCheckException(exception, _dll_handle);
   }
 
+  void _setContextTemplate(ContextTemplate val) {
+    final constructor = _dll_handle.lookupFunction<_Context_putContextTemplate_c, _Context_putContextTemplate_dart>(_context_namespace + 'putContextTemplate');
+    final exception = _getException();
+    constructor(this._impl, val._impl, exception);
+
+    tdvCheckException(exception, _dll_handle);
+  }
+
+  void _setDynamicTemplateIndex(DynamicTemplateIndex val) {
+    final constructor = _dll_handle.lookupFunction<_Context_putDynamicTemplateIndex_c, _Context_putDynamicTemplateIndex_dart>(_context_namespace + 'putDynamicTemplateIndex');
+    final exception = _getException();
+    constructor(this._impl, val._impl, exception);
+
+    tdvCheckException(exception, _dll_handle);
+  }
+
   void _setDataPtr(Uint8List data) {
     final constructor =
         _dll_handle.lookupFunction<_Context_putDataPtr_c, _Context_putDataPtr_dart>(_context_namespace + 'putDataPtr');
@@ -399,6 +419,28 @@ class Context extends _ComplexObject {
     tdvCheckException(exception, _dll_handle);
 
     return res;
+  }
+
+  ContextTemplate _getContextTemplate() {
+    final constructor =
+    _dll_handle.lookupFunction<_Context_getContextTemplate_c, _Context_getContextTemplate_dart>(_context_namespace + 'getContextTemplate');
+    final exception = _getException();
+    var res = constructor(this._impl, exception);
+
+    tdvCheckException(exception, _dll_handle);
+
+    return ContextTemplate(_dll_handle, res, weak: true);
+  }
+
+  DynamicTemplateIndex _getDynamicTemplateIndex() {
+    final constructor =
+    _dll_handle.lookupFunction<_Context_getDynamicTemplateIndex_c, _Context_getDynamicTemplateIndex_dart>(_context_namespace + 'getDynamicTemplateIndex');
+    final exception = _getException();
+    var res = constructor(this._impl, exception);
+
+    tdvCheckException(exception, _dll_handle);
+
+    return DynamicTemplateIndex(_dll_handle, res, weak: true);
   }
 
   Uint8List getBytes(int size) {
@@ -524,6 +566,28 @@ class Context extends _ComplexObject {
     return res;
   }
 
+  bool is_context_template() {
+    final constructor =
+    _dll_handle.lookupFunction<_Context_isContextTemplate_c, _Context_isContextTemplate_dart>(_context_namespace + 'isContextTemplate');
+    final exception = _getException();
+    bool res = constructor(this._impl, exception);
+
+    tdvCheckException(exception, _dll_handle);
+
+    return res;
+  }
+
+  bool is_dynamic_template_index() {
+    final constructor =
+    _dll_handle.lookupFunction<_Context_isDynamicTemplateIndex_c, _Context_isDynamicTemplateIndex_dart>(_context_namespace + 'isDynamicTemplateIndex');
+    final exception = _getException();
+    bool res = constructor(this._impl, exception);
+
+    tdvCheckException(exception, _dll_handle);
+
+    return res;
+  }
+
   dynamic get_value() {
     if (this.is_none()) {
       return null;
@@ -542,6 +606,12 @@ class Context extends _ComplexObject {
     }
     if (this.is_data_ptr()) {
       return this._getDataPtr();
+    }
+    if (this.is_context_template()) {
+      return this._getContextTemplate();
+    }
+    if (this.is_dynamic_template_index()) {
+      return this._getDynamicTemplateIndex();
     }
   }
 

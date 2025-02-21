@@ -36,6 +36,8 @@
 		AA3632242C81E893009187A3 /* Context.mm in Sources */ = {isa = PBXBuildFile; fileRef = AA3632202C81E892009187A3 /* Context.mm */; };
 		AA3632252C81E893009187A3 /* ProcessingBlock.mm in Sources */ = {isa = PBXBuildFile; fileRef = AA3632212C81E893009187A3 /* ProcessingBlock.mm */; };
 		AA9CAFFE293F5F1200905FE4 /* onnxruntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AA9CAFFC293F5F1200905FE4 /* onnxruntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		AAE818092D5E101D002D3D28 /* ContextTemplate.mm in Sources */ = {isa = PBXBuildFile; fileRef = AAE818052D5E101D002D3D28 /* ContextTemplate.mm */; };
+		AAE8180A2D5E101D002D3D28 /* DynamicTemplateIndex.mm in Sources */ = {isa = PBXBuildFile; fileRef = AAE818082D5E101D002D3D28 /* DynamicTemplateIndex.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -99,6 +101,10 @@
 		AA3632222C81E893009187A3 /* ProcessingBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProcessingBlock.h; sourceTree = "<group>"; };
 		AA3632232C81E893009187A3 /* Context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Context.h; sourceTree = "<group>"; };
 		AA9CAFFC293F5F1200905FE4 /* onnxruntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = onnxruntime.framework; path = ../../../onnxruntime.framework; sourceTree = "<group>"; };
+		AAE818052D5E101D002D3D28 /* ContextTemplate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ContextTemplate.mm; sourceTree = "<group>"; };
+		AAE818062D5E101D002D3D28 /* ContextTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContextTemplate.h; sourceTree = "<group>"; };
+		AAE818072D5E101D002D3D28 /* DynamicTemplateIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicTemplateIndex.h; sourceTree = "<group>"; };
+		AAE818082D5E101D002D3D28 /* DynamicTemplateIndex.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DynamicTemplateIndex.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,34 +160,38 @@
 		AA0AAB8C269D6CA5007BF703 /* swift_api */ = {
 			isa = PBXGroup;
 			children = (
-				AA3632232C81E893009187A3 /* Context.h */,
-				AA3632202C81E892009187A3 /* Context.mm */,
-				AA3632222C81E893009187A3 /* ProcessingBlock.h */,
-				AA3632212C81E893009187A3 /* ProcessingBlock.mm */,
-				AA0AAB8D269D6CA5007BF703 /* VideoWorker.h */,
-				AA0AAB8E269D6CA5007BF703 /* RawSample.h */,
-				AA0AAB8F269D6CA5007BF703 /* Capturer.mm */,
+				AAE818062D5E101D002D3D28 /* ContextTemplate.h */,
+				AAE818052D5E101D002D3D28 /* ContextTemplate.mm */,
+				AAE818072D5E101D002D3D28 /* DynamicTemplateIndex.h */,
+				AAE818082D5E101D002D3D28 /* DynamicTemplateIndex.mm */,
+				AA0AABA0269D6CA5007BF703 /* CallbackData.h */,
 				AA0AAB90269D6CA5007BF703 /* CallbackData.mm */,
 				AA0AAB91269D6CA5007BF703 /* Capturer.h */,
-				AA0AAB92269D6CA5007BF703 /* Template.mm */,
-				AA0AAB93269D6CA5007BF703 /* Point.mm */,
-				AA0AAB94269D6CA5007BF703 /* Point.h */,
-				AA0AAB95269D6CA5007BF703 /* Recognizer.h */,
-				AA0AAB96269D6CA5007BF703 /* RawImage.h */,
-				AA0AAB97269D6CA5007BF703 /* TryCatch.mm */,
-				AA0AAB98269D6CA5007BF703 /* ExceptionCheck.h */,
-				AA0AAB99269D6CA5007BF703 /* VideoWorker.mm */,
-				AA0AAB9A269D6CA5007BF703 /* ExceptionCheck.mm */,
-				AA0AAB9B269D6CA5007BF703 /* swift_callback.h */,
-				AA0AAB9C269D6CA5007BF703 /* RawSample.mm */,
-				AA0AAB9D269D6CA5007BF703 /* FacerecService.mm */,
+				AA0AAB8F269D6CA5007BF703 /* Capturer.mm */,
 				AA0AAB9E269D6CA5007BF703 /* CheckException.swift */,
-				AA0AAB9F269D6CA5007BF703 /* RawImage.mm */,
-				AA0AABA0269D6CA5007BF703 /* CallbackData.h */,
+				AA3632232C81E893009187A3 /* Context.h */,
+				AA3632202C81E892009187A3 /* Context.mm */,
+				AA0AAB98269D6CA5007BF703 /* ExceptionCheck.h */,
+				AA0AAB9A269D6CA5007BF703 /* ExceptionCheck.mm */,
 				AA0AABA1269D6CA5007BF703 /* FacerecService.h */,
+				AA0AAB9D269D6CA5007BF703 /* FacerecService.mm */,
+				AA0AAB94269D6CA5007BF703 /* Point.h */,
+				AA0AAB93269D6CA5007BF703 /* Point.mm */,
+				AA3632222C81E893009187A3 /* ProcessingBlock.h */,
+				AA3632212C81E893009187A3 /* ProcessingBlock.mm */,
+				AA0AAB96269D6CA5007BF703 /* RawImage.h */,
+				AA0AAB9F269D6CA5007BF703 /* RawImage.mm */,
+				AA0AAB8E269D6CA5007BF703 /* RawSample.h */,
+				AA0AAB9C269D6CA5007BF703 /* RawSample.mm */,
+				AA0AAB95269D6CA5007BF703 /* Recognizer.h */,
+				AA0AABA4269D6CA5007BF703 /* Recognizer.mm */,
+				AA0AAB9B269D6CA5007BF703 /* swift_callback.h */,
 				AA0AABA2269D6CA5007BF703 /* SwiftCallback.swift */,
 				AA0AABA3269D6CA5007BF703 /* Template.h */,
-				AA0AABA4269D6CA5007BF703 /* Recognizer.mm */,
+				AA0AAB92269D6CA5007BF703 /* Template.mm */,
+				AA0AAB97269D6CA5007BF703 /* TryCatch.mm */,
+				AA0AAB8D269D6CA5007BF703 /* VideoWorker.h */,
+				AA0AAB99269D6CA5007BF703 /* VideoWorker.mm */,
 			);
 			name = swift_api;
 			path = ../../../../swift_api;
@@ -277,6 +287,7 @@
 				AA0AAB83269D6C74007BF703 /* UserClass.swift in Sources */,
 				AA0AABAC269D6CA5007BF703 /* RawSample.mm in Sources */,
 				AA0AABB0269D6CA5007BF703 /* SwiftCallback.swift in Sources */,
+				AAE818092D5E101D002D3D28 /* ContextTemplate.mm in Sources */,
 				AA3632252C81E893009187A3 /* ProcessingBlock.mm in Sources */,
 				AA0AABB1269D6CA5007BF703 /* Recognizer.mm in Sources */,
 				AA0AABAB269D6CA5007BF703 /* ExceptionCheck.mm in Sources */,
@@ -288,6 +299,7 @@
 				AA0AABAA269D6CA5007BF703 /* VideoWorker.mm in Sources */,
 				AA0AAB82269D6C74007BF703 /* DataBase.swift in Sources */,
 				AA0AAB61269D6B65007BF703 /* SceneDelegate.swift in Sources */,
+				AAE8180A2D5E101D002D3D28 /* DynamicTemplateIndex.mm in Sources */,
 				AA0AABA7269D6CA5007BF703 /* Template.mm in Sources */,
 				AA0AABAD269D6CA5007BF703 /* FacerecService.mm in Sources */,
 				AA0AABAE269D6CA5007BF703 /* CheckException.swift in Sources */,
