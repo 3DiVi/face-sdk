@@ -15,7 +15,11 @@ class AsyncProcessingBlock {
     Isolate isolate = await Isolate.spawn(_isolateImplementation,
         {"implementation": implementation.address, "facerecConfDir": facerecConfDir, "dllPath": dllPath, "sendPort": receivePort.sendPort, "context": context});
 
-    SendPort sendPort = await receivePort.first;
+    dynamic isolateResult = await receivePort.first;
+
+    _checkException(isolateResult, isolate: isolate);
+
+    SendPort sendPort = isolateResult;
 
     return AsyncProcessingBlock._create(isolate, sendPort);
   }
@@ -29,7 +33,9 @@ class AsyncProcessingBlock {
       "context": context._impl.address,
     });
 
-    await receivePort.first;
+    dynamic isolateResult = await receivePort.first;
+
+    _checkException(isolateResult);
   }
 
   Future<void> dispose() async {
@@ -44,7 +50,10 @@ class AsyncProcessingBlock {
       "sendPort": receivePort.sendPort,
     });
 
-    _isDisposed = await receivePort.first;
+    dynamic isolateResult = await receivePort.first;
+    _isDisposed = true;
+
+    _checkException(isolateResult, isolate: _isolate);
 
     _isolate.kill(priority: Isolate.immediate);
   }
@@ -55,7 +64,15 @@ class AsyncProcessingBlock {
         FacerecService(dylib, Pointer<Void>.fromAddress(initialization["implementation"]), initialization["facerecConfDir"], initialization["dllPath"]);
 
     ReceivePort receivePort = ReceivePort();
-    ProcessingBlock block = service.createProcessingBlock(initialization["context"]);
+    ProcessingBlock block;
+
+    try {
+      block = service.createProcessingBlock(initialization["context"]);
+    } on TDVException catch (exception) {
+      (initialization["sendPort"] as SendPort).send(exception.message);
+
+      return;
+    }
 
     (initialization["sendPort"] as SendPort).send(receivePort.sendPort);
 
@@ -69,23 +86,35 @@ class AsyncProcessingBlock {
       final _ProcessingBlockEvents event = message["event"];
       final SendPort sendPort = message["sendPort"];
 
-      switch (event) {
-        case _ProcessingBlockEvents.PROCESS:
-          int context = message["context"];
+      try {
+        switch (event) {
+          case _ProcessingBlockEvents.PROCESS:
+            int context = message["context"];
 
-          block.process(Context(dylib, Pointer<Void>.fromAddress(context)));
+            block.process(Context(dylib, Pointer<Void>.fromAddress(context)));
 
-          sendPort.send(true);
+            sendPort.send(true);
 
-          break;
+            break;
 
-        case _ProcessingBlockEvents.CLEAR:
-          block.dispose();
+          case _ProcessingBlockEvents.CLEAR:
+            block.dispose();
 
-          sendPort.send(true);
+            sendPort.send(true);
 
-          return;
+            return;
+        }
+      } on TDVException catch (exception) {
+        sendPort.send(exception.message);
       }
+    }
+  }
+
+  static void _checkException(dynamic isolateResult, {Isolate? isolate}) {
+    if (isolateResult is String) {
+      isolate?.kill(priority: Isolate.immediate);
+
+      throw TDVException(isolateResult);
     }
   }
 }

@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         getPermission()
 
         service = FacerecService.createService(
-            "libfacerec.so",
+            applicationInfo.nativeLibraryDir + "/libfacerec.so",
             applicationInfo.dataDir + "/fsdk/conf/facerec",
             applicationInfo.dataDir + "/fsdk/license"
         )

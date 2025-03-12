@@ -10,7 +10,8 @@ class AsyncVideoWorker {
 
   AsyncVideoWorker._create(this._isolate, this._sendPort, this._dllPath);
 
-  static Future<AsyncVideoWorker> create(Pointer<Void> implementation, String facerecConfDir, String dllPath, VideoWorkerParams params) async {
+  static Future<AsyncVideoWorker> create(
+      Pointer<Void> implementation, String facerecConfDir, String dllPath, VideoWorkerParams params) async {
     ReceivePort receivePort = ReceivePort();
 
     Isolate isolate = await Isolate.spawn(_isolateImplementation, {
@@ -31,8 +32,11 @@ class AsyncVideoWorker {
       "configFilepath": params._video_worker_config._configFilepath,
       "overriddenParams": params._video_worker_config._overriddenParams,
     });
+    dynamic isolateResult = await receivePort.first;
 
-    SendPort sendPort = await receivePort.first;
+    _checkException(isolateResult, isolate: isolate);
+
+    SendPort sendPort = isolateResult;
 
     return AsyncVideoWorker._create(isolate, sendPort, dllPath);
   }
@@ -55,7 +59,11 @@ class AsyncVideoWorker {
       "timestamp_microsec": timestamp_microsec
     });
 
-    return await receivePort.first;
+    dynamic isolateResult = await receivePort.first;
+
+    _checkException(isolateResult);
+
+    return isolateResult;
   }
 
   Future<void> resetTrackerOnStream() async {
@@ -66,10 +74,15 @@ class AsyncVideoWorker {
       "sendPort": receivePort.sendPort,
     });
 
-    await receivePort.first;
+    dynamic isolateResult = await receivePort.first;
+
+    _checkException(isolateResult);
+
+    return isolateResult;
   }
 
-  Future<void> setDataBase(List<DataBaseElement> dataBase, {SearchAccelerationType acceleration = SearchAccelerationType.SEARCH_ACCELERATION_1}) async {
+  Future<void> setDataBase(List<DataBaseElement> dataBase,
+      {SearchAccelerationType acceleration = SearchAccelerationType.SEARCH_ACCELERATION_1}) async {
     ReceivePort receivePort = ReceivePort();
     List<Map<String, dynamic>> data = [];
 
@@ -84,9 +97,18 @@ class AsyncVideoWorker {
       data.add(elementData);
     });
 
-    _sendPort.send({"event": _VideoWorkerEvents.SET_DATA_BASE, "sendPort": receivePort.sendPort, "data": data, "acceleration": acceleration});
+    _sendPort.send({
+      "event": _VideoWorkerEvents.SET_DATA_BASE,
+      "sendPort": receivePort.sendPort,
+      "data": data,
+      "acceleration": acceleration
+    });
 
-    await receivePort.first;
+    dynamic isolateResult = await receivePort.first;
+
+    _checkException(isolateResult);
+
+    return isolateResult;
   }
 
   Future<TrackingData> poolTrackResults() async {
@@ -97,14 +119,19 @@ class AsyncVideoWorker {
       "event": _VideoWorkerEvents.POOL_TRACK_RESULTS,
       "sendPort": receivePort.sendPort,
     });
+    dynamic isolateResult = await receivePort.first;
 
-    Map<String, dynamic> data = await receivePort.first;
+    _checkException(isolateResult);
+
+    Map<String, dynamic> data = isolateResult;
 
     result.tracking_callback_data = _parseTrackingCallbackData(data["tracking_callback_data"]);
     result.template_created_callback_data = _parseTemplateCreatedCallbackData(data["template_created_callback_data"]);
     result.tracking_lost_callback_data = _parseTrackingLostCallbackData(data["tracking_lost_callback_data"]);
-    result.tracking_match_found_callback_data = _parseTrackingMatchFoundCallbackData(data["tracking_match_found_callback_data"]);
-    result.sti_person_outdated_callback_data = _parseStiPersonOutdatedCallbackData(data["sti_person_outdated_callback_data"]);
+    result.tracking_match_found_callback_data =
+        _parseTrackingMatchFoundCallbackData(data["tracking_match_found_callback_data"]);
+    result.sti_person_outdated_callback_data =
+        _parseStiPersonOutdatedCallbackData(data["sti_person_outdated_callback_data"]);
 
     return result;
   }
@@ -121,15 +148,18 @@ class AsyncVideoWorker {
       "sendPort": receivePort.sendPort,
     });
 
-    _isDisposed = await receivePort.first;
+    dynamic isolateResult = await receivePort.first;
+    _isDisposed = true;
+
+    _checkException(isolateResult, isolate: _isolate);
 
     _isolate.kill(priority: Isolate.immediate);
   }
 
   static Future<void> _isolateImplementation(Map<String, dynamic> initialization) async {
     DynamicLibrary dylib = DynamicLibrary.open(initialization["dllPath"]);
-    FacerecService service =
-        FacerecService(dylib, Pointer<Void>.fromAddress(initialization["implementation"]), initialization["facerecConfDir"], initialization["dllPath"]);
+    FacerecService service = FacerecService(dylib, Pointer<Void>.fromAddress(initialization["implementation"]),
+        initialization["facerecConfDir"], initialization["dllPath"]);
     VideoWorkerParams params = VideoWorkerParams();
     Config config = Config(initialization["configFilepath"]);
     Map<String, double> overriddenParams = initialization["overriddenParams"];
@@ -143,13 +173,23 @@ class AsyncVideoWorker {
     params._age_gender_estimation_threads_count = initialization["_age_gender_estimation_threads_count"];
     params._emotions_estimation_threads_count = initialization["_emotions_estimation_threads_count"];
     params._short_time_identification_enabled = initialization["_short_time_identification_enabled"];
-    params._short_time_identification_distance_threshold = initialization["_short_time_identification_distance_threshold"];
-    params._short_time_identification_outdate_time_seconds = initialization["_short_time_identification_outdate_time_seconds"];
+    params._short_time_identification_distance_threshold =
+        initialization["_short_time_identification_distance_threshold"];
+    params._short_time_identification_outdate_time_seconds =
+        initialization["_short_time_identification_outdate_time_seconds"];
     params._active_liveness_checks_order = initialization["_active_liveness_checks_order"];
     params._video_worker_config = config;
 
     ReceivePort receivePort = ReceivePort();
-    VideoWorker videoWorker = service.createVideoWorker(params);
+    VideoWorker videoWorker;
+
+    try {
+      videoWorker = service.createVideoWorker(params);
+    } on TDVException catch (exception) {
+      (initialization["sendPort"] as SendPort).send(exception.message);
+
+      return;
+    }
 
     (initialization["sendPort"] as SendPort).send(receivePort.sendPort);
 
@@ -163,171 +203,181 @@ class AsyncVideoWorker {
       final _VideoWorkerEvents event = message["event"];
       final SendPort sendPort = message["sendPort"];
 
-      switch (event) {
-        case _VideoWorkerEvents.ADD_VIDEO_FRAME:
-          int width = message["width"];
-          int height = message["height"];
-          Format format = message["format"];
-          Pointer<Utf8> data = Pointer<Utf8>.fromAddress(message["data"]);
-          int with_crop = message["with_crop"];
-          int crop_info_offset_x = message["crop_info_offset_x"];
-          int crop_info_offset_y = message["crop_info_offset_y"];
-          int crop_info_data_image_width = message["crop_info_data_image_width"];
-          int crop_info_data_image_height = message["crop_info_data_image_height"];
-          int timestamp_microsec = message["timestamp_microsec"];
+      try {
+        switch (event) {
+          case _VideoWorkerEvents.ADD_VIDEO_FRAME:
+            int width = message["width"];
+            int height = message["height"];
+            Format format = message["format"];
+            Pointer<Utf8> data = Pointer<Utf8>.fromAddress(message["data"]);
+            int with_crop = message["with_crop"];
+            int crop_info_offset_x = message["crop_info_offset_x"];
+            int crop_info_offset_y = message["crop_info_offset_y"];
+            int crop_info_data_image_width = message["crop_info_data_image_width"];
+            int crop_info_data_image_height = message["crop_info_data_image_height"];
+            int timestamp_microsec = message["timestamp_microsec"];
 
-          RawImageF image = RawImageF(width, height, format, data);
+            RawImageF image = RawImageF(width, height, format, data);
 
-          image.with_crop = with_crop;
-          image.crop_info_offset_x = crop_info_offset_x;
-          image.crop_info_offset_y = crop_info_offset_y;
-          image.crop_info_data_image_width = crop_info_data_image_width;
-          image.crop_info_data_image_height = crop_info_data_image_height;
+            image.with_crop = with_crop;
+            image.crop_info_offset_x = crop_info_offset_x;
+            image.crop_info_offset_y = crop_info_offset_y;
+            image.crop_info_data_image_width = crop_info_data_image_width;
+            image.crop_info_data_image_height = crop_info_data_image_height;
 
-          sendPort.send(videoWorker.addVideoFrame(image, timestamp_microsec));
+            sendPort.send(videoWorker.addVideoFrame(image, timestamp_microsec));
 
-          break;
+            break;
 
-        case _VideoWorkerEvents.SET_DATA_BASE:
-          List<Map<String, dynamic>> data = message["data"];
-          SearchAccelerationType acceleration = message["acceleration"];
+          case _VideoWorkerEvents.SET_DATA_BASE:
+            List<Map<String, dynamic>> data = message["data"];
+            SearchAccelerationType acceleration = message["acceleration"];
 
-          List<DataBaseElement> dataBase = [];
+            List<DataBaseElement> dataBase = [];
 
-          data.forEach((element) {
-            dataBase.add(DataBaseElement(element["element_id"], element["person_id"], Template(dylib, Pointer<Void>.fromAddress(element["face_template"])),
-                element["distance_threshold"]));
-          });
+            data.forEach((element) {
+              dataBase.add(DataBaseElement(element["element_id"], element["person_id"],
+                  Template(dylib, Pointer<Void>.fromAddress(element["face_template"])), element["distance_threshold"]));
+            });
 
-          videoWorker.setDataBase(dataBase, acceleration: acceleration);
+            videoWorker.setDataBase(dataBase, acceleration: acceleration);
 
-          sendPort.send(true);
+            sendPort.send(true);
 
-          break;
+            break;
 
-        case _VideoWorkerEvents.RESET_TRACKER_ON_STREAM:
-          videoWorker.resetTrackerOnStream();
+          case _VideoWorkerEvents.RESET_TRACKER_ON_STREAM:
+            videoWorker.resetTrackerOnStream();
 
-          sendPort.send(true);
+            sendPort.send(true);
 
-          break;
+            break;
 
-        case _VideoWorkerEvents.POOL_TRACK_RESULTS:
-          TrackingData data = videoWorker.poolTrackResults();
-          Map<String, dynamic> result = Map<String, dynamic>();
-          List<int> samplePointers = [];
+          case _VideoWorkerEvents.POOL_TRACK_RESULTS:
+            TrackingData data = videoWorker.poolTrackResults();
+            Map<String, dynamic> result = Map<String, dynamic>();
+            List<int> samplePointers = [];
 
-          data.tracking_callback_data.samples.forEach((element) => samplePointers.add(element._impl.address));
-          List<ActiveLivenessStatus> status = data.tracking_callback_data.samples_active_liveness_status;
-          List<ActiveLiveness> verdict = [];
-          List<ActiveLivenessCheckType> check_type = [];
-          List<double> progress_level = [];
-          RawSample? bestQualitySample;
-          Template? bestQualityTemplate;
-          RawSample? matchFoundSample;
-          Template? matchFoundTemplate;
+            data.tracking_callback_data.samples.forEach((element) => samplePointers.add(element._impl.address));
+            List<ActiveLivenessStatus> status = data.tracking_callback_data.samples_active_liveness_status;
+            List<ActiveLiveness> verdict = [];
+            List<ActiveLivenessCheckType> check_type = [];
+            List<double> progress_level = [];
+            RawSample? bestQualitySample;
+            Template? bestQualityTemplate;
+            RawSample? matchFoundSample;
+            Template? matchFoundTemplate;
 
-          if (data.tracking_lost_callback_data.stream_id != -1) {
-            bestQualitySample = data.tracking_lost_callback_data.best_quality_sample;
-            bestQualityTemplate = data.tracking_lost_callback_data.best_quality_templ;
-          }
+            if (data.tracking_lost_callback_data.stream_id != -1) {
+              bestQualitySample = data.tracking_lost_callback_data.best_quality_sample;
+              bestQualityTemplate = data.tracking_lost_callback_data.best_quality_templ;
+            }
 
-          if (data.tracking_match_found_callback_data.stream_id != -1) {
-            matchFoundSample = data.tracking_match_found_callback_data.sample;
-            matchFoundTemplate = data.tracking_match_found_callback_data.templ;
-          }
+            if (data.tracking_match_found_callback_data.stream_id != -1) {
+              matchFoundSample = data.tracking_match_found_callback_data.sample;
+              matchFoundTemplate = data.tracking_match_found_callback_data.templ;
+            }
 
-          status.forEach((element) {
-            verdict.add(element.verdict);
-            check_type.add(element.check_type);
-            progress_level.add(element.progress_level);
-          });
+            status.forEach((element) {
+              verdict.add(element.verdict);
+              check_type.add(element.check_type);
+              progress_level.add(element.progress_level);
+            });
 
-          result["tracking_callback_data"] = {
-            "stream_id": data.tracking_callback_data.stream_id,
-            "frame_id": data.tracking_callback_data.frame_id,
-            "_samples_track_id": data.tracking_callback_data._samples_track_id,
-            "_samples_weak": data.tracking_callback_data._samples_weak,
-            "samples_quality": data.tracking_callback_data.samples_quality,
-            "samples": samplePointers,
-            "samples_active_liveness_status": {"verdict": verdict, "check_type": check_type, "progress_level": progress_level}
-          };
+            result["tracking_callback_data"] = {
+              "stream_id": data.tracking_callback_data.stream_id,
+              "frame_id": data.tracking_callback_data.frame_id,
+              "_samples_track_id": data.tracking_callback_data._samples_track_id,
+              "_samples_weak": data.tracking_callback_data._samples_weak,
+              "samples_quality": data.tracking_callback_data.samples_quality,
+              "samples": samplePointers,
+              "samples_active_liveness_status": {
+                "verdict": verdict,
+                "check_type": check_type,
+                "progress_level": progress_level
+              }
+            };
 
-          result["template_created_callback_data"] = {
-            "stream_id": data.template_created_callback_data.stream_id,
-            "frame_id": data.template_created_callback_data.frame_id,
-            "quality": data.template_created_callback_data.quality
-          };
+            result["template_created_callback_data"] = {
+              "stream_id": data.template_created_callback_data.stream_id,
+              "frame_id": data.template_created_callback_data.frame_id,
+              "quality": data.template_created_callback_data.quality
+            };
 
-          if (data.template_created_callback_data.stream_id != -1) {
-            result["template_created_callback_data"]["sample"] = data.template_created_callback_data.sample._impl.address;
-            result["template_created_callback_data"]["template"] = data.template_created_callback_data.templ._impl.address;
-          }
+            if (data.template_created_callback_data.stream_id != -1) {
+              result["template_created_callback_data"]["sample"] =
+                  data.template_created_callback_data.sample._impl.address;
+              result["template_created_callback_data"]["template"] =
+                  data.template_created_callback_data.templ._impl.address;
+            }
 
-          result["tracking_lost_callback_data"] = {
-            "stream_id": data.tracking_lost_callback_data.stream_id,
-            "first_frame_id": data.tracking_lost_callback_data.first_frame_id,
-            "last_frame_id": data.tracking_lost_callback_data.last_frame_id,
-            "best_quality": data.tracking_lost_callback_data.best_quality,
-            "best_quality_frame_id": data.tracking_lost_callback_data.best_quality_frame_id,
-            "track_id": data.tracking_lost_callback_data.track_id,
-            "sti_person_id_set": data.tracking_lost_callback_data.sti_person_id_set,
-            "sti_person_id": data.tracking_lost_callback_data.sti_person_id
-          };
+            result["tracking_lost_callback_data"] = {
+              "stream_id": data.tracking_lost_callback_data.stream_id,
+              "first_frame_id": data.tracking_lost_callback_data.first_frame_id,
+              "last_frame_id": data.tracking_lost_callback_data.last_frame_id,
+              "best_quality": data.tracking_lost_callback_data.best_quality,
+              "best_quality_frame_id": data.tracking_lost_callback_data.best_quality_frame_id,
+              "track_id": data.tracking_lost_callback_data.track_id,
+              "sti_person_id_set": data.tracking_lost_callback_data.sti_person_id_set,
+              "sti_person_id": data.tracking_lost_callback_data.sti_person_id
+            };
 
-          if (bestQualitySample != null) {
-            result["tracking_lost_callback_data"]["best_quality_sample"] = bestQualitySample._impl.address;
-          }
+            if (bestQualitySample != null) {
+              result["tracking_lost_callback_data"]["best_quality_sample"] = bestQualitySample._impl.address;
+            }
 
-          if (bestQualityTemplate != null) {
-            result["tracking_lost_callback_data"]["best_quality_template"] = bestQualityTemplate._impl.address;
-          }
+            if (bestQualityTemplate != null) {
+              result["tracking_lost_callback_data"]["best_quality_template"] = bestQualityTemplate._impl.address;
+            }
 
-          List<Map<String, dynamic>> searchResults = [];
+            List<Map<String, dynamic>> searchResults = [];
 
-          for (VWSearchResult searchResult in data.tracking_match_found_callback_data.search_results) {
-            Map<String, dynamic> temp = <String, dynamic>{};
+            for (VWSearchResult searchResult in data.tracking_match_found_callback_data.search_results) {
+              Map<String, dynamic> temp = <String, dynamic>{};
 
-            temp["person_id"] = searchResult.person_id;
-            temp["element_id"] = searchResult.element_id;
-            temp["distance"] = searchResult.match_result.distance;
-            temp["fa_r"] = searchResult.match_result.fa_r;
-            temp["fr_r"] = searchResult.match_result.fr_r;
-            temp["score"] = searchResult.match_result.score;
+              temp["person_id"] = searchResult.person_id;
+              temp["element_id"] = searchResult.element_id;
+              temp["distance"] = searchResult.match_result.distance;
+              temp["fa_r"] = searchResult.match_result.fa_r;
+              temp["fr_r"] = searchResult.match_result.fr_r;
+              temp["score"] = searchResult.match_result.score;
 
-            searchResults.add(temp);
-          }
+              searchResults.add(temp);
+            }
 
-          result["tracking_match_found_callback_data"] = {
-            "stream_id": data.tracking_match_found_callback_data.stream_id,
-            "frame_id": data.tracking_match_found_callback_data.frame_id,
-            "quality": data.tracking_match_found_callback_data.quality,
-            "search_results": searchResults
-          };
+            result["tracking_match_found_callback_data"] = {
+              "stream_id": data.tracking_match_found_callback_data.stream_id,
+              "frame_id": data.tracking_match_found_callback_data.frame_id,
+              "quality": data.tracking_match_found_callback_data.quality,
+              "search_results": searchResults
+            };
 
-          if (matchFoundSample != null) {
-            result["tracking_match_found_callback_data"]["sample"] = matchFoundSample._impl.address;
-          }
+            if (matchFoundSample != null) {
+              result["tracking_match_found_callback_data"]["sample"] = matchFoundSample._impl.address;
+            }
 
-          if (matchFoundTemplate != null) {
-            result["tracking_match_found_callback_data"]["template"] = matchFoundTemplate._impl.address;
-          }
+            if (matchFoundTemplate != null) {
+              result["tracking_match_found_callback_data"]["template"] = matchFoundTemplate._impl.address;
+            }
 
-          result["sti_person_outdated_callback_data"] = {
-            "stream_id": data.sti_person_outdated_callback_data.stream_id,
-            "sti_person_id": data.sti_person_outdated_callback_data.sti_person_id
-          };
+            result["sti_person_outdated_callback_data"] = {
+              "stream_id": data.sti_person_outdated_callback_data.stream_id,
+              "sti_person_id": data.sti_person_outdated_callback_data.sti_person_id
+            };
 
-          sendPort.send(result);
+            sendPort.send(result);
 
-          break;
+            break;
 
-        case _VideoWorkerEvents.CLEAR:
-          videoWorker.dispose();
+          case _VideoWorkerEvents.CLEAR:
+            videoWorker.dispose();
 
-          sendPort.send(true);
+            sendPort.send(true);
 
-          return;
+            return;
+        }
+      } on TDVException catch (exception) {
+        sendPort.send(exception.message);
       }
     }
   }
@@ -444,5 +494,13 @@ class AsyncVideoWorker {
     result.sti_person_id = data["sti_person_id"];
 
     return result;
+  }
+
+  static void _checkException(dynamic isolateResult, {Isolate? isolate}) {
+    if (isolateResult is String) {
+      isolate?.kill(priority: Isolate.immediate);
+
+      throw TDVException(isolateResult);
+    }
   }
 }

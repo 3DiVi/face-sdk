@@ -21,7 +21,11 @@ class AsyncCapturer {
       "overriddenParams": config._overriddenParams,
       "sendPort": receivePort.sendPort
     });
-    SendPort sendPort = await receivePort.first;
+    dynamic isolateResult = await receivePort.first;
+
+    _checkException(isolateResult, isolate: isolate);
+
+    SendPort sendPort = isolateResult;
 
     return AsyncCapturer._create(isolate, sendPort, dllPath);
   }
@@ -33,7 +37,11 @@ class AsyncCapturer {
 
     _sendPort.send({"event": _CapturerEvents.CAPTURE, "sendPort": receivePort.sendPort, "encodedImage": encodedImage});
 
-    List<int> pointers = await receivePort.first;
+    dynamic isolateResult = await receivePort.first;
+
+    _checkException(isolateResult);
+
+    List<int> pointers = isolateResult;
 
     pointers.forEach((address) => result.add(RawSample(dylib, Pointer<Void>.fromAddress(address))));
 
@@ -59,7 +67,11 @@ class AsyncCapturer {
       "crop_info_data_image_height": image.crop_info_data_image_height
     });
 
-    List<int> pointers = await receivePort.first;
+    dynamic isolateResult = await receivePort.first;
+
+    _checkException(isolateResult);
+
+    List<int> pointers = isolateResult;
 
     pointers.forEach((address) => result.add(RawSample(dylib, Pointer<Void>.fromAddress(address))));
 
@@ -78,7 +90,10 @@ class AsyncCapturer {
       "sendPort": receivePort.sendPort,
     });
 
-    _isDisposed = await receivePort.first;
+    dynamic isolateResult = await receivePort.first;
+    _isDisposed = true;
+
+    _checkException(isolateResult, isolate: _isolate);
 
     _isolate.kill(priority: Isolate.immediate);
   }
@@ -92,7 +107,15 @@ class AsyncCapturer {
     overriddenParams.forEach((key, value) => config.overrideParameter(key, value));
 
     ReceivePort receivePort = ReceivePort();
-    Capturer capturer = service.createCapturer(config);
+    Capturer capturer;
+
+    try {
+      capturer = service.createCapturer(config);
+    } on TDVException catch (exception) {
+      (initialization["sendPort"] as SendPort).send(exception.message);
+
+      return;
+    }
 
     (initialization["sendPort"] as SendPort).send(receivePort.sendPort);
 
@@ -109,46 +132,58 @@ class AsyncCapturer {
       final _CapturerEvents event = message["event"];
       final SendPort sendPort = message["sendPort"];
 
-      switch (event) {
-        case _CapturerEvents.CAPTURE:
-          samples = capturer.capture(message["encodedImage"]);
+      try {
+        switch (event) {
+          case _CapturerEvents.CAPTURE:
+            samples = capturer.capture(message["encodedImage"]);
 
-          break;
+            break;
 
-        case _CapturerEvents.CAPTURE_RAW_IMAGE_F:
-          int width = message["width"];
-          int height = message["height"];
-          Format format = message["format"];
-          Pointer<Utf8> data = Pointer<Utf8>.fromAddress(message["data"]);
-          int with_crop = message["with_crop"];
-          int crop_info_offset_x = message["crop_info_offset_x"];
-          int crop_info_offset_y = message["crop_info_offset_y"];
-          int crop_info_data_image_width = message["crop_info_data_image_width"];
-          int crop_info_data_image_height = message["crop_info_data_image_height"];
+          case _CapturerEvents.CAPTURE_RAW_IMAGE_F:
+            int width = message["width"];
+            int height = message["height"];
+            Format format = message["format"];
+            Pointer<Utf8> data = Pointer<Utf8>.fromAddress(message["data"]);
+            int with_crop = message["with_crop"];
+            int crop_info_offset_x = message["crop_info_offset_x"];
+            int crop_info_offset_y = message["crop_info_offset_y"];
+            int crop_info_data_image_width = message["crop_info_data_image_width"];
+            int crop_info_data_image_height = message["crop_info_data_image_height"];
 
-          RawImageF image = RawImageF(width, height, format, data);
+            RawImageF image = RawImageF(width, height, format, data);
 
-          image.with_crop = with_crop;
-          image.crop_info_offset_x = crop_info_offset_x;
-          image.crop_info_offset_y = crop_info_offset_y;
-          image.crop_info_data_image_width = crop_info_data_image_width;
-          image.crop_info_data_image_height = crop_info_data_image_height;
+            image.with_crop = with_crop;
+            image.crop_info_offset_x = crop_info_offset_x;
+            image.crop_info_offset_y = crop_info_offset_y;
+            image.crop_info_data_image_width = crop_info_data_image_width;
+            image.crop_info_data_image_height = crop_info_data_image_height;
 
-          samples = capturer.captureRawImageF(image);
+            samples = capturer.captureRawImageF(image);
 
-          break;
+            break;
 
-        case _CapturerEvents.CLEAR:
-          capturer.dispose();
+          case _CapturerEvents.CLEAR:
+            capturer.dispose();
 
-          sendPort.send(true);
+            sendPort.send(true);
 
-          return;
+            return;
+        }
+
+        samples.forEach((sample) => result.add(sample._impl.address));
+
+        sendPort.send(result);
+      } on TDVException catch (exception) {
+        sendPort.send(exception.message);
       }
+    }
+  }
 
-      samples.forEach((sample) => result.add(sample._impl.address));
+  static void _checkException(dynamic isolateResult, {Isolate? isolate}) {
+    if (isolateResult is String) {
+      isolate?.kill(priority: Isolate.immediate);
 
-      sendPort.send(result);
+      throw TDVException(isolateResult);
     }
   }
 }
