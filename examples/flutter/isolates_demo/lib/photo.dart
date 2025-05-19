@@ -133,7 +133,7 @@ class _DetectPictureState extends State<DetectPicture> {
 
                 await widget.templateExtractor.process(data);
 
-                widget.callback(widget._service.createContext(object["template"]), _cropImg);
+                widget.callback(widget._service.createContext(object["face_template"]), _cropImg);
 
                 hasTemplate = true;
 

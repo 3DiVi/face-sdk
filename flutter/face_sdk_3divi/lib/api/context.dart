@@ -377,15 +377,10 @@ class Context extends _ComplexObject {
 
     final exception = _getException();
 
-    Pointer<Utf8> strPointer = malloc.allocate(sizeOf<Pointer<Utf8>>() * strSize);
-    getStrFun(this._impl, strPointer, exception);
+    Pointer<Utf8> result = getStrFun(this._impl, exception);
     tdvCheckException(exception, _dll_handle);
 
-    String strValue = strPointer.toDartString(length: strSize);
-
-    malloc.free(strPointer);
-
-    return strValue;
+    return result.toDartString(length: strSize);
   }
 
   int _getLong() {

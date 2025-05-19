@@ -4314,12 +4314,10 @@ namespace capi {
 		TDVContext_getStr, \
 		( \
 			HContext* ctx, \
-			char* buff, \
 			ContextEH** errorHandler \
 		), \
 		( \
 			ctx, \
-			buff, \
 			errorHandler \
 		), \
 		return ) \

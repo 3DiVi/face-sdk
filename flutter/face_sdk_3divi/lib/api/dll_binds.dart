@@ -492,12 +492,10 @@ typedef _Context_getStrSize_dart = int Function(
 
 typedef _Context_getStr_c = Pointer<Utf8> Function(
     Pointer<Void>,
-    Pointer<Utf8>,
     Pointer<Pointer<Void>>);
 
 typedef _Context_getStr_dart = Pointer<Utf8> Function(
     Pointer<Void>,
-    Pointer<Utf8>,
     Pointer<Pointer<Void>>);
 
 typedef _Context_getLong_c = Int64 Function(

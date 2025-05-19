@@ -163,8 +163,7 @@ class Context(ComplexObject):
     def get_string(self):
         exception = make_exception()
 
-        buff = c_char_p()
-        str1 = self._dll_handle.getStr(self._impl, buff, exception)
+        str1 = self._dll_handle.getStr(self._impl, exception)
 
         check_processing_block_exception(exception, self._dll_handle)
         return str(str1, "ascii")

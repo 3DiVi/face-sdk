@@ -498,9 +498,7 @@ public:
 	std::string getString() const {
 		unsigned long str_size = dll_handle->TDVContext_getStrSize(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
-		std::string ret;
-		ret.resize(str_size);
-		dll_handle->TDVContext_getStr(handle_, &ret[0], &eh_);
+		std::string ret = dll_handle->TDVContext_getStr(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);
 		return ret; // copy elision (NRVO)
 	}

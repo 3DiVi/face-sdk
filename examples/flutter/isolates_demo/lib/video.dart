@@ -238,7 +238,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
 
       await widget.templateExtractor.process(data);
 
-      Context template = widget._service.createContext(data["objects"][0]["template"]);
+      Context template = widget._service.createContext(data["objects"][0]["face_template"]);
       Rectangle bbox = sample.getRectangle();
       final image_lib.Image image = image_lib.Image.fromBytes(
           width: width, height: height, bytes: bytes!.buffer, numChannels: 3, order: image_lib.ChannelOrder.rgb);
