@@ -873,18 +873,6 @@ class FacerecService(ComplexObject):
 
         return DynamicTemplateIndex(self._dll_handle, c_void_p(implementation))
 
-    def load_context_template(self, binary_stream: BytesIO) -> ContextTemplate:
-        exception = make_exception()
-
-        result_impl = self._dll_handle.ContextTemplate_loadTemplate(
-            py_object(binary_stream),
-            read_func,
-            exception)
-
-        check_exception(exception, self._dll_handle)
-
-        return ContextTemplate(self._dll_handle, c_void_p(result_impl))
-
     def convert_template(self, template_context: Context) -> ContextTemplate:
         exception = make_exception()
 
@@ -893,3 +881,16 @@ class FacerecService(ComplexObject):
         check_exception(exception, self._dll_handle)
 
         return ContextTemplate(self._dll_handle, c_void_p(result_impl))
+
+    @staticmethod
+    def load_context_template(binary_stream: BytesIO) -> ContextTemplate:
+        exception = make_exception()
+
+        result_impl = FacerecService._dll_handle.ContextTemplate_loadTemplate(
+            py_object(binary_stream),
+            read_func,
+            exception)
+
+        check_exception(exception, FacerecService._dll_handle)
+
+        return ContextTemplate(FacerecService._dll_handle, c_void_p(result_impl))

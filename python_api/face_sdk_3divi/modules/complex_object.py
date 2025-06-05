@@ -5,8 +5,10 @@ from .error import Error
 
 
 class ComplexObject:
+    _dll_handle: DllHandle
+
     def __init__(self, dll_handle: DllHandle, impl: c_void_p):
-        self._dll_handle = dll_handle
+        ComplexObject._dll_handle = dll_handle
         self._obj_impl = impl.value
 
     def __get_impl(self):

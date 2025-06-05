@@ -321,6 +321,14 @@ typedef _Context_saveToJsonFile_dart = void Function(
     Pointer<Utf8>,
     Pointer<Pointer<Void>>);
 
+typedef _Context_serializeToJson_c = Pointer<Utf8> Function(
+    Pointer<Void>, // context
+    Pointer<Pointer<Void>>);
+
+typedef _Context_serializeToJson_dart = Pointer<Utf8> Function(
+    Pointer<Void>, // context
+    Pointer<Pointer<Void>>);
+
 typedef _Context_getOrInsertByKey_c = Pointer<Void> Function(
     Pointer<Void>, // context
     Pointer<Utf8>, //
@@ -1059,6 +1067,14 @@ typedef _DynamicTemplateIndex_concat_c = Void Function(
 
 typedef _DynamicTemplateIndex_concat_dart = void Function(
     Pointer<Void>,
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_clear_c = Void Function(
+    Pointer<Void>,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_clear_dart = void Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 

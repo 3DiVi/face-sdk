@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.5)
 
 project(face_sdk_cpp_demos)
 
@@ -6,7 +6,7 @@ set(TARGET_OS_LINUX ${UNIX} CACHE BOOL "target is linux")
 
 find_package(OpenCV)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(pbio_cpp)
 add_subdirectory(test_identify)

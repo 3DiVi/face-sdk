@@ -110,7 +110,7 @@ void drawFaceKeypoint(const pbio::Context& data, cv::Mat& image)
 	{
 		for(const auto& point : obj.at("keypoints").at("points"))
 		{
-			cv::circle(image, cv::Point2f(point["proj"][0].getDouble() * image.size[1], point["proj"][1].getDouble() * image.size[0]), 2, {0, 255, 0}, 5);
+			cv::circle(image, cv::Point2f(point["proj"][0].getDouble() * width, point["proj"][1].getDouble() * heigth), 2, {0, 255, 0}, 5);
 		}
 	}
 }

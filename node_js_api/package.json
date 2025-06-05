@@ -1,0 +1,7 @@
+{
+  "name": "face_sdk_3divi",
+  "version": "1.0.0",
+  "description": "Face SDK addon. Implements Face Recognition, Face Detection and Face Keypoints Detection.",
+  "main": "face_sdk_3divi.js",
+  "author": "3DiVi"
+}

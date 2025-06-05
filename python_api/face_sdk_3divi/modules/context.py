@@ -29,6 +29,7 @@ class ContextFormat(Enum):
     FORMAT_YUV_NV21 = 3
     FORMAT_YUV_NV12 = 4
 
+
 ##
 #  \~English
 #     \brief Interface object for the container is Context.
@@ -59,7 +60,8 @@ class Context(ComplexObject):
         return cls(handle, the_impl)
 
     @classmethod
-    def from_frame(cls, handle: DllHandle, data: bytes, width: int, height: int, format: ContextFormat, base_angle: int):
+    def from_frame(cls, handle: DllHandle, data: bytes, width: int, height: int, format: ContextFormat,
+                   base_angle: int):
         exception = make_exception()
 
         the_impl = c_void_p(handle.create_from_frame(data, width, height, format.value, base_angle, exception))
@@ -166,6 +168,7 @@ class Context(ComplexObject):
         str1 = self._dll_handle.getStr(self._impl, exception)
 
         check_processing_block_exception(exception, self._dll_handle)
+
         return str(str1, "ascii")
 
     def set_double(self, value: float):
@@ -446,7 +449,6 @@ class Context(ComplexObject):
 
         return self.get_value()
 
-
     @dispatch(dict)
     def parser(self, ctx: dict):
         for key in ctx.keys():
@@ -701,3 +703,21 @@ class Context(ComplexObject):
         self._dll_handle.save_to_json_file(self._impl, c_char_p(bytes(path, "ascii")), exception)
 
         check_processing_block_exception(exception, self._dll_handle)
+
+    ##
+    # \~English
+    #    \brief saves the contents of the container to a json string
+    # \~Russian
+    #    \brief сохраняет содержимое контейнера в json строку
+    def serialize_to_json(self) -> str:
+        exception = make_exception()
+
+        string = c_void_p(self._dll_handle.serialize_to_json(self._impl, exception))
+
+        check_processing_block_exception(exception, self._dll_handle)
+
+        result = str(c_char_p(string.value).value, "ascii")
+
+        self._dll_handle.delete_string(string, exception)
+
+        return result

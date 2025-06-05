@@ -93,7 +93,7 @@ def is_image(file_path):
 
 def create_template_index(images_path: str, modification: str, pipeline: List[ProcessingBlock]):
 
-    config = service.create_context({"model_version": f"{modification}_1"})
+    config = service.create_context({"modification": modification, "version": 1})
     template_index = service.create_dynamic_template_index(config)
 
     for root, dirs, files in os.walk(images_path):
@@ -184,7 +184,8 @@ if __name__ == "__main__":
 
     config = service.create_context({
         "capacity": args.capacity,
-        "model_version": f"{args.modification}_1",
+        "modification": args.modification,
+        "version": 1,
     })
     template_index = service.create_dynamic_template_index(config)
 

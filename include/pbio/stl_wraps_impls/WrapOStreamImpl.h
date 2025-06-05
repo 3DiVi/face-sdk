@@ -18,7 +18,7 @@ class WrapOStreamImpl : public WrapOStream
 public:
 	WrapOStreamImpl(std::ostream &s):_s(s){}
 
-	virtual void write(const char* buf, uint64_t size)
+	virtual void write(const char* buf, uint64_t size) override
 	{
 		_s.write(buf, size);
 	}

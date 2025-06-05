@@ -17,7 +17,7 @@ public:
 
 	virtual ~OpenniSource();
 
-	virtual void get(ImageAndDepth& data);
+	virtual void get(ImageAndDepth& data) override;
 
 	OpenniSource();
 

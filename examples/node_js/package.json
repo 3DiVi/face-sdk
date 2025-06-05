@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "face_sdk_3divi": "file:../../node_js_api",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "yargs": "^17.7.2"
+  }
+}

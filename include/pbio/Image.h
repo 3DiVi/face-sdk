@@ -21,10 +21,10 @@ public:
 
 	virtual ~Image();
 
-	virtual const unsigned char* data() const throw();
-	virtual int32_t width() const throw();
-	virtual int32_t height() const throw();
-	virtual int32_t format() const throw();
+	virtual const unsigned char* data() const throw() override;
+	virtual int32_t width() const throw() override;
+	virtual int32_t height() const throw() override;
+	virtual int32_t format() const throw() override;
 
 	// not from IRawImage
 	unsigned char* data() throw();

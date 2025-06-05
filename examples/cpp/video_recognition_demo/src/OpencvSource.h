@@ -25,7 +25,7 @@ public:
 
 	virtual ~OpencvSource() {}
 
-	virtual void get(ImageAndDepth& data);
+	virtual void get(ImageAndDepth& data) override;
 
 	OpencvSource(const std::string cam_or_url, bool no_repeat_on_empty);
 

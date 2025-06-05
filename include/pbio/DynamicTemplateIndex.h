@@ -99,6 +99,8 @@ namespace pbio
 
         void concat(DynamicTemplateIndex::Ptr otherIndex);
 
+        void clear();
+
         /**
             \~English
             \brief
@@ -329,6 +331,15 @@ namespace pbio
         void* exception = nullptr;
 
         _dll_handle->DynamicTemplateIndex_concatenate(_impl, otherIndex->_impl, &exception);
+
+        checkException(exception, *_dll_handle);
+    }
+
+    inline void DynamicTemplateIndex::clear()
+    {
+        void* exception = nullptr;
+
+        _dll_handle->DynamicTemplateIndex_clear(_impl, &exception);
 
         checkException(exception, *_dll_handle);
     }

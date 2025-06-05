@@ -5,8 +5,7 @@ enum ContextFormat { FORMAT_BGR, FORMAT_RGB, FORMAT_BGRA8888, FORMAT_YUV420, FOR
 class Context extends _ComplexObject {
   Context(DynamicLibrary dll_handle, Pointer<Void> impl) : super(dll_handle, impl) {
     if (_impl.address == Pointer.fromAddress(0).address) {
-      var constructor =
-          dll_handle.lookupFunction<_Context_Construct_c, _Context_Constructor_dart>(_context_namespace + 'create');
+      var constructor = dll_handle.lookupFunction<_Context_Construct_c, _Context_Constructor_dart>(_context_namespace + 'create');
       var exception = _getException();
 
       final newImpl = constructor(exception);
@@ -17,9 +16,7 @@ class Context extends _ComplexObject {
   }
 
   Context.fromImage(DynamicLibrary dll_handle, Uint8List data) : super(dll_handle, nullptr) {
-    var constructor =
-        dll_handle.lookupFunction<_Context_CreateFromEncodedImage_c, _Context_CreateFromEncodedImage_dart>(
-            _context_namespace + "createFromEncodedImage");
+    var constructor = dll_handle.lookupFunction<_Context_CreateFromEncodedImage_c, _Context_CreateFromEncodedImage_dart>(_context_namespace + "createFromEncodedImage");
 
     var exception = _getException();
     Pointer<Uint8> dataPointer = malloc.allocate<Uint8>(data.length);
@@ -34,11 +31,8 @@ class Context extends _ComplexObject {
     malloc.free(dataPointer);
   }
 
-  Context.fromFrame(
-      DynamicLibrary dll_handle, Uint8List data, int width, int height, ContextFormat format, int baseAngle)
-      : super(dll_handle, nullptr) {
-    var constructor = dll_handle.lookupFunction<_Context_CreateFromFrame_c, _Context_CreateFromFrame_dart>(
-        _context_namespace + "createFromFrame");
+  Context.fromFrame(DynamicLibrary dll_handle, Uint8List data, int width, int height, ContextFormat format, int baseAngle) : super(dll_handle, nullptr) {
+    var constructor = dll_handle.lookupFunction<_Context_CreateFromFrame_c, _Context_CreateFromFrame_dart>(_context_namespace + "createFromFrame");
 
     var exception = _getException();
     Pointer<Uint8> dataPointer = malloc.allocate<Uint8>(data.length);
@@ -53,10 +47,8 @@ class Context extends _ComplexObject {
     malloc.free(dataPointer);
   }
 
-  Context.fromJsonFile(DynamicLibrary dll_handle, String path)
-      : super(dll_handle, nullptr) {
-    var constructor = dll_handle.lookupFunction<_Context_CreateFromJsonFile_c, _Context_CreateFromJsonFile_dart>(
-        _context_namespace + "createFromJsonFile");
+  Context.fromJsonFile(DynamicLibrary dll_handle, String path) : super(dll_handle, nullptr) {
+    var constructor = dll_handle.lookupFunction<_Context_CreateFromJsonFile_c, _Context_CreateFromJsonFile_dart>(_context_namespace + "createFromJsonFile");
 
     var exception = _getException();
 
@@ -71,8 +63,7 @@ class Context extends _ComplexObject {
     if (_isDisposed) return;
 
     var exception = _getException();
-    var destructor =
-        _dll_handle.lookupFunction<_Context_Destruct_c, _Context_Destructor_dart>(_context_namespace + 'destroy');
+    var destructor = _dll_handle.lookupFunction<_Context_Destruct_c, _Context_Destructor_dart>(_context_namespace + 'destroy');
 
     destructor(this._impl, exception);
 
@@ -214,7 +205,22 @@ class Context extends _ComplexObject {
     constructor(_impl, path.toNativeUtf8(), exception);
 
     tdvCheckException(exception, _dll_handle);
+  }
 
+  String serializeToJson() {
+    var exception = _getException();
+
+    final serializeConstructor = _dll_handle.lookupFunction<_Context_serializeToJson_c, _Context_serializeToJson_dart>(_context_namespace + 'serializeToJson');
+
+    Pointer<Utf8> data = serializeConstructor(_impl, exception);
+
+    tdvCheckException(exception, _dll_handle);
+
+    String result = data.toDartString();
+
+    malloc.free(data);
+
+    return result;
   }
 
   void pushBack(data) {
@@ -244,8 +250,7 @@ class Context extends _ComplexObject {
   }
 
   Context _getOrInsertByKey(String key) {
-    final constructor = _dll_handle.lookupFunction<_Context_getOrInsertByKey_c, _Context_getOrInsertByKey_dart>(
-        _context_namespace + 'getOrInsertByKey');
+    final constructor = _dll_handle.lookupFunction<_Context_getOrInsertByKey_c, _Context_getOrInsertByKey_dart>(_context_namespace + 'getOrInsertByKey');
     final exception = _getException();
     final pointer = constructor(this._impl, key.toNativeUtf8(), exception);
 
@@ -255,8 +260,7 @@ class Context extends _ComplexObject {
   }
 
   Context _getByIndex(int index) {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_getByIndex_c, _Context_getByIndex_dart>(_context_namespace + 'getByIndex');
+    final constructor = _dll_handle.lookupFunction<_Context_getByIndex_c, _Context_getByIndex_dart>(_context_namespace + 'getByIndex');
     final exception = _getException();
     final pointer = constructor(this._impl, index, exception);
 
@@ -266,8 +270,7 @@ class Context extends _ComplexObject {
   }
 
   Context _getByKey(String key) {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_getByKey_c, _Context_getByKey_dart>(_context_namespace + 'getByKey');
+    final constructor = _dll_handle.lookupFunction<_Context_getByKey_c, _Context_getByKey_dart>(_context_namespace + 'getByKey');
     final exception = _getException();
     final pointer = constructor(this._impl, key.toNativeUtf8(), exception);
 
@@ -277,8 +280,7 @@ class Context extends _ComplexObject {
   }
 
   void _pushBack(Context data) {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_pushBack_c, _Context_pushBack_dart>(_context_namespace + 'pushBack');
+    final constructor = _dll_handle.lookupFunction<_Context_pushBack_c, _Context_pushBack_dart>(_context_namespace + 'pushBack');
     final exception = _getException();
 
     constructor(this._impl, data._impl, true, exception);
@@ -287,8 +289,7 @@ class Context extends _ComplexObject {
   }
 
   void _setStr(String str) {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_putStr_c, _Context_putStr_dart>(_context_namespace + 'putStr');
+    final constructor = _dll_handle.lookupFunction<_Context_putStr_c, _Context_putStr_dart>(_context_namespace + 'putStr');
     final exception = _getException();
     constructor(this._impl, str.toNativeUtf8(), exception);
 
@@ -296,8 +297,7 @@ class Context extends _ComplexObject {
   }
 
   void _setLong(int val) {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_putLong_c, _Context_putLong_dart>(_context_namespace + 'putLong');
+    final constructor = _dll_handle.lookupFunction<_Context_putLong_c, _Context_putLong_dart>(_context_namespace + 'putLong');
     final exception = _getException();
     constructor(this._impl, val, exception);
 
@@ -305,8 +305,7 @@ class Context extends _ComplexObject {
   }
 
   void _setDouble(double val) {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_putDouble_c, _Context_putDouble_dart>(_context_namespace + 'putDouble');
+    final constructor = _dll_handle.lookupFunction<_Context_putDouble_c, _Context_putDouble_dart>(_context_namespace + 'putDouble');
     final exception = _getException();
     constructor(this._impl, val, exception);
 
@@ -314,8 +313,7 @@ class Context extends _ComplexObject {
   }
 
   void _setBool(bool val) {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_putBool_c, _Context_putBool_dart>(_context_namespace + 'putBool');
+    final constructor = _dll_handle.lookupFunction<_Context_putBool_c, _Context_putBool_dart>(_context_namespace + 'putBool');
     final exception = _getException();
     constructor(this._impl, val, exception);
 
@@ -339,8 +337,7 @@ class Context extends _ComplexObject {
   }
 
   void _setDataPtr(Uint8List data) {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_putDataPtr_c, _Context_putDataPtr_dart>(_context_namespace + 'putDataPtr');
+    final constructor = _dll_handle.lookupFunction<_Context_putDataPtr_c, _Context_putDataPtr_dart>(_context_namespace + 'putDataPtr');
     final exception = _getException();
 
     final Pointer<Uint8> frameData = malloc.allocate<Uint8>(data.length);
@@ -355,8 +352,7 @@ class Context extends _ComplexObject {
   }
 
   bool _getBool() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_getBool_c, _Context_getBool_dart>(_context_namespace + 'getBool');
+    final constructor = _dll_handle.lookupFunction<_Context_getBool_c, _Context_getBool_dart>(_context_namespace + 'getBool');
     final exception = _getException();
     bool res = constructor(this._impl, exception);
 
@@ -366,15 +362,12 @@ class Context extends _ComplexObject {
   }
 
   String _getStr() {
-    final strLengthFunction =
-        _dll_handle.lookupFunction<_Context_getStrSize_c, _Context_getStrSize_dart>(_context_namespace + 'getStrSize');
+    final strLengthFunction = _dll_handle.lookupFunction<_Context_getStrSize_c, _Context_getStrSize_dart>(_context_namespace + 'getStrSize');
     final exceptionStrSize = _getException();
     int strSize = strLengthFunction(this._impl, exceptionStrSize);
     tdvCheckException(exceptionStrSize, _dll_handle);
 
-    final getStrFun =
-        _dll_handle.lookupFunction<_Context_getStr_c, _Context_getStr_dart>(_context_namespace + 'getStr');
-
+    final getStrFun = _dll_handle.lookupFunction<_Context_getStr_c, _Context_getStr_dart>(_context_namespace + 'getStr');
     final exception = _getException();
 
     Pointer<Utf8> result = getStrFun(this._impl, exception);
@@ -384,8 +377,7 @@ class Context extends _ComplexObject {
   }
 
   int _getLong() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_getLong_c, _Context_getLong_dart>(_context_namespace + 'getLong');
+    final constructor = _dll_handle.lookupFunction<_Context_getLong_c, _Context_getLong_dart>(_context_namespace + 'getLong');
     final exception = _getException();
     var res = constructor(this._impl, exception);
 
@@ -395,8 +387,7 @@ class Context extends _ComplexObject {
   }
 
   double _getDouble() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_getDouble_c, _Context_getDouble_dart>(_context_namespace + 'getDouble');
+    final constructor = _dll_handle.lookupFunction<_Context_getDouble_c, _Context_getDouble_dart>(_context_namespace + 'getDouble');
     final exception = _getException();
     var res = constructor(this._impl, exception);
 
@@ -406,8 +397,7 @@ class Context extends _ComplexObject {
   }
 
   Pointer<Uint8> _getDataPtr() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_getDataPtr_c, _Context_getDataPtr_dart>(_context_namespace + 'getDataPtr');
+    final constructor = _dll_handle.lookupFunction<_Context_getDataPtr_c, _Context_getDataPtr_dart>(_context_namespace + 'getDataPtr');
     final exception = _getException();
     var res = constructor(this._impl, exception);
 
@@ -417,8 +407,7 @@ class Context extends _ComplexObject {
   }
 
   ContextTemplate _getContextTemplate() {
-    final constructor =
-    _dll_handle.lookupFunction<_Context_getContextTemplate_c, _Context_getContextTemplate_dart>(_context_namespace + 'getContextTemplate');
+    final constructor = _dll_handle.lookupFunction<_Context_getContextTemplate_c, _Context_getContextTemplate_dart>(_context_namespace + 'getContextTemplate');
     final exception = _getException();
     var res = constructor(this._impl, exception);
 
@@ -428,8 +417,7 @@ class Context extends _ComplexObject {
   }
 
   DynamicTemplateIndex _getDynamicTemplateIndex() {
-    final constructor =
-    _dll_handle.lookupFunction<_Context_getDynamicTemplateIndex_c, _Context_getDynamicTemplateIndex_dart>(_context_namespace + 'getDynamicTemplateIndex');
+    final constructor = _dll_handle.lookupFunction<_Context_getDynamicTemplateIndex_c, _Context_getDynamicTemplateIndex_dart>(_context_namespace + 'getDynamicTemplateIndex');
     final exception = _getException();
     var res = constructor(this._impl, exception);
 
@@ -443,8 +431,7 @@ class Context extends _ComplexObject {
   }
 
   int len() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_getLength_c, _Context_getLength_dart>(_context_namespace + 'getLength');
+    final constructor = _dll_handle.lookupFunction<_Context_getLength_c, _Context_getLength_dart>(_context_namespace + 'getLength');
     final exception = _getException();
     var res = constructor(this._impl, exception);
 
@@ -453,8 +440,7 @@ class Context extends _ComplexObject {
   }
 
   List<String> getKeys() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_getKeys_c, _Context_getKeys_dart>(_context_namespace + 'getKeys');
+    final constructor = _dll_handle.lookupFunction<_Context_getKeys_c, _Context_getKeys_dart>(_context_namespace + 'getKeys');
     final exception = _getException();
 
     final length = this.len();
@@ -473,8 +459,7 @@ class Context extends _ComplexObject {
   }
 
   bool is_none() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_isNone_c, _Context_isNone_dart>(_context_namespace + 'isNone');
+    final constructor = _dll_handle.lookupFunction<_Context_isNone_c, _Context_isNone_dart>(_context_namespace + 'isNone');
     final exception = _getException();
     bool res = constructor(this._impl, exception);
 
@@ -484,8 +469,7 @@ class Context extends _ComplexObject {
   }
 
   bool is_array() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_isArray_c, _Context_isArray_dart>(_context_namespace + 'isArray');
+    final constructor = _dll_handle.lookupFunction<_Context_isArray_c, _Context_isArray_dart>(_context_namespace + 'isArray');
     final exception = _getException();
     bool res = constructor(this._impl, exception);
 
@@ -495,8 +479,7 @@ class Context extends _ComplexObject {
   }
 
   bool is_object() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_isObject_c, _Context_isObject_dart>(_context_namespace + 'isObject');
+    final constructor = _dll_handle.lookupFunction<_Context_isObject_c, _Context_isObject_dart>(_context_namespace + 'isObject');
     final exception = _getException();
 
     bool res = constructor(this._impl, exception);
@@ -507,8 +490,7 @@ class Context extends _ComplexObject {
   }
 
   bool is_bool() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_isBool_c, _Context_isBool_dart>(_context_namespace + 'isBool');
+    final constructor = _dll_handle.lookupFunction<_Context_isBool_c, _Context_isBool_dart>(_context_namespace + 'isBool');
     final exception = _getException();
     bool res = constructor(this._impl, exception);
 
@@ -518,8 +500,7 @@ class Context extends _ComplexObject {
   }
 
   bool is_long() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_isLong_c, _Context_isLong_dart>(_context_namespace + 'isLong');
+    final constructor = _dll_handle.lookupFunction<_Context_isLong_c, _Context_isLong_dart>(_context_namespace + 'isLong');
     final exception = _getException();
     bool res = constructor(this._impl, exception);
 
@@ -529,8 +510,7 @@ class Context extends _ComplexObject {
   }
 
   bool is_double() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_isDouble_c, _Context_isDouble_dart>(_context_namespace + 'isDouble');
+    final constructor = _dll_handle.lookupFunction<_Context_isDouble_c, _Context_isDouble_dart>(_context_namespace + 'isDouble');
     final exception = _getException();
     bool res = constructor(this._impl, exception);
 
@@ -540,8 +520,7 @@ class Context extends _ComplexObject {
   }
 
   bool is_string() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_isString_c, _Context_isString_dart>(_context_namespace + 'isString');
+    final constructor = _dll_handle.lookupFunction<_Context_isString_c, _Context_isString_dart>(_context_namespace + 'isString');
     final exception = _getException();
     bool res = constructor(this._impl, exception);
 
@@ -551,8 +530,7 @@ class Context extends _ComplexObject {
   }
 
   bool is_data_ptr() {
-    final constructor =
-        _dll_handle.lookupFunction<_Context_isDataPtr_c, _Context_isDataPtr_dart>(_context_namespace + 'isDataPtr');
+    final constructor = _dll_handle.lookupFunction<_Context_isDataPtr_c, _Context_isDataPtr_dart>(_context_namespace + 'isDataPtr');
     final exception = _getException();
     bool res = constructor(this._impl, exception);
 
@@ -562,8 +540,7 @@ class Context extends _ComplexObject {
   }
 
   bool is_context_template() {
-    final constructor =
-    _dll_handle.lookupFunction<_Context_isContextTemplate_c, _Context_isContextTemplate_dart>(_context_namespace + 'isContextTemplate');
+    final constructor = _dll_handle.lookupFunction<_Context_isContextTemplate_c, _Context_isContextTemplate_dart>(_context_namespace + 'isContextTemplate');
     final exception = _getException();
     bool res = constructor(this._impl, exception);
 
@@ -573,8 +550,7 @@ class Context extends _ComplexObject {
   }
 
   bool is_dynamic_template_index() {
-    final constructor =
-    _dll_handle.lookupFunction<_Context_isDynamicTemplateIndex_c, _Context_isDynamicTemplateIndex_dart>(_context_namespace + 'isDynamicTemplateIndex');
+    final constructor = _dll_handle.lookupFunction<_Context_isDynamicTemplateIndex_c, _Context_isDynamicTemplateIndex_dart>(_context_namespace + 'isDynamicTemplateIndex');
     final exception = _getException();
     bool res = constructor(this._impl, exception);
 

@@ -28,7 +28,7 @@ public:
 
 	virtual ~StreamVideoCapture();
 
-	virtual StreamVideoCapture& operator >> (CV_OUT cv::Mat& image);
+	virtual StreamVideoCapture& operator >> (CV_OUT cv::Mat& image) override;
 
 private:
 

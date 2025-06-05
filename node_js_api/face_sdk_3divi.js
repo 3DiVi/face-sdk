@@ -1,0 +1,1 @@
+module.exports = require('./prebuilds/' + process.platform + '-' + process.arch + '/face_sdk_3divi.node');

@@ -27,9 +27,9 @@ public:
 		// nothing else
 	}
 
-	virtual void read(char* buf, uint64_t size)
+	virtual void read(char* buf, uint64_t size) override
 	{
-		const uint64_t copy_size = std::min<uint64_t>(size, _size - _pos);
+		const uint64_t copy_size = (std::min<uint64_t>)(size, _size - _pos);
 
 		if(copy_size > 0)
 		{

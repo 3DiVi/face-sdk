@@ -11,10 +11,6 @@
 
 #ifndef WITHOUT_PROCESSING_BLOCK
 
-#if defined(_WIN32)
-#define NOMINMAX
-#endif
-
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -196,7 +192,12 @@ public:
 	{
 		if(!weak_) {
 			dll_handle->TDVContext_destroy(handle_, &eh_);
+
+#if __cplusplus >= 201703L
+			if (eh_ && std::uncaught_exceptions() > 0)
+#else
 			if (eh_ && std::uncaught_exception())
+#endif
 				std::cerr << Error(dll_handle->TDVException_getErrorCode(eh_), dll_handle->TDVException_getMessage(eh_)).what();
 			else
 				tdvCheckException(dll_handle, eh_);
@@ -835,6 +836,21 @@ public:
 		tdvCheckException(dll_handle,eh_);
 	}
 
+	std::string serializeToJson() const
+	{
+		const char* data = dll_handle->TDVContext_serializeToJson(handle_, &eh_);
+
+		tdvCheckException(dll_handle, eh_);
+
+		std::string result(data);
+
+		dll_handle->TDVContext_deleteString(data, &eh_);
+
+		tdvCheckException(dll_handle, eh_);
+
+		return result;
+	}
+
 protected:
 
 	void setValue(const char* str) {
@@ -896,7 +912,7 @@ Context::ContextArrayIterator<isConst>::ContextArrayIterator(const Context& ctx,
 {
 	length_ = base_.dll_handle->TDVContext_getLength(base_.handle_, &(base_.eh_));
 	tdvCheckException(base_.dll_handle, base_.eh_);
-	index_ = (index > -1) ? std::min<size_t>(static_cast<size_t>(index), length_) : length_;
+	index_ = (index > -1) ? (std::min<size_t>)(static_cast<size_t>(index), length_) : length_;
 	if(index_ < length_) {
 		if(isObj_)
 		{
@@ -946,7 +962,7 @@ template<bool isConst>
 Context::ContextArrayIterator<isConst>& Context::ContextArrayIterator<isConst>::operator++() {
 	if(curr_)
 		delete curr_;
-	index_ = std::min<size_t>(index_+1, length_);
+	index_ = (std::min<size_t>)(index_+1, length_);
 	if(isObj_)
 		curr_ = (index_ < length_) ? new Context(base_[keys_->operator[](index_)]) : nullptr;
 	else
@@ -957,7 +973,7 @@ Context::ContextArrayIterator<isConst>& Context::ContextArrayIterator<isConst>::
 template<bool isConst>
 Context::ContextArrayIterator<isConst> Context::ContextArrayIterator<isConst>::operator++(int) {
 	ContextArrayIterator tmp = *this;
-	index_ = std::min<size_t>(index_+1, length_);
+	index_ = (std::min<size_t>)(index_+1, length_);
 	if(isObj_)
 		curr_ = (index_ < length_) ? new Context(base_[keys_->operator[](index_)]) : nullptr;
 	else

@@ -18,7 +18,7 @@ class WrapIStreamImpl : public WrapIStream
 public:
 	WrapIStreamImpl(std::istream &s):_s(s){}
 
-	virtual void read(char* buf, uint64_t size)
+	virtual void read(char* buf, uint64_t size) override
 	{
 		_s.read(buf, size);
 	}

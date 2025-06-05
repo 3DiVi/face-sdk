@@ -12,8 +12,11 @@ Pointer<Pointer<Void>> _getException(){
 }
 
 class TDVException implements Exception {
-  String message;
+  final String message;
   TDVException(this.message);
+
+  @override
+  String toString() => 'TDVException: $message';
 }
 
 void checkException(Pointer<Pointer<Void>> exception, DynamicLibrary dll_handle){

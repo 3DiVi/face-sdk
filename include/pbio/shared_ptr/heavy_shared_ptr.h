@@ -211,7 +211,7 @@ struct PtrOwnerImpl : PtrOwner
     PtrOwnerImpl(Y* p, D d) : owned(p), deleter(d)
     {}
 
-    void deleteSelf()
+    virtual void deleteSelf() override
     {
         deleter(owned);
         delete this;

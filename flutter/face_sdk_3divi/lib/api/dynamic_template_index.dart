@@ -11,8 +11,7 @@ class DynamicTemplateIndex {
   DynamicTemplateIndex(DynamicLibrary dll_handle, Pointer<Void> impl, {bool weak = false})
       : _dll_handle = dll_handle,
         _impl = impl,
-        _destructor = dll_handle
-            .lookupFunction<_DynamicTemplateIndexDestructor_c, _DynamicTemplateIndexDestructor_dart>(_c_namespace + "DynamicTemplateIndex_destructor"),
+        _destructor = dll_handle.lookupFunction<_DynamicTemplateIndexDestructor_c, _DynamicTemplateIndexDestructor_dart>(_c_namespace + "DynamicTemplateIndex_destructor"),
         _weak = weak;
 
   String getMethodName() {
@@ -23,8 +22,8 @@ class DynamicTemplateIndex {
     Pointer<Int32> byteCount = Pointer.fromAddress(_emptyPointerList[0].address);
     byteCount.value = 0;
 
-    final templateSave = _dll_handle.lookupFunction<_DynamicTemplateIndex_get_method_name_c, _DynamicTemplateIndex_get_method_name_dart>(
-        _c_namespace + "DynamicTemplateIndex_getMethodName");
+    final templateSave =
+        _dll_handle.lookupFunction<_DynamicTemplateIndex_get_method_name_c, _DynamicTemplateIndex_get_method_name_dart>(_c_namespace + "DynamicTemplateIndex_getMethodName");
 
     var exception = _getException();
     templateSave(_impl, _emptyPointerList.cast(), Pointer.fromFunction(writeFunc), exception);
@@ -44,8 +43,7 @@ class DynamicTemplateIndex {
   int size() {
     var exception = _getException();
 
-    int result = _dll_handle.lookupFunction<_DynamicTemplateIndex_size_c, _DynamicTemplateIndex_size_dart>(_c_namespace + "DynamicTemplateIndex_size")(
-        _impl, exception);
+    int result = _dll_handle.lookupFunction<_DynamicTemplateIndex_size_c, _DynamicTemplateIndex_size_dart>(_c_namespace + "DynamicTemplateIndex_size")(_impl, exception);
 
     checkException(exception, _dll_handle);
 
@@ -55,8 +53,8 @@ class DynamicTemplateIndex {
   int capacity() {
     var exception = _getException();
 
-    int result = _dll_handle.lookupFunction<_DynamicTemplateIndex_capacity_c, _DynamicTemplateIndex_capacity_dart>(
-        _c_namespace + "DynamicTemplateIndex_capacity")(_impl, exception);
+    int result =
+        _dll_handle.lookupFunction<_DynamicTemplateIndex_capacity_c, _DynamicTemplateIndex_capacity_dart>(_c_namespace + "DynamicTemplateIndex_capacity")(_impl, exception);
 
     checkException(exception, _dll_handle);
 
@@ -71,8 +69,7 @@ class DynamicTemplateIndex {
     Pointer<Int32> byteCount = Pointer.fromAddress(_emptyPointerList[0].address);
     byteCount.value = 0;
 
-    final atByIndex = _dll_handle
-        .lookupFunction<_DynamicTemplateIndex_at_by_index_c, _DynamicTemplateIndex_at_by_index_dart>(_c_namespace + "DynamicTemplateIndex_at_by_index");
+    final atByIndex = _dll_handle.lookupFunction<_DynamicTemplateIndex_at_by_index_c, _DynamicTemplateIndex_at_by_index_dart>(_c_namespace + "DynamicTemplateIndex_at_by_index");
 
     var exception = _getException();
     atByIndex(_impl, index, _emptyPointerList.cast(), Pointer.fromFunction(writeFunc), exception);
@@ -90,8 +87,7 @@ class DynamicTemplateIndex {
   }
 
   ContextTemplate at(String uuid) {
-    final atByUuid = _dll_handle
-        .lookupFunction<_DynamicTemplateIndex_at_by_uuid_c, _DynamicTemplateIndex_at_by_uuid_dart>(_c_namespace + "DynamicTemplateIndex_at_by_uuid");
+    final atByUuid = _dll_handle.lookupFunction<_DynamicTemplateIndex_at_by_uuid_c, _DynamicTemplateIndex_at_by_uuid_dart>(_c_namespace + "DynamicTemplateIndex_at_by_uuid");
 
     var exception = _getException();
     ContextTemplate result = ContextTemplate(_dll_handle, atByUuid(_impl, uuid.toNativeUtf8(), exception));
@@ -116,8 +112,7 @@ class DynamicTemplateIndex {
   void addRecognizerTemplate(Template template, String uuid) {
     var exception = _getException();
 
-    final addConstructor =
-        _dll_handle.lookupFunction<_DynamicTemplateIndex_add_1_c, _DynamicTemplateIndex_add_1_dart>(_c_namespace + "DynamicTemplateIndex_add_1_");
+    final addConstructor = _dll_handle.lookupFunction<_DynamicTemplateIndex_add_1_c, _DynamicTemplateIndex_add_1_dart>(_c_namespace + "DynamicTemplateIndex_add_1_");
 
     addConstructor(_impl, template._impl, uuid.toNativeUtf8(), exception);
 
@@ -127,8 +122,7 @@ class DynamicTemplateIndex {
   void addRecognizerTemplates(List<Template> templates, List<String> uuids) {
     var exception = _getException();
 
-    final addConstructor =
-        _dll_handle.lookupFunction<_DynamicTemplateIndex_add_2_c, _DynamicTemplateIndex_add_2_dart>(_c_namespace + "DynamicTemplateIndex_add_2");
+    final addConstructor = _dll_handle.lookupFunction<_DynamicTemplateIndex_add_2_c, _DynamicTemplateIndex_add_2_dart>(_c_namespace + "DynamicTemplateIndex_add_2");
 
     Pointer<Pointer<Void>> tempTemplates = malloc.allocate(sizeOf<Pointer<Pointer<Void>>>() * templates.length);
     Pointer<Pointer<Utf8>> tempUuids = malloc.allocate(sizeOf<Pointer<Pointer<Utf8>>>() * uuids.length);
@@ -152,8 +146,7 @@ class DynamicTemplateIndex {
   void addContextTemplate(ContextTemplate template, String uuid) {
     var exception = _getException();
 
-    final addConstructor =
-        _dll_handle.lookupFunction<_DynamicTemplateIndex_add_3_c, _DynamicTemplateIndex_add_3_dart>(_c_namespace + "DynamicTemplateIndex_add_3");
+    final addConstructor = _dll_handle.lookupFunction<_DynamicTemplateIndex_add_3_c, _DynamicTemplateIndex_add_3_dart>(_c_namespace + "DynamicTemplateIndex_add_3");
 
     addConstructor(_impl, template._impl, uuid.toNativeUtf8(), exception);
 
@@ -163,8 +156,7 @@ class DynamicTemplateIndex {
   void addContextTemplates(List<ContextTemplate> templates, List<String> uuids) {
     var exception = _getException();
 
-    final addConstructor =
-        _dll_handle.lookupFunction<_DynamicTemplateIndex_add_4_c, _DynamicTemplateIndex_add_4_dart>(_c_namespace + "DynamicTemplateIndex_add_4");
+    final addConstructor = _dll_handle.lookupFunction<_DynamicTemplateIndex_add_4_c, _DynamicTemplateIndex_add_4_dart>(_c_namespace + "DynamicTemplateIndex_add_4");
 
     Pointer<Pointer<Void>> tempTemplates = malloc.allocate(sizeOf<Pointer<Pointer<Void>>>() * templates.length);
     Pointer<Pointer<Utf8>> tempUuids = malloc.allocate(sizeOf<Pointer<Pointer<Utf8>>>() * uuids.length);
@@ -188,8 +180,7 @@ class DynamicTemplateIndex {
   void removeByUuid(String uuid) {
     var exception = _getException();
 
-    final removeConstructor =
-        _dll_handle.lookupFunction<_DynamicTemplateIndex_remove_1_c, _DynamicTemplateIndex_remove_1_dart>(_c_namespace + "DynamicTemplateIndex_remove_1");
+    final removeConstructor = _dll_handle.lookupFunction<_DynamicTemplateIndex_remove_1_c, _DynamicTemplateIndex_remove_1_dart>(_c_namespace + "DynamicTemplateIndex_remove_1");
 
     removeConstructor(_impl, uuid.toNativeUtf8(), exception);
 
@@ -199,8 +190,7 @@ class DynamicTemplateIndex {
   void removeByUuids(List<String> uuids) {
     var exception = _getException();
 
-    final removeConstructor =
-        _dll_handle.lookupFunction<_DynamicTemplateIndex_remove_2_c, _DynamicTemplateIndex_remove_2_dart>(_c_namespace + "DynamicTemplateIndex_remove_2");
+    final removeConstructor = _dll_handle.lookupFunction<_DynamicTemplateIndex_remove_2_c, _DynamicTemplateIndex_remove_2_dart>(_c_namespace + "DynamicTemplateIndex_remove_2");
 
     Pointer<Pointer<Utf8>> tempUuids = malloc.allocate(sizeOf<Pointer<Pointer<Utf8>>>() * uuids.length);
 
@@ -218,10 +208,19 @@ class DynamicTemplateIndex {
   void concat(DynamicTemplateIndex otherIndex) {
     var exception = _getException();
 
-    final concatConstructor =
-        _dll_handle.lookupFunction<_DynamicTemplateIndex_concat_c, _DynamicTemplateIndex_concat_dart>(_c_namespace + "DynamicTemplateIndex_concatenate");
+    final concatConstructor = _dll_handle.lookupFunction<_DynamicTemplateIndex_concat_c, _DynamicTemplateIndex_concat_dart>(_c_namespace + "DynamicTemplateIndex_concatenate");
 
     concatConstructor(_impl, otherIndex._impl, exception);
+
+    checkException(exception, _dll_handle);
+  }
+
+  void clear() {
+    var exception = _getException();
+
+    final clearConstructor = _dll_handle.lookupFunction<_DynamicTemplateIndex_clear_c, _DynamicTemplateIndex_clear_dart>(_c_namespace + "DynamicTemplateIndex_clear");
+
+    clearConstructor(_impl, exception);
 
     checkException(exception, _dll_handle);
   }

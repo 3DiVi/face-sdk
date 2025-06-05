@@ -174,10 +174,10 @@ QualityEstimator::Quality QualityEstimator::estimateQuality(const pbio::RawSampl
 	// total is the worst quality, i.e. the max value
 
 	result.total = 1;
-	result.total = std::max<int>(result.total, result.lighting);
-	result.total = std::max<int>(result.total, result.noise);
-	result.total = std::max<int>(result.total, result.sharpness);
-	result.total = std::max<int>(result.total, result.flare);
+	result.total = (std::max<int>)(result.total, result.lighting);
+	result.total = (std::max<int>)(result.total, result.noise);
+	result.total = (std::max<int>)(result.total, result.sharpness);
+	result.total = (std::max<int>)(result.total, result.flare);
 
 	checkException(exception, *_dll_handle);
 

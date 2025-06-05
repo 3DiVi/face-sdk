@@ -524,6 +524,12 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
+    def DynamicTemplateIndex_clear(self, *args, **kwargs):
+        func = self.__dll_handle['{}DynamicTemplateIndex_clear'.format(self.__namespace)]
+        func.restype = None
+
+        return func(*args, **kwargs)
+
     def DynamicTemplateIndex_destructor(self, *args, **kwargs):
         func = self.__dll_handle['{}DynamicTemplateIndex_destructor'.format(self.__namespace)]
         func.restype = None
@@ -765,6 +771,16 @@ class DllHandle:
     def getStr(self, *args, **kwargs):
         func = self.__dll_handle['{}getStr'.format(self.__contextNamespace)]
         func.restype = c_char_p
+        return func(*args, **kwargs)
+
+    def delete_string(self, *args, **kwargs):
+        func = self.__dll_handle['{}deleteString'.format(self.__contextNamespace)]
+        func.restype = None
+        return func(*args, **kwargs)
+
+    def serialize_to_json(self, *args, **kwargs):
+        func = self.__dll_handle['{}serializeToJson'.format(self.__contextNamespace)]
+        func.restype = c_void_p
         return func(*args, **kwargs)
 
     def getStrSize(self, *args, **kwargs):

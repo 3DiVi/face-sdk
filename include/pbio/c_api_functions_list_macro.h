@@ -3158,6 +3158,20 @@ namespace capi {
 	\
 	decl( \
 		void, \
+		DynamicTemplateIndex_clear, \
+		( \
+			void* templateIndex, \
+			void** out_exception \
+		), \
+		( \
+			templateIndex, \
+			out_exception \
+		), \
+		) \
+	\
+	\
+	decl( \
+		void, \
 		DynamicTemplateIndex_destructor, \
 		( \
 			void* templateIndex \
@@ -3802,6 +3816,35 @@ namespace capi {
 		( \
 			ctx, \
 			path, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		const char*, \
+		TDVContext_serializeToJson, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			buff, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		void, \
+		TDVContext_deleteString, \
+		( \
+			const char* str, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			str, \
 			errorHandler \
 		), \
 		return ) \

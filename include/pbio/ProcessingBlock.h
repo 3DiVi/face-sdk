@@ -67,7 +67,11 @@ public:
 		if(handle_)
 		{
 			dll_handle_->TDVProcessingBlock_destroyBlock(handle_,  &eh_);
+#if __cplusplus >= 201703L
+			if (eh_ && std::uncaught_exceptions() > 0)
+#else
 			if (eh_ && std::uncaught_exception())
+#endif
 				std::cerr << Error(dll_handle_->TDVException_getErrorCode(eh_), dll_handle_->TDVException_getMessage(eh_)).what();
 			else
 				tdvCheckException(dll_handle_, eh_);

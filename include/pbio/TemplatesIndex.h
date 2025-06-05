@@ -129,7 +129,7 @@ public:
                 queries_templates, подаваемого в Recognizer.search за один раз, 
                 к которому нужно подготовить буферы.
 	*/
-	void reserveSearchMemory(const int queries_count) const;
+	void reserveSearchMemory(int64_t queries_count) const;
 
 private:
 	TemplatesIndex(
@@ -215,7 +215,7 @@ Template::Ptr TemplatesIndex::at(size_t i) const
 
 
 inline
-void TemplatesIndex::reserveSearchMemory(const int queries_count) const
+void TemplatesIndex::reserveSearchMemory(int64_t queries_count) const
 {
 	void* exception = NULL;
 

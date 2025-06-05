@@ -58,7 +58,7 @@ public:
 			- NULL, если хранимое изображение некорректно
 			- указатель на данные изображения, в противном случае.
 	*/
-	virtual const unsigned char* data() const;
+	virtual const unsigned char* data() const override;
 
 
 	/**
@@ -76,7 +76,7 @@ public:
 		\return
 			Ширина изображения в пикселах.
 	*/
-	virtual int32_t width() const;
+	virtual int32_t width() const override;
 
 	/**
 		\~English
@@ -93,7 +93,7 @@ public:
 		\return
 			Высота изображения в пикселах.
 	*/
-	virtual int32_t height() const;
+	virtual int32_t height() const override;
 
 
 	/**
@@ -115,7 +115,7 @@ public:
 			- pbio::IRawImage::FORMAT_GRAY, если mat имеет формат CV_8UC1,
 			- pbio::IRawImage::FORMAT_BGR, если mat имеет формат CV_8UC3.
 	*/
-	virtual int32_t format() const;
+	virtual int32_t format() const override;
 
 
 	/**

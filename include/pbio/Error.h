@@ -57,7 +57,7 @@ public:
 		\return
 			Нуль-терминированная строка с описанием ошибки.
 	*/
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return _what.c_str();
 	}
