@@ -4,13 +4,42 @@ package facesdk
 #include <stdlib.h>
 #include <stdint.h>
 
+#define MAX_VERSION_SIZE 32
+
+typedef void (*binary_stream_write_func_type)(
+		void* stream,
+		const void* data,
+		uint64_t bytes_count);
+
+typedef struct {
+	char* data;
+	size_t size;
+	size_t offset;
+} WriteData;
+
 void* __4848a76477c449608aa5deb15c5495e4_facerec_v3_FacerecService_constructor3(void* ae_ptr, char const* conf_dir, char const* license_dir, char const* dll_path, void** exception);
 void* __4848a76477c449608aa5deb15c5495e4_facerec_v3_FacerecService_ProcessingBlock_createProcessingBlock(void* service, void* context, void** exception);
 void* __4848a76477c449608aa5deb15c5495e4_facerec_v3_FacerecService_createDynamicTemplateIndex_1(void* service, const void** contextTemplates, const char** uuids, uint64_t size, const void* config, void** exception);
 void* __4848a76477c449608aa5deb15c5495e4_facerec_v3_FacerecService_createDynamicTemplateIndex_2(void* service, const void* config, void** exception);
+
+void* __4848a76477c449608aa5deb15c5495e4_facerec_v3_get_version(void* version_stream, binary_stream_write_func_type writeFunction, void** exception);
+
+extern void writeFunction(void* data, const void* buffer, uint64_t bytesCount);
+
+const char* getVersion(size_t* size, void** exception)
+{
+	WriteData writeData = { (char*)malloc(MAX_VERSION_SIZE), MAX_VERSION_SIZE, 0 };
+
+	__4848a76477c449608aa5deb15c5495e4_facerec_v3_get_version(&writeData, writeFunction, exception);
+
+	*size = writeData.offset;
+
+	return writeData.data;
+}
 */
 import "C"
 import (
+	"fmt"
 	"runtime"
 	"unsafe"
 )
@@ -23,6 +52,7 @@ type FacerecService struct {
 func CreateFacerecService(confPath string, licensePath string) (FacerecService, error) {
 	exception := createException()
 	dynamicLibraryName := ""
+	apiVersion := "3.27.00"
 
 	if runtime.GOOS == "windows" {
 		dynamicLibraryName = "facerec.dll"
@@ -40,7 +70,19 @@ func CreateFacerecService(confPath string, licensePath string) (FacerecService, 
 	C.free(unsafe.Pointer(confPathPtr))
 	C.free(unsafe.Pointer(licensePathPtr))
 
-	return FacerecService{implementation: service}, checkApiException(exception)
+	result, err := FacerecService{implementation: service}, checkApiException(exception)
+
+	if err != nil {
+		return result, err
+	}
+
+	version, err := result.GetVersion()
+
+	if version != apiVersion {
+		fmt.Printf("WARNING: The version in the facerec_service.go does not match the version in the library. facerec_service.go version: %s, library version: %s\n", apiVersion, version)
+	}
+
+	return result, err
 }
 
 // Create ProcessingBlock
@@ -98,4 +140,17 @@ func (service FacerecService) CreateDynamicTemplateIndexWithTemplates(templates 
 	C.free(unsafe.Pointer(cArray))
 
 	return DynamicTemplateIndex{implementation: templateIndex}, checkApiException(exception)
+}
+
+// Get libfacerec.so version
+func (service FacerecService) GetVersion() (string, error) {
+	exception := createException()
+	var size = C.size_t(0)
+
+	temp := C.getVersion(&size, &exception)
+	result := C.GoStringN(temp, C.int(size))
+
+	C.free(unsafe.Pointer(temp))
+
+	return result, checkApiException(exception)
 }

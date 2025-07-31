@@ -1292,3 +1292,12 @@ typedef _createDynamicTemplateIndex_2_dart = Pointer<Void> Function(Pointer<Void
 
 typedef _contextTemplate_size_c = Int32 Function(Pointer<Void>, Pointer<Pointer<Void>>);
 typedef _contextTemplate_size_dart = int Function(Pointer<Void>, Pointer<Pointer<Void>>);
+
+typedef _get_version_c = Void Function(
+    Pointer<Void>, // stream
+    Pointer<NativeFunction<binary_stream_write_func>>, // stream_write_func
+    Pointer<Pointer<Void>>); // out_exception
+typedef _get_version_dart = void Function(
+    Pointer<Void>, // stream
+    Pointer<NativeFunction<binary_stream_write_func>>, // stream_write_func
+    Pointer<Pointer<Void>>);

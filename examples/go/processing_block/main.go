@@ -33,6 +33,7 @@ func main() {
 		"glasses":      "GLASSES_ESTIMATOR",
 		"eye_openness": "EYE_OPENNESS_ESTIMATOR",
 		"liveness":     "LIVENESS_ESTIMATOR",
+		"deepfake":     "DEEPFAKE_ESTIMATOR",
 		"quality":      "QUALITY_ASSESSMENT_ESTIMATOR",
 	}
 	printResults := map[string]printResultFunction{
@@ -45,6 +46,7 @@ func main() {
 		"GLASSES_ESTIMATOR":            printGlassesEstimator,
 		"EYE_OPENNESS_ESTIMATOR":       printEyeOpennessEstimator,
 		"LIVENESS_ESTIMATOR":           printLivenessEstimator,
+		"DEEPFAKE_ESTIMATOR":           printDeepFakeEstimator,
 		"QUALITY_ASSESSMENT_ESTIMATOR": printQualityAssessmentEstimator,
 	}
 
@@ -61,8 +63,8 @@ func main() {
 
 	if *unitType != "FACE_DETECTOR" {
 		tempUnitType := "FACE_DETECTOR"
-		tempModification := "ssyv"
-		tempVersion := 3
+		tempModification := "ssyv_light"
+		tempVersion := 1
 
 		pipeline = append(pipeline, createProcessingBlock(service, &tempUnitType, &tempModification, &tempVersion))
 
@@ -265,6 +267,16 @@ func printGlassesEstimator(data map[string]any) {
 		glasses, _ := object.(map[string]any)["glasses"].(map[string]any)
 
 		fmt.Printf("Glasses: %t, confidence: %0.3f\n", glasses["value"].(bool), glasses["confidence"].(float64))
+	}
+}
+
+func printDeepFakeEstimator(data map[string]any) {
+	objects, _ := data["objects"].([]any)
+
+	for _, object := range objects {
+		deepfake, _ := object.(map[string]any)["deepfake"].(map[string]any)
+
+		fmt.Printf("Deepfake: %t, confidence: %0.3f\n", deepfake["value"].(bool), deepfake["confidence"].(float64))
 	}
 }
 

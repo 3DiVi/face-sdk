@@ -60,15 +60,44 @@ class FacerecService extends _ComplexObject {
     final String dllPath = "$libraryDirectory/${FaceSdkPlugin.nativeLibName}";
     final DynamicLibrary dylib = DynamicLibrary.open(dllPath);
 
-    final createService =
-        dylib.lookupFunction<_facerecConstructor, _facerecConstructor>(_c_namespace + 'FacerecService_constructor2');
+    final createService = dylib.lookupFunction<_facerecConstructor, _facerecConstructor>(_c_namespace + 'FacerecService_constructor2');
 
     final exception = _getException();
-    final pointer =
-        createService(facerecConfDir.toNativeUtf8(), licenseDir.toNativeUtf8(), dllPath.toNativeUtf8(), exception);
+    final pointer = createService(facerecConfDir.toNativeUtf8(), licenseDir.toNativeUtf8(), dllPath.toNativeUtf8(), exception);
     checkException(exception, dylib);
 
-    return FacerecService(dylib, pointer, facerecConfDir, dllPath);
+    FacerecService service = FacerecService(dylib, pointer, facerecConfDir, dllPath);
+
+    if (service.getVersion() != getPackageVersion()) {
+      print("WARNING: The version in the version.dart does not match the version in the library. version.dart version: ${getPackageVersion()}, library version: ${service.getVersion()}");
+    }
+
+    return service;
+  }
+
+  String getVersion() {
+    Pointer<Pointer<Uint8>> _emptyPointerList = malloc.allocate(sizeOf<Pointer<Pointer<Uint8>>>() * 2);
+    _emptyPointerList[0] = malloc.allocate(sizeOf<Pointer<Int32>>());
+    _emptyPointerList[1] = malloc.allocate(1000);
+
+    Pointer<Int32> byteCount = Pointer.fromAddress(_emptyPointerList[0].address);
+    byteCount.value = 0;
+
+    final getVersion = _dll_handle.lookupFunction<_get_version_c, _get_version_dart>(_c_namespace + 'get_version');
+
+    var exception = _getException();
+    getVersion(_emptyPointerList.cast(), Pointer.fromFunction(writeFunc), exception);
+    checkException(exception, _dll_handle);
+
+    List<int> result = [];
+    for (var i = 0; i < byteCount.value; i++) {
+      result.add(_emptyPointerList[1][i]);
+    }
+    malloc.free(_emptyPointerList[0]);
+    malloc.free(_emptyPointerList[1]);
+    malloc.free(_emptyPointerList);
+
+    return utf8.decode(result);
   }
 
   /// Creates a [VideoWorker] object<br>
@@ -81,8 +110,7 @@ class FacerecService extends _ComplexObject {
   ///  - estimate liveness<br>
   ///  - match the faces detected in a specified period with each other.
   VideoWorker createVideoWorker(VideoWorkerParams params) {
-    final vwConstructor = _dll_handle.lookupFunction<_VWConstructor_c, _VWConstructor_dart>(
-        _c_namespace + 'FacerecService_createVideoWorker_sti_age_gender_emotions');
+    final vwConstructor = _dll_handle.lookupFunction<_VWConstructor_c, _VWConstructor_dart>(_c_namespace + 'FacerecService_createVideoWorker_sti_age_gender_emotions');
     final exception = _getException();
 
     Pointer<Int32> _emptyPointer = malloc.allocate(1);
@@ -175,8 +203,7 @@ class FacerecService extends _ComplexObject {
     return Context.fromImage(_dll_handle, data);
   }
 
-  Context createContextFromFrame(Uint8List data, int width, int height,
-      {ContextFormat format = ContextFormat.FORMAT_YUV420, int baseAngle = 0}) {
+  Context createContextFromFrame(Uint8List data, int width, int height, {ContextFormat format = ContextFormat.FORMAT_YUV420, int baseAngle = 0}) {
     return Context.fromFrame(_dll_handle, data, width, height, format, baseAngle);
   }
 
@@ -224,10 +251,8 @@ class FacerecService extends _ComplexObject {
 
     Context meta_ctx = this.createContext(ctx);
 
-    final constructor = this
-        ._dll_handle
-        .lookupFunction<_ProcessingBlock_createProcessingBlock_c, _ProcessingBlock_createProcessingBlock_dart>(
-            _c_namespace + 'FacerecService_ProcessingBlock_createProcessingBlock');
+    final constructor = this._dll_handle.lookupFunction<_ProcessingBlock_createProcessingBlock_c, _ProcessingBlock_createProcessingBlock_dart>(
+        _c_namespace + 'FacerecService_ProcessingBlock_createProcessingBlock');
 
     final impl = constructor(_impl, meta_ctx._impl, exception);
 
@@ -242,13 +267,11 @@ class FacerecService extends _ComplexObject {
 
   /// Creates a [Capturer] object (it's used to detect or track faces in images or video sequences).
   Capturer createCapturer(Config config) {
-    final capConstructor =
-        _dll_handle.lookupFunction<_CapConstr_c, _CapConstr_dart>(_c_namespace + 'FacerecService_createCapturerE');
+    final capConstructor = _dll_handle.lookupFunction<_CapConstr_c, _CapConstr_dart>(_c_namespace + 'FacerecService_createCapturerE');
     final exception = _getException();
     final res = config._prepare();
 
-    final cap_pointer = capConstructor(
-        _impl, (_facerecConfDir + config._configFilepath).toNativeUtf8(), res.length, res.keys, res.values, exception);
+    final cap_pointer = capConstructor(_impl, (_facerecConfDir + config._configFilepath).toNativeUtf8(), res.length, res.keys, res.values, exception);
 
     checkException(exception, _dll_handle);
 
@@ -261,14 +284,12 @@ class FacerecService extends _ComplexObject {
 
   /// Similar to the [FacerecService.createCapturer] method.
   Capturer createCapturer2(String ini_file) {
-    final capConstructor =
-        _dll_handle.lookupFunction<_CapConstr_c, _CapConstr_dart>(_c_namespace + 'FacerecService_createCapturerE');
+    final capConstructor = _dll_handle.lookupFunction<_CapConstr_c, _CapConstr_dart>(_c_namespace + 'FacerecService_createCapturerE');
     Pointer<Pointer<Utf8>> _emptyPointerStrList = malloc.allocate(1);
     Pointer<Double> _emptyPointerDouble = malloc.allocate(1);
     final exception = _getException();
 
-    final cap_pointer = capConstructor(
-        _impl, (_facerecConfDir + ini_file).toNativeUtf8(), 0, _emptyPointerStrList, _emptyPointerDouble, exception);
+    final cap_pointer = capConstructor(_impl, (_facerecConfDir + ini_file).toNativeUtf8(), 0, _emptyPointerStrList, _emptyPointerDouble, exception);
 
     checkException(exception, _dll_handle);
 
@@ -276,26 +297,14 @@ class FacerecService extends _ComplexObject {
   }
 
   /// Creates a [Recognizer] object (it's used to create face templates and compare them).
-  Recognizer createRecognizer(final String ini_file,
-      {final bool processing = true,
-      final bool matching = true,
-      final bool processing_less_memory_consumption = false}) {
-    final recConstructor = _dll_handle
-        .lookupFunction<_RecognizerConstr_c, _RecognizerConstr_dart>(_c_namespace + 'FacerecService_createRecognizer2');
+  Recognizer createRecognizer(final String ini_file, {final bool processing = true, final bool matching = true, final bool processing_less_memory_consumption = false}) {
+    final recConstructor = _dll_handle.lookupFunction<_RecognizerConstr_c, _RecognizerConstr_dart>(_c_namespace + 'FacerecService_createRecognizer2');
     Pointer<Pointer<Utf8>> _emptyPointerStrList = malloc.allocate(1);
     Pointer<Double> _emptyPointerDouble = malloc.allocate(1);
     final exception = _getException();
 
-    final recPointer = recConstructor(
-        _impl,
-        (_facerecConfDir + ini_file).toNativeUtf8(),
-        0,
-        _emptyPointerStrList,
-        _emptyPointerDouble,
-        processing ? 1 : 0,
-        matching ? 1 : 0,
-        processing_less_memory_consumption ? 1 : 0,
-        exception);
+    final recPointer = recConstructor(_impl, (_facerecConfDir + ini_file).toNativeUtf8(), 0, _emptyPointerStrList, _emptyPointerDouble, processing ? 1 : 0, matching ? 1 : 0,
+        processing_less_memory_consumption ? 1 : 0, exception);
 
     checkException(exception, _dll_handle);
 
@@ -303,24 +312,19 @@ class FacerecService extends _ComplexObject {
   }
 
   Future<AsyncRecognizer> createAsyncRecognizer(final String ini_file,
-      {final bool processing = true,
-      final bool matching = true,
-      final bool processing_less_memory_consumption = false}) async {
-    return AsyncRecognizer.create(
-        _impl, _facerecConfDir, _dllPath, ini_file, processing, matching, processing_less_memory_consumption);
+      {final bool processing = true, final bool matching = true, final bool processing_less_memory_consumption = false}) async {
+    return AsyncRecognizer.create(_impl, _facerecConfDir, _dllPath, ini_file, processing, matching, processing_less_memory_consumption);
   }
 
   /// Creates a [Liveness2DEstimator] object (it's used evalute liveness of face).
   Liveness2DEstimator createLiveness2DEstimator(final String ini_file) {
     final livenessEstimatorConstructor =
-        _dll_handle.lookupFunction<_Liveness2DEstimatorConstr_c, _Liveness2DEstimatorConstr_dart>(
-            _c_namespace + 'FacerecService_createLiveness2DEstimatorE');
+        _dll_handle.lookupFunction<_Liveness2DEstimatorConstr_c, _Liveness2DEstimatorConstr_dart>(_c_namespace + 'FacerecService_createLiveness2DEstimatorE');
     Pointer<Pointer<Utf8>> _emptyPointerStrList = malloc.allocate(1);
     Pointer<Double> _emptyPointerDouble = malloc.allocate(1);
     final exception = _getException();
 
-    final livenessEstimatorPointer = livenessEstimatorConstructor(
-        _impl, (_facerecConfDir + ini_file).toNativeUtf8(), 0, _emptyPointerStrList, _emptyPointerDouble, exception);
+    final livenessEstimatorPointer = livenessEstimatorConstructor(_impl, (_facerecConfDir + ini_file).toNativeUtf8(), 0, _emptyPointerStrList, _emptyPointerDouble, exception);
 
     checkException(exception, _dll_handle);
 
@@ -329,14 +333,13 @@ class FacerecService extends _ComplexObject {
 
   FaceAttributesEstimator createFaceAttributesEstimator(final String ini_file) {
     final faceAttributesEstimatorConstructor =
-        _dll_handle.lookupFunction<_FaceAttributesEstimatorConstr_c, _FaceAttributesEstimatorConstr_dart>(
-            _c_namespace + 'FacerecService_createFaceAttributesEstimator');
+        _dll_handle.lookupFunction<_FaceAttributesEstimatorConstr_c, _FaceAttributesEstimatorConstr_dart>(_c_namespace + 'FacerecService_createFaceAttributesEstimator');
     Pointer<Pointer<Utf8>> _emptyPointerStrList = malloc.allocate(1);
     Pointer<Double> _emptyPointerDouble = malloc.allocate(1);
     final exception = _getException();
 
-    final faceAttributesEstimatorPointer = faceAttributesEstimatorConstructor(
-        _impl, (_facerecConfDir + ini_file).toNativeUtf8(), 0, _emptyPointerStrList, _emptyPointerDouble, exception);
+    final faceAttributesEstimatorPointer =
+        faceAttributesEstimatorConstructor(_impl, (_facerecConfDir + ini_file).toNativeUtf8(), 0, _emptyPointerStrList, _emptyPointerDouble, exception);
 
     checkException(exception, _dll_handle);
 
@@ -353,32 +356,17 @@ class FacerecService extends _ComplexObject {
   void convertYUV2ARGB(RawImageF image, Pointer<Void> result_buffer, {bool downscale_x2 = false}) {
     final exception = _getException();
 
-    final convertYUV2ARGBConstructor =
-        _dll_handle.lookupFunction<_RawImage_convertYUV2ARGB_c, _RawImage_convertYUV2ARGB_dart>(
-            _c_namespace + 'RawImage_convertYUV2ARGB');
+    final convertYUV2ARGBConstructor = _dll_handle.lookupFunction<_RawImage_convertYUV2ARGB_c, _RawImage_convertYUV2ARGB_dart>(_c_namespace + 'RawImage_convertYUV2ARGB');
 
-    convertYUV2ARGBConstructor(
-        image.data.cast(),
-        image.width,
-        image.height,
-        image.format.index,
-        image.with_crop,
-        image.crop_info_offset_x,
-        image.crop_info_offset_y,
-        image.crop_info_data_image_width,
-        image.crop_info_data_image_height,
-        downscale_x2 ? 1 : 0,
-        result_buffer,
-        exception);
+    convertYUV2ARGBConstructor(image.data.cast(), image.width, image.height, image.format.index, image.with_crop, image.crop_info_offset_x, image.crop_info_offset_y,
+        image.crop_info_data_image_width, image.crop_info_data_image_height, downscale_x2 ? 1 : 0, result_buffer, exception);
 
     checkException(exception, _dll_handle);
   }
 
   RawImageF convertYUV2RGB(RawImageF image, {required int baseAngle, NativeDataStruct? reusableData}) {
     final exception = _getException();
-    final convertYUV2RGBConstructor =
-        _dll_handle.lookupFunction<_RawImage_convertYUV2RGB_c, _RawImage_convertYUV2RGB_dart>(
-            _c_namespace + 'RawImage_convertYUV2RGB');
+    final convertYUV2RGBConstructor = _dll_handle.lookupFunction<_RawImage_convertYUV2RGB_c, _RawImage_convertYUV2RGB_dart>(_c_namespace + 'RawImage_convertYUV2RGB');
     int width;
     int height;
 
@@ -408,35 +396,19 @@ class FacerecService extends _ComplexObject {
       data.resize(totalBytes);
     }
 
-    RawImageF result =
-        RawImageF(width, height, Format.FORMAT_RGB, (reusableData == null ? data : reusableData).pointer!.cast());
+    RawImageF result = RawImageF(width, height, Format.FORMAT_RGB, (reusableData == null ? data : reusableData).pointer!.cast());
 
-    convertYUV2RGBConstructor(
-        image.data.cast(),
-        image.width,
-        image.height,
-        image.format.index,
-        image.with_crop,
-        image.crop_info_offset_x,
-        image.crop_info_offset_y,
-        image.crop_info_data_image_width,
-        image.crop_info_data_image_height,
-        0,
-        baseAngle,
-        result.data.cast(),
-        exception);
+    convertYUV2RGBConstructor(image.data.cast(), image.width, image.height, image.format.index, image.with_crop, image.crop_info_offset_x, image.crop_info_offset_y,
+        image.crop_info_data_image_width, image.crop_info_data_image_height, 0, baseAngle, result.data.cast(), exception);
 
     checkException(exception, _dll_handle);
 
     return result;
   }
 
-  RawImageF _convertYUV2RGB(Pointer<Uint8> imageData, int imageWidth, int imageHeight, Format format,
-      {required int baseAngle}) {
+  RawImageF _convertYUV2RGB(Pointer<Uint8> imageData, int imageWidth, int imageHeight, Format format, {required int baseAngle}) {
     final exception = _getException();
-    final convertYUV2RGBConstructor =
-        _dll_handle.lookupFunction<_RawImage_convertYUV2RGB_c, _RawImage_convertYUV2RGB_dart>(
-            _c_namespace + 'RawImage_convertYUV2RGB');
+    final convertYUV2RGBConstructor = _dll_handle.lookupFunction<_RawImage_convertYUV2RGB_c, _RawImage_convertYUV2RGB_dart>(_c_namespace + 'RawImage_convertYUV2RGB');
     int width;
     int height;
 
@@ -462,8 +434,7 @@ class FacerecService extends _ComplexObject {
 
     RawImageF result = RawImageF(width, height, Format.FORMAT_RGB, data.pointer!.cast());
 
-    convertYUV2RGBConstructor(imageData.cast(), imageWidth, imageHeight, format.index, 0, -1, -1, -1, -1, 0, baseAngle,
-        result.data.cast(), exception);
+    convertYUV2RGBConstructor(imageData.cast(), imageWidth, imageHeight, format.index, 0, -1, -1, -1, -1, 0, baseAngle, result.data.cast(), exception);
 
     checkException(exception, _dll_handle);
 
@@ -473,8 +444,7 @@ class FacerecService extends _ComplexObject {
   RawImageF convertBGRA88882RGB(RawImageF image, {required int baseAngle}) {
     final exception = _getException();
     final convertBGRA88882RGBConstructor =
-        _dll_handle.lookupFunction<_RawImage_convertBGRA88882RGB_c, _RawImage_convertBGRA88882RGB_dart>(
-            _c_namespace + 'RawImage_convertBGRA88882RGB');
+        _dll_handle.lookupFunction<_RawImage_convertBGRA88882RGB_c, _RawImage_convertBGRA88882RGB_dart>(_c_namespace + 'RawImage_convertBGRA88882RGB');
     int width;
     int height;
 
@@ -500,8 +470,7 @@ class FacerecService extends _ComplexObject {
 
     RawImageF result = RawImageF(width, height, Format.FORMAT_RGB, data.pointer!.cast());
 
-    convertBGRA88882RGBConstructor(
-        image.data.cast(), image.width, image.height, baseAngle, result.data.cast(), exception);
+    convertBGRA88882RGBConstructor(image.data.cast(), image.width, image.height, baseAngle, result.data.cast(), exception);
 
     checkException(exception, _dll_handle);
 
@@ -510,22 +479,20 @@ class FacerecService extends _ComplexObject {
 
   ContextTemplate convertTemplate(Context templateContext) {
     final exception = _getException();
-    
-    final converter = _dll_handle.lookupFunction<_ContextTemplate_convert_c, _ContextTemplate_convert_dart>(
-        _c_namespace + 'ContextTemplate_convert');
+
+    final converter = _dll_handle.lookupFunction<_ContextTemplate_convert_c, _ContextTemplate_convert_dart>(_c_namespace + 'ContextTemplate_convert');
 
     final impl = converter(templateContext._impl, exception);
-    
+
     checkException(exception, _dll_handle);
-    
+
     return ContextTemplate(_dll_handle, impl);
   }
 
   ContextTemplate loadContextTemplate(Uint8List binary_stream) {
     final exception = _getException();
 
-    final loadTemplate = _dll_handle.lookupFunction<_ContextTemplate_loadTemplate_c, _ContextTemplate_loadTemplate_dart>(
-        _c_namespace + 'ContextTemplate_loadTemplate');
+    final loadTemplate = _dll_handle.lookupFunction<_ContextTemplate_loadTemplate_c, _ContextTemplate_loadTemplate_dart>(_c_namespace + 'ContextTemplate_loadTemplate');
 
     Pointer<Pointer<Uint8>> _templatePointerStructure = malloc.allocate(sizeOf<Pointer<Pointer<Uint8>>>() * 2);
     _templatePointerStructure[0] = malloc.allocate(sizeOf<Pointer<Int32>>());
@@ -564,8 +531,7 @@ class FacerecService extends _ComplexObject {
         Pointer<Uint8> yuv420Data = getRawDataPointer(image.planes);
 
         if (image.format.raw == YUV_420_888 && width != image.planes.first.bytesPerRow) {
-          Pointer<Uint8> temp =
-              _removePaddingFromYUV420_888Pointer(yuv420Data, width, height, image.planes.first.bytesPerRow);
+          Pointer<Uint8> temp = _removePaddingFromYUV420_888Pointer(yuv420Data, width, height, image.planes.first.bytesPerRow);
 
           malloc.free(yuv420Data);
 
@@ -609,8 +575,7 @@ class FacerecService extends _ComplexObject {
 
     dataPointer.asTypedList(data.length).setAll(0, data);
 
-    final convert = _dll_handle.lookupFunction<_convertYUV420_888ToNV21_c, _convertYUV420_888ToNV21_dart>(
-        "${_c_namespace}TDV_convertYUV420_888ToNV21");
+    final convert = _dll_handle.lookupFunction<_convertYUV420_888ToNV21_c, _convertYUV420_888ToNV21_dart>("${_c_namespace}TDV_convertYUV420_888ToNV21");
 
     convert(dataPointer, width, height, bytesPerRow, result, resultSize, exception);
 
@@ -634,8 +599,7 @@ class FacerecService extends _ComplexObject {
     Context meta_ctx = this.createContext(config);
 
     final constructor =
-    _dll_handle.lookupFunction<_createDynamicTemplateIndex_1_c, _createDynamicTemplateIndex_1_dart>(
-        "${_c_namespace}FacerecService_createDynamicTemplateIndex_1");
+        _dll_handle.lookupFunction<_createDynamicTemplateIndex_1_c, _createDynamicTemplateIndex_1_dart>("${_c_namespace}FacerecService_createDynamicTemplateIndex_1");
     Pointer<Pointer<Void>> templatesImpls = malloc.allocate(sizeOf<Pointer<Void>>() * uuids.length);
     Pointer<Pointer<Utf8>> uuidsPointers = malloc.allocate(sizeOf<Pointer<Utf8>>() * uuids.length);
 
@@ -644,8 +608,7 @@ class FacerecService extends _ComplexObject {
       uuidsPointers[i] = uuids[i].toNativeUtf8();
     }
 
-    DynamicTemplateIndex result = DynamicTemplateIndex(
-        _dll_handle, constructor(_impl, templatesImpls, uuidsPointers, templates.length, meta_ctx._impl, exception));
+    DynamicTemplateIndex result = DynamicTemplateIndex(_dll_handle, constructor(_impl, templatesImpls, uuidsPointers, templates.length, meta_ctx._impl, exception));
 
     malloc.free(templatesImpls);
     malloc.free(uuidsPointers);
@@ -661,8 +624,7 @@ class FacerecService extends _ComplexObject {
     Context meta_ctx = this.createContext(config);
 
     final constructor =
-        _dll_handle.lookupFunction<_createDynamicTemplateIndex_2_c, _createDynamicTemplateIndex_2_dart>(
-            "${_c_namespace}FacerecService_createDynamicTemplateIndex_2");
+        _dll_handle.lookupFunction<_createDynamicTemplateIndex_2_c, _createDynamicTemplateIndex_2_dart>("${_c_namespace}FacerecService_createDynamicTemplateIndex_2");
 
     DynamicTemplateIndex result = DynamicTemplateIndex(_dll_handle, constructor(_impl, meta_ctx._impl, exception));
 
@@ -676,8 +638,7 @@ class FacerecService extends _ComplexObject {
     int resultSize = 2 * width * height - 2;
     Pointer<Uint8> result = malloc.allocate<Uint8>(resultSize);
 
-    final convert = _dll_handle.lookupFunction<_convertYUV420_888ToNV21_c, _convertYUV420_888ToNV21_dart>(
-        "${_c_namespace}TDV_convertYUV420_888ToNV21");
+    final convert = _dll_handle.lookupFunction<_convertYUV420_888ToNV21_c, _convertYUV420_888ToNV21_dart>("${_c_namespace}TDV_convertYUV420_888ToNV21");
 
     convert(data, width, height, bytesPerRow, result, resultSize, exception);
 

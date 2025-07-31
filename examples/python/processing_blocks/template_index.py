@@ -63,7 +63,7 @@ def create_service(sdk_path: str) -> FacerecService:
 def create_detector(use_cuda: bool) -> ProcessingBlock:
     return service.create_processing_block({
         "unit_type": "FACE_DETECTOR",
-        "modification": "ssyv",
+        "modification": "ssyv_light",
         "use_cuda": use_cuda,
     })
 

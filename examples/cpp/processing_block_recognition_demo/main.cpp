@@ -143,7 +143,7 @@ void recognitionSample(std::string sdk_path, std::string input_image_path1, std:
 	Context faceTemplateExtractorCtx = service.createContext();
 	
 	detectorCtx["unit_type"] = "FACE_DETECTOR";
-	detectorCtx["modification"] = "ssyv";
+	detectorCtx["modification"] = "ssyv_light";
 
 	fitterCtx["unit_type"] = "FACE_FITTER";
 	fitterCtx["modification"] = "fda";

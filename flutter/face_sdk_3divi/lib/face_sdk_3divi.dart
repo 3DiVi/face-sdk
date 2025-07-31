@@ -42,6 +42,7 @@ part 'api/async_processing_block.dart';
 part 'api/async_video_worker.dart';
 part 'api/context_template.dart';
 part 'api/dynamic_template_index.dart';
+part 'api/version.dart';
 
 
 /// Base class of FaceSDK flutter plugin for creating FacerecService.
@@ -57,9 +58,8 @@ class FaceSdkPlugin {
   }
 
   /// Create a FacerecService using default library paths: `libfacerec.so`
-  /// on Andorid and `facerec.framework/libfacerec.dylib` on iOS.<br>
+  /// on Android and `facerec.framework/libfacerec.dylib` on iOS.<br>
   static Future<FacerecService> createFacerecService() async {
-    return FacerecService.createService();
+    return await FacerecService.createService();
   }
 }
-

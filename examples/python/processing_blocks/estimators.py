@@ -20,6 +20,7 @@ unit_types: Dict[str, str] = {
     "glasses": "GLASSES_ESTIMATOR",
     "eye_openness": "EYE_OPENNESS_ESTIMATOR",
     "liveness": "LIVENESS_ESTIMATOR",
+    "deepfake": "DEEPFAKE_ESTIMATOR",
     "quality": "QUALITY_ASSESSMENT_ESTIMATOR",
 }
 bbox_color = (0, 255, 0)
@@ -157,6 +158,14 @@ def show_liveness(image: np.ndarray, obj: Context):
     put_text(image, get_draw_text(image, obj), f"Liveness {obj['liveness']['value'].get_string()}")
     put_text(image, get_draw_text(image, obj, 20), f"Confidence {round(obj['liveness']['confidence'].get_double(), 2)}")
 
+def print_deepfake(obj: Context):
+    print(f"Deepfake {obj['deepfake']['value'].get_value()}")
+    print(f"Confidence {round(obj['deepfake']['confidence'].get_double(), 2)}")
+
+def show_deepfake(image: np.ndarray, obj: Context):
+    put_text(image, get_draw_text(image, obj), f"Deepfake {obj['deepfake']['value'].get_value()}")
+    put_text(image, get_draw_text(image, obj, 20), f"Confidence {round(obj['deepfake']['confidence'].get_double(), 2)}")
+
 
 def print_quality(obj: Context):
     print(f"Quality score: {round(obj['quality']['total_score'].get_double(), 2)}")
@@ -174,6 +183,7 @@ print_functions: Dict[str, Callable[[Context], None]] = {
     "glasses": print_glasses,
     "eye_openness": print_eye_openness,
     "liveness": print_liveness,
+    "deepfake": print_deepfake,
     "quality": print_quality,
 }
 
@@ -198,6 +208,7 @@ show_functions: Dict[str, Callable[[np.ndarray, Context], None]] = {
     "glasses": show_glasses,
     "eye_openness": show_eye_openness,
     "liveness": show_liveness,
+    "deepfake": show_deepfake,
     "quality": show_quality,
 }
 
@@ -236,7 +247,7 @@ def create_service(sdk_path: str) -> FacerecService:
 def create_detector(use_cuda: bool) -> ProcessingBlock:
     return service.create_processing_block({
         "unit_type": "FACE_DETECTOR",
-        "modification": "ssyv",
+        "modification": "ssyv_light",
         "use_cuda": use_cuda,
     })
 

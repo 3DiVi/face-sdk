@@ -66,7 +66,7 @@ def recognition_demo(sdk_path, img_path_1, img_path_2, window, output, mode, mod
         raise Exception(f"not exist file {img_path_2}")
 
     face_detector = service.create_processing_block(
-        {"unit_type": "FACE_DETECTOR", "modification": "ssyv"})
+        {"unit_type": "FACE_DETECTOR", "modification": "ssyv_light"})
     face_template_extractor = service.create_processing_block({"unit_type": "FACE_TEMPLATE_EXTRACTOR", "modification": modification})
     face_fitter = service.create_processing_block({"unit_type": "FACE_FITTER", "modification": "fda"})
 

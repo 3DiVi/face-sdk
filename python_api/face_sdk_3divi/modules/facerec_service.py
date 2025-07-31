@@ -11,6 +11,12 @@ from ctypes import create_string_buffer
 from ctypes import c_int, c_double
 from ctypes import py_object
 from multipledispatch import dispatch
+try:
+    from importlib.metadata import version as metadata_version
+
+    can_check_version = True
+except:
+    can_check_version = False
 
 from io import BytesIO
 from typing import Union, List
@@ -55,6 +61,17 @@ class FacerecService(ComplexObject):
     def __init__(self, dll_handle: CDLL, facerec_conf_dir: str, impl: c_void_p):
         super(FacerecService, self).__init__(dll_handle, impl)
         self.__facerec_conf_dir = facerec_conf_dir
+
+        if can_check_version:
+            sdk_api_version = metadata_version("face_sdk_3divi")
+            if FacerecService.__normalize_version(self.get_version()) != FacerecService.__normalize_version(sdk_api_version):
+                print(
+                    f"WARNING: The version in the setup.py does not match the version in the library. setup.py version: {sdk_api_version}, library version: {self.get_version()}"
+                )
+
+    @staticmethod
+    def __normalize_version(version):
+        return [int(part) for part in version.split('.')]
 
     ##
     # \~English

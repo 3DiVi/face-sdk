@@ -51,6 +51,7 @@ namespace csharp_processing_block_demo
 			{ "glasses", "GLASSES_ESTIMATOR" },
 			{ "eye_openness", "EYE_OPENNESS_ESTIMATOR" },
 			{ "liveness", "LIVENESS_ESTIMATOR" },
+			{ "deepfake", "DEEPFAKE_ESTIMATOR" },
 			{ "quality", "QUALITY_ASSESSMENT_ESTIMATOR" },
 			{ "pose", "HUMAN_POSE_ESTIMATOR" },
 		};
@@ -137,7 +138,7 @@ namespace csharp_processing_block_demo
 				Context ioData = service.CreateContextFromEncodedImage(GetImageData(options.InputImage));
 				Mat image = Cv2.ImRead(options.InputImage);
 
-				if (unitType == "quality" || unitType == "liveness")
+				if (unitType == "quality" || unitType == "liveness" || unitType == "deepfake")
 				{
 					ProcessingBlock faceDetector = service.CreateProcessingBlock(CreateFaceDetector(service));
 					ProcessingBlock faceFitter = service.CreateProcessingBlock(CreateFaceFitter(service));
@@ -232,6 +233,11 @@ namespace csharp_processing_block_demo
 
 					case "liveness":
 						DrawLiveness(ioData, image);
+
+						break;
+
+					case "deepfake":
+						DrawDeepfake(ioData, image);
 
 						break;
 				}
@@ -538,6 +544,54 @@ namespace csharp_processing_block_demo
 			}
 		}
 
+		private static void DrawDeepfake(Context ioData, Mat image)
+		{
+			int width = image.Cols;
+			int heigth = image.Rows;
+			Context objects = ioData["objects"];
+
+			DrawObjects(ioData, image, "face");
+
+			for (int i = 0; i < (int)objects.Length(); i++)
+			{
+				Context obj = objects[i];
+
+				if (obj["class"].GetString() != "face")
+				{
+					continue;
+				}
+
+				Context deepfake = obj["deepfake"];
+				OpenCvSharp.Point textPoint = new
+				(
+					Math.Min(obj["bbox"][2].GetDouble() * width, width),
+					Math.Max(obj["bbox"][1].GetDouble() * heigth, 0) + 15
+				);
+
+				PutTextWithRightExpansion
+				(
+					image, $"Deepfake: {deepfake["value"].GetBool()}",
+					textPoint,
+					HersheyFonts.HersheyDuplex,
+					0.5,
+					new(0, 0, 255),
+					1
+				);
+
+				textPoint.Y += 15;
+
+				PutTextWithRightExpansion
+				(
+					image, $"Confidence: {deepfake["confidence"].GetDouble()}",
+					textPoint,
+					HersheyFonts.HersheyDuplex,
+					0.5,
+					new(0, 0, 255),
+					1
+				);
+			}
+		}
+
 		private static void DrawEyeOpenness(Context ioData, Mat image)
 		{
 			int width = image.Cols;
@@ -695,8 +749,7 @@ namespace csharp_processing_block_demo
 			return new Dictionary<object, object>
 			{
 				{ "unit_type", "FACE_DETECTOR" },
-				{ "modification", "ssyv" },
-				{ "version", 2 }
+				{ "modification", "ssyv_light" }
 			};
 		}
 

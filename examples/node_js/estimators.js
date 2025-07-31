@@ -11,6 +11,7 @@ const unit_types =
 	"glasses": "GLASSES_ESTIMATOR",
 	"eye_openness": "EYE_OPENNESS_ESTIMATOR",
 	"liveness": "LIVENESS_ESTIMATOR",
+	"deepfake": "DEEPFAKE_ESTIMATOR",
 	"quality": "QUALITY_ASSESSMENT_ESTIMATOR"
 };
 
@@ -65,6 +66,13 @@ function print_glasses(obj)
 	console.log(`Confidence: ${glasses.get("confidence").value.toFixed(2)}`);
 }
 
+function print_deepfake(obj)
+{
+	const deepfake = obj.get('deepfake');
+	console.log(`Has deepfake: ${deepfake.get("value").value}`);
+	console.log(`Confidence: ${deepfake.get("confidence").value.toFixed(2)}`);
+}
+
 function print_eye_openness(obj)
 {
 	const is_right_eye_open = obj.get('is_right_eye_open');
@@ -97,6 +105,7 @@ const print_functions =
 	"glasses": print_glasses,
 	"eye_openness": print_eye_openness,
 	"liveness": print_liveness,
+	"deepfake": print_deepfake,
 	"quality": print_quality,
 }
 

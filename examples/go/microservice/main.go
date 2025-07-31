@@ -486,5 +486,15 @@ func getModificationAndVersion(path string) (string, int) {
 
 	json.NewDecoder(file).Decode(&data)
 
-	return data["modification"].(string), data["version"].(int)
+	modificationVal, ok := data["modification"].(string)
+	if !ok {
+		modificationVal = "1000"
+	}
+
+	versionVal, ok := data["version"].(int)
+	if !ok {
+		versionVal = 1
+	}
+
+	return modificationVal, versionVal
 }

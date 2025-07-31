@@ -629,7 +629,6 @@ void Worker::work(const pbio::InternalImageBuffer::Ptr frame)
 		if( _flag_liveness )
 		{
 			// here we get/create the liveness estimator that work with this face
-			const int id = sample.getID();
 			if(!liveness2d)
 			{
 				liveness2d = _service->createLiveness2DEstimator(liveness_config);

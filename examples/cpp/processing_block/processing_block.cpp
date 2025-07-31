@@ -255,6 +255,54 @@ void drawGlasses(const pbio::Context& data, cv::Mat& image)
 	}
 }
 
+void drawDeepfake(const pbio::Context& data, cv::Mat& image)
+{
+	drawObjects(data, image, std::string("face"));
+
+	const int width = image.size[1];
+	const int heigth = image.size[0];
+
+	for (const pbio::Context& object : data["objects"])
+	{
+		if (object.at("class").getString().compare("face"))
+		{
+			continue;
+		}
+
+		cv::Point text_point{std::min(static_cast<int>(object.at("bbox")[2].getDouble() * width), width),
+							 std::max(static_cast<int>(object.at("bbox")[1].getDouble() * heigth), 0) + 15};
+		const pbio::Context& deepfake = object.at("deepfake");
+		bool value = deepfake.at("value").getBool();
+		double confidence = deepfake.at("confidence").getDouble();
+
+		putTextWithRightExpansion
+		(
+			image,
+			"Deepfake: " + std::to_string(value),
+			text_point,
+			cv::FONT_HERSHEY_DUPLEX,
+			0.5,
+			cv::Scalar(0,0,255),
+			1,
+			false
+		);
+
+		text_point.y += 15;
+
+		putTextWithRightExpansion
+		(
+			image,
+			"Confidence: " + std::to_string(confidence),
+			text_point,
+			cv::FONT_HERSHEY_DUPLEX,
+			0.5,
+			cv::Scalar(0,0,255),
+			1,
+			false
+		);
+	}
+}
+
 void drawEyeOpenness(const pbio::Context& data, cv::Mat& image)
 {
 	int width = image.cols;
@@ -328,6 +376,7 @@ const std::map<std::string, std::string> unitTypes {
 	{"glasses", "GLASSES_ESTIMATOR"},
 	{"eye_openness", "EYE_OPENNESS_ESTIMATOR"},
 	{"liveness", "LIVENESS_ESTIMATOR"},
+	{"deepfake", "DEEPFAKE_ESTIMATOR"},
 	{"quality", "QUALITY_ASSESSMENT_ESTIMATOR"},
 	{"pose", "HUMAN_POSE_ESTIMATOR"},
 };
@@ -343,7 +392,7 @@ int main(int argc, char **argv)
 	// print usage
 	std::cout << "usage: " << argv[0] <<
 		" [--input_image <path to image>]"
-		" [--unit_type body|face|face_keypoint|pose|objects|emotions|age|gender|mask|glasses|eye_openness|liveness|quality]"
+		" [--unit_type body|face|face_keypoint|pose|objects|emotions|age|gender|mask|glasses|eye_openness|liveness|deepfake|quality]"
 		" [--sdk_path ..]"
 		" [--use_cuda]"
 		<< std::endl;
@@ -414,7 +463,7 @@ int main(int argc, char **argv)
 
 		pbio::ProcessingBlock processingBlock = service->createProcessingBlock(configCtx);
 
-		if(unit_type == "quality" || unit_type == "liveness")
+		if(unit_type == "quality" || unit_type == "liveness" || unit_type == "deepfake")
 		{
 			pbio::ProcessingBlock faceDetector = service->createProcessingBlock(createFaceDetector(*service));
 			pbio::ProcessingBlock faceFitter = service->createProcessingBlock(createFaceFitter(*service));
@@ -474,6 +523,8 @@ int main(int argc, char **argv)
 			drawAgeGenderMaskQuality(ioData, image, unit_type);
 		else if (!unit_type.compare("glasses"))
 			drawGlasses(ioData, image);
+		else if (!unit_type.compare("deepfake"))
+			drawDeepfake(ioData, image);
 		else if (!unit_type.compare("eye_openness"))
 			drawEyeOpenness(ioData, image);
 		else if(unit_type.find("liveness") != std::string::npos)
@@ -513,8 +564,7 @@ pbio::Context createFaceDetector(pbio::FacerecService& service)
 	pbio::Context config = service.createContext();
 
 	config["unit_type"] = "FACE_DETECTOR";
-	config["modification"] = "ssyv";
-	config["version"] = static_cast<int64_t>(2);
+	config["modification"] = "ssyv_light";
 	
 	return config;
 }
