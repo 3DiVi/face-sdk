@@ -371,7 +371,7 @@ class Context(ComplexObject):
     def erase(self, key: str):
         exception = make_exception()
 
-        self._dll_handle.clear(self._impl, c_char_p(bytes(key, "ascii")), exception)
+        self._dll_handle.erase(self._impl, c_char_p(bytes(key, "ascii")), exception)
 
         check_processing_block_exception(exception, self._dll_handle)
 

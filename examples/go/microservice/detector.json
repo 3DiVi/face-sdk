@@ -1,4 +1,5 @@
 {
     "unit_type": "FACE_DETECTOR",
-    "modification": "ssyv_light"
+    "modification": "ssyv_light",
+    "version": 1
 }
