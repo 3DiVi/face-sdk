@@ -4,6 +4,7 @@ package facesdk
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define UUID_DEFAULT_SIZE 36
 #define MAX_METHOD_NAME_SIZE 16
@@ -31,6 +32,7 @@ void __4848a76477c449608aa5deb15c5495e4_facerec_v3_DynamicTemplateIndex_at_by_in
 void* __4848a76477c449608aa5deb15c5495e4_facerec_v3_DynamicTemplateIndex_get(void* templateIndex, int64_t index, void** exception);
 void __4848a76477c449608aa5deb15c5495e4_facerec_v3_DynamicTemplateIndex_getMethodName(void* templateIndex, void* stream, binary_stream_write_func_type binary_stream_write_func, void** exception);
 void __4848a76477c449608aa5deb15c5495e4_facerec_v3_DynamicTemplateIndex_clear(void* templateIndex, void** exception);
+void __4848a76477c449608aa5deb15c5495e4_facerec_v3_DynamicTemplateIndex_save(void* templateIndex, const char* filePath, bool allowOverwrite, void** exception);
 void __4848a76477c449608aa5deb15c5495e4_facerec_v3_DynamicTemplateIndex_destructor(void* templateIndex);
 
 extern void writeFunction(void* data, const void* buffer, uint64_t bytesCount);
@@ -220,6 +222,18 @@ func (templateIndex *DynamicTemplateIndex) Clear() error {
 	exception := createException()
 
 	C.__4848a76477c449608aa5deb15c5495e4_facerec_v3_DynamicTemplateIndex_clear(templateIndex.implementation, &exception)
+
+	return checkApiException(exception)
+}
+
+// Save DynamicTemplateIndex to file
+func (templateIndex *DynamicTemplateIndex) Save(filePath string, allowOverwrite bool) error {
+	exception := createException()
+	filePathPtr := C.CString(filePath)
+
+	C.__4848a76477c449608aa5deb15c5495e4_facerec_v3_DynamicTemplateIndex_save(templateIndex.implementation, filePathPtr, C.bool(allowOverwrite), &exception)
+
+	C.free(unsafe.Pointer(filePathPtr))
 
 	return checkApiException(exception)
 }

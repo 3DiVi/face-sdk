@@ -140,6 +140,13 @@ class DynamicTemplateIndex:
         self._dll_handle.DynamicTemplateIndex_clear(self._impl, exception)
 
         check_exception(exception, self._dll_handle)
+        
+    def save(self, file_path: str, allow_overwrite: bool):
+        exception = make_exception()
+
+        self._dll_handle.DynamicTemplateIndex_save(self._impl, c_char_p(file_path.encode()), allow_overwrite, exception)
+        
+        check_exception(exception, self._dll_handle)
 
     @dispatch(str)
     def at(self, uuid: str) -> ContextTemplate:

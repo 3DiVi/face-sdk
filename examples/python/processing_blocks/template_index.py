@@ -7,11 +7,14 @@ from io import BytesIO
 from typing import List
 
 import sys
-from face_sdk_3divi import FacerecService, Template  # FacerecService creates service
-from face_sdk_3divi.modules.context_template import ContextTemplate
-from face_sdk_3divi.modules.processing_block import ProcessingBlock
-from face_sdk_3divi.modules.dynamic_template_index import DynamicTemplateIndex
-
+try:
+    from face_sdk_3divi import FacerecService  # FacerecService creates service
+    from face_sdk_3divi.modules.context_template import ContextTemplate
+    from face_sdk_3divi.modules.processing_block import ProcessingBlock
+    from face_sdk_3divi.modules.dynamic_template_index import DynamicTemplateIndex
+except:
+    from face_sdk_3divi import FacerecService, ContextTemplate, ProcessingBlock, DynamicTemplateIndex # FacerecService creates service
+    
 
 def help_message():
     message = f"\n This program is an example of the TemplateIndex integration \n Usage: " \

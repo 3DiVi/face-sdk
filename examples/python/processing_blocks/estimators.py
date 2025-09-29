@@ -6,9 +6,12 @@ import cv2  # for reading images, visualising window and rectangle creation
 import numpy as np
 
 from sys import platform  # for a platform identification
-from face_sdk_3divi import FacerecService  # FacerecService creates service
-from face_sdk_3divi.modules.context import Context
-from face_sdk_3divi.modules.processing_block import ProcessingBlock
+try:
+    from face_sdk_3divi import FacerecService  # FacerecService creates service
+    from face_sdk_3divi.modules.context import Context
+    from face_sdk_3divi.modules.processing_block import ProcessingBlock
+except:
+    from face_sdk_3divi import FacerecService, Context, ProcessingBlock # FacerecService creates service
 
 from typing import  Dict, Callable, Tuple
 

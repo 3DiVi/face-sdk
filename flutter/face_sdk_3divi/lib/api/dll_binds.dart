@@ -1078,6 +1078,18 @@ typedef _DynamicTemplateIndex_clear_dart = void Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
+typedef _DynamicTemplateIndex_save_c = Void Function(
+    Pointer<Void>,
+    Pointer<Utf8>,
+    Bool,
+    Pointer<Pointer<Void>>);
+
+typedef _DynamicTemplateIndex_save_dart = void Function(
+    Pointer<Void>,
+    Pointer<Utf8>,
+    bool,
+    Pointer<Pointer<Void>>);
+
 // Others
 
 typedef _StructStorage_get_int64_c = Int64 Function(Pointer<Void>, Int32, Pointer<Pointer<Void>>);

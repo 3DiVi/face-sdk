@@ -3172,6 +3172,24 @@ namespace capi {
 	\
 	decl( \
 		void, \
+		DynamicTemplateIndex_save, \
+		( \
+			void* templateIndex, \
+			const char* filePath, \
+			bool allowOverwrite, \
+			void** out_exception \
+		), \
+		( \
+			templateIndex, \
+			filePath, \
+			allowOverwrite, \
+			out_exception \
+		), \
+		) \
+	\
+	\
+	decl( \
+		void, \
 		DynamicTemplateIndex_destructor, \
 		( \
 			void* templateIndex \

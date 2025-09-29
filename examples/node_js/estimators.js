@@ -141,6 +141,10 @@ function main()
 		const version = argv.version;
 		const use_cuda = argv.use_cuda;
 
+		if (!(unit_type in unit_types)) {
+			throw new Error(`unknown: ${unit_type}`);
+		}
+
 		let detector_config = new facerec.Context();
 		detector_config.get("unit_type").value = "FACE_DETECTOR";
 		detector_config.get("modification").value = "ssyv_light";
@@ -180,7 +184,7 @@ function main()
 		print_output(ioData, print_functions[unit_type]);
 
 	} catch (err) {
-		console.log(err)
+		console.log(err.message)
 	}
 }
 

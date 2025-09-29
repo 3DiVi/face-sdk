@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"errors"
 )
 
 type printResultFunction func(data map[string]any)
@@ -56,6 +57,10 @@ func main() {
 		panic("Not supported unit_type")
 	}
 
+	if _, err := os.Stat(*imagePath); errors.Is(err, os.ErrNotExist) {
+		panic("Not valid path to input image")
+	}
+	
 	service, err := facesdk.CreateFacerecService(fmt.Sprintf("%s/conf/facerec", *sdkPath), fmt.Sprintf("%s/license", *sdkPath))
 	checkError(err)
 

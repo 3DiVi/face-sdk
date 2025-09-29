@@ -530,6 +530,12 @@ class DllHandle:
 
         return func(*args, **kwargs)
 
+    def DynamicTemplateIndex_save(self, *args, **kwargs):
+        func = self.__dll_handle['{}DynamicTemplateIndex_save'.format(self.__namespace)]
+        func.restype = None
+
+        return func(*args, **kwargs)
+
     def DynamicTemplateIndex_destructor(self, *args, **kwargs):
         func = self.__dll_handle['{}DynamicTemplateIndex_destructor'.format(self.__namespace)]
         func.restype = None

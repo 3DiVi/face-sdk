@@ -225,6 +225,16 @@ class DynamicTemplateIndex {
     checkException(exception, _dll_handle);
   }
 
+  void save(String filePath, bool allowOverwrite) {
+    var exception = _getException();
+
+    final saveConstructor = _dll_handle.lookupFunction<_DynamicTemplateIndex_save_c, _DynamicTemplateIndex_save_dart>(_c_namespace + "DynamicTemplateIndex_save");
+
+    saveConstructor(_impl, filePath.toNativeUtf8(), allowOverwrite, exception);
+
+    checkException(exception, _dll_handle);
+  }
+
   void dispose() {
     if (_weak || _isDisposed) {
       return;
