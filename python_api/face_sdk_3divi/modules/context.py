@@ -491,6 +491,8 @@ class Context(ComplexObject):
 
     @dispatch(object)
     def parser(self, ctx):
+        if ctx is None:
+            return
         assert isinstance(ctx, Context), "the object does not belong to the base types or Context"
         if ctx is not self:
             if self.__weak_:

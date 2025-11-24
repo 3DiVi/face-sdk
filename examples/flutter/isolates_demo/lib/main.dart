@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
     _templateExtractor =
         await _service!.createAsyncProcessingBlock({"unit_type": "FACE_TEMPLATE_EXTRACTOR", "modification": "30"});
     _qaa = await _service!.createAsyncProcessingBlock({
-      "unit_type": "QUALITY_CONTROL",
+      "unit_type": "QUALITY_ASSESSMENT_ESTIMATOR",
       "modification": "assessment",
       "config_name": "quality_assessment.xml",
       "version": 1,

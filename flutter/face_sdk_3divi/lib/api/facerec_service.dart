@@ -57,7 +57,9 @@ class FacerecService extends _ComplexObject {
     final String libraryDirectory = await getLibraryDirectory();
     final String facerecConfDir = "$dataDirectory/conf/facerec";
     final String licenseDir = "$dataDirectory/license";
-    final String dllPath = "$libraryDirectory/${FaceSdkPlugin.nativeLibName}";
+
+    final checkDll = await File("$libraryDirectory/${FaceSdkPlugin.nativeLibName}").exists();
+    final String dllPath = (checkDll) ? "$libraryDirectory/${FaceSdkPlugin.nativeLibName}" : FaceSdkPlugin.nativeLibName;
     final DynamicLibrary dylib = DynamicLibrary.open(dllPath);
 
     final createService = dylib.lookupFunction<_facerecConstructor, _facerecConstructor>(_c_namespace + 'FacerecService_constructor2');

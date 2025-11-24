@@ -236,7 +236,7 @@ class _HomePageState extends State<HomePage> {
     fitter = service
         .createProcessingBlock({"unit_type": "FACE_FITTER", "modification": "tddfa_faster"});
     qualityAssessment = service.createProcessingBlock({
-      "unit_type": "QUALITY_CONTROL",
+      "unit_type": "QUALITY_ASSESSMENT_ESTIMATOR",
       "modification": "assessment",
       "config_name": "quality_assessment.xml",
       "version": 1,

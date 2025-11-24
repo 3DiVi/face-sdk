@@ -1,9 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
@@ -94,6 +92,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
     RawSample? sample = await pool();
 
     if (sample == null) {
+      frame.dispose();
       bboxWidget = null;
 
       isReady = true;
@@ -188,6 +187,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
 
     if (!isProcessFrameReady) {
       sample.dispose();
+      frame?.dispose();
 
       return;
     }
@@ -217,6 +217,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
     if (_isLivenessSet) {
       data.dispose();
       sample.dispose();
+      frame?.dispose();
 
       isProcessFrameReady = true;
 

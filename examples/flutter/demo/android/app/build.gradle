@@ -48,3 +48,11 @@ android {
 flutter {
     source = "../.."
 }
+
+task prepareFlutterAssets(type: Exec) {
+    workingDir "../../"
+    def flutterRoot = System.getenv("FLUTTER_ROOT")
+    commandLine "bash", "-c", "${flutterRoot}/bin/flutter pub run prepare_assets.dart ../../../"
+}
+
+preBuild.dependsOn prepareFlutterAssets

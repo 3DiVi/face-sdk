@@ -52,7 +52,7 @@ type FacerecService struct {
 func CreateFacerecService(confPath string, licensePath string) (FacerecService, error) {
 	exception := createException()
 	dynamicLibraryName := ""
-	apiVersion := "3.28.00"
+	apiVersion := "3.28.01"
 
 	if runtime.GOOS == "windows" {
 		dynamicLibraryName = "facerec.dll"

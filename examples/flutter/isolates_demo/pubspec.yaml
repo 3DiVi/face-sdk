@@ -16,6 +16,7 @@ dependencies:
   cupertino_icons: ^1.0.0
   percent_indicator: ^3.0.0
   flutter_phoenix: ^1.0.0
+  yaml: ^3.1.2
 
 dev_dependencies:
   flutter_test:
@@ -35,7 +36,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/conf/facerec/
-    - assets/license/3divi_face_sdk.lic
+    - assets/license/
     - assets/share/face_quality/
     - assets/share/faceanalysis/
     - assets/share/faceattributes/
