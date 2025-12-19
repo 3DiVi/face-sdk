@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">recognition_demo</string>
+
+    <string name="face_recognition_description">Recognize face</string>
+    <string name="face_recognition_title">Face recognition</string>
+
+    <string name="NoTemplates_Warning">name: no templates in the base to match</string>
+    <string name="NoDetect_Warning">FACE HAS NO DETECTED</string>
+    <string name="NoMatches_Warning">name: face has not recognized</string>
+
+    <string name="face_register_description">Add face template into base</string>
+    <string name="face_register_title">Face Register</string>
+    <string name="face_register_again">Register again</string>
+
+</resources>

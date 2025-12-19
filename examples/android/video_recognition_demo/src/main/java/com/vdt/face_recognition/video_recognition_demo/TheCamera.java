@@ -8,24 +8,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
-import android.graphics.Matrix;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
-import android.graphics.YuvImage;
 import android.hardware.Camera;
-import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.vdt.face_recognition.sdk.SDKException;
-
-import com.vdt.face_recognition.video_recognition_demo.TheCameraPainter;
 
 
 public class TheCamera implements Camera.PreviewCallback
@@ -52,15 +42,14 @@ public class TheCamera implements Camera.PreviewCallback
 	public static class TheCameraInfo {
 		public int id = 0; // id of camera
 		public List<Size> resolutions = null;
-	} 
-	
+	}
+
 	public static List<TheCamera.TheCameraInfo> getAvailableCameras() {
-		List<TheCameraInfo> result = new ArrayList<TheCameraInfo>();
+		List<TheCameraInfo> result = new ArrayList<>();
 		int count = Camera.getNumberOfCameras();
 		for (int i = 0; i < count; i++) {
 			Camera cam = null;
-			List<Size> resolutions = null; 
-			try {
+            try {
 				cam = Camera.open(i);
 				Parameters params = cam.getParameters();
 				TheCameraInfo cam_info = new TheCameraInfo();

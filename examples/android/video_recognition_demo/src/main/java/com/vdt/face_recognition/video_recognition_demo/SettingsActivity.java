@@ -1,18 +1,13 @@
 package com.vdt.face_recognition.video_recognition_demo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.hardware.Camera;
-import android.hardware.Camera.CameraInfo;
-import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -24,10 +19,8 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.vdt.face_recognition.video_recognition_demo.TheCamera;
 
 
 public class SettingsActivity extends Activity{
@@ -35,23 +28,19 @@ public class SettingsActivity extends Activity{
 	private static final String TAG = "Settings Activity";
 	private static final String SETTINGS_NAME = "SETTINGS";
 
-	private ArrayList<RadioButton> rb_list = new ArrayList<RadioButton>();
-	private RadioGroup radioGroup = null;
-	private RadioButton rb0 = null;
-	private RadioButton rb1 = null;
-	private RadioButton rb2 = null;
+	private final ArrayList<RadioButton> rb_list = new ArrayList<>();
 
-	private Spinner resolution_spinner = null;
+    private Spinner resolution_spinner = null;
 	private Spinner recognizer_spinner = null;
 
 	private EditText threshold_editText = null;
 
-	private ArrayList<ArrayList<String>> cams_resolutions = new ArrayList<ArrayList<String>>();
+	private final ArrayList<ArrayList<String>> cams_resolutions = new ArrayList<>();
 
 	private int camera_id;
 	private String resolution;
-	private String [] recognizer_methods = new String [3];
-	private String [] thresholds = new String [3];
+	private final String [] recognizer_methods = new String [3];
+	private final String [] thresholds = new String [3];
 	private int recognizer_method_index;
 
 
@@ -62,10 +51,10 @@ public class SettingsActivity extends Activity{
 		setContentView(R.layout.settings);
 
 		//radio buttons init
-		radioGroup = (RadioGroup) findViewById(R.id.cameras_radio_group);
-		rb0 = (RadioButton) findViewById(R.id.camera0_radio_button);
-		rb1 = (RadioButton) findViewById(R.id.camera1_radio_button);
-		rb2 = (RadioButton) findViewById(R.id.camera2_radio_button);
+        RadioGroup radioGroup = findViewById(R.id.cameras_radio_group);
+        RadioButton rb0 = findViewById(R.id.camera0_radio_button);
+        RadioButton rb1 = findViewById(R.id.camera1_radio_button);
+        RadioButton rb2 = findViewById(R.id.camera2_radio_button);
 
 		rb_list.add(rb0);
 		rb_list.add(rb1);
@@ -84,7 +73,7 @@ public class SettingsActivity extends Activity{
 		thresholds[2] 			= shared_settings.getString	("threshold2", null);
 
 		List<TheCamera.TheCameraInfo> availableCameras = TheCamera.getAvailableCameras();
-		if (availableCameras.size() == 0) {
+		if (availableCameras.isEmpty()) {
 			Log.e(TAG, "No available cameras");
 			Intent toErrorIntent = new Intent(this, ErrorActivity.class);
 			toErrorIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -94,9 +83,9 @@ public class SettingsActivity extends Activity{
 			return;
 		}
 
-				
+
 		for(int i = 0; i < rb_list.size(); i++) {
-			cams_resolutions.add(new ArrayList<String>());
+			cams_resolutions.add(new ArrayList<>());
 			rb_list.get(i).setVisibility(View.GONE);
 		}
 
@@ -108,7 +97,7 @@ public class SettingsActivity extends Activity{
 			if (cam_id < rb_list.size()) {
 				rb_list.get(cam_id).setVisibility(View.VISIBLE);
 				for (Size size: resolutions) {
-					String resolution_string = Integer.toString(size.width) + "x" + Integer.toString(size.height);
+					String resolution_string = size.width + "x" + size.height;
 					cams_resolutions.get(cam_id).add(resolution_string);
 					Log.d(TAG, "    " + resolution_string);
 				}
@@ -127,135 +116,131 @@ public class SettingsActivity extends Activity{
 		rb.setChecked(true);
 
 		//resolution spinner
-        resolution_spinner = (Spinner) findViewById(R.id.resolution_spinner);
-        setSpinnerResolutions(resolution);
+		resolution_spinner = findViewById(R.id.resolution_spinner);
+		setSpinnerResolutions(resolution);
 
-        //recognizer spinner
-        recognizer_spinner = (Spinner) findViewById(R.id.recognizer_spinner);
-        setSpinnerRecognizer();
-        recognizer_spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+		//recognizer spinner
+		recognizer_spinner = findViewById(R.id.recognizer_spinner);
+		setSpinnerRecognizer();
+		recognizer_spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-            @Override
-            public void onItemSelected(
-            	AdapterView<?> adapterView,
-            	View view,
-                int position,
-                long id)
-            {
-                threshold_editText.setText(thresholds[position]);
-            }
+			@Override
+			public void onItemSelected(
+					AdapterView<?> adapterView,
+					View view,
+					int position,
+					long id)
+			{
+				threshold_editText.setText(thresholds[position]);
+			}
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
-        });
+			@Override
+			public void onNothingSelected(AdapterView<?> adapterView) {}
+		});
 
-        //recognizer threshold
-		threshold_editText = (EditText) findViewById(R.id.threshold_editText);
+		//recognizer threshold
+		threshold_editText = findViewById(R.id.threshold_editText);
 		threshold_editText.setText(thresholds[recognizer_method_index]);
 
 		//ok - button
-		Button okButton = (Button) findViewById(R.id.settings_ok_button);
-		okButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            	if (TextUtils.isEmpty(threshold_editText.getText().toString())){
-					Toast.makeText(SettingsActivity.this, "the threshold cannot be empty",
-							Toast.LENGTH_LONG).show();
-					return;
-				}
+		Button okButton = findViewById(R.id.settings_ok_button);
+		okButton.setOnClickListener(v -> {
+			if (TextUtils.isEmpty(threshold_editText.getText().toString())){
+				Toast.makeText(SettingsActivity.this, "the threshold cannot be empty",
+						Toast.LENGTH_LONG).show();
+				return;
+			}
 
-            	int new_method_index = recognizer_spinner.getSelectedItemPosition();
+			int new_method_index = recognizer_spinner.getSelectedItemPosition();
 
-				final SharedPreferences shared_settings = getSharedPreferences(SETTINGS_NAME, 0);
-				SharedPreferences.Editor editor = shared_settings.edit();
+			final SharedPreferences shared_settings1 = getSharedPreferences(SETTINGS_NAME, 0);
+			SharedPreferences.Editor editor = shared_settings1.edit();
 
-				editor.putInt 		("camera id", camera_id);
-				editor.putString 	("resolution", resolution_spinner.getSelectedItem().toString());
-				editor.putInt 		("method index", new_method_index);
-				switch(new_method_index){
-					case 0:
-						editor.putString("threshold0", threshold_editText.getText().toString());
-						break;
-					case 1:
-						editor.putString("threshold1", threshold_editText.getText().toString());
-						break;
-					case 2:
-						editor.putString("threshold2", threshold_editText.getText().toString());
-						break;
+			editor.putInt 		("camera id", camera_id);
+			editor.putString 	("resolution", resolution_spinner.getSelectedItem().toString());
+			editor.putInt 		("method index", new_method_index);
+			switch(new_method_index){
+				case 0:
+					editor.putString("threshold0", threshold_editText.getText().toString());
+					break;
+				case 1:
+					editor.putString("threshold1", threshold_editText.getText().toString());
+					break;
+				case 2:
+					editor.putString("threshold2", threshold_editText.getText().toString());
+					break;
 
-				}
+			}
 
-				//check updates
-				if(recognizer_method_index != new_method_index){
-					//new recognizier
+			//check updates
+			if(recognizer_method_index != new_method_index){
+				//new recognizier
+				editor.putBoolean("recognizer_updated", true);
+			}else{
+				if(!thresholds[recognizer_method_index].equals(threshold_editText.getText().toString())) {
+					//new threshold
 					editor.putBoolean("recognizer_updated", true);
-				}else{
-					if(!thresholds[recognizer_method_index].equals(threshold_editText.getText().toString())) {
-						//new threshold
-						editor.putBoolean("recognizer_updated", true);
-					}
 				}
+			}
 
-				if(!resolution.equals(resolution_spinner.getSelectedItem().toString())) {
-					//new capturer
-					editor.putBoolean("capturer_updated", true);
-				}
+			if(!resolution.equals(resolution_spinner.getSelectedItem().toString())) {
+				//new capturer
+				editor.putBoolean("capturer_updated", true);
+			}
 
-				editor.commit();
+			editor.apply();
 
-            	finish();
-            }
-        });
+			finish();
+		});
 
 	}
 
 
 	public void onRadioClicked(View view) {
-
-		switch (view.getId()) {
-
-			case R.id.camera0_radio_button:
-				camera_id = 0;
-				setSpinnerResolutions("640x480");
-				break;
-
-			case R.id.camera1_radio_button:
-				camera_id = 1;
-				setSpinnerResolutions("640x480");
-				break;
-
-			case R.id.camera2_radio_button:
-				camera_id = 2;
-				setSpinnerResolutions("640x480");
-				break;
+		int id = view.getId();
+		if (id == R.id.camera0_radio_button)
+		{
+			camera_id = 0;
+			setSpinnerResolutions("640x480");
+		}
+		else if (id == R.id.camera1_radio_button)
+		{
+			camera_id = 1;
+			setSpinnerResolutions("640x480");
+		}
+		else if(id == R.id.camera2_radio_button)
+		{
+			camera_id = 2;
+			setSpinnerResolutions("640x480");
 		}
 	}
 
 
 	private void setSpinnerResolutions(String resolution){
-		
-		ArrayAdapter<String> resolution_spinnerAdapter = new ArrayAdapter<String>(
-			this,
-			android.R.layout.simple_spinner_item,
-			cams_resolutions.get(camera_id).toArray(new String[0]));
-        resolution_spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        resolution_spinner.setAdapter(resolution_spinnerAdapter);
 
-        int spinner_index = cams_resolutions.get(camera_id).indexOf(resolution);
-        spinner_index = (spinner_index == -1) ? 0 : spinner_index;
-        resolution_spinner.setSelection(spinner_index);
+		ArrayAdapter<String> resolution_spinnerAdapter = new ArrayAdapter<>(
+				this,
+				android.R.layout.simple_spinner_item,
+				cams_resolutions.get(camera_id).toArray(new String[0]));
+		resolution_spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		resolution_spinner.setAdapter(resolution_spinnerAdapter);
+
+		int spinner_index = cams_resolutions.get(camera_id).indexOf(resolution);
+		spinner_index = (spinner_index == -1) ? 0 : spinner_index;
+		resolution_spinner.setSelection(spinner_index);
 	}
 
 
 	private void setSpinnerRecognizer(){
 
-		ArrayAdapter<String> recognizer_spinnerAdapter = new ArrayAdapter<String>(
-			this,
-			android.R.layout.simple_spinner_item,
-			recognizer_methods);
-        recognizer_spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        recognizer_spinner.setAdapter(recognizer_spinnerAdapter);
+		ArrayAdapter<String> recognizer_spinnerAdapter = new ArrayAdapter<>(
+				this,
+				android.R.layout.simple_spinner_item,
+				recognizer_methods);
+		recognizer_spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		recognizer_spinner.setAdapter(recognizer_spinnerAdapter);
 
-        recognizer_spinner.setSelection(recognizer_method_index);
+		recognizer_spinner.setSelection(recognizer_method_index);
 	}
 
 }

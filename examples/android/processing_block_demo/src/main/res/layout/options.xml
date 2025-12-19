@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.87"
+        android:orientation="horizontal"
+        >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.33"
+            android:orientation="vertical"
+            >
+            
+            <CheckBox
+                android:id="@+id/rectangle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rectangle_check_box_text"
+                android:onClick="onCheckboxClicked" />
+
+            <CheckBox
+                android:id="@+id/angles"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/angles_check_box_text"
+                android:onClick="onCheckboxClicked" />
+
+            <CheckBox
+                android:id="@+id/quality"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/quality_check_box_text"
+                android:onClick="onCheckboxClicked" />
+
+            <CheckBox
+                android:id="@+id/liveness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/liveness_check_box_text"
+                android:onClick="onCheckboxClicked" />
+
+            <CheckBox
+                android:id="@+id/age_and_gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/age_and_gender_check_box_text"
+                android:onClick="onCheckboxClicked" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.33"
+            android:orientation="vertical"
+            >
+
+            <CheckBox
+                android:id="@+id/points"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/points_check_box_text"
+                android:onClick="onCheckboxClicked" />
+
+            <CheckBox
+                android:id="@+id/angles_vectors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/angles_vectors_check_box_text"
+                android:onClick="onCheckboxClicked" />
+
+            <CheckBox
+                android:id="@+id/emotions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/emotions_check_box_text"
+                android:onClick="onCheckboxClicked" />
+
+            <CheckBox
+                android:id="@+id/face_mask"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/face_mask_box_text"
+                android:onClick="onCheckboxClicked" />
+
+            <CheckBox
+                android:id="@+id/eyes_openness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/eyes_openness_box_text"
+                android:onClick="onCheckboxClicked" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.34"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" Face cut: " />
+
+            <RadioGroup
+                android:id="@+id/face_cut_radio_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true" >
+
+                <RadioButton
+                    android:id="@+id/none_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/none_radio_button"
+                    android:textAppearance="?android:textAppearanceMedium" />
+
+                <RadioButton
+                    android:id="@+id/base_cut_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/base_cut_radio_button"
+                    android:textAppearance="?android:textAppearanceMedium" />
+
+                <RadioButton
+                    android:id="@+id/full_cut_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/full_cut_radio_button"
+                    android:textAppearance="?android:textAppearanceMedium" />
+
+                <RadioButton
+                    android:id="@+id/token_cut_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/token_cut_radio_button"
+                    android:textAppearance="?android:textAppearanceMedium" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <Button 
+        android:id="@+id/options_ok_button"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.13"
+        android:text="ok"
+        android:layout_centerHorizontal="true" />
+
+
+</LinearLayout>

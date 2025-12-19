@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/faceRecognitionFragment">
+
+    <fragment
+        android:id="@+id/faceRecognitionFragment"
+        android:name="com.example.recognition_demo.FaceRecognitionFragment"
+        android:label="Recognition"
+        tools:layout="@layout/fragment_face_recognition">
+        <action
+            android:id="@+id/action_faceRecognitionFragment_to_faceRegisterFragment"
+            app:destination="@id/faceRegisterFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/faceRegisterFragment"
+        android:name="com.example.recognition_demo.FaceRegisterFragment"
+        android:label="Register"
+        tools:layout="@layout/fragment_face_register">
+        <action
+            android:id="@+id/action_faceRegisterFragment_to_faceRecognitionFragment"
+            app:destination="@id/faceRecognitionFragment" />
+    </fragment>
+
+</navigation>

@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.vdt.face_recognition.sdk.SDKException;
-
 
 public class ErrorActivity extends Activity
 {

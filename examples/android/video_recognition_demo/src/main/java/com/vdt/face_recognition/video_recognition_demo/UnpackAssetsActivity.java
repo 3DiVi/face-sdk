@@ -12,7 +12,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
-import java.util.ArrayDeque;
 import java.util.Queue;
 
 
@@ -29,7 +28,7 @@ public class UnpackAssetsActivity extends Activity
 		setContentView(R.layout.unpack_assets);
 
 		// unpack in different thread to let the progressbar spin
-		the_thread = new Thread(new Runnable(){public void run() {
+		the_thread = new Thread(() -> {
 		try
 		{
 			final AssetManager asman = getAssets();
@@ -49,7 +48,7 @@ public class UnpackAssetsActivity extends Activity
 
 				final String persistent_dir = getApplicationInfo().dataDir;
 
-				Queue<String> queue = new ArrayDeque();
+				Queue<String> queue = new ArrayDeque<>();
 				queue.add("conf");
 				queue.add("share");
 				queue.add("license");
@@ -105,7 +104,7 @@ public class UnpackAssetsActivity extends Activity
 			Log.e("UnpackAssetsActivity", e.getMessage());
 			e.printStackTrace();
 			finishAffinity();
-		}}});
+		}});
 
 		the_thread.start();
 	}

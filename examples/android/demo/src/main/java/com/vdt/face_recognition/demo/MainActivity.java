@@ -1,23 +1,14 @@
 package com.vdt.face_recognition.demo;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import android.graphics.Color;
 import android.Manifest;
@@ -28,15 +19,13 @@ import android.content.pm.PackageManager;
 import com.vdt.face_recognition.sdk.FacerecService;
 import com.vdt.face_recognition.sdk.SDKException;
 
-import com.vdt.face_recognition.demo.TheCamera;
-
 
 public class MainActivity extends Activity
 {
 	private static final int REQUEST_SETTINGS = 1;
 	private static final int REQUEST_OPTIONS = 2;
 
-	private static final String TAG = "MainActivity face_sdk_demo";
+	private static final String TAG = "MainActivity";
 
 	private TheCamera camera = null;
 	private Demo demo = null;
@@ -51,14 +40,14 @@ public class MainActivity extends Activity
 	private int faceCutTypeId;
 
 
-	private String[] permissions_str = new String[] {
+	private final String[] permissions_str = new String[] {
 		Manifest.permission.CAMERA,
 		Manifest.permission.READ_EXTERNAL_STORAGE,
 		Manifest.permission.WRITE_EXTERNAL_STORAGE,
 		Manifest.permission.READ_PHONE_STATE,
 	};
 
-	private int[] permissions_tv_id = new int[] {
+	private final int[] permissions_tv_id = new int[] {
 		R.id.camera_perm_status,
 		R.id.read_storage_perm_status,
 		R.id.write_storage_perm_status,
@@ -85,7 +74,7 @@ public class MainActivity extends Activity
 
 			if(ContextCompat.checkSelfPermission(this, perstr) == PackageManager.PERMISSION_GRANTED)
 			{
-				TextView tv = (TextView) findViewById(permissions_tv_id[i]);
+				TextView tv = findViewById(permissions_tv_id[i]);
 				tv.setText(" granted ");
 				tv.setTextColor(Color.GREEN);
 				++granted_count;
@@ -126,7 +115,7 @@ public class MainActivity extends Activity
 			Log.i(TAG, "workaround catch '" + e.getMessage() + "'");
 			license_state = service.getLicenseState();
 		}
-		Log.i(TAG, "license_state.online            = " + Boolean.toString(license_state.online));
+		Log.i(TAG, "license_state.online            = " + license_state.online);
 		Log.i(TAG, "license_state.android_app_id    = " + license_state.android_app_id);
 		Log.i(TAG, "license_state.android_serial    = " + license_state.android_serial);
 		Log.i(TAG, "license_state.ios_app_id        = " + license_state.ios_app_id);
@@ -148,7 +137,7 @@ public class MainActivity extends Activity
 		{
 			if(grantResults[i] == PackageManager.PERMISSION_GRANTED)
 			{
-				TextView tv = (TextView) findViewById(permissions_tv_id[i]);
+				TextView tv = findViewById(permissions_tv_id[i]);
 				tv.setText(" granted ");
 				tv.setTextColor(Color.GREEN);
 			}
@@ -208,7 +197,7 @@ public class MainActivity extends Activity
 
 				case REQUEST_SETTINGS:
 
-			        camera_id = data.getIntExtra("cam_id", camera_id);
+					camera_id = data.getIntExtra("cam_id", camera_id);
 					String stemp = data.getStringExtra("selected_resolution");
 
 					if (!stemp.equals(getStringResolution())){
@@ -253,12 +242,10 @@ public class MainActivity extends Activity
 				ma.flags = demo.getFlags();
 				ma.faceCutTypeId = demo.getFaceCutTypeId();
 
-				ma.runOnUiThread(new Runnable() {
-					public void run() {
-						ma.demo = demo;
-						ma.camera = camera;
-						ma.showForm();
-					}
+				ma.runOnUiThread(() -> {
+					ma.demo = demo;
+					ma.camera = camera;
+					ma.showForm();
 				});
 			}catch(Exception e){
 				exceptionHappensDo(ma, e);
@@ -272,56 +259,48 @@ public class MainActivity extends Activity
 		
 		setContentView(R.layout.main);
 		
-		TextView textView = (TextView) findViewById(R.id.textView);
+		TextView textView = findViewById(R.id.textView);
 		textView.setMovementMethod(new ScrollingMovementMethod());
 
 		demo.setTextView();
 
-		Button quitButton = (Button) findViewById(R.id.quit_button);
-		quitButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                finishAffinity();
-            }
-        });
+		Button quitButton = findViewById(R.id.quit_button);
+		quitButton.setOnClickListener(v -> finishAffinity());
 
-        Button optionsButton = (Button) findViewById(R.id.options_button);
-		optionsButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent toOptionsIntent = new Intent(getApplicationContext(), OptionsActivity.class);
-        		toOptionsIntent.putExtra("flags", flags);
-        		toOptionsIntent.putExtra("faceCutTypeId", faceCutTypeId);
-				startActivityForResult(toOptionsIntent, REQUEST_OPTIONS);
-            }
-        });
+		Button optionsButton = findViewById(R.id.options_button);
+		optionsButton.setOnClickListener(v -> {
+			Intent toOptionsIntent = new Intent(getApplicationContext(), OptionsActivity.class);
+			toOptionsIntent.putExtra("flags", flags);
+			toOptionsIntent.putExtra("faceCutTypeId", faceCutTypeId);
+			startActivityForResult(toOptionsIntent, REQUEST_OPTIONS);
+		});
 
-        Button settingsButton = (Button) findViewById(R.id.settings_button);
-		settingsButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent toSettingsIntent = new Intent(getApplicationContext(), SettingsActivity.class);
+		Button settingsButton = findViewById(R.id.settings_button);
+		settingsButton.setOnClickListener(v -> {
+			Intent toSettingsIntent = new Intent(getApplicationContext(), SettingsActivity.class);
 
-                toSettingsIntent.putExtra("selected_camera_id", camera_id);
-                toSettingsIntent.putExtra("selected_resolution", getStringResolution());
+			toSettingsIntent.putExtra("selected_camera_id", camera_id);
+			toSettingsIntent.putExtra("selected_resolution", getStringResolution());
 
-				startActivityForResult(toSettingsIntent, REQUEST_SETTINGS);
-            }
-        });
+			startActivityForResult(toSettingsIntent, REQUEST_SETTINGS);
+		});
 
-        camera.open(demo, camera_id, im_width, im_height);
+		camera.open(demo, camera_id, im_width, im_height);
 	
 	}
 
 
-    private void setNewResolution(String resol){
+	private void setNewResolution(String resol){
 
-    	String [] tempStr = resol.split("x");
-    	im_width = Integer.parseInt(tempStr[0]);
-    	im_height = Integer.parseInt(tempStr[1]);
+		String [] tempStr = resol.split("x");
+		im_width = Integer.parseInt(tempStr[0]);
+		im_height = Integer.parseInt(tempStr[1]);
 
 	}
 
 
 	private String getStringResolution(){
-		return Integer.toString(im_width)+"x"+Integer.toString(im_height);
+		return im_width +"x"+ im_height;
 	}
 
 

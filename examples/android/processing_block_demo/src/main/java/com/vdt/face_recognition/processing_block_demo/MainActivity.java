@@ -1,0 +1,338 @@
+package com.vdt.face_recognition.processing_block_demo;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.TextView;
+
+import android.graphics.Color;
+import android.Manifest;
+import androidx.core.content.ContextCompat;
+import androidx.core.app.ActivityCompat;
+import android.content.pm.PackageManager;
+
+import com.vdt.face_recognition.sdk.FacerecService;
+import com.vdt.face_recognition.sdk.SDKException;
+
+
+public class MainActivity extends Activity
+{
+	private static final int REQUEST_SETTINGS = 1;
+	private static final int REQUEST_OPTIONS = 2;
+
+	private static final String TAG = "MainActivity";
+
+	private TheCamera camera = null;
+	private Demo demo = null;
+
+	//Settings
+	private int camera_id = 1;
+	private int im_width = 640;
+	private int im_height = 480;
+
+	//Options
+	private boolean [] flags;
+	private String faceCutType;
+
+	private final String[] faceCutTypes = {
+			"FACE_CUT_BASE",
+			"FACE_CUT_TOKEN_FRONTAL",
+			"FACE_CUT_FULL_FRONTAL"
+	};
+
+
+	private final String[] permissions_str = new String[] {
+		Manifest.permission.CAMERA,
+		Manifest.permission.READ_EXTERNAL_STORAGE,
+		Manifest.permission.WRITE_EXTERNAL_STORAGE,
+		Manifest.permission.READ_PHONE_STATE,
+	};
+
+	private final int[] permissions_tv_id = new int[] {
+		R.id.camera_perm_status,
+		R.id.read_storage_perm_status,
+		R.id.write_storage_perm_status,
+		R.id.read_phone_perm_status,
+	};
+
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+
+
+
+		// view persmissions status
+		setContentView(R.layout.permissions);
+
+		// check and request permissions
+		int granted_count = 0;
+
+		for(int i = 0; i < permissions_str.length; ++i)
+		{
+			String perstr = permissions_str[i];
+
+			if(ContextCompat.checkSelfPermission(this, perstr) == PackageManager.PERMISSION_GRANTED)
+			{
+				TextView tv = findViewById(permissions_tv_id[i]);
+				tv.setText(" granted ");
+				tv.setTextColor(Color.GREEN);
+				++granted_count;
+			}
+		}
+
+		if(granted_count < permissions_str.length)
+		{
+			ActivityCompat.requestPermissions(this, permissions_str, 0);
+		}
+		else
+		{
+			starting();
+		}
+	}
+
+
+	private void starting()
+	{
+		setContentView(R.layout.splash);
+
+		FacerecService service = FacerecService.createService(
+			getApplicationInfo().nativeLibraryDir + "/libfacerec.so",
+			getApplicationInfo().dataDir + "/fsdk/conf/facerec",
+			getApplicationInfo().dataDir + "/fsdk/license");
+		Log.i(TAG, "Library version: " + service.getVersion());
+
+		FacerecService.LicenseState license_state;
+		try
+		{
+			license_state = service.getLicenseState();
+		}
+		catch(Exception e)
+		{
+			// just ignore any exception here
+			//  this is workaround of rare error caused by incorret
+			//  previous shutdown of the application
+			Log.i(TAG, "workaround catch '" + e.getMessage() + "'");
+			license_state = service.getLicenseState();
+		}
+		Log.i(TAG, "license_state.online			= " + Boolean.toString(license_state.online));
+		Log.i(TAG, "license_state.android_app_id	= " + license_state.android_app_id);
+		Log.i(TAG, "license_state.android_serial	= " + license_state.android_serial);
+		Log.i(TAG, "license_state.ios_app_id		= " + license_state.ios_app_id);
+		Log.i(TAG, "license_state.hardware_reg	  = " + license_state.hardware_reg);
+
+
+		new Thread(new LoadThread(this, service)).start();
+	}
+
+	@Override
+	public void onRequestPermissionsResult(
+		int requestCode,
+		String[] permissions,
+		int[] grantResults)
+	{
+		boolean ask_again = false;
+
+		for(int i = 0; i < permissions.length; ++i)
+		{
+			if(grantResults[i] == PackageManager.PERMISSION_GRANTED)
+			{
+				TextView tv = (TextView) findViewById(permissions_tv_id[i]);
+				tv.setText(" granted ");
+				tv.setTextColor(Color.GREEN);
+			}
+			else if(!permissions[i].equals(Manifest.permission.READ_PHONE_STATE))  // READ_PHONE_STATE is optional
+			{
+				ask_again = true;
+			}
+		}
+
+		if(ask_again)
+		{
+			final Activity this_activity = this;
+			new Timer().schedule(new TimerTask(){@Override public void run() {
+				ActivityCompat.requestPermissions(this_activity, permissions_str, 0);
+			}}, 2000);
+		}
+		else
+		{
+			starting();
+		}
+	}
+
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if (camera != null && demo != null){
+			camera.open(demo, camera_id, im_width, im_height);
+		}
+	}
+
+
+	@Override
+	protected void onPause() {
+		if(camera != null) camera.close();
+
+		super.onPause();
+	}
+
+
+	@Override
+	protected void onDestroy() {
+		if(camera != null) camera.close();
+
+		if(demo != null) demo.dispose();
+
+		super.onDestroy();
+	}
+
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		if(resultCode == RESULT_OK){
+			switch(requestCode){
+
+				case REQUEST_SETTINGS:
+
+					camera_id = data.getIntExtra("cam_id", camera_id);
+					String stemp = data.getStringExtra("selected_resolution");
+
+					if (!stemp.equals(getStringResolution())){
+						demo.updateFaceDetector();
+						setNewResolution(stemp);
+					}
+					
+
+					break;
+
+				case REQUEST_OPTIONS:
+
+					flags = data.getBooleanArrayExtra("flags");
+					int faceCutTypeId = data.getIntExtra("faceCutTypeId", 0);
+					faceCutType = (faceCutTypeId > 0) ? faceCutTypes[faceCutTypeId - 1] : null;
+
+					demo.setOptions(flags, faceCutType);
+
+					break;
+			}
+		}
+	}
+
+
+	private static class LoadThread implements Runnable{
+
+		MainActivity ma;
+		FacerecService service;
+
+		public LoadThread(MainActivity ma, FacerecService service)
+		{
+			this.ma = ma;
+			this.service = service;
+		}
+
+		public void run(){
+			try{
+
+				final TheCamera camera = new TheCamera(ma);
+
+				final Demo demo = new Demo(ma, service);
+
+				ma.flags = demo.getFlags();
+				ma.faceCutType = demo.getFaceCutType();
+
+				ma.runOnUiThread(() -> {
+					ma.demo = demo;
+					ma.camera = camera;
+					ma.showForm();
+				});
+			}catch(Exception e){
+				exceptionHappensDo(ma, e);
+			}
+		}
+	}
+
+
+	public void showForm(){
+		
+		setContentView(R.layout.main);
+		
+		TextView textView = findViewById(R.id.textView);
+		textView.setMovementMethod(new ScrollingMovementMethod());
+
+		demo.setTextView();
+
+		Button quitButton = findViewById(R.id.quit_button);
+		quitButton.setOnClickListener(v -> finishAffinity());
+
+		Button optionsButton = findViewById(R.id.options_button);
+		optionsButton.setOnClickListener(v -> {
+			Intent toOptionsIntent = new Intent(getApplicationContext(), OptionsActivity.class);
+			toOptionsIntent.putExtra("flags", flags);
+			int faceCutTypeId = 0;
+			for (int i = 0; i < faceCutTypes.length; i++)
+				if (faceCutTypes[i] == faceCutType)
+				{
+					faceCutTypeId = i + 1;
+					break;
+				}
+			toOptionsIntent.putExtra("faceCutTypeId", faceCutTypeId);
+			startActivityForResult(toOptionsIntent, REQUEST_OPTIONS);
+		});
+
+		Button settingsButton = findViewById(R.id.settings_button);
+		settingsButton.setOnClickListener(v -> {
+			Intent toSettingsIntent = new Intent(getApplicationContext(), SettingsActivity.class);
+
+			toSettingsIntent.putExtra("selected_camera_id", camera_id);
+			toSettingsIntent.putExtra("selected_resolution", getStringResolution());
+
+			startActivityForResult(toSettingsIntent, REQUEST_SETTINGS);
+		});
+
+		camera.open(demo, camera_id, im_width, im_height);
+	
+	}
+
+
+	private void setNewResolution(String resol){
+
+		String [] tempStr = resol.split("x");
+		im_width = Integer.parseInt(tempStr[0]);
+		im_height = Integer.parseInt(tempStr[1]);
+
+	}
+
+
+	private String getStringResolution(){
+		return im_width + "x" + im_height;
+	}
+
+
+	private static void exceptionHappensDo(
+		final Activity activity,
+		final Exception e)
+	{
+		Intent toErrorIntent = new Intent(activity, ErrorActivity.class);
+		toErrorIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		if (e instanceof SDKException){
+			SDKException sdke = (SDKException) e;
+			toErrorIntent.putExtra("error message", "code: " + String.format("0x%08X", sdke.code()) + "\n"+ sdke.getMessage());
+		}else{
+			toErrorIntent.putExtra("error message", e.getMessage());
+		}
+		e.printStackTrace();
+
+		activity.startActivity(toErrorIntent);
+		activity.finish();
+	}
+
+}

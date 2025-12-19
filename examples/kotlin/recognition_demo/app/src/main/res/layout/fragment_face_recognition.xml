@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/faceRec"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FaceRecognitionFragment">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewViewRec"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <ImageView
+        android:id="@+id/bbox"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/noDetectedWarning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/NoDetect_Warning"
+        android:textSize="32sp"
+        android:textColor="@color/black"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_horizontal"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/detectedFaceName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="21sp"
+        android:textColor="@color/black"
+        android:layout_gravity="bottom" />
+</FrameLayout>

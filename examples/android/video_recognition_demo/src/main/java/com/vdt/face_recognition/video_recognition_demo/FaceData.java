@@ -5,7 +5,7 @@ import com.vdt.face_recognition.sdk.RawSample;
 
 class FaceData{
 
-	public RawSample sample = null;
+	public RawSample sample;
 	public boolean lost;
 	public boolean weak;
 	public int frame_id;

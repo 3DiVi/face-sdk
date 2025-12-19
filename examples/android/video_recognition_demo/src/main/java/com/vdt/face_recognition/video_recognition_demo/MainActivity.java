@@ -1,20 +1,15 @@
 package com.vdt.face_recognition.video_recognition_demo;
 
-import java.io.File;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
 import android.widget.TextView;
@@ -26,9 +21,6 @@ import android.content.pm.PackageManager;
 
 import com.vdt.face_recognition.sdk.FacerecService;
 import com.vdt.face_recognition.sdk.SDKException;
-
-import com.vdt.face_recognition.video_recognition_demo.VidRecDemo;
-import com.vdt.face_recognition.video_recognition_demo.TheCamera;
 
 
 //all init parameters in init_settings
@@ -47,14 +39,14 @@ public class MainActivity extends Activity
 	private VidRecDemo vr_demo = null;
 	private TheCamera camera = null;
 
-	private String[] permissions_str = new String[] {
+	private final String[] permissions_str = new String[] {
 		Manifest.permission.CAMERA,
 		Manifest.permission.READ_EXTERNAL_STORAGE,
 		Manifest.permission.WRITE_EXTERNAL_STORAGE,
 		Manifest.permission.READ_PHONE_STATE,
 	};
 
-	private int[] permissions_tv_id = new int[] {
+	private final int[] permissions_tv_id = new int[] {
 		R.id.camera_perm_status,
 		R.id.read_storage_perm_status,
 		R.id.write_storage_perm_status,
@@ -80,7 +72,7 @@ public class MainActivity extends Activity
 
 			if(ContextCompat.checkSelfPermission(this, perstr) == PackageManager.PERMISSION_GRANTED)
 			{
-				TextView tv = (TextView) findViewById(permissions_tv_id[i]);
+				TextView tv = findViewById(permissions_tv_id[i]);
 				tv.setText(" granted ");
 				tv.setTextColor(Color.GREEN);
 				++granted_count;
@@ -121,7 +113,7 @@ public class MainActivity extends Activity
 			license_state = service.getLicenseState();
 		}
 
-		Log.i(TAG, "license_state.online            = " + Boolean.toString(license_state.online));
+		Log.i(TAG, "license_state.online            = " + license_state.online);
 		Log.i(TAG, "license_state.android_app_id    = " + license_state.android_app_id);
 		Log.i(TAG, "license_state.android_serial    = " + license_state.android_serial);
 		Log.i(TAG, "license_state.ios_app_id        = " + license_state.ios_app_id);
@@ -143,7 +135,7 @@ public class MainActivity extends Activity
 		{
 			if(grantResults[i] == PackageManager.PERMISSION_GRANTED)
 			{
-				TextView tv = (TextView) findViewById(permissions_tv_id[i]);
+				TextView tv = findViewById(permissions_tv_id[i]);
 				tv.setText(" granted ");
 				tv.setTextColor(Color.GREEN);
 			}
@@ -171,11 +163,7 @@ public class MainActivity extends Activity
 	protected void onResume() {
 		super.onResume();
 
-		if(vr_demo == null){
-			//creating activity, nothing update
-			return;
-		}else{
-
+		if(vr_demo != null){
 			//check update exist
 			SharedPreferences shared_settings = getSharedPreferences(SETTINGS_NAME, 0);
 			if (shared_settings.getBoolean("recognizer_updated", true) ||
@@ -249,7 +237,7 @@ public class MainActivity extends Activity
 		editor.putBoolean	("recognizer_updated", false);
 		editor.putBoolean	("capturer_updated", false);
 
-		editor.commit();
+		editor.apply();
 	}
 
 
@@ -270,16 +258,13 @@ public class MainActivity extends Activity
 
 				final VidRecDemo vr_demo = new VidRecDemo(ma);
 
-				ma.runOnUiThread(new Runnable(){
-					public void run(){
-						ma.camera = camera;
-						ma.vr_demo = vr_demo;
-						ma.showForm();
-					}
+				ma.runOnUiThread(() -> {
+					ma.camera = camera;
+					ma.vr_demo = vr_demo;
+					ma.showForm();
 				});
 			}catch(Exception e){
 				exceptionHappensDo(ma, e);
-				return;
 			}
 		}
 	}
@@ -306,13 +291,11 @@ public class MainActivity extends Activity
 				editor.putBoolean("recognizer_updated", false);
 				editor.putBoolean("capturer_updated", false);
 
-				editor.commit();
+				editor.apply();
 
-				ma.runOnUiThread(new Runnable(){
-					public void run(){
-						ma.vr_demo = vr_demo;
-						ma.showForm();
-					}
+				ma.runOnUiThread(() -> {
+					ma.vr_demo = vr_demo;
+					ma.showForm();
 				});
 
 			}catch(Exception e){
@@ -328,36 +311,28 @@ public class MainActivity extends Activity
 
 		camera.open(vr_demo);
 
-		Button new_personButton = (Button) findViewById(R.id.new_person_button);
-		new_personButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Intent newPersonIntent = new Intent(getApplicationContext(), NewPersonActivity.class);
-				startActivity(newPersonIntent);
-			}
+		Button new_personButton = findViewById(R.id.new_person_button);
+		new_personButton.setOnClickListener(v -> {
+			Intent newPersonIntent = new Intent(getApplicationContext(), NewPersonActivity.class);
+			startActivity(newPersonIntent);
 		});
 
-		Button settingsButton = (Button) findViewById(R.id.settings_button);
-		settingsButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Intent settingsIntent = new Intent(getApplicationContext(), SettingsActivity.class);
-				startActivity(settingsIntent);
-			}
+		Button settingsButton = findViewById(R.id.settings_button);
+		settingsButton.setOnClickListener(v -> {
+			Intent settingsIntent = new Intent(getApplicationContext(), SettingsActivity.class);
+			startActivity(settingsIntent);
 		});
 
-		Button quitButton = (Button) findViewById(R.id.quit_button);
-		quitButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				finishAffinity();
-			}
-		});
+		Button quitButton = findViewById(R.id.quit_button);
+		quitButton.setOnClickListener(v -> finishAffinity());
 
 		handler = new Handler(){
 			public void handleMessage(Message msg){
-				try{
-					vr_demo.updateImageViews();
-				}catch(Exception e){
-					exceptionHappensDo(MainActivity.this, e);
-				}
+			try{
+				vr_demo.updateImageViews();
+			}catch(Exception e){
+				exceptionHappensDo(MainActivity.this, e);
+			}
 			}
 		};
 

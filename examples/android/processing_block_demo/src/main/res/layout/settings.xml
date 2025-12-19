@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    >
+
+
+<RadioGroup
+    android:id="@+id/cameras_radio_group"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_centerHorizontal="true"
+    android:layout_alignParentTop="true" >
+
+    <RadioButton
+        android:id="@+id/camera0_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/camera0_radio_button"
+        android:onClick="onRadioClicked"
+        android:textAppearance="?android:textAppearanceMedium" />
+
+    <RadioButton
+        android:id="@+id/camera1_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/camera1_radio_button"
+        android:onClick="onRadioClicked"
+        android:textAppearance="?android:textAppearanceMedium" />
+
+    <RadioButton
+        android:id="@+id/camera2_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/camera2_radio_button"
+        android:onClick="onRadioClicked"
+        android:textAppearance="?android:textAppearanceMedium" />
+
+</RadioGroup>
+
+
+<Spinner
+    android:id="@+id/resolution_spinner"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_below="@+id/cameras_radio_group" />
+
+
+
+<Button 
+    android:id="@+id/settings_ok_button"
+    android:layout_width="100dp"
+    android:layout_height="wrap_content"
+    android:text="ok"
+    android:layout_centerHorizontal="true"
+    android:layout_alignParentBottom="true" />
+
+
+
+</RelativeLayout>

@@ -3,23 +3,17 @@ package com.vdt.face_recognition.demo;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.lang.Math;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.Vector;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.vdt.face_recognition.sdk.AgeGenderEstimator;
 import com.vdt.face_recognition.sdk.Capturer;
@@ -32,25 +26,24 @@ import com.vdt.face_recognition.sdk.QualityEstimator;
 import com.vdt.face_recognition.sdk.RawImage;
 import com.vdt.face_recognition.sdk.RawSample;
 import com.vdt.face_recognition.sdk.FaceAttributesEstimator;
-import com.vdt.face_recognition.sdk.SDKException;
 
 
 public class Demo{
 
 	private static String TAG = "Demo";
 
-	private Activity activity;
+	private final Activity activity;
 	private TextView textView = null;
 
-	private FacerecService service = null;
-	private Capturer capturer = null;
-	private QualityEstimator qualityEstimator = null;
-	private AgeGenderEstimator ageGenderEstimator = null;
-	private EmotionsEstimator emotionsEstimator = null;
-	private FaceQualityEstimator faceQualityEstimator = null;
+	private final FacerecService service;
+	private Capturer capturer;
+	private final QualityEstimator qualityEstimator;
+	private final AgeGenderEstimator ageGenderEstimator;
+	private final EmotionsEstimator emotionsEstimator;
+	private final FaceQualityEstimator faceQualityEstimator;
 	private Liveness2DEstimator liveness2dEstimator = null;
-	private FaceAttributesEstimator faceMaskEstimator = null;
-	private FaceAttributesEstimator eyesOpennessEstimator = null;
+	private final FaceAttributesEstimator faceMaskEstimator;
+	private final FaceAttributesEstimator eyesOpennessEstimator;
 
 	private boolean flag_rectangle = true;
 	private boolean flag_angles = true;
@@ -101,7 +94,7 @@ public class Demo{
 
 
 	public void setTextView(){
-		textView = (TextView) activity.findViewById(R.id.textView);
+		textView = activity.findViewById(R.id.textView);
 	}
 
 	private void setWeight(int id, float weight)
@@ -181,7 +174,7 @@ public class Demo{
 			text += "Age: " + (int)(ageGender.age_years + 0.5) + " years - ";
 			switch(ageGender.age)
 			{
-				case AGE_KID:    text += "kid\n";    break;
+				case AGE_KID:	text += "kid\n";	break;
 				case AGE_YOUNG:  text += "young\n";  break;
 				case AGE_ADULT:  text += "adult\n";  break;
 				case AGE_SENIOR: text += "senior\n"; break;
@@ -197,8 +190,8 @@ public class Demo{
 		// face attribute (masked_face)
 		if (flag_face_mask)
 		{
-            FaceAttributesEstimator.Attribute attr = faceMaskEstimator.estimate(sample);
-            String score_str = String.format("%.03f", attr.score);
+			FaceAttributesEstimator.Attribute attr = faceMaskEstimator.estimate(sample);
+			String score_str = String.format("%.03f", attr.score);
 			text += "masked: " + (attr.verdict ? "true" : "false") + " - " + score_str + "\n";
 		}
 
@@ -219,8 +212,8 @@ public class Demo{
 				right_verdict_str = (attr.right_eye_state.eye_state == FaceAttributesEstimator.EyeStateScore.EyeState.OPENED ? "true" : "false");
 
 			text += "Eyes openness \n";
-			text += "  left eye opened: \n     " + left_verdict_str + "  " + eye_left_score_str + "\n";
-			text += "  right eye opened: \n     " + right_verdict_str + "  " + eye_right_score_str + "\n";
+			text += "  left eye opened: \n	 " + left_verdict_str + "  " + eye_left_score_str + "\n";
+			text += "  right eye opened: \n	 " + right_verdict_str + "  " + eye_right_score_str + "\n";
 		}
 
 		//crops
@@ -231,9 +224,9 @@ public class Demo{
 			cut_border_paint.setStrokeWidth(3);
 			cut_border_paint.setStyle(Paint.Style.STROKE);
 
-			OutputStream os = new ByteArrayOutputStream();
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			sample.cutFaceImage(os, RawSample.ImageFormat.IMAGE_FORMAT_JPG, faceCutType);
-			byte [] byte_crop = ((ByteArrayOutputStream) os).toByteArray();
+			byte [] byte_crop = os.toByteArray();
 			Bitmap bitmap_crop = BitmapFactory.decodeByteArray(byte_crop, 0, byte_crop.length);
 			Rect srcRect = new Rect(0, 0, bitmap_crop.getWidth(), bitmap_crop.getHeight());
 
@@ -407,7 +400,7 @@ public class Demo{
 
 
 	public boolean [] getFlags(){
-		boolean [] flags = {
+		return new boolean[]{
 			flag_rectangle,
 			flag_angles,
 			flag_quality,
@@ -420,8 +413,6 @@ public class Demo{
 			flag_face_mask,
 			flag_eyes_openness
 		};
-
-		return flags;
 	}
 
 

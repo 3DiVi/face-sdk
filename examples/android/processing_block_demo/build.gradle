@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+
+dependencies {
+   implementation files('../../../lib/facerec.jar')
+   implementation "androidx.core:core:1.0.0"
+}
+
+android {
+    compileSdkVersion 30
+
+    defaultConfig {
+        applicationId "com.vdt.face_recognition.processing_block_demo"
+        minSdkVersion 21
+        targetSdkVersion 30
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ["../../../lib"]
+        }
+    }
+
+//Insert unique string into asest to avoid copy assets to data folder every time on load app.
+//Checking this unique string in UnpackAssetsActivity
+    task computeAssetsHash() {
+        doLast {
+            mkdir("$projectDir/src/main/assets/")
+            new File(  "$projectDir/src/main/assets/", "assets-hash.txt").text = 
+                """Buildtime: ${new Date().format("YYYY:MM:dd:HH:mm:ss", TimeZone.getTimeZone("GMT"))}"""
+        }
+    }
+
+    task copyFiles(type: Copy) {
+        description = 'Copy files'
+        from("$projectDir/../../.."){
+            include (
+                "conf/**",
+                "share/processing_block/age_estimator/light/2.enc",
+                "share/processing_block/gender_estimator/light/2.enc",
+                "share/processing_block/mask_estimator/light/2.enc",
+                "share/processing_block/face_detector/blf_front/**",
+                "share/processing_block/face_fitter/fda/**",
+                "share/processing_block/eye_openness_estimator/**",
+                "share/processing_block/quality_control/**",
+                "share/processing_block/emotion_estimator/**",
+                "share/processing_block/liveness_estimator/2d_light/4.enc",
+                "license/**"
+            )
+        }
+        into "$projectDir/src/main/assets/"
+    }
+    namespace 'com.vdt.face_recognition.processing_block_demo'
+
+    preBuild.dependsOn computeAssetsHash, copyFiles
+}

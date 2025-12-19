@@ -2,7 +2,6 @@ package com.vdt.face_recognition.video_recognition_demo;
 
 import java.io.*;
 import java.lang.Math;
-import java.nio.ByteBuffer;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -12,10 +11,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Handler;
 import android.util.Log;
 import android.util.Pair;
@@ -46,34 +43,33 @@ import com.vdt.face_recognition.video_recognition_demo.TheCameraPainter;
 
 public class VidRecDemo implements TheCameraPainter{
 
-	private static String TAG = "VidRecDemo";
+	private static final String TAG = "VidRecDemo";
 	private static final String SETTINGS_NAME = "SETTINGS";
 
-	private MainActivity activity;
+	private final MainActivity activity;
 	private ImageView mainImageView = null;
-	private Vector<ImageView> vid_faces_image_views = new Vector<ImageView>();
-	private Vector<ImageView> db_faces_image_views = new Vector<ImageView>();
+	private final Vector<ImageView> vid_faces_image_views = new Vector<>();
+	private final Vector<ImageView> db_faces_image_views = new Vector<>();
 
 	private Capturer capturer = null;
-	private VideoWorker videoWorker = null;
+	private final VideoWorker videoWorker;
 	private Database db =  null;
 
 	//This thread used for background async initialization of some Face SDK components for speedup.
-	private Thread init_thread;
+	private final Thread init_thread;
 
-	private String method_recognizer;
-	private float threshold;
+	private final String method_recognizer;
+	private final float threshold;
 
-	private LinkedBlockingQueue<Pair<Integer, Bitmap>> frames = new LinkedBlockingQueue<Pair<Integer, Bitmap>>();
-	private int stream_id = 0;
+	private final LinkedBlockingQueue<Pair<Integer, Bitmap>> frames = new LinkedBlockingQueue<>();
+	private final int stream_id = 0;
 	private int tracking_callback_id;
 	private int tracking_lost_callback_id;
 	private int match_found_callback_id;
 	private int sti_person_outdated_callback_id;
 
 	Thread drawThread = null;
-	private DrawingData drawingData = new DrawingData();
-	private long alive_lost_time = 5000; //milliseconds
+	private final DrawingData drawingData = new DrawingData();
 
 
 	public VidRecDemo(
@@ -200,7 +196,7 @@ public class VidRecDemo implements TheCameraPainter{
 		Bitmap mut_bitmap = immut_bitmap.copy(Bitmap.Config.ARGB_8888, true);
 
 		int frame_id = videoWorker.addVideoFrame(frame, stream_id);
-		frames.offer(new Pair<Integer, Bitmap>(frame_id, mut_bitmap));
+		frames.offer(new Pair<>(frame_id, mut_bitmap));
 
 		videoWorker.checkExceptions();
 	}
@@ -217,7 +213,7 @@ public class VidRecDemo implements TheCameraPainter{
 			Bitmap frame;
 			while(true){
 
-				if(frames.size() == 0){
+				if(frames.isEmpty()){
 					return;
 				}
 
@@ -225,7 +221,7 @@ public class VidRecDemo implements TheCameraPainter{
 					frame = frames.poll().second;
 					break;
 				}else{
-					Log.v(TAG, "Skiped " + Integer.toString(stream_id) + ": " + Integer.toString(frames.poll().first));
+					Log.v(TAG, "Skiped " + stream_id + ": " + frames.poll().first);
 				}
 			}
 
@@ -286,7 +282,7 @@ public class VidRecDemo implements TheCameraPainter{
 
 
 	private class TrackingLostCallbacker implements VideoWorker.TrackingLostCallback{
-	
+
 		public void call(TrackingLostCallbackData data){
 
 			if (data.stream_id != stream_id)
@@ -299,7 +295,7 @@ public class VidRecDemo implements TheCameraPainter{
 				);
 
 			synchronized(drawingData){
-				
+
 				if(drawingData.faces.isEmpty()){
 					return;
 				}
@@ -327,13 +323,13 @@ public class VidRecDemo implements TheCameraPainter{
 				return;
 
 			Log.i(TAG, "sti person outdated callback: "
-				+ "  sti_person_id: " + Integer.toString(data.sti_person_id)
+				+ "  sti_person_id: " + data.sti_person_id
 				);
 		}
 	}
 
 	private class MatchFoundCallbacker implements VideoWorker.MatchFoundCallback{
-	
+
 		public void call(MatchFoundCallbackData data){
 
 			if (data.stream_id != stream_id)
@@ -342,7 +338,7 @@ public class VidRecDemo implements TheCameraPainter{
 			int id = data.sample.getID();
 
 			synchronized(drawingData){
-				
+
 				if(drawingData.faces.isEmpty()){
 					return;
 				}
@@ -360,56 +356,52 @@ public class VidRecDemo implements TheCameraPainter{
 			closeDrawThread();
 		}
 
-		mainImageView = (ImageView) activity.findViewById(R.id.mainImageView);
+		mainImageView = activity.findViewById(R.id.mainImageView);
 
-		vid_faces_image_views.add(	(ImageView) activity.findViewById(R.id.video_faces_ImageView0));
-		vid_faces_image_views.add(	(ImageView) activity.findViewById(R.id.video_faces_ImageView1));
-		vid_faces_image_views.add(	(ImageView) activity.findViewById(R.id.video_faces_ImageView2));
-		vid_faces_image_views.add(	(ImageView) activity.findViewById(R.id.video_faces_ImageView3));
-		vid_faces_image_views.add(	(ImageView) activity.findViewById(R.id.video_faces_ImageView4));
-		vid_faces_image_views.add(	(ImageView) activity.findViewById(R.id.video_faces_ImageView5));
-		vid_faces_image_views.add(	(ImageView) activity.findViewById(R.id.video_faces_ImageView6));
+		vid_faces_image_views.add(activity.findViewById(R.id.video_faces_ImageView0));
+		vid_faces_image_views.add(activity.findViewById(R.id.video_faces_ImageView1));
+		vid_faces_image_views.add(activity.findViewById(R.id.video_faces_ImageView2));
+		vid_faces_image_views.add(activity.findViewById(R.id.video_faces_ImageView3));
+		vid_faces_image_views.add(activity.findViewById(R.id.video_faces_ImageView4));
+		vid_faces_image_views.add(activity.findViewById(R.id.video_faces_ImageView5));
+		vid_faces_image_views.add(activity.findViewById(R.id.video_faces_ImageView6));
 
-		db_faces_image_views.add(	(ImageView) activity.findViewById(R.id.db_faces_ImageView0));
-		db_faces_image_views.add(	(ImageView) activity.findViewById(R.id.db_faces_ImageView1));
-		db_faces_image_views.add(	(ImageView) activity.findViewById(R.id.db_faces_ImageView2));
-		db_faces_image_views.add(	(ImageView) activity.findViewById(R.id.db_faces_ImageView3));
-		db_faces_image_views.add(	(ImageView) activity.findViewById(R.id.db_faces_ImageView4));
-		db_faces_image_views.add(	(ImageView) activity.findViewById(R.id.db_faces_ImageView5));
-		db_faces_image_views.add(	(ImageView) activity.findViewById(R.id.db_faces_ImageView6));
+		db_faces_image_views.add(activity.findViewById(R.id.db_faces_ImageView0));
+		db_faces_image_views.add(activity.findViewById(R.id.db_faces_ImageView1));
+		db_faces_image_views.add(activity.findViewById(R.id.db_faces_ImageView2));
+		db_faces_image_views.add(activity.findViewById(R.id.db_faces_ImageView3));
+		db_faces_image_views.add(activity.findViewById(R.id.db_faces_ImageView4));
+		db_faces_image_views.add(activity.findViewById(R.id.db_faces_ImageView5));
+		db_faces_image_views.add(activity.findViewById(R.id.db_faces_ImageView6));
 
 
-		drawThread = new Thread(new Runnable(){
-			
-			public void run(){
-			
-				while(true){
+		drawThread = new Thread(() -> {
 
-					try {
-						Thread.sleep(20);
-					} catch(InterruptedException ex) {
-						Thread.currentThread().interrupt();
-						break;
-					}
+			while(true){
 
-					if(drawingData.updated){
-						handler.sendEmptyMessage(0);
-					}
-
+				try {
+					Thread.sleep(20);
+				} catch(InterruptedException ex) {
+					Thread.currentThread().interrupt();
+					break;
 				}
-			}
 
+				if(drawingData.updated){
+					handler.sendEmptyMessage(0);
+				}
+
+			}
 		});
 		drawThread.start();
 	}
 
 
-	public void updateImageViews(){		
+	public void updateImageViews(){
 		synchronized(drawingData){
 
 			//draw only first 7 faces
 			int count = 0;
-			SortedSet<Integer> keys = new TreeSet<Integer>(drawingData.faces.keySet());
+			SortedSet<Integer> keys = new TreeSet<>(drawingData.faces.keySet());
 
 			for(Integer key : keys){
 
@@ -462,9 +454,9 @@ public class VidRecDemo implements TheCameraPainter{
 
 
 				//RawSample to Bitmap
-				OutputStream os = new ByteArrayOutputStream();
+				ByteArrayOutputStream os = new ByteArrayOutputStream();
 				face.sample.cutFaceImage(os, RawSample.ImageFormat.IMAGE_FORMAT_JPG, RawSample.FaceCutType.FACE_CUT_BASE);
-				byte [] byte_sample = ((ByteArrayOutputStream) os).toByteArray();
+				byte [] byte_sample = os.toByteArray();
 				Bitmap thumbnail_from_frame = BitmapFactory.decodeByteArray(byte_sample, 0, byte_sample.length);
 
 				//if exist get thumbnail from db else empty
@@ -484,6 +476,8 @@ public class VidRecDemo implements TheCameraPainter{
 
 					long cur_time = System.currentTimeMillis();
 
+					//milliseconds
+					long alive_lost_time = 5000;
 					if(cur_time - face.lost_time > alive_lost_time){
 						//delete old face
 						drawingData.faces.remove(key);
@@ -491,7 +485,7 @@ public class VidRecDemo implements TheCameraPainter{
 						continue;
 					}else{
 						//fade lost face
-						int alpha = (int) ((1 - (1.0*cur_time - face.lost_time)/alive_lost_time) * 255);
+						int alpha = (int) ((1 - (1.0*cur_time - face.lost_time)/ alive_lost_time) * 255);
 						vid_faces_image_views.get(count).setImageAlpha(alpha);
 						db_faces_image_views.get(count).setImageAlpha(alpha);
 					}
@@ -512,7 +506,7 @@ public class VidRecDemo implements TheCameraPainter{
 			}
 
 			mainImageView.setImageBitmap(drawingData.frame);
-			drawingData.updated = false;			
+			drawingData.updated = false;
 		}
 	}
 
@@ -537,13 +531,6 @@ public class VidRecDemo implements TheCameraPainter{
 
 			db_faces_image_views.get(i).setImageAlpha(0xff);
 			db_faces_image_views.get(i).setImageResource(android.R.color.transparent);
-		}
-	}
-
-
-	private void clearDrawingData(){
-		synchronized(drawingData){
-			drawingData = new DrawingData();
 		}
 	}
 

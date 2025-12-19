@@ -57,6 +57,7 @@ android {
         }
         into "$projectDir/src/main/assets/"
     }
+    namespace 'com.vdt.face_recognition.telpo_liveness_video_recognition'
 
     preBuild.dependsOn computeAssetsHash, copyFiles
 

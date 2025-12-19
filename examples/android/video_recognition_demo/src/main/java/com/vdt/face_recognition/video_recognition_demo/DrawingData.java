@@ -3,8 +3,6 @@ package com.vdt.face_recognition.video_recognition_demo;
 import java.util.HashMap;
 import android.graphics.Bitmap;
 
-import com.vdt.face_recognition.video_recognition_demo.FaceData;
-
 
 class DrawingData{
 

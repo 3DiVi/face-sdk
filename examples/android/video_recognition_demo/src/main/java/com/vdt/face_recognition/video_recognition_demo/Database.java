@@ -6,45 +6,34 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Vector;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.vdt.face_recognition.sdk.Capturer;
 import com.vdt.face_recognition.sdk.Point;
-import com.vdt.face_recognition.sdk.RawImage;
 import com.vdt.face_recognition.sdk.RawSample;
 import com.vdt.face_recognition.sdk.Recognizer;
 import com.vdt.face_recognition.sdk.Template;
 import com.vdt.face_recognition.sdk.VideoWorker;
 
-import static android.os.ParcelFileDescriptor.MODE_WORLD_READABLE;
-
 
 public class Database{
 
 	private static final String TAG = "Database";
-
-	private MainActivity activity;
-	private ImageView image = null;
-
-	public Vector<VideoWorker.DatabaseElement> vw_elements = new Vector<VideoWorker.DatabaseElement>();
-	public Vector<RawSample> raw_samples = new Vector<RawSample>();
-	public Vector<Bitmap> thumbnails = new Vector<Bitmap>();
-	public Vector<String> names = new Vector<String>();
+	private final MainActivity activity;
+	public Vector<VideoWorker.DatabaseElement> vw_elements = new Vector<>();
+	public Vector<RawSample> raw_samples = new Vector<>();
+	public Vector<Bitmap> thumbnails = new Vector<>();
+	public Vector<String> names = new Vector<>();
 
 	private boolean isImage( String filename ){
 		final String[] okFileExtensions = new String[] {
@@ -80,7 +69,7 @@ public class Database{
 			db_dir_file.mkdir();
 		}
 
-		//get dirs for each person		
+		//get dirs for each person
 		Vector<File> person_dirs = new Vector<File>();
 		for (File file : db_dir_file.listFiles()){
 			if (file.isDirectory()){
@@ -163,7 +152,7 @@ public class Database{
 
 					Vector<RawSample> samples_buf = null;
 					try {
-						samples_buf = capturer.capture(byte_image);	
+						samples_buf = capturer.capture(byte_image);
 					} catch(Exception e) {
 						showErrorMessage(
 							"File: " + file.getName() + "\n"
@@ -231,9 +220,9 @@ public class Database{
 	//generate crop face image with name
 	private Bitmap makeThumbnail(RawSample sample, String name){
 
-		OutputStream os = new ByteArrayOutputStream();
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		sample.cutFaceImage(os, RawSample.ImageFormat.IMAGE_FORMAT_BMP, RawSample.FaceCutType.FACE_CUT_TOKEN_FRONTAL);
-		byte [] byte_crop = ((ByteArrayOutputStream) os).toByteArray();
+		byte [] byte_crop = os.toByteArray();
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inMutable = true;
 		Bitmap bitmap_crop = BitmapFactory.decodeByteArray(byte_crop, 0, byte_crop.length, options);
@@ -264,19 +253,6 @@ public class Database{
 
 		return bitmap_crop;
 	}
-
-
-	private byte[] getImageBytes(File file){
-
-		Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
-		byte[] buf = baos.toByteArray();
-
-		return buf;
-	}
-
 
 	private byte[] readImage(final File file) throws IOException
 	{

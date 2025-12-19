@@ -9,11 +9,6 @@ import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.vdt.face_recognition.demo.TheCamera;
-
-import com.vdt.face_recognition.sdk.RawSample;
-
-import android.widget.Toast;
 
 public class OptionsActivity extends Activity
 {
@@ -40,23 +35,23 @@ public class OptionsActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.options);
 
-		CheckBox cb_rectangle = (CheckBox) findViewById(R.id.rectangle);
-		CheckBox cb_angles = (CheckBox) findViewById(R.id.angles);
-		CheckBox cb_quality = (CheckBox) findViewById(R.id.quality);
-		CheckBox cb_liveness = (CheckBox) findViewById(R.id.liveness);
-		CheckBox cb_age_and_gender = (CheckBox) findViewById(R.id.age_and_gender);
-		CheckBox cb_points = (CheckBox) findViewById(R.id.points);
-		CheckBox cb_face_quality = (CheckBox) findViewById(R.id.face_quality);
-		CheckBox cb_angles_vectors = (CheckBox) findViewById(R.id.angles_vectors);
-		CheckBox cb_emotions = (CheckBox) findViewById(R.id.emotions);
-		CheckBox cb_face_mask = (CheckBox) findViewById(R.id.face_mask);
-		CheckBox cb_eyes_openness = (CheckBox) findViewById(R.id.eyes_openness);
+		CheckBox cb_rectangle = findViewById(R.id.rectangle);
+		CheckBox cb_angles = findViewById(R.id.angles);
+		CheckBox cb_quality = findViewById(R.id.quality);
+		CheckBox cb_liveness = findViewById(R.id.liveness);
+		CheckBox cb_age_and_gender = findViewById(R.id.age_and_gender);
+		CheckBox cb_points = findViewById(R.id.points);
+		CheckBox cb_face_quality = findViewById(R.id.face_quality);
+		CheckBox cb_angles_vectors = findViewById(R.id.angles_vectors);
+		CheckBox cb_emotions = findViewById(R.id.emotions);
+		CheckBox cb_face_mask = findViewById(R.id.face_mask);
+		CheckBox cb_eyes_openness = findViewById(R.id.eyes_openness);
 
 		Intent getFlagsIntent = getIntent();
 		boolean [] flags = getFlagsIntent.getBooleanArrayExtra("flags");
 		faceCutTypeId = getFlagsIntent.getIntExtra("faceCutTypeId", 0);
 
-		radioGroup = (RadioGroup) findViewById(R.id.face_cut_radio_group);
+		radioGroup = findViewById(R.id.face_cut_radio_group);
 		RadioButton rb = (RadioButton) radioGroup.getChildAt(faceCutTypeId);
 		rb.setChecked(true);
 
@@ -86,139 +81,101 @@ public class OptionsActivity extends Activity
 
 
 		//ok - button
-		Button okButton = (Button) findViewById(R.id.options_ok_button);
-		okButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+		Button okButton = findViewById(R.id.options_ok_button);
+		okButton.setOnClickListener(v -> {
 
-            	Intent setValuesIntent = new Intent();
+			Intent setValuesIntent = new Intent();
 
-            	boolean [] flags = {
-            		flag_rectangle,
-            		flag_angles,
-            		flag_quality,
-            		flag_liveness,
-            		flag_age_and_gender,
-            		flag_points,
-            		flag_face_quality,
-            		flag_angles_vectors,
-            		flag_emotions,
-            		flag_face_mask,
-            		flag_eyes_openness
-            	};
-            	setValuesIntent.putExtra( "flags", flags);
+			boolean [] flags1 = {
+				flag_rectangle,
+				flag_angles,
+				flag_quality,
+				flag_liveness,
+				flag_age_and_gender,
+				flag_points,
+				flag_face_quality,
+				flag_angles_vectors,
+				flag_emotions,
+				flag_face_mask,
+				flag_eyes_openness
+			};
+			setValuesIntent.putExtra( "flags", flags1);
 
-            	RadioButton cur_rb = (RadioButton) findViewById(radioGroup.getCheckedRadioButtonId());
-            	switch(cur_rb.getId()){
+			RadioButton cur_rb = findViewById(radioGroup.getCheckedRadioButtonId());
+			int id = cur_rb.getId();
+			if (id == R.id.none_radio_button)
+			{
+				faceCutTypeId = 0;
+			}
+			else if(id == R.id.base_cut_radio_button)
+			{
+				faceCutTypeId = 1;
+			}
+			else if(id == R.id.full_cut_radio_button)
+			{
+				faceCutTypeId = 2;
+			}
+			else if(id == R.id.token_cut_radio_button)
+			{
+				faceCutTypeId = 3;
+			}
 
-            		case R.id.none_radio_button:
-            			faceCutTypeId = 0;
-            			break;
+			setValuesIntent.putExtra( "faceCutTypeId", faceCutTypeId);
 
-            		case R.id.base_cut_radio_button:
-            			faceCutTypeId = 1;
-            			break;
-
-            		case R.id.full_cut_radio_button:
-            			faceCutTypeId = 2;
-            			break;
-
-            		case R.id.token_cut_radio_button:
-            			faceCutTypeId = 3;
-            			break;
-            	}
-            	setValuesIntent.putExtra( "faceCutTypeId", faceCutTypeId);
-
-            	setResult(RESULT_OK, setValuesIntent);
-            	finish();
-            }
-        });
+			setResult(RESULT_OK, setValuesIntent);
+			finish();
+		});
 
 	}
 
 
 	public void onCheckboxClicked(View view) {
-	    boolean checked = ((CheckBox) view).isChecked();
-
-	    switch(view.getId()) {
-
-	        case R.id.rectangle:
-	            if (checked)
-	            	flag_rectangle = true;
-	            else
-	            	flag_rectangle = false;
-	            break;
-
-	        case R.id.angles:
-	            if (checked)
-	            	flag_angles = true;
-	            else
-	            	flag_angles = false;
-	            break;
-
-	        case R.id.quality:
-	            if (checked)
-	            	flag_quality = true;
-	            else
-	            	flag_quality = false;
-	            break;
-
-	        case R.id.liveness:
-	            if (checked)
-	            	flag_liveness = true;
-	            else
-	            	flag_liveness = false;
-	            break;
-
-	        case R.id.age_and_gender:
-	            if (checked)
-	            	flag_age_and_gender = true;
-	            else
-	            	flag_age_and_gender = false;
-	            break;
-
-	        case R.id.points:
-	            if (checked)
-	            	flag_points = true;
-	            else
-	            	flag_points = false;
-	            break;
-
-	        case R.id.face_quality:
-	            if (checked)
-	            	flag_face_quality = true;
-	            else
-	            	flag_face_quality = false;
-	            break;
-
-	        case R.id.angles_vectors:
-	            if (checked)
-	            	flag_angles_vectors = true;
-	            else
-	            	flag_angles_vectors = false;
-	            break;
-
-	        case R.id.emotions:
-	            if (checked)
-	            	flag_emotions = true;
-	            else
-	            	flag_emotions = false;
-	            break;
-
-	        case R.id.face_mask:
-	            if (checked)
-	            	flag_face_mask = true;
-	            else
-	            	flag_face_mask = false;
-	            break;
-
-	        case R.id.eyes_openness:
-	            if (checked)
-	                flag_eyes_openness = true;
-	            else
-	                flag_eyes_openness = false;
-	            break;
-
-    	}
+		boolean checked = ((CheckBox) view).isChecked();
+		int id = view.getId();
+		if (id == R.id.rectangle)
+		{
+			flag_rectangle = checked;
+		}
+		else if (id == R.id.angles)
+		{
+			flag_angles = checked;
+		}
+		else if (id == R.id.quality)
+		{
+			flag_quality = checked;
+		}
+		else if (id == R.id.liveness)
+		{
+			flag_liveness = checked;
+		}
+		else if (id == R.id.age_and_gender)
+		{
+			flag_age_and_gender = checked;
+		}
+		else if (id == R.id.points)
+		{
+			flag_points = checked;
+		}
+		else if (id == R.id.face_quality)
+		{
+			flag_face_quality = checked;
+		}
+		else if (id == R.id.angles_vectors)
+		{
+			flag_angles_vectors = checked;
+		}
+		else if (id == R.id.emotions)
+		{
+			flag_emotions = checked;
+		}
+		else if (id == R.id.face_mask)
+		{
+			flag_face_mask = checked;
+		}		
+		else if (id == R.id.eyes_openness)
+		{
+			flag_eyes_openness = checked;
+		}
 	}
 
 }

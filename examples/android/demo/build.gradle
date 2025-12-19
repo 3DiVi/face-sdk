@@ -7,7 +7,6 @@ dependencies {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "29.0.2"
 
     defaultConfig {
         applicationId "com.vdt.face_recognition.demo"
@@ -33,7 +32,7 @@ android {
     task computeAssetsHash() {
         doLast {
             mkdir("$projectDir/src/main/assets/")
-            new File(  "$projectDir/src/main/assets/", "assets-hash.txt").text = 
+            new File(  "$projectDir/src/main/assets/", "assets-hash.txt").text =
                 """Buildtime: ${new Date().format("YYYY:MM:dd:HH:mm:ss", TimeZone.getTimeZone("GMT"))}"""
         }
     }
@@ -61,6 +60,7 @@ android {
         }
         into "$projectDir/src/main/assets/"
     }
+    namespace 'com.vdt.face_recognition.demo'
 
     preBuild.dependsOn computeAssetsHash, copyFiles
 }

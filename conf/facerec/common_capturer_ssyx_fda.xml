@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<capturer_impl_name>fld_capturer</capturer_impl_name>
+
+<detector_type>pb_fd</detector_type>
+<modification>ssyx</modification>
+<version>1</version>
+
+<iou_threshold>0.7</iou_threshold>
+<confidence_threshold>0.62</confidence_threshold>
+
+<capturer_type>frontal</capturer_type>
+<fitter_type>fda</fitter_type>
+<fda_file>share/fda/fda0017.3500.enc</fda_file>
+
+<iris_enabled>0</iris_enabled>
+<iris_config_filepath>conf/facerec/iris_fitter.xml</iris_config_filepath>
+
+</opencv_storage>
