@@ -530,6 +530,17 @@ typedef _Context_getDataPtr_dart = Pointer<Uint8> Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
+
+typedef _Context_getBlobData_c = Pointer<Uint8> Function(
+    Pointer<Void>,
+    Pointer<Uint64>,
+    Pointer<Pointer<Void>>);
+
+typedef _Context_getBlobData_dart = Pointer<Uint8> Function(
+    Pointer<Void>,
+    Pointer<Uint64>,
+    Pointer<Pointer<Void>>);
+
 typedef _Context_getContextTemplate_c = Pointer<Void> Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);

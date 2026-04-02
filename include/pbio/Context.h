@@ -518,6 +518,13 @@ public:
 		return ret;
 	}
 
+	std::pair<uint8_t*, size_t> getBlobData() const {
+		size_t length;
+		uint8_t* ret = dll_handle->TDVContext_getBlobData(handle_, &length, &eh_);
+		tdvCheckException(dll_handle, eh_);
+		return {ret, length};
+	}
+
 	pbio::DynamicTemplateIndex::Ptr getDynamicTemplateIndex() const {
 		void* index = dll_handle->TDVContext_getDynamicTemplateIndex(handle_, &eh_);
 		tdvCheckException(dll_handle, eh_);

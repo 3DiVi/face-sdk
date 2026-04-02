@@ -4344,6 +4344,20 @@ namespace capi {
 	\
 	decl( \
 		bool, \
+		TDVContext_isBlobData, \
+		( \
+			HContext* ctx, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		bool, \
 		TDVContext_isDynamicTemplateIndex, \
 		( \
 			HContext* ctx, \
@@ -4461,6 +4475,22 @@ namespace capi {
 		), \
 		( \
 			ctx, \
+			errorHandler \
+		), \
+		return ) \
+	\
+	\
+	decl( \
+		uint8_t*, \
+		TDVContext_getBlobData, \
+		( \
+			HContext* ctx, \
+			size_t* size, \
+			ContextEH** errorHandler \
+		), \
+		( \
+			ctx, \
+			size, \
 			errorHandler \
 		), \
 		return ) \

@@ -4,7 +4,7 @@
 #     \brief Context is an interface object for storing data and interacting with methods from the Processing Block API.
 #  \~Russian
 #     \brief Context - интерфейсный объект для хранения данных и взаимодействия с методами из Processing Block API.
-
+from _ctypes import byref
 from enum import Enum
 from multipledispatch import dispatch
 from ctypes import c_char_p, c_void_p
@@ -242,15 +242,20 @@ class Context(ComplexObject):
     ##
     # \~English
     #    \brief get a string of bytes from the container.
-    #    \param[in] size the size of the byte string.
     #    \return a string of bytes.
     # \~Russian
     #    \brief получить строку байтов из контейнера.
-    #    \param[in] size размер строки байтов.
     #    \return строку байтов.
-    def get_bytes(self, size):
-        byte_ptr = self.get_data_ptr()
-        return string_at(byte_ptr, size)
+    def get_bytes(self):
+        exception = make_exception()
+
+        size = c_int64()
+
+        byte_ptr = self._dll_handle.getBlobData(self._impl, byref(size), exception)
+
+        check_processing_block_exception(exception, self._dll_handle)
+
+        return string_at(byte_ptr, size.value)
 
     ##
     # \~English
@@ -647,6 +652,14 @@ class Context(ComplexObject):
         check_processing_block_exception(exception, self._dll_handle)
         return value
 
+    def is_bytes(self) -> bool:
+        exception = make_exception()
+
+        value = self._dll_handle.isBlobData(self._impl, exception)
+
+        check_processing_block_exception(exception, self._dll_handle)
+        return value
+
     def is_dynamic_template_index(self) -> bool:
         exception = make_exception()
 
@@ -683,8 +696,8 @@ class Context(ComplexObject):
             return self.get_long()
         if self.is_double():
             return self.get_double()
-        if self.is_data_ptr():
-            return self.get_data_ptr()
+        if self.is_bytes():
+            return self.get_bytes()
         if self.is_dynamic_template_index():
             return self.__getDynamicTemplateIndex()
         if self.is_context_template():

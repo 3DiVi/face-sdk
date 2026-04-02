@@ -310,7 +310,7 @@ public class Demo{
 			 final long cropWidth = cropShapes.get(1).getLong();
 			 final long cropCannel = cropShapes.get(2).getLong();
 			 final long cropSizeInBytes  = cropHeight * cropWidth * cropCannel;
-			 byte[] cropData = faceCropCtx.get("blob").getBytes((int)cropSizeInBytes);
+			 byte[] cropData = faceCropCtx.get("blob").getBytes();
 
 			 int[] pixels = new int[Math.toIntExact(cropWidth * cropHeight)];
 			 int idx = 0;

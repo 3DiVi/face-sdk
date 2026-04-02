@@ -809,6 +809,11 @@ class DllHandle:
         func.restype = POINTER(c_ubyte)
         return func(*args, **kwargs)
 
+    def getBlobData(self, *args, **kwargs):
+        func = self.__dll_handle['{}getBlobData'.format(self.__contextNamespace)]
+        func.restype = POINTER(c_ubyte)
+        return func(*args, **kwargs)
+
     def getDynamicTemplateIndex(self, *args, **kwargs):
         func = self.__dll_handle['{}getDynamicTemplateIndex'.format(self.__contextNamespace)]
         func.restype = c_void_p
@@ -871,6 +876,11 @@ class DllHandle:
 
     def isDataPtr(self, *args, **kwargs):
         func = self.__dll_handle['{}isDataPtr'.format(self.__contextNamespace)]
+        func.restype = c_bool
+        return func(*args, **kwargs)
+
+    def isBlobData(self, *args, **kwargs):
+        func = self.__dll_handle['{}isBlobData'.format(self.__contextNamespace)]
         func.restype = c_bool
         return func(*args, **kwargs)
 

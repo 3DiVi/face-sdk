@@ -426,8 +426,22 @@ class Context extends _ComplexObject {
     return DynamicTemplateIndex(_dll_handle, res, weak: true);
   }
 
-  Uint8List getBytes(int size) {
-    return Context.getBytesFromPointer(_getDataPtr(), size);
+  Uint8List _getBytes() {
+    final constructor = _dll_handle.lookupFunction<_Context_getBlobData_c, _Context_getBlobData_dart>(_context_namespace + 'getBlobData');
+    final exception = _getException();
+    Pointer<Uint64> size = malloc.allocate(sizeOf<Pointer<Uint64>>());
+    var pointer = constructor(this._impl, size, exception);
+
+    tdvCheckException(exception, _dll_handle);
+
+    var size_v = size.value;
+    malloc.free(size);
+
+    return Uint8List.fromList(pointer.asTypedList(size_v));
+  }
+
+  Uint8List getBytes() {
+    return _getBytes();
   }
 
   int len() {
@@ -576,7 +590,7 @@ class Context extends _ComplexObject {
       return this._getDouble();
     }
     if (this.is_data_ptr()) {
-      return this._getDataPtr();
+      return this._getBytes();
     }
     if (this.is_context_template()) {
       return this._getContextTemplate();
