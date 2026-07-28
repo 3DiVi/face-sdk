@@ -1,0 +1,207 @@
+unit_type: QUALITY_ASSESSMENT_ESTIMATOR
+description: Evaluates facial image quality per ISO/IEC 19794-5:2011 and ICAO standards
+confidence: explicit
+gpu_supported: false
+modifications:
+- name: assessment
+  description: Quality assessment modification
+  versions:
+  - version: 1
+    parameters:
+      enable_check_sharpness:
+        type: bool
+        required: false
+        default: true
+        description: Enable sharpness check
+      enable_check_illumination:
+        type: bool
+        required: false
+        default: true
+        description: Enable illumination check
+      enable_check_flare:
+        type: bool
+        required: false
+        default: true
+        description: Enable flare check
+      enable_check_noise:
+        type: bool
+        required: false
+        default: true
+        description: Enable noise check
+      enable_check_dynamic_range:
+        type: bool
+        required: false
+        default: true
+        description: Enable dynamic range check
+      enable_check_watermark:
+        type: bool
+        required: false
+        default: true
+        description: Enable watermark check
+      enable_check_background:
+        type: bool
+        required: false
+        default: true
+        description: Enable background uniformity check
+      enable_check_eye_openness:
+        type: bool
+        required: false
+        default: true
+        description: Enable eye openness check
+      enable_check_mask:
+        type: bool
+        required: false
+        default: true
+        description: Enable mask check
+      enable_check_neutral_emotion:
+        type: bool
+        required: false
+        default: true
+        description: Enable neutral emotion check
+      enable_check_eye_distance:
+        type: bool
+        required: false
+        default: true
+        description: Enable eyes distance check
+      enable_check_margin:
+        type: bool
+        required: false
+        default: true
+        description: Enable margin check
+      enable_check_rotation:
+        type: bool
+        required: false
+        default: true
+        description: Enable rotation check
+      enable_check_resolution:
+        type: bool
+        required: false
+        default: true
+        description: Enable resolution check
+      enable_check_gray_scale:
+        type: bool
+        required: false
+        default: true
+        description: Enable grayscale check
+  - version: 2
+    parameters:
+      enable_check_sharpness:
+        type: bool
+        required: false
+        default: true
+        description: Enable sharpness check
+      enable_check_illumination:
+        type: bool
+        required: false
+        default: true
+        description: Enable illumination check
+      enable_check_flare:
+        type: bool
+        required: false
+        default: true
+        description: Enable flare check
+      enable_check_noise:
+        type: bool
+        required: false
+        default: true
+        description: Enable noise check
+      enable_check_dynamic_range:
+        type: bool
+        required: false
+        default: true
+        description: Enable dynamic range check
+      enable_check_watermark:
+        type: bool
+        required: false
+        default: true
+        description: Enable watermark check
+      enable_check_background:
+        type: bool
+        required: false
+        default: true
+        description: Enable background uniformity check
+      enable_check_eye_openness:
+        type: bool
+        required: false
+        default: true
+        description: Enable eye openness check
+      enable_check_mask:
+        type: bool
+        required: false
+        default: true
+        description: Enable mask check
+      enable_check_neutral_emotion:
+        type: bool
+        required: false
+        default: true
+        description: Enable neutral emotion check
+      enable_check_eye_distance:
+        type: bool
+        required: false
+        default: true
+        description: Enable eyes distance check
+      enable_check_margin:
+        type: bool
+        required: false
+        default: true
+        description: Enable margin check
+      enable_check_rotation:
+        type: bool
+        required: false
+        default: true
+        description: Enable rotation check
+      enable_check_resolution:
+        type: bool
+        required: false
+        default: true
+        description: Enable resolution check
+      enable_check_gray_scale:
+        type: bool
+        required: false
+        default: true
+        description: Enable grayscale check
+      enable_check_face_size:
+        type: bool
+        required: false
+        default: true
+        description: Enable face size check (v2)
+      enable_check_red_eye:
+        type: bool
+        required: false
+        default: true
+        description: Enable red-eye check (v2)
+      enable_check_glasses:
+        type: bool
+        required: false
+        default: true
+        description: Enable glasses check (v2)
+      enable_check_mouth_openness:
+        type: bool
+        required: false
+        default: true
+        description: Enable mouth openness check (v2)
+requires:
+- image
+- objects[].bbox
+- objects[].keypoints
+produces:
+- objects[].quality
+prerequisites:
+- FACE_DETECTOR
+- FACE_TRACKING_MODULE
+- FACE_FITTER
+prerequisites_note: "OR: requires either FACE_DETECTOR or FACE_TRACKING_MODULE (not both)"
+constraints:
+  multiple_faces_supported: true
+errors:
+  - code: 0x18ba1f8e
+    description: Unknown modification specified in block config
+  - code: 0x032ad038
+    description: onnxruntime library could not be loaded
+see_also:
+  api:
+    - languages/python_api.yaml
+    - languages/cpp_api.yaml
+    - languages/java_api.yaml
+    - languages/csharp_api.yaml
+    - languages/flutter_api.yaml

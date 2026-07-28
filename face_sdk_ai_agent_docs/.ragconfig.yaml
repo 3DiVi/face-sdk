@@ -1,0 +1,33 @@
+# RAG configuration for AI knowledge base chunking
+# Used by AI agents to determine optimal chunk strategy per file type
+
+chunk_size: 2048
+overlap: 256
+
+priority:
+  - pattern: "blocks/*.yaml"
+    priority: 1.0
+    chunk_size: 1024
+    description: "Individual block definitions — small chunks preserve block boundaries"
+
+  - pattern: "languages/*.yaml"
+    priority: 0.9
+    description: "Language API references — medium chunks preserve method groupings"
+
+  - pattern: "context_schema.yaml"
+    priority: 0.8
+    description: "Context field schema — large chunks preserve entity relationships"
+
+  - pattern: "best_practices.yaml"
+    priority: 0.7
+    chunk_size: 1024
+    description: "Use cases — small chunks per use case"
+
+  - pattern: "*.md"
+    priority: 0.5
+    description: "Markdown guides — standard chunking"
+
+  - pattern: "examples/**"
+    priority: 0.4
+    chunk_size: 1024
+    description: "Code examples — small chunks per file"

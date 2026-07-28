@@ -1,0 +1,385 @@
+language: "cpp"
+classes:
+  FacerecService:
+    description: "Main entry point for FaceSDK. Used to create ProcessingBlocks, Contexts, templates, and the DynamicTemplateIndex."
+    methods:
+      createService:
+        description: "Creates the singleton FacerecService. Call once at startup. Requires paths to DLL, config, and license."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Invalid paths, missing license, or initialization failure"
+        signature: "static Ptr createService(const std::string& dll_path, const std::string& config_dir, const std::string& license_dir)"
+        parameters:
+          dll_path:
+            type: "const std::string&"
+          config_dir:
+            type: "const std::string&"
+          license_dir:
+            type: "const std::string&"
+      createProcessingBlock:
+        description: "Creates a ProcessingBlock instance from a configuration Context. Config must specify unit_type and may specify modification/version. Throws pbio::Error on unknown config."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Unknown unit_type, invalid modification, or license restriction"
+        signature: "ProcessingBlock createProcessingBlock(const Context& config)"
+        parameters:
+          config:
+            type: "const Context&"
+      createContext:
+        description: "Creates an empty Context. This is the only way to create a Context — no default constructor. Use Context::operator[] to populate fields."
+        signature: "Context createContext()"
+      createContextFromEncodedImage:
+        description: "Creates a Context with an image field from encoded file bytes (JPEG/PNG/BMP). Preferred over manual Context construction for image input."
+        supported_formats: [JPEG, PNG, BMP]
+        signature: "Context createContextFromEncodedImage(const std::vector<uint8_t>& data)"
+        parameters:
+          data:
+            type: "const std::vector<uint8_t>&"
+      createContextFromFrame:
+        description: "Creates a Context from raw pixel data with specified format and dimensions. Use for camera/video frame input."
+        signature: "Context createContextFromFrame(uint8_t* data, int32_t width, int32_t height, Context::Format format = Context::FORMAT_BGR, int32_t baseAngle = 0)"
+        parameters:
+          data:
+            type: "uint8_t*"
+          width:
+            type: "int32_t"
+          height:
+            type: "int32_t"
+          format:
+            type: "Context::Format"
+          baseAngle:
+            type: "int32_t"
+      createContextFromJsonFile:
+        description: "Creates a Context from a JSON file. Useful for loading pre-configured pipeline descriptors."
+        signature: "Context createContextFromJsonFile(const std::string& path)"
+        parameters:
+          path:
+            type: "const std::string&"
+      loadContextTemplate:
+        description: "Loads a previously saved ContextTemplate from a binary stream."
+        signature: "ContextTemplate::Ptr loadContextTemplate(std::istream& stream)"
+        parameters:
+          stream:
+            type: "std::istream&"
+      createDynamicTemplateIndex:
+        description: "Creates a DynamicTemplateIndex for 1:N face search. Config must specify modification and version matching the template extractor."
+        throws:
+          - exception: "pbio::Error"
+            condition: "max_license_count exceeded or invalid config"
+        signature: "DynamicTemplateIndex::Ptr createDynamicTemplateIndex(const Context& config)"
+        parameters:
+          config:
+            type: "const Context&"
+      getVersion:
+        description: "Returns the SDK version string (e.g., '3.31')."
+        signature: "std::string getVersion()"
+  Context:
+    description: "Hierarchical key-value container that flows through the processing pipeline. Supports nested objects, arrays, and typed values. ⚠️ No public default constructor — use FacerecService::createContext() to create a new Context. Writing 'pbio::Context x;' compiles but produces an invalid object."
+    usage_pattern: |
+      TWO-mode container: operator[] navigates to a child node; set*() or operator= sets that node's VALUE.
+      To build an OBJECT with children (e.g. "image"):
+        auto img = ioData["image"];         // Ref to child "image"
+        img["format"] = "NDARRAY";          // child "format" = string (via Ref::operator=)
+        img["blob"].setDataPtr(data, size); // child "blob" = data_ptr
+        img["dtype"] = "uint8_t";           // child "dtype" = string
+        auto shape = img["shape"];          // child "shape" = array
+        shape.push_back(h); shape.push_back(w); shape.push_back(3);
+      WRONG: img.setString("NDARRAY") — this sets "image" itself to a string, not a child!
+      WRONG: img.setString("format", "NDARRAY") — setString takes 1 arg (value), not key+value
+      Range-based for iterates array Contexts: for (const auto& obj : ctx["objects"]) { obj["bbox"]... }
+    methods:
+      operator[]:
+        description: "Accesses a child Context by string key (for objects/arrays). Returns a Ref that can be read, assigned via operator=, or iterated with range-based for."
+        signature: "Ref operator[](const std::string& key)"
+        parameters:
+          key:
+            type: "const std::string&"
+      operator[]_int:
+        description: "Accesses an array element by integer index."
+        signature: "Ref operator[](int index)"
+        parameters:
+          index:
+            type: "int"
+      at:
+        description: "Accesses a child Context by string key with bounds checking."
+        signature: "Ref at(const std::string& key)"
+        parameters:
+          key:
+            type: "const std::string&"
+      contains:
+        description: "Returns true if the specified key exists in the Context."
+        signature: "bool contains(const std::string& key)"
+        parameters:
+          key:
+            type: "const std::string&"
+      isNone:
+        description: "Returns true if the Context holds a null/None value."
+        signature: "bool isNone()"
+      isArray:
+        description: "Returns true if the Context holds an array."
+        signature: "bool isArray()"
+      isObject:
+        description: "Returns true if the Context holds an object/map."
+        signature: "bool isObject()"
+      isLong:
+        description: "Returns true if the Context holds an integer value."
+        signature: "bool isLong()"
+      isDouble:
+        description: "Returns true if the Context holds a double value."
+        signature: "bool isDouble()"
+      isString:
+        description: "Returns true if the Context holds a string value."
+        signature: "bool isString()"
+      isBool:
+        description: "Returns true if the Context holds a boolean value."
+        signature: "bool isBool()"
+      getDouble:
+        description: "Gets the double value. Throws pbio::Error on type mismatch."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Type mismatch — value is not a double"
+        signature: "double getDouble() const"
+      getLong:
+        description: "Gets the long integer value. Throws pbio::Error on type mismatch."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Type mismatch — value is not a long"
+        signature: "long getLong() const"
+      getBool:
+        description: "Gets the boolean value. Throws pbio::Error on type mismatch."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Type mismatch — value is not a bool"
+        signature: "bool getBool() const"
+      getString:
+        description: "Gets the string value. Throws pbio::Error on type mismatch."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Type mismatch — value is not a string"
+        signature: "std::string getString() const"
+      setDouble:
+        description: "Sets the value to a double."
+        signature: "void setDouble(double val)"
+        parameters:
+          val:
+            type: "double"
+      setLong:
+        description: "Sets the value to a long integer."
+        signature: "void setLong(long val)"
+        parameters:
+          val:
+            type: "long"
+      setBool:
+        description: "Sets the value to a boolean."
+        signature: "void setBool(bool val)"
+        parameters:
+          val:
+            type: "bool"
+      setString:
+        description: "Sets the value to a string."
+        signature: "void setString(const std::string& str)"
+        parameters:
+          str:
+            type: "const std::string&"
+      getDynamicTemplateIndex:
+        description: "Extracts a DynamicTemplateIndex from the Context value. Throws pbio::Error on type mismatch."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Type mismatch — value is not a DynamicTemplateIndex"
+        signature: "DynamicTemplateIndex::Ptr getDynamicTemplateIndex() const"
+      getContextTemplate:
+        description: "Extracts a ContextTemplate from the Context value. Throws pbio::Error on type mismatch."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Type mismatch — value is not a ContextTemplate"
+        signature: "ContextTemplate::Ptr getContextTemplate() const"
+      setDynamicTemplateIndex:
+        description: "Sets the Context value to a DynamicTemplateIndex."
+        signature: "void setDynamicTemplateIndex(DynamicTemplateIndex::Ptr value)"
+        parameters:
+          value:
+            type: "DynamicTemplateIndex::Ptr"
+      setContextTemplate:
+        description: "Sets the Context value to a ContextTemplate."
+        signature: "void setContextTemplate(ContextTemplate::Ptr value)"
+        parameters:
+          value:
+            type: "ContextTemplate::Ptr"
+      setDataPtr:
+        description: "Sets the value to a raw data pointer (for image blob storage)."
+        signature: "unsigned char* setDataPtr(void* ptr, int copy_sz = 0)"
+        parameters:
+          ptr:
+            type: "void*"
+          copy_sz:
+            type: "int"
+      getDataPtr:
+        description: "Gets the raw data pointer value."
+        signature: "unsigned char* getDataPtr() const"
+      serializeToJson:
+        description: "Serializes the entire Context to a JSON string."
+        signature: "std::string serializeToJson() const"
+      saveToJsonFile:
+        description: "Saves the entire Context to a JSON file."
+        signature: "void saveToJsonFile(const std::string& path)"
+        parameters:
+          path:
+            type: "const std::string&"
+      size:
+        description: "Returns the number of elements (for arrays) or keys (for objects)."
+        signature: "size_t size() const"
+      begin:
+        description: "Returns an iterator to the first element of an array Context. Enables range-based for loops: for (const auto& obj : ctx['objects'])."
+        signature: "iterator begin() const"
+      end:
+        description: "Returns a past-the-end iterator for an array Context."
+        signature: "iterator end() const"
+      push_back:
+        description: "Appends a value to the Context array. Accepts compatible types (long, double, string, bool, Context)."
+        signature: "void push_back(const T& value)  // templated — type deduced from argument"
+        parameters:
+          value:
+            type: "const T&"
+      clear:
+        description: "Removes all keys/elements from the Context."
+        signature: "void clear()"
+      erase:
+        description: "Removes a specific key from the Context."
+        signature: "void erase(const std::string& key)"
+        parameters:
+          key:
+            type: "const std::string&"
+      getKeys:
+        description: "Returns all keys in the Context object."
+        signature: "std::vector<std::string> getKeys()"
+  ContextFormat:
+    description: "Enumeration of supported image pixel formats for createContextFromFrame."
+    methods:
+      FORMAT_BGR:
+        description: "Blue-Green-Red 3-channel format (default on desktop)."
+        signature: "FORMAT_BGR"
+      FORMAT_RGB:
+        description: "Red-Green-Blue 3-channel format."
+        signature: "FORMAT_RGB"
+      FORMAT_BGRA8888:
+        description: "Blue-Green-Red-Alpha 4-channel format."
+        signature: "FORMAT_BGRA8888"
+      FORMAT_YUV420:
+        description: "YUV 4:2:0 planar format"
+        signature: "FORMAT_YUV420"
+      FORMAT_YUV_NV12:
+        description: "YUV NV12 semi-planar format"
+        signature: "FORMAT_YUV_NV12"
+      FORMAT_NV21:
+        description: "YUV NV21 semi-planar format"
+        signature: "FORMAT_NV21"
+  ProcessingBlock:
+    description: "A processing unit that reads/writes Context. Created via FacerecService::createProcessingBlock."
+    usage_pattern: "block(ioData) — C++ uses operator() for invocation. No .process() or .Invoke() — just function-call syntax."
+    methods:
+      operator():
+        description: "Executes the block on the given Context. Reads required fields, writes produced fields. Throws pbio::Error on processing failure."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Processing failure, invalid input, or constraint violation"
+        signature: "void operator()(Context& ioData)"
+        parameters:
+          ioData:
+            type: "Context&"
+  ContextTemplate:
+    description: "Binary biometric face template produced by FACE_TEMPLATE_EXTRACTOR. Immutable after creation."
+    methods:
+      getMethodName:
+        description: "Returns the modification name used to create this template (e.g., '1000')."
+        signature: "std::string getMethodName() const"
+      size:
+        description: "Returns the template size in bytes."
+        signature: "int32_t size() const"
+      save:
+        description: "Saves the template to a binary output stream for serialization."
+        signature: "void save(std::ostream& stream) const"
+        parameters:
+          stream:
+            type: "std::ostream&"
+  DynamicTemplateIndex:
+    description: "Searchable template database for 1:N face matching. Created via FacerecService::createDynamicTemplateIndex."
+    note: "C++ uses overloaded add(): single — add(ContextTemplate::Ptr, uuid), batch — add(vector<ContextTemplate::Ptr>, vector<string>). YAML keys add_single/add_batch are documentation labels only — the actual method name is add()."
+    methods:
+      size:
+        description: "Returns the number of stored templates."
+        signature: "size_t size() const"
+      capacity:
+        description: "Returns the maximum capacity of the index."
+        signature: "size_t capacity() const"
+      getUUID:
+        description: "Returns the UUID of the template at the specified index position."
+        signature: "std::string getUUID(size_t index) const"
+        parameters:
+          index:
+            type: "size_t"
+      at:
+        description: "Retrieves a ContextTemplate by its UUID."
+        signature: "ContextTemplate::Ptr at(const std::string& uuid) const"
+        parameters:
+          uuid:
+            type: "const std::string&"
+      get:
+        description: "Retrieves a ContextTemplate by its numeric index."
+        signature: "ContextTemplate::Ptr get(int64_t index) const"
+        parameters:
+          index:
+            type: "int64_t"
+      add_single:
+        description: "Adds a single template with its UUID to the index. Throws pbio::Error on duplicate UUID or capacity exceeded."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Duplicate UUID or max_license_count exceeded"
+        signature: "void add(ContextTemplate::Ptr templ, const std::string& uuid)  // overloaded: single"
+        parameters:
+          templ:
+            type: "ContextTemplate::Ptr"
+          uuid:
+            type: "const std::string&"
+      add_batch:
+        description: "Adds multiple templates with their UUIDs in batch. More efficient than repeated single adds."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Duplicate UUID or max_license_count exceeded"
+        signature: "void add(const std::vector<ContextTemplate::Ptr>& templates, const std::vector<std::string>& uuids)  // overloaded: batch"
+        parameters:
+          templates:
+            type: "const std::vector<ContextTemplate::Ptr>&"
+          uuids:
+            type: "const std::vector<std::string>&"
+      remove:
+        description: "Removes a template by its UUID. Throws pbio::Error if UUID not found."
+        throws:
+          - exception: "pbio::Error"
+            condition: "Non-existent UUID"
+        signature: "void remove(const std::string& uuid)"
+        parameters:
+          uuid:
+            type: "const std::string&"
+      concat:
+        description: "Merges another DynamicTemplateIndex into this one. Invalidates the source index."
+        signature: "void concat(DynamicTemplateIndex::Ptr other)"
+        parameters:
+          other:
+            type: "DynamicTemplateIndex::Ptr"
+      clear:
+        description: "Removes all templates from the index."
+        signature: "void clear()"
+      save:
+        description: "Saves the index to a file for later loading. Throws pbio::Error on I/O errors."
+        throws:
+          - exception: "pbio::Error"
+            condition: "I/O errors (disk full, permission denied)"
+        signature: "void save(const std::string& path, bool allowOverwrite) const"
+        parameters:
+          path:
+            type: "const std::string&"
+          allowOverwrite:
+            type: "bool"
+      getMethodName:
+        description: "Returns the modification name this index was created with (e.g., '1000')."
+        signature: "std::string getMethodName() const"

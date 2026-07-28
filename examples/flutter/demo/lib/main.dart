@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -87,53 +86,61 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  Widget getFinalStatus(BuildContext context){
-    return new WillPopScope(
-        onWillPop: () async => false,
-        child: Scaffold(
-          body: Stack(
-            children: [
-              Center(child: Text("Match score: ${_match?.score}\nIs same persons: ${_match!.score > 0.9 ? "true" : "false" } \nLiveness passed: $_livenessPassed")),
-              Container(
-                height: 150,
-                width: 500,
-                margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 30.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.rotationY(math.pi),
-                        child: Center(child: _idPhoto),
-                      ),
-
-                    ),
-                    Expanded(
-                      child: Transform(
-                        alignment: Alignment.center,
-                        transform: rotate,
-                        child: Center(child: _livePhoto),
-                      ),
-                    ),
-                  ],
-                ),
+  Widget getFinalStatus(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Center(
+              child: Text(
+                "Match score: ${_match?.score}\n"
+                    "Is same persons: ${_match != null && _match!.score > 0.9 ? "true" : "false"}\n"
+                    "Liveness passed: $_livenessPassed",
               ),
-              //Center(child: Center(child: _livePhoto)),
-            ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            heroTag: "btn6",
-            child: Icon(Icons.navigate_next),
-            onPressed: (){setState(() {
-              _recognizer!.dispose();
-              Phoenix.rebirth(context);
-            });},
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            ),
+
+            Container(
+              height: 150,
+              width: 500,
+              margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 30.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(math.pi),
+                      child: Center(child: _idPhoto),
+                    ),
+                  ),
+
+                  Expanded(
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: rotate,
+                      child: Center(child: _livePhoto),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
 
+        floatingActionButton: FloatingActionButton(
+          heroTag: "btn6",
+          child: const Icon(Icons.navigate_next),
+          onPressed: () {
+            setState(() {
+              _recognizer?.dispose();
+              Phoenix.rebirth(context);
+            });
+          },
+        ),
 
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      ),
     );
   }
 

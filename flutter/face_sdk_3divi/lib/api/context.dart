@@ -396,16 +396,6 @@ class Context extends _ComplexObject {
     return res;
   }
 
-  Pointer<Uint8> _getDataPtr() {
-    final constructor = _dll_handle.lookupFunction<_Context_getDataPtr_c, _Context_getDataPtr_dart>(_context_namespace + 'getDataPtr');
-    final exception = _getException();
-    var res = constructor(this._impl, exception);
-
-    tdvCheckException(exception, _dll_handle);
-
-    return res;
-  }
-
   ContextTemplate _getContextTemplate() {
     final constructor = _dll_handle.lookupFunction<_Context_getContextTemplate_c, _Context_getContextTemplate_dart>(_context_namespace + 'getContextTemplate');
     final exception = _getException();

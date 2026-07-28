@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'dart:io';
 import 'dart:async';
 import "dart:typed_data";
@@ -6,17 +5,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:face_sdk_3divi/face_sdk_3divi.dart';
-import 'package:face_sdk_3divi/utils.dart';
 
 import 'bndbox.dart';
 
 
 void logError(String code, String message) {
-  if (message != null) {
     print('Error: $code\nError Message: $message');
-  } else {
-    print('Error: $code');
-  }
 }
 
 typedef void setTempalte(Template templ, Image photo);
@@ -25,7 +19,7 @@ typedef void setTempalte(Template templ, Image photo);
 class DetectPicture extends StatefulWidget {
   final List<CameraDescription> cameras;
   final FacerecService _facerecService;
-  Recognizer _recognizer;
+  final Recognizer _recognizer;
 
   final setTempalte callback;
   final String descriprion;
@@ -45,7 +39,6 @@ class _DetectPictureState extends State<DetectPicture> {
   bool isDetecting = false;
   late Capturer _capturer;
   Image? _lastImage;
-  late Image _cropImg;
   late var fornatal;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey _pictureKey = GlobalKey();
@@ -64,7 +57,7 @@ class _DetectPictureState extends State<DetectPicture> {
 
   Future<XFile?> takePicture() async {
     final CameraController cameraController = controller;
-    if (cameraController == null || !cameraController.value.isInitialized) {
+    if (!cameraController.value.isInitialized) {
       showInSnackBar('Error: select a camera first.');
       return null;
     }
@@ -91,7 +84,7 @@ class _DetectPictureState extends State<DetectPicture> {
     takePicture().then((XFile? file) async {
 
       if (mounted) {
-        if (file != null && _capturer != null) {
+        if (file != null) {
           final Uint8List img_bytes = File(file.path).readAsBytesSync();
           _lastImage = Image.memory(img_bytes);
           var img = await decodeImageFromList(img_bytes);
@@ -99,7 +92,7 @@ class _DetectPictureState extends State<DetectPicture> {
           List<RawSample> rss = _capturer.capture(img_bytes);
 
           List<dynamic>  dets = [];
-          if (rss != null && rss.length > 0) {
+          if (rss.length > 0) {
             for(var i = 0; i < rss.length; i+=1) {
               final rect = rss[i].getRectangle();
 
@@ -162,7 +155,7 @@ class _DetectPictureState extends State<DetectPicture> {
 
     _capturer = widget._facerecService.createCapturer(Config("common_capturer_blf_fda_front.xml"));
 
-    if (widget.cameras == null || widget.cameras.length < 1) {
+    if (widget.cameras.length < 1) {
       print('No camera is found');
     } else {
       changeCamera();
@@ -193,7 +186,7 @@ class _DetectPictureState extends State<DetectPicture> {
                     heroTag: "btn1",
                     child: Icon(Icons.camera_alt),
                     // color: Colors.blue,
-                    onPressed: controller != null && controller.value.isInitialized
+                    onPressed: controller.value.isInitialized
                         ? onTakePictureButtonPressed
                         : null,
                   ),
@@ -201,7 +194,7 @@ class _DetectPictureState extends State<DetectPicture> {
                     heroTag: "btn2",
                     child: const Icon(Icons.flip_camera_android),
                     // color: Colors.blue,
-                    onPressed: controller != null && controller.value.isInitialized
+                    onPressed: controller.value.isInitialized
                         ? (){changeCamera();}
                         : null,
                   ),
@@ -241,8 +234,8 @@ class _DetectPictureState extends State<DetectPicture> {
                         margin: const EdgeInsets.only(top: 0),
                         child: BndBox(
                           _recognitions,
-                          widgetPosition.dx == null ? 0 : widgetPosition.dx,
-                          widgetPosition.dy == null ? 0 : widgetPosition.dy,
+                          widgetPosition.dx,
+                          widgetPosition.dy,
                         ),
                       ),
                     ),
@@ -271,7 +264,7 @@ class _DetectPictureState extends State<DetectPicture> {
 
   @override
   Widget build(BuildContext context) {
-    if (controller == null || !controller.value.isInitialized) {
+    if (!controller.value.isInitialized) {
       return Container();
     }
     return _lastImage == null ? livePreview(context): imagePreview(context);

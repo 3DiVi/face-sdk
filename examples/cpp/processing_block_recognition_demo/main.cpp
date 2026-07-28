@@ -235,23 +235,19 @@ void recognitionSample(std::string sdk_path, std::string input_image_path1, std:
 		matcherConfig["unit_type"] = "MATCHER_MODULE";
 		matcherConfig["modification"] = modification;
 
-		templateIndexConfig["unit_type"] = "TEMPLATE_INDEX";
 		templateIndexConfig["modification"] = modification;
 
 		api::ProcessingBlock matcherModule = service.createProcessingBlock(matcherConfig);
-		api::ProcessingBlock templateIndex = service.createProcessingBlock(templateIndexConfig);
+		pbio::DynamicTemplateIndex::Ptr templateIndex = service.createDynamicTemplateIndex(templateIndexConfig);
 
 		for (const Context& object : ioData["objects"])
 		{
-			templates.push_back(object["face_template"]);
+			const auto& face_template = object["face_template"];
+			templateIndex->add(face_template["template"].getContextTemplate(), face_template["uuid"].getString());
 		}
 
-		ioData["templates"] = std::move(templates);
-
-		templateIndex(ioData);
-
 		matcherData["knn"] = 1l;
-		matcherData["template_index"] = ioData["template_index"];
+		matcherData["template_index"] =templateIndex;
 		matcherData["queries"] = ioData2["objects"][0]["face_template"]["template"];
 
 		///////////Matcher////////////////

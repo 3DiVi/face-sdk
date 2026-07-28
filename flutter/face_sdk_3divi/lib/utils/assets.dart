@@ -1,11 +1,12 @@
 part of utils;
 
 Future<String> loadAssets() async {
-  final manifestContent = await rootBundle.loadString("AssetManifest.json");
-  final Map<String, dynamic> manifestMap = jsonDecode(manifestContent);
+  final assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+  final assets = assetManifest.listAssets();
+
   Directory documentsDirectory = await getApplicationDocumentsDirectory();
 
-  for (String key in manifestMap.keys) {
+  for (String key in assets) {
     String assetPath = key;
 
     if (assetPath.contains("packages/face_sdk_3divi_models/")) {

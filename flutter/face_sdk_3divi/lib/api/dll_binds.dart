@@ -522,15 +522,6 @@ typedef _Context_getDouble_dart = double Function(
     Pointer<Void>,
     Pointer<Pointer<Void>>);
 
-typedef _Context_getDataPtr_c = Pointer<Uint8> Function(
-    Pointer<Void>,
-    Pointer<Pointer<Void>>);
-
-typedef _Context_getDataPtr_dart = Pointer<Uint8> Function(
-    Pointer<Void>,
-    Pointer<Pointer<Void>>);
-
-
 typedef _Context_getBlobData_c = Pointer<Uint8> Function(
     Pointer<Void>,
     Pointer<Uint64>,

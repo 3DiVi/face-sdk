@@ -1,0 +1,340 @@
+language: "dart"
+note: "⚠️ FaceSdkPlugin.createFacerecService() is async with 0 parameters (no dll_path/config/license args — unlike C++/Java/Python). Flutter uses FORMAT_YUV420 as default (not BGR). Always await createFacerecService() and use createAsyncProcessingBlock for video pipelines."
+classes:
+  FaceSdkPlugin:
+    description: "Static factory for FaceSDK in Flutter. Auto-loads assets from the app bundle. Internally creates a FacerecService singleton."
+    methods:
+      createFacerecService:
+        description: "Creates the singleton FacerecService (async). Auto-loads SDK assets from the Flutter app bundle."
+        signature: "static Future<FacerecService> createFacerecService()"
+  FacerecService:
+    description: "Main FaceSDK service instance returned by FaceSdkPlugin.createFacerecService(). All creation methods are async."
+    methods:
+      createProcessingBlock:
+        description: "Creates a ProcessingBlock from a Map config. Must specify unit_type. Throws Exception on unknown config."
+        throws:
+          - exception: "Exception"
+            condition: "Unknown unit_type, invalid modification, or license restriction"
+        signature: "ProcessingBlock createProcessingBlock(Map ctx)"
+        parameters:
+          ctx:
+            type: "Map"
+      createAsyncProcessingBlock:
+        description: "Creates an AsyncProcessingBlock for non-blocking processing in video pipelines. Returns a Future."
+        throws:
+          - exception: "Exception"
+            condition: "Unknown unit_type, invalid modification, or license restriction"
+        signature: "Future<AsyncProcessingBlock> createAsyncProcessingBlock(Map ctx)"
+        parameters:
+          ctx:
+            type: "Map"
+      createContext:
+        description: "Creates a Context from a Map of initial values. Pass `{}` for an empty context."
+        signature: "Context createContext(Map ctx)"
+        parameters:
+          ctx:
+            type: "Map"
+      createContextFromEncodedImage:
+        description: "Creates a Context from encoded image bytes (JPEG/PNG/BMP)."
+        supported_formats: [JPEG, PNG, BMP]
+        signature: "Context createContextFromEncodedImage(Uint8List data)"
+        parameters:
+          data:
+            type: "Uint8List"
+      createContextFromFrame:
+        description: "Creates a Context from raw pixel data. Default format is FORMAT_YUV420 (unlike desktop which defaults to BGR)."
+        signature: "Context createContextFromFrame(Uint8List data, int width, int height, {ContextFormat format = ContextFormat.FORMAT_YUV420, int baseAngle = 0})"
+        parameters:
+          data:
+            type: "Uint8List"
+          width:
+            type: "int"
+          height:
+            type: "int"
+          format:
+            type: "ContextFormat"
+          baseAngle:
+            type: "int"
+      createContextFromJsonFile:
+        description: "Creates a Context from a JSON file path."
+        signature: "Context createContextFromJsonFile(String path)"
+        parameters:
+          path:
+            type: "String"
+      createContextFromCameraImage:
+        description: "Creates a Context from a CameraImage (from camera plugin). Flutter-specific."
+        signature: "Context createContextFromCameraImage(CameraImage image)"
+        parameters:
+          image:
+            type: "CameraImage"
+      loadContextTemplate:
+        description: "Loads a saved ContextTemplate from a Stream."
+        signature: "static ContextTemplate loadContextTemplate(Stream<List<int>> stream)"
+        parameters:
+          stream:
+            type: "Stream<List<int>>"
+      createDynamicTemplateIndex:
+        description: "Creates a DynamicTemplateIndex from a Map config. Must specify modification and version."
+        throws:
+          - exception: "Exception"
+            condition: "max_license_count exceeded or invalid config"
+        signature: "DynamicTemplateIndex createDynamicTemplateIndex(Map ctx)"
+        parameters:
+          ctx:
+            type: "Map"
+      getVersion:
+        description: "Returns the SDK version string."
+        signature: "String getVersion()"
+      dispose:
+        description: "Releases native resources for this FacerecService. Always call in a finally block."
+        signature: "void dispose()"
+  Context:
+    description: "Hierarchical key-value container flowing through the processing pipeline. Flutter requires explicit .dispose() on Context, ContextTemplate, and DynamicTemplateIndex. ⚠️ No public constructor — always create via service.createContext() or service.createContextFromEncodedImage()."
+    methods:
+      get_value:
+        description: "Gets the Dart native value (dynamic) from the Context node."
+        signature: "dynamic get_value()"
+      operator_get:
+        description: "Accesses a child Context by key using bracket notation: context['key']."
+        signature: "Context operator[](Object key)"
+        parameters:
+          key:
+            type: "Object"
+      placeValues:
+        description: "Bulk-sets multiple values from a Map."
+        signature: "void placeValues(Map values)"
+        parameters:
+          values:
+            type: "Map"
+      isNone:
+        description: "Returns true if the Context node holds null."
+        signature: "bool isNone()"
+      isArray:
+        description: "Returns true if the Context node is an array."
+        signature: "bool isArray()"
+      isObject:
+        description: "Returns true if the Context node is an object."
+        signature: "bool isObject()"
+      isLong:
+        description: "Returns true if the Context node holds an integer."
+        signature: "bool isLong()"
+      isDouble:
+        description: "Returns true if the Context node holds a double."
+        signature: "bool isDouble()"
+      isString:
+        description: "Returns true if the Context node holds a String."
+        signature: "bool isString()"
+      isBool:
+        description: "Returns true if the Context node holds a bool."
+        signature: "bool isBool()"
+      isContextTemplate:
+        description: "Returns true if the Context node holds a ContextTemplate."
+        signature: "bool isContextTemplate()"
+      isDynamicTemplateIndex:
+        description: "Returns true if the Context node holds a DynamicTemplateIndex."
+        signature: "bool isDynamicTemplateIndex()"
+      contains:
+        description: "Returns true if the specified key exists."
+        signature: "bool contains(Object key)"
+        parameters:
+          key:
+            type: "Object"
+      insertMap:
+        description: "Inserts all entries from a Map into this Context node."
+        signature: "void insertMap(Map<String, dynamic> map)"
+        parameters:
+          map:
+            type: "Map<String, dynamic>"
+      insertList:
+        description: "Inserts a List into this Context node."
+        signature: "void insertList(List<dynamic> list)"
+        parameters:
+          list:
+            type: "List<dynamic>"
+      toMap:
+        description: "Converts the Context to a Dart Map recursively."
+        signature: "Map<String, dynamic> toMap()"
+      len:
+        description: "Returns the number of elements (array) or keys (object)."
+        signature: "int len()"
+      clone:
+        description: "Creates an independent deep copy of the Context."
+        signature: "Context clone()"
+      clear:
+        description: "Removes all keys/elements. Resets to empty state."
+        signature: "void clear()"
+      dispose:
+        description: "Releases native resources. Required in Flutter — always call in finally block."
+        signature: "void dispose()"
+  ContextFormat:
+    description: "Enumeration of supported image pixel formats."
+    methods:
+      FORMAT_BGR:
+        description: "Blue-Green-Red 3-channel format."
+        signature: "FORMAT_BGR"
+      FORMAT_RGB:
+        description: "Red-Green-Blue 3-channel format."
+        signature: "FORMAT_RGB"
+      FORMAT_BGRA8888:
+        description: "Blue-Green-Red-Alpha 4-channel format."
+        signature: "FORMAT_BGRA8888"
+      FORMAT_YUV420:
+        description: "YUV 4:2:0 planar format (default for Flutter)."
+        signature: "FORMAT_YUV420"
+      FORMAT_YUV_NV12:
+        description: "YUV 4:2:0 NV12 format."
+        signature: "FORMAT_YUV_NV12"
+      FORMAT_NV21:
+        description: "YUV 4:2:0 NV21 format."
+        signature: "FORMAT_NV21"
+  ProcessingBlock:
+    description: "Synchronous processing block. Created via FacerecService.createProcessingBlock()."
+    usage_pattern: "block.process(ioData) — Flutter uses .process() (same as Java). ⚠️ C++ uses operator(), C# uses .Invoke(). Sync variant: block.process(ioData). Async variant: await asyncBlock.process(ioData). Always call .dispose() on all objects."
+    methods:
+      process:
+        description: "Executes this block on the given Context. Throws TDVException on failure."
+        throws:
+          - exception: "TDVException"
+            condition: "Processing failure, invalid input, or constraint violation"
+        signature: "void process(Context ioData)"
+        parameters:
+          ioData:
+            type: "Context"
+  AsyncProcessingBlock:
+    description: "Asynchronous processing block for non-blocking video pipelines. Created via FacerecService.createAsyncProcessingBlock()."
+    usage_pattern: "await asyncBlock.process(ioData) — Flutter async variant. ⚠️ Must await the Future! Calling without await starts but does not wait for completion."
+    methods:
+      process:
+        description: "Executes this block asynchronously. Returns a Future. Throws TDVException on failure."
+        throws:
+          - exception: "TDVException"
+            condition: "Processing failure, invalid input, or constraint violation"
+        signature: "Future<void> process(Context ioData)"
+        parameters:
+          ioData:
+            type: "Context"
+      dispose:
+        description: "Releases native resources for this AsyncProcessingBlock. Always call in a finally block."
+        signature: "void dispose()"
+  ContextTemplate:
+    description: "Binary biometric face template produced by FACE_TEMPLATE_EXTRACTOR. Must call .dispose() in Flutter."
+    methods:
+      getMethodName:
+        description: "Returns the modification name used to create this template."
+        signature: "String getMethodName()"
+      size:
+        description: "Returns the template size in bytes."
+        signature: "int size()"
+      save:
+        description: "Saves the template to a Uint8List."
+        signature: "Uint8List save()"
+      dispose:
+        description: "Releases native resources. Required in Flutter."
+        signature: "void dispose()"
+  DynamicTemplateIndex:
+    description: "Searchable template database for 1:N face matching. Must call .dispose() in Flutter."
+    methods:
+      size:
+        description: "Returns the number of stored templates."
+        signature: "int size()"
+      capacity:
+        description: "Returns the maximum capacity."
+        signature: "int capacity()"
+      add:
+        description: "Adds a single template with UUID. Throws Exception on duplicate UUID or capacity exceeded."
+        throws:
+          - exception: "Exception"
+            condition: "Duplicate UUID or max_license_count exceeded"
+        signature: "void add(ContextTemplate templ, String uuid)"
+        parameters:
+          templ:
+            type: "ContextTemplate"
+          uuid:
+            type: "String"
+      add_batch:
+        description: "Adds multiple templates in batch."
+        throws:
+          - exception: "Exception"
+            condition: "Duplicate UUID or max_license_count exceeded"
+        signature: "void add(List<ContextTemplate> templates, List<String> uuids)"
+        parameters:
+          templates:
+            type: "List<ContextTemplate>"
+          uuids:
+            type: "List<String>"
+      remove:
+        description: "Removes a template by UUID. Throws Exception if UUID not found."
+        throws:
+          - exception: "Exception"
+            condition: "Non-existent UUID"
+        signature: "void remove(String uuid)"
+        parameters:
+          uuid:
+            type: "String"
+      removeByUuid:
+        description: "Removes a template by dynamic UUID. Throws Exception if UUID not found."
+        throws:
+          - exception: "Exception"
+            condition: "Non-existent UUID"
+        signature: "void removeByUuid(dynamic uuid)"
+        parameters:
+          uuid:
+            type: "dynamic"
+      removeByUuids:
+        description: "Removes multiple templates by dynamic UUIDs. Throws Exception if any UUID not found."
+        throws:
+          - exception: "Exception"
+            condition: "Non-existent UUID"
+        signature: "void removeByUuids(List<dynamic> uuids)"
+        parameters:
+          uuids:
+            type: "List<dynamic>"
+      getUUID:
+        description: "Returns the UUID at the specified index."
+        signature: "String getUUID(int index)"
+        parameters:
+          index:
+            type: "int"
+      at:
+        description: "Retrieves a ContextTemplate by UUID."
+        signature: "ContextTemplate at(String uuid)"
+        parameters:
+          uuid:
+            type: "String"
+      get:
+        description: "Retrieves a ContextTemplate by numeric index."
+        signature: "ContextTemplate get(int index)"
+        parameters:
+          index:
+            type: "int"
+      concat:
+        description: "Merges another DynamicTemplateIndex. Invalidates source."
+        signature: "void concat(DynamicTemplateIndex other)"
+        parameters:
+          other:
+            type: "DynamicTemplateIndex"
+      clear:
+        description: "Removes all templates."
+        signature: "void clear()"
+      save:
+        description: "Saves the index to a file. Throws Exception on I/O errors."
+        throws:
+          - exception: "Exception"
+            condition: "I/O errors (disk full, permission denied)"
+        signature: "void save(String path, bool allowOverwrite)"
+        parameters:
+          path:
+            type: "String"
+          allowOverwrite:
+            type: "bool"
+      getMethodName:
+        description: "Returns the modification name this index was created with."
+        signature: "String getMethodName()"
+      dispose:
+        description: "Releases native resources. Required in Flutter — always call in finally block."
+        signature: "void dispose()"
+exceptions:
+  Exception:
+    description: "Dart built-in exception (used for service creation errors)"
+  TDVException:
+    description: "Block processing errors (wraps native errors)"

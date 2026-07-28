@@ -1,0 +1,79 @@
+unit_type: FACE_TEMPLATE_EXTRACTOR
+description: Extracts biometric face template for recognition
+confidence: explicit
+gpu_supported: true
+modifications:
+- name: '30'
+  description: Fastest, lower accuracy
+  versions:
+  - version: 1
+- name: '50'
+  description: Fast, lower accuracy
+  versions:
+  - version: 1
+- name: '100'
+  description: Balanced speed and accuracy
+  versions:
+  - version: 1
+- name: '1000'
+  description: Highest accuracy, slowest (default)
+  versions:
+  - version: 1
+- name: 30m
+  description: Mobile-optimized, fastest
+  versions:
+  - version: 1
+- name: 50m
+  description: Mobile-optimized, fast
+  versions:
+  - version: 1
+- name: 100m
+  description: Mobile-optimized, balanced
+  versions:
+  - version: 1
+- name: 1000m
+  description: Mobile-optimized, highest accuracy
+  versions:
+  - version: 1
+requires:
+- image
+- objects[].bbox
+- objects[].keypoints
+produces:
+- objects[].face_template
+- objects[].face_template.template
+- objects[].face_template.uuid
+prerequisites:
+- FACE_DETECTOR
+- FACE_TRACKING_MODULE
+- FACE_FITTER
+prerequisites_note: "OR: requires either FACE_DETECTOR or FACE_TRACKING_MODULE (not both)"
+constraints:
+  multiple_faces_supported: true
+errors:
+  - code: 0x18ba1f8e
+    description: Unknown modification specified in block config
+  - code: 0x54faacfe
+    description: GPU device not available but use_cuda enabled
+  - code: 0x78121b36
+    description: Build does not support GPU
+  - code: 0x032ad038
+    description: onnxruntime library could not be loaded
+see_also:
+  examples:
+    - examples/python/face_verification.py
+    - examples/python/face_identification.py
+    - examples/cpp/face_verification.cpp
+    - examples/cpp/face_identification.cpp
+    - examples/java/face_verification.java
+    - examples/java/face_identification.java
+    - examples/csharp/face_verification.cs
+    - examples/csharp/face_identification.cs
+    - examples/flutter/face_verification.dart
+    - examples/flutter/face_identification.dart
+  api:
+    - languages/python_api.yaml
+    - languages/cpp_api.yaml
+    - languages/java_api.yaml
+    - languages/csharp_api.yaml
+    - languages/flutter_api.yaml

@@ -1,13 +1,13 @@
-import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter/services.dart';
 import 'package:face_sdk_3divi/face_sdk_3divi.dart';
 import 'package:face_sdk_3divi/utils.dart';
-import 'package:image/image.dart' as image_lib;
+import 'package:vector_math/vector_math_64.dart' hide Colors;
+import 'utils.dart';
 
 typedef void setLivenessStatus(bool isPassed, Context template, Image image, double mirror);
 
@@ -15,11 +15,13 @@ class VideoProcessing extends StatefulWidget {
   final List<CameraDescription> cameras;
   final FacerecService _service;
   final AsyncProcessingBlock templateExtractor;
-  final AsyncProcessingBlock qaa;
+  final AsyncProcessingBlock quality_control;
+  final AsyncProcessingBlock face_crop;
   final String nextRoute;
   final setLivenessStatus callback;
 
-  VideoProcessing(this.cameras, this._service, this.templateExtractor, this.qaa, this.nextRoute, this.callback);
+  VideoProcessing(this.cameras, this._service, this.templateExtractor,
+      this.quality_control, this.face_crop, this.nextRoute, this.callback);
 
   @override
   _VideoProcessingState createState() => _VideoProcessingState();
@@ -27,88 +29,124 @@ class VideoProcessing extends StatefulWidget {
 
 class _VideoProcessingState extends State<VideoProcessing> {
   late CameraController controller;
-  image_lib.PngEncoder pngEncoder = image_lib.PngEncoder(level: 0);
-  AsyncVideoWorker? _videoWorker;
+  AsyncProcessingBlock? _tracking;
+  AsyncProcessingBlock? _fitter;
   AsyncProcessingBlock? liveness;
   GlobalKey _pictureKey = GlobalKey();
   bool _isLivenessSet = false;
   int baseAngle = 0;
-  double mirror = 0;
   String _livenessResult = "Processing";
   bool isReady = true;
-  bool isProcessFrameReady = true;
   bool livenessPassed = false;
   Offset? widgetPosition;
   ui.Size? widgetSize;
-  NativeDataStruct data = NativeDataStruct();
   Widget? bboxWidget;
-  Image? bboxImage;
-  bool flipX = true;
 
-  double _qaaTotalScore = 0.0;
+  bool _qualityVerdict = false;
+  String _qualityMessage = "";
+  late Vector3 bboxMirror;
+
+  void showInSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      behavior: SnackBarBehavior.floating,
+    ));
+  }
 
   Future<void> _processStream(CameraImage image) async {
-    if (!isReady || _videoWorker == null || !mounted) {
+    if (!isReady || _tracking == null || !mounted) {
       return;
     }
 
     isReady = false;
 
-    final RenderBox? renderBox = _pictureKey.currentContext?.findRenderObject() as RenderBox;
+    try {
+      final RenderBox? renderBox = _pictureKey.currentContext?.findRenderObject() as RenderBox;
 
-    if (renderBox != null) {
-      widgetPosition = renderBox.localToGlobal(Offset.zero);
-      widgetSize = renderBox.size;
-    }
+      if (renderBox != null) {
+        widgetPosition = renderBox.localToGlobal(Offset.zero);
+        widgetSize = renderBox.size;
+      }
 
-    int width;
-    int height;
+      Context ioData = widget._service.createContextFromCameraImage(image, baseAngle);
 
-    switch (baseAngle) {
-      case 1:
-      case 2:
-        width = image.height;
-        height = image.width;
+      await _tracking!.process(ioData);
 
-        break;
+      if (ioData["objects"].len() > 0) {
+        if (_isLivenessSet) {
+          int imgW = ioData["image"]["shape"][1].get_value();
+          int imgH = ioData["image"]["shape"][0].get_value();
+          Context bbox = ioData["objects"][0]["bbox"];
+          bboxWidget = buildBboxWidget(imgW, imgH, bbox);
 
-      default:
-        width = image.width;
-        height = image.height;
+          if (mounted) {
+            setState(() {});
+          }
+          ioData.dispose();
+          return;
+        }
 
-        break;
-    }
+        if (_fitter != null) {
+          await _fitter!.process(ioData);
+          await widget.quality_control.process(ioData);
 
-    RawImageF? frame = await addVideoFrame(image);
+          Context obj = ioData["objects"][0];
+          _qualityVerdict = obj["quality"]["value"].get_value();
 
-    if (frame == null) {
-      bboxWidget = null;
+          if (_qualityVerdict && liveness != null) {
+            if (ioData["objects"].len() != 1) {
+              ioData.dispose();
+              return;
+            }
 
+            _qualityMessage = "";
+            await liveness!.process(ioData);
+
+            _isLivenessSet = true;
+
+            if (obj["liveness"]["value"].get_value() == "REAL") {
+              _livenessResult = "Real";
+              livenessPassed = true;
+            } else {
+              _livenessResult = "Fake";
+              livenessPassed = false;
+            }
+
+            await widget.templateExtractor.process(ioData);
+            await widget.face_crop.process(ioData);
+
+            Context template = widget._service.createContext(obj["face_template"]);
+
+            final cropImg = await getFaceCutImageFromContext(obj["face_crop"]);
+
+            widget.callback(livenessPassed, template, cropImg, 0.0);
+          } else if (!_qualityVerdict) {
+            final newMessage = getMessageForQualityControl(obj["quality"]);
+            if (_qualityMessage != newMessage) {
+              _qualityMessage = newMessage;
+              showInSnackBar(_qualityMessage);
+            }
+          }
+        }
+
+        int imgW = ioData["image"]["shape"][1].get_value();
+        int imgH = ioData["image"]["shape"][0].get_value();
+        Context bbox = ioData["objects"][0]["bbox"];
+        bboxWidget = buildBboxWidget(imgW, imgH, bbox);
+
+        if (mounted) {
+          setState(() {});
+        }
+      } else {
+        bboxWidget = null;
+      }
+
+      ioData.dispose();
+    } catch (e) {
+      print("_processStream error: $e");
+    } finally {
       isReady = true;
-
-      return;
     }
-
-    RawSample? sample = await pool();
-
-    if (sample == null) {
-      frame.dispose();
-      bboxWidget = null;
-
-      isReady = true;
-
-      return;
-    }
-
-    bboxWidget = buildBboxWidget(width, height, sample.getRectangle());
-
-    if (mounted) {
-      setState(() {
-        isReady = true;
-      });
-    }
-
-    await processFrame(width, height, frame, sample);
   }
 
   @override
@@ -132,145 +170,40 @@ class _VideoProcessingState extends State<VideoProcessing> {
 
     baseAngle = getBaseAngle(controller);
 
-    if (Platform.isIOS) {
-      flipX = false;
-    }
+    bboxMirror = Platform.isIOS ? Vector3(1.0, 1.0, 1.0) : Vector3(-1.0, 1.0, 1.0);
 
     widget._service
         .createAsyncProcessingBlock({"unit_type": "LIVENESS_ESTIMATOR", "modification": "2d_light", "version": 1}).then(
             (value) => liveness = value);
 
     widget._service
-        .createAsyncVideoWorker(VideoWorkerParams()
-            .video_worker_config(Config("video_worker_fdatracker_pb_blf_fda_front.xml"))
-            .streams_count(1))
-        .then((value) {
-      _videoWorker = value;
-    });
+        .createAsyncProcessingBlock({"unit_type": "FACE_TRACKING_MODULE", "modification": "fda"}).then(
+            (value) => _tracking = value);
+
+    widget._service
+        .createAsyncProcessingBlock({"unit_type": "FACE_FITTER", "modification": "fda"}).then(
+            (value) => _fitter = value);
   }
 
-  Future<RawImageF?> addVideoFrame(CameraImage cameraImage) async {
-    if (!mounted) {
-      await Future.delayed(const Duration(milliseconds: 10));
-
-      return null;
-    }
-
-    RawImageF target = widget._service.createRawImageFromCameraImage(cameraImage, baseAngle);
-
-    await _videoWorker!.addVideoFrame(target, DateTime.now().microsecondsSinceEpoch);
-
-    await Future.delayed(const Duration(milliseconds: 10));
-
-    return target;
-  }
-
-  Future<RawSample?> pool() async {
-    if (_videoWorker == null || liveness == null || !mounted) {
-      await Future.delayed(const Duration(milliseconds: 50));
-
-      return null;
-    }
-
-    final TrackingData callbackData = await _videoWorker!.poolTrackResults();
-    final List<RawSample> rawSamples = callbackData.tracking_callback_data.samples;
-
-    if (rawSamples.length != 1) {
-      return null;
-    }
-
-    return rawSamples.first;
-  }
-
-  Future<void> processFrame(int width, int height, RawImageF? frame, RawSample sample) async {
-    final bytes = frame?.data.cast<Uint8>().asTypedList(width * height * 3);
-
-    if (!isProcessFrameReady) {
-      sample.dispose();
-      frame?.dispose();
-
-      return;
-    }
-
-    isProcessFrameReady = false;
-
-    Context data = widget._service.createContext({
-      "objects": [sample.toContext()],
-      "image": {
-        "blob": bytes,
-        "dtype": "uint8_t",
-        "format": "NDARRAY",
-        "shape": [height, width, 3]
-      }
-    });
-
-    await widget.qaa.process(data);
-
-    Context object = data["objects"][0];
-
-    _qaaTotalScore = object["quality"]["total_score"].get_value();
-
-    if (mounted) {
-      setState(() {});
-    }
-
-    if (_isLivenessSet) {
-      data.dispose();
-      sample.dispose();
-      frame?.dispose();
-
-      isProcessFrameReady = true;
-
-      return;
-    }
-
-    if (object["quality"]["total_score"].get_value() >= 0.6) {
-      await liveness!.process(data);
-
-      _isLivenessSet = true;
-
-      if (object["liveness"]["value"].get_value() == "REAL") {
-        _livenessResult = "Real";
-        livenessPassed = true;
-      } else {
-        _livenessResult = "Fake";
-        livenessPassed = false;
-      }
-
-      await widget.templateExtractor.process(data);
-
-      Context template = widget._service.createContext(data["objects"][0]["face_template"]);
-      Rectangle bbox = sample.getRectangle();
-      final image_lib.Image image = image_lib.Image.fromBytes(
-          width: width, height: height, bytes: bytes!.buffer, numChannels: 3, order: image_lib.ChannelOrder.rgb);
-
-      List<int> png =
-          pngEncoder.encode(image_lib.copyCrop(image, x: bbox.x, y: bbox.y, width: bbox.width, height: bbox.height));
-
-      widget.callback(livenessPassed, template, Image.memory(png as Uint8List), mirror);
-    }
-
-    data.dispose();
-    sample.dispose();
-    frame?.dispose();
-
-    isProcessFrameReady = true;
-  }
-
-  Widget? buildBboxWidget(int width, int height, Rectangle bbox) {
+  Widget? buildBboxWidget(int imgW, int imgH, Context bbox) {
     if (widgetSize == null) {
       return null;
     }
 
-    double xCoefficient = widgetSize!.width / width;
-    double yCoefficient = widgetSize!.height / height;
+    double scaleX = widgetSize!.width / imgW;
+    double scaleY = widgetSize!.height / imgH;
 
-    double widgetWidth = bbox.width * xCoefficient;
-    double widgetHeight = bbox.height * yCoefficient;
+    double x1 = bbox[0].get_value() * imgW;
+    double y1 = bbox[1].get_value() * imgH;
+    double x2 = bbox[2].get_value() * imgW;
+    double y2 = bbox[3].get_value() * imgH;
+
+    double widgetWidth = (x2 - x1) * scaleX;
+    double widgetHeight = (y2 - y1) * scaleY;
 
     return Positioned(
-        left: widgetPosition!.dx + bbox.x * xCoefficient,
-        top: widgetPosition!.dy + bbox.y * yCoefficient,
+        left: widgetPosition!.dx + x1 * scaleX,
+        top: widgetPosition!.dy + y1 * scaleY,
         width: widgetWidth,
         height: widgetHeight,
         child: Stack(children: [
@@ -286,7 +219,7 @@ class _VideoProcessingState extends State<VideoProcessing> {
           Transform.translate(
               key: const ValueKey<String>("Quality"),
               offset: Offset(0, widgetHeight),
-              child: Text("Quality score: $_qaaTotalScore",
+              child: Text("Quality verdict: $_qualityVerdict",
                   style: TextStyle(fontSize: 20, backgroundColor: Colors.black))),
           Transform.translate(
               key: const ValueKey<String>("Liveness"),
@@ -300,12 +233,12 @@ class _VideoProcessingState extends State<VideoProcessing> {
       Stack stack = (bboxWidget as Positioned).child as Stack;
 
       Transform liveness =
-          stack.children.firstWhere((element) => element.key == ValueKey<String>("Liveness")) as Transform;
+      stack.children.firstWhere((element) => element.key == ValueKey<String>("Liveness")) as Transform;
       Transform quality =
-          stack.children.firstWhere((element) => element.key == ValueKey<String>("Quality")) as Transform;
+      stack.children.firstWhere((element) => element.key == ValueKey<String>("Quality")) as Transform;
 
       (liveness.child as Text).data?.replaceRange(0, null, _livenessResult);
-      (quality.child as Text).data?.replaceRange(0, null, "Quality score: $_qaaTotalScore");
+      (quality.child as Text).data?.replaceRange(0, null, "Quality score: $_qualityVerdict");
     }
 
     return bboxWidget;
@@ -319,38 +252,44 @@ class _VideoProcessingState extends State<VideoProcessing> {
 
     return PopScope(
         child: Scaffold(
-      body: Stack(
-        children: [
-          Center(
-            child: Padding(
-              key: _pictureKey,
-              padding: const EdgeInsets.all(1.0),
-              child: CameraPreview(controller)),
+          body: Stack(
+            children: [
+              Center(
+                child: Padding(
+                  key: _pictureKey,
+                  padding: const EdgeInsets.all(1.0),
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()..scaleByVector3(bboxMirror),
+                    child: CameraPreview(controller),
+                  ),
+                ),
+              ),
+              Container(child: bboxDrawer())
+            ],
           ),
-          Container(child: bboxDrawer())
-        ],
-      ),
-      floatingActionButton: Visibility(
-        visible: _isLivenessSet,
-        child: FloatingActionButton(
-          heroTag: "btn5",
-          child: Icon(Icons.navigate_next),
-          onPressed: () {
-            setState(() {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushNamed(widget.nextRoute);
-            });
-          },
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    ));
+          floatingActionButton: Visibility(
+            visible: _isLivenessSet,
+            child: FloatingActionButton(
+              heroTag: "btn5",
+              child: Icon(Icons.navigate_next),
+              onPressed: () {
+                setState(() {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed(widget.nextRoute);
+                });
+              },
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        ));
   }
 
   @override
   void dispose() {
     controller.dispose();
-    _videoWorker?.dispose();
+    _tracking?.dispose();
+    _fitter?.dispose();
     liveness?.dispose();
 
     super.dispose();

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -44,11 +43,15 @@ class _MyAppState extends State<MyApp> {
   Image? _idPhoto;
   Context? _liveTemplate;
   Image? _livePhoto;
-  MatchResult? _match;
+  double _matchScore = 0;
+  double _matchDistance = 0;
+  double _matchFar = 0;
+  double _matchFrr = 0;
   bool? _livenessPassed;
   AsyncProcessingBlock? _templateExtractor;
-  AsyncProcessingBlock? _qaa;
+  AsyncProcessingBlock? _quality_control;
   AsyncProcessingBlock? verification;
+  AsyncProcessingBlock? _face_crop;
   double _liveMirror = 0;
   late Matrix4 rotate;
 
@@ -56,14 +59,17 @@ class _MyAppState extends State<MyApp> {
     _service = service;
     _templateExtractor =
         await _service!.createAsyncProcessingBlock({"unit_type": "FACE_TEMPLATE_EXTRACTOR", "modification": "30"});
-    _qaa = await _service!.createAsyncProcessingBlock({
-      "unit_type": "QUALITY_ASSESSMENT_ESTIMATOR",
-      "modification": "assessment",
-      "config_name": "quality_assessment.xml",
-      "version": 1,
+    _quality_control = await _service!.createAsyncProcessingBlock({
+      "unit_type": "QUALITY_CONTROL",
+      "modification": "core",
+      "mode": ["recognition"]
     });
     verification =
         await _service!.createAsyncProcessingBlock({"unit_type": "VERIFICATION_MODULE", "modification": "30"});
+    _face_crop = await _service!.createAsyncProcessingBlock({
+        "unit_type": "UTILITY_MODULE", "modification": "face_cut",
+        "cut_type": "FACE_CUT_BASE",
+      });
   }
 
   void setIDTemplate(Context template, Image idPhoto) {
@@ -93,8 +99,10 @@ class _MyAppState extends State<MyApp> {
       verification!.process(verificationData).whenComplete(() {
         Context result = verificationData["result"];
 
-        _match = MatchResult(result["distance"].get_value(), result["far"].get_value(), result["frr"].get_value(),
-            result["score"].get_value());
+        _matchDistance = result["distance"].get_value();
+        _matchFar = result["far"].get_value();
+        _matchFrr = result["frr"].get_value();
+        _matchScore = result["score"].get_value();
 
         verificationData.dispose();
       });
@@ -110,7 +118,7 @@ class _MyAppState extends State<MyApp> {
           children: [
             Center(
                 child: Text(
-                    "Match score: ${_match?.score}\nIs same persons: ${_match!.score > 0.9 ? "true" : "false"} \nLiveness passed: $_livenessPassed")),
+                    "Match score: $_matchScore\nIs same persons: ${_matchScore > 0.9 ? "true" : "false"} \nLiveness passed: $_livenessPassed")),
             Container(
               height: 150,
               width: 500,
@@ -143,10 +151,11 @@ class _MyAppState extends State<MyApp> {
           onPressed: () {
             setState(() {
               _templateExtractor?.dispose();
-              _qaa?.dispose();
+              _quality_control?.dispose();
               _template?.dispose();
               _liveTemplate?.dispose();
               verification?.dispose();
+              _face_crop?.dispose();
 
               Phoenix.rebirth(context);
             });
@@ -167,9 +176,9 @@ class _MyAppState extends State<MyApp> {
           page = HomePage(cameras, detectIDRoute, setService);
         } else if (settings.name == detectIDRoute) {
           page = DetectPicture(cameras, _service!, _templateExtractor!, "Take a photo of the document", livenessRoute,
-              setIDTemplate, _qaa!);
+              setIDTemplate, _quality_control!, _face_crop!);
         } else if (settings.name == livenessRoute) {
-          page = VideoProcessing(cameras, _service!, _templateExtractor!, _qaa!, endRoute, setLiveness);
+          page = VideoProcessing(cameras, _service!, _templateExtractor!, _quality_control!, _face_crop!, endRoute, setLiveness);
         } else if (settings.name == endRoute) {
           page = getFinalStatus(context);
         } else

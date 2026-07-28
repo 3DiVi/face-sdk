@@ -1,0 +1,35 @@
+unit_type: HUMAN_POSE_ESTIMATOR
+description: Estimates human body pose keypoints
+confidence: explicit
+gpu_supported: true
+modifications:
+- name: heavy
+  description: Heavy pose estimation (default)
+  versions:
+  - version: 1
+requires:
+- image
+- objects[].bbox
+produces:
+- objects[].keypoints
+prerequisites:
+- HUMAN_BODY_DETECTOR
+- OBJECT_DETECTOR
+constraints:
+  multiple_objects_supported: true
+errors:
+  - code: 0x18ba1f8e
+    description: Unknown modification specified in block config
+  - code: 0x54faacfe
+    description: GPU device not available but use_cuda enabled
+  - code: 0x78121b36
+    description: Build does not support GPU
+  - code: 0x032ad038
+    description: onnxruntime library could not be loaded
+see_also:
+  api:
+    - languages/python_api.yaml
+    - languages/cpp_api.yaml
+    - languages/java_api.yaml
+    - languages/csharp_api.yaml
+    - languages/flutter_api.yaml

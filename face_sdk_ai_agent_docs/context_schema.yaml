@@ -1,0 +1,1160 @@
+see_also:
+  - "blocks/*.yaml"
+  - "ARCHITECTURE.md"
+entities:
+  # ██ RootContext ████████████████████████████████████████████████████████
+  RootContext:
+    description: Top-level Context fields
+    confidence: explicit
+    fields:
+      image:
+        type: object
+        description: Input image container
+        required: true
+        produced_by:
+          - SOURCE
+        consumed_by:
+          - FACE_DETECTOR
+          - FACE_TRACKING_MODULE
+          - HUMAN_BODY_DETECTOR
+          - OBJECT_DETECTOR
+          - FACE_FITTER
+          - HUMAN_POSE_ESTIMATOR
+          - AGE_ESTIMATOR
+          - GENDER_ESTIMATOR
+          - EMOTION_ESTIMATOR
+          - MASK_ESTIMATOR
+          - GLASSES_ESTIMATOR
+          - EYE_OPENNESS_ESTIMATOR
+          - DEEPFAKE_ESTIMATOR
+          - LIVENESS_ESTIMATOR
+          - QUALITY_ASSESSMENT_ESTIMATOR
+          - QUALITY_CONTROL
+          - FACE_TEMPLATE_EXTRACTOR
+          - UTILITY_MODULE
+      objects:
+        type: array
+        description: Array of detected objects (faces, bodies, etc.)
+        required: false
+        produced_by:
+          - FACE_DETECTOR
+          - FACE_TRACKING_MODULE
+          - HUMAN_BODY_DETECTOR
+          - OBJECT_DETECTOR
+        consumed_by:
+          - FACE_FITTER
+          - HUMAN_POSE_ESTIMATOR
+          - AGE_ESTIMATOR
+          - GENDER_ESTIMATOR
+          - EMOTION_ESTIMATOR
+          - MASK_ESTIMATOR
+          - GLASSES_ESTIMATOR
+          - EYE_OPENNESS_ESTIMATOR
+          - DEEPFAKE_ESTIMATOR
+          - LIVENESS_ESTIMATOR
+          - QUALITY_ASSESSMENT_ESTIMATOR
+          - QUALITY_CONTROL
+          - FACE_TEMPLATE_EXTRACTOR
+          - UTILITY_MODULE
+      template1:
+        type: TemplateContainer
+        description: "First template container for 1:1 verification. SDK expects TemplateContainer (dict with `template` key), NOT raw ContextTemplate. Use `objects[].face_template` directly."
+        required: false
+        produced_by: []
+        consumed_by:
+          - VERIFICATION_MODULE
+      template2:
+        type: TemplateContainer
+        description: "Second template container for 1:1 verification. SDK expects TemplateContainer (dict with `template` key), NOT raw ContextTemplate. Use `objects[].face_template` directly."
+        required: false
+        produced_by: []
+        consumed_by:
+          - VERIFICATION_MODULE
+      result:
+        type: VerificationResult
+        description: "1:1 verification result — see VerificationResult entity"
+        required: false
+        produced_by:
+          - VERIFICATION_MODULE
+        consumed_by: []
+      queries:
+        type: object
+        description: "Query template for 1:N search. Native SDK object — a ContextTemplate. NOT a string/value. Obtain via FACE_TEMPLATE_EXTRACTOR → objects[].face_template.template, or FacerecService.loadContextTemplate(). For 1:N search with DynamicTemplateIndex, pass index to MATCHER_MODULE's separate template_index field."
+        required: false
+        produced_by: []
+        consumed_by:
+          - MATCHER_MODULE
+      template_index:
+        type: DynamicTemplateIndex
+        description: DynamicTemplateIndex for 1:N search
+        required: false
+        produced_by:
+          - API (createDynamicTemplateIndex)
+        consumed_by:
+          - MATCHER_MODULE
+      knn:
+        type: long
+        description: Number of nearest neighbors to return
+        required: false
+        minimum: 1
+        default: 1
+        produced_by: []
+        consumed_by:
+          - MATCHER_MODULE
+      results:
+        type: array
+        description: "Array of 1:N search results — each element is a MatchResult"
+        required: false
+        items:
+          type: MatchResult
+        produced_by:
+          - MATCHER_MODULE
+        consumed_by: []
+
+  # ██ Image █████████████████████████████████████████████████████████████
+  Image:
+    description: "Input image for processing. ⚠️ DO NOT construct manually — use createContextFromFrame() (raw pixels) or createContextFromEncodedImage() (JPEG/PNG/BMP files) instead. Manual construction is error-prone (requires correct blob/dtype/shape/format per language). ⚠️ Factory methods automatically convert input to RGB. ioData['image'] is always in RGB colorspace."
+    preferred_creation:
+      - method: "createContextFromFrame"
+        input: "raw pixel data (uint8_t*), width, height, format"
+        use_case: "OpenCV Mat, camera frames, raw buffers"
+      - method: "createContextFromEncodedImage"
+        input: "encoded file bytes (JPEG/PNG/BMP)"
+        use_case: "image files on disk, network responses"
+    confidence: explicit
+    fields:
+      format:
+        type: string
+        description: "Image format identifier — always 'NDARRAY'"
+        required: true
+        enum:
+          - "NDARRAY"
+        produced_by:
+          - SOURCE
+        consumed_by:
+          - FACE_DETECTOR
+          - HUMAN_BODY_DETECTOR
+          - OBJECT_DETECTOR
+          - FACE_FITTER
+          - LIVENESS_ESTIMATOR
+      blob:
+        type: data_ptr
+        description: Raw image data pointer
+        required: true
+        produced_by:
+          - SOURCE
+        consumed_by:
+          - FACE_DETECTOR
+          - HUMAN_BODY_DETECTOR
+          - OBJECT_DETECTOR
+          - FACE_FITTER
+      dtype:
+        type: string
+        description: Data type of pixel values
+        required: true
+        enum:
+          - "uint8_t"
+          - "int8_t"
+          - "uint16_t"
+          - "int16_t"
+          - "int32_t"
+          - "float"
+          - "double"
+        produced_by:
+          - SOURCE
+        consumed_by:
+          - FACE_DETECTOR
+          - HUMAN_BODY_DETECTOR
+          - OBJECT_DETECTOR
+          - FACE_FITTER
+      shape:
+        type: array
+        description: Image dimensions [height, width, channels]
+        required: true
+        produced_by:
+          - SOURCE
+        consumed_by:
+          - FACE_DETECTOR
+          - HUMAN_BODY_DETECTOR
+          - OBJECT_DETECTOR
+          - FACE_FITTER
+
+  # ██ FaceObject ████████████████████████████████████████████████████████
+  FaceObject:
+    description: Detected face with associated data
+    confidence: explicit
+    fields:
+      id:
+        type: long
+        description: Unique object identifier within Context
+        required: true
+        produced_by:
+          - FACE_DETECTOR
+        consumed_by:
+          - FACE_FITTER
+          - AGE_ESTIMATOR
+          - GENDER_ESTIMATOR
+          - EMOTION_ESTIMATOR
+          - MASK_ESTIMATOR
+          - GLASSES_ESTIMATOR
+          - EYE_OPENNESS_ESTIMATOR
+          - DEEPFAKE_ESTIMATOR
+          - LIVENESS_ESTIMATOR
+          - QUALITY_ASSESSMENT_ESTIMATOR
+          - QUALITY_CONTROL
+          - FACE_TEMPLATE_EXTRACTOR
+          - UTILITY_MODULE
+      class:
+        type: string
+        description: Object class label (e.g., "face")
+        required: true
+        produced_by:
+          - FACE_DETECTOR
+        consumed_by: []
+      confidence:
+        type: double
+        description: Detection confidence score (0-1)
+        required: true
+        produced_by:
+          - FACE_DETECTOR
+        consumed_by: []
+      track_id:
+        type: long
+        description: Unique tracking identifier for face tracking across frames
+        required: false
+        produced_by:
+          - FACE_TRACKING_MODULE
+        consumed_by: []
+      bbox:
+        type: array
+        description: Bounding box coordinates [x1, y1, x2, y2] (relative)
+        required: true
+        produced_by:
+          - FACE_DETECTOR
+          - FACE_TRACKING_MODULE
+        consumed_by:
+          - FACE_FITTER
+          - AGE_ESTIMATOR
+          - GENDER_ESTIMATOR
+          - EMOTION_ESTIMATOR
+          - MASK_ESTIMATOR
+          - GLASSES_ESTIMATOR
+          - EYE_OPENNESS_ESTIMATOR
+          - DEEPFAKE_ESTIMATOR
+          - LIVENESS_ESTIMATOR
+          - QUALITY_ASSESSMENT_ESTIMATOR
+          - QUALITY_CONTROL
+          - FACE_TEMPLATE_EXTRACTOR
+          - UTILITY_MODULE
+      keypoints:
+        type: object
+        description: "Facial landmark keypoints as nested object. Structure: { points: [{ proj: [x, y{ , z}], confidence: double }] }. Normalized [0, 1] relative to image. Point count depends on FACE_FITTER modification: fda=21pts, tddfa/tddfa_faster=68pts, mesh=470pts (3D with z)."
+        required: false
+        produced_by:
+          - FACE_FITTER
+        consumed_by:
+          - AGE_ESTIMATOR
+          - GENDER_ESTIMATOR
+          - EMOTION_ESTIMATOR
+          - MASK_ESTIMATOR
+          - GLASSES_ESTIMATOR
+          - EYE_OPENNESS_ESTIMATOR
+          - DEEPFAKE_ESTIMATOR
+          - LIVENESS_ESTIMATOR
+          - QUALITY_ASSESSMENT_ESTIMATOR
+          - QUALITY_CONTROL
+          - FACE_TEMPLATE_EXTRACTOR
+          - UTILITY_MODULE
+      pose:
+        type: object
+        description: "Head pose Euler angles in degrees: {pitch: double, yaw: double, roll: double}"
+        required: false
+        produced_by:
+          - FACE_FITTER
+        consumed_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+      age:
+        type: long
+        description: Estimated age (>=0)
+        required: false
+        produced_by:
+          - AGE_ESTIMATOR
+        consumed_by: []
+      gender:
+        type: enum
+        description: Estimated gender (FEMALE, MALE)
+        required: false
+        produced_by:
+          - GENDER_ESTIMATOR
+        consumed_by: []
+      emotions:
+        type: array
+        description: Array of emotion objects
+        required: false
+        items:
+          type: object
+          fields:
+            confidence:
+              type: double
+              description: Emotion confidence score (0-1)
+            emotion:
+              type: string
+              description: Emotion label
+              enum:
+                - ANGRY
+                - DISGUSTED
+                - SCARED
+                - HAPPY
+                - NEUTRAL
+                - SAD
+                - SURPRISED
+        produced_by:
+          - EMOTION_ESTIMATOR
+        consumed_by: []
+      has_medical_mask:
+        type: object
+        description: Mask presence estimation with value and confidence
+        required: false
+        fields:
+          value:
+            type: bool
+            description: "true = mask detected, false = no mask"
+            required: true
+          confidence:
+            type: double
+            description: Confidence score (0-1)
+            required: true
+        produced_by:
+          - MASK_ESTIMATOR
+        consumed_by: []
+      glasses:
+        type: object
+        description: Glasses presence estimation with value and confidence
+        required: false
+        fields:
+          value:
+            type: bool
+            description: "true = glasses detected, false = no glasses"
+            required: true
+          confidence:
+            type: double
+            description: Confidence score (0-1)
+            required: true
+        produced_by:
+          - GLASSES_ESTIMATOR
+        consumed_by: []
+      is_left_eye_open:
+        type: object
+        description: Left eye openness with value and confidence
+        required: false
+        fields:
+          value:
+            type: bool
+            description: "true = open, false = closed"
+            required: true
+          confidence:
+            type: double
+            description: Confidence score (0-1)
+            required: true
+        produced_by:
+          - EYE_OPENNESS_ESTIMATOR
+        consumed_by: []
+      is_right_eye_open:
+        type: object
+        description: Right eye openness with value and confidence
+        required: false
+        fields:
+          value:
+            type: bool
+            description: "true = open, false = closed"
+            required: true
+          confidence:
+            type: double
+            description: Confidence score (0-1)
+            required: true
+        produced_by:
+          - EYE_OPENNESS_ESTIMATOR
+        consumed_by: []
+      deepfake:
+        type: object
+        description: Deepfake detection result with value and confidence
+        required: false
+        fields:
+          value:
+            type: bool
+            description: "true = deepfake detected, false = genuine"
+            required: true
+          confidence:
+            type: double
+            description: Confidence score (0-1)
+            required: true
+        produced_by:
+          - DEEPFAKE_ESTIMATOR
+        consumed_by: []
+      liveness:
+        type: LivenessResult
+        description: Liveness detection result with value (string "REAL"/"FAKE"), confidence, attack_type, attack_type_scores
+        required: false
+        produced_by:
+          - LIVENESS_ESTIMATOR
+        consumed_by: []
+      quality:
+        type: object
+        description: "Quality assessment result. Structure varies by producer (detect at runtime by field presence): QUALITY_ASSESSMENT_ESTIMATOR → QualityAssessmentResult (has total_score, sharpness_score...), QUALITY_CONTROL core → QualityControlResult (has value bool + failed_checks[]), QUALITY_CONTROL estimation → QualityControlEstimationResult (has value bool + confidence)."
+        required: false
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+          - QUALITY_CONTROL
+        consumed_by: []
+      face_template:
+        type: TemplateContainer
+        description: "Face template container with template and uuid — see TemplateContainer entity"
+        required: false
+        produced_by:
+          - FACE_TEMPLATE_EXTRACTOR
+        consumed_by:
+          - VERIFICATION_MODULE
+          - MATCHER_MODULE
+      cut_rect:
+        type: array
+        description: "Normalized face crop corner coordinates (relative to image). 8 doubles: [x1, y1, x2, y2, x3, y3, x4, y4]. Order: left-top, right-top, right-bottom, left-bottom."
+        required: false
+        produced_by:
+          - UTILITY_MODULE
+        consumed_by: []
+      face_crop:
+        type: object
+        description: "Normalized face crop image in NDARRAY format (RGB). Same structure as Image entity: { format, blob, dtype, shape }. Always RGB — same colorspace as ioData['image']."
+        required: false
+        fields:
+          format:
+            type: string
+            description: "Image format identifier — always 'NDARRAY'"
+            required: true
+          blob:
+            type: data_ptr
+            description: Raw image data pointer
+            required: true
+          dtype:
+            type: string
+            description: Data type of pixel values
+            required: true
+          shape:
+            type: array
+            description: Image dimensions [height, width, channels]
+            required: true
+        produced_by:
+          - UTILITY_MODULE
+        consumed_by: []
+
+  # ██ BodyObject ████████████████████████████████████████████████████████
+  BodyObject:
+    description: Detected body with associated data
+    confidence: explicit
+    fields:
+      id:
+        type: long
+        description: Unique object identifier within Context
+        required: true
+        produced_by:
+          - HUMAN_BODY_DETECTOR
+          - OBJECT_DETECTOR
+        consumed_by:
+          - HUMAN_POSE_ESTIMATOR
+      class:
+        type: string
+        description: Object class label (e.g., "body", "car", "dog")
+        required: true
+        produced_by:
+          - HUMAN_BODY_DETECTOR
+          - OBJECT_DETECTOR
+        consumed_by: []
+      confidence:
+        type: double
+        description: Detection confidence score (0-1)
+        required: true
+        produced_by:
+          - HUMAN_BODY_DETECTOR
+          - OBJECT_DETECTOR
+        consumed_by: []
+      bbox:
+        type: array
+        description: Bounding box coordinates [x1, y1, x2, y2] (relative)
+        required: true
+        produced_by:
+          - HUMAN_BODY_DETECTOR
+          - OBJECT_DETECTOR
+        consumed_by:
+          - HUMAN_POSE_ESTIMATOR
+      keypoints:
+        type: object
+        description: "Body pose keypoints (17 keypoints for human pose). Structure: { points: [{ proj: [x, y], confidence: double }] }."
+        required: false
+        produced_by:
+          - HUMAN_POSE_ESTIMATOR
+        consumed_by: []
+
+  # ██ VerificationResult ████████████████████████████████████████████████
+  VerificationResult:
+    description: 1:1 verification result
+    confidence: explicit
+    fields:
+      distance:
+        type: double
+        description: Distance between templates (>=0)
+        required: true
+        produced_by:
+          - VERIFICATION_MODULE
+        consumed_by: []
+      score:
+        type: double
+        description: Matching score (0-1)
+        required: true
+        produced_by:
+          - VERIFICATION_MODULE
+        consumed_by: []
+      far:
+        type: double
+        description: False acceptance rate (0-1)
+        required: true
+        produced_by:
+          - VERIFICATION_MODULE
+        consumed_by: []
+      frr:
+        type: double
+        description: False rejection rate (0-1)
+        required: true
+        produced_by:
+          - VERIFICATION_MODULE
+        consumed_by: []
+
+  # ██ MatchResult ███████████████████████████████████████████████████████
+  MatchResult:
+    description: 1:N search result entry
+    confidence: explicit
+    fields:
+      index:
+        type: long
+        description: Index in the template index
+        required: true
+        produced_by:
+          - MATCHER_MODULE
+        consumed_by: []
+      uuid:
+        type: string
+        description: UUID of the matched template
+        required: true
+        produced_by:
+          - MATCHER_MODULE
+        consumed_by: []
+      distance:
+        type: double
+        description: Distance to query template
+        required: true
+        produced_by:
+          - MATCHER_MODULE
+        consumed_by: []
+      score:
+        type: double
+        description: Matching score (0-1)
+        required: true
+        produced_by:
+          - MATCHER_MODULE
+        consumed_by: []
+      far:
+        type: double
+        description: False acceptance rate
+        required: true
+        produced_by:
+          - MATCHER_MODULE
+        consumed_by: []
+      frr:
+        type: double
+        description: False rejection rate
+        required: true
+        produced_by:
+          - MATCHER_MODULE
+        consumed_by: []
+
+  # ██ TemplateContainer █████████████████████████████████████████████████
+  TemplateContainer:
+    description: "Container for a ContextTemplate. template field is a NATIVE SDK OBJECT — cannot be constructed via dict. Obtain via FACE_TEMPLATE_EXTRACTOR or loadContextTemplate()."
+    confidence: explicit
+    fields:
+      template:
+        type: ContextTemplate
+        description: "Binary biometric face template (native object — NOT a dict)"
+        required: true
+        produced_by:
+          - FACE_TEMPLATE_EXTRACTOR
+        consumed_by:
+          - VERIFICATION_MODULE
+          - MATCHER_MODULE
+      uuid:
+        type: string
+        description: "Unique identifier for the template. Auto-generated by FACE_TEMPLATE_EXTRACTOR if not set. uuid is optional but recommended for search results."
+        required: false
+        produced_by:
+          - FACE_TEMPLATE_EXTRACTOR
+        consumed_by: []
+
+  # ██ LivenessResult ████████████████████████████████████████████████████
+  LivenessResult:
+    description: Liveness detection result object
+    confidence: explicit
+    fields:
+      value:
+        type: string
+        description: Liveness verdict ("REAL" or "FAKE")
+        required: true
+        produced_by:
+          - LIVENESS_ESTIMATOR
+        consumed_by: []
+      confidence:
+        type: double
+        description: Liveness confidence score (0-1)
+        required: true
+        produced_by:
+          - LIVENESS_ESTIMATOR
+        consumed_by: []
+      attack_type:
+        type: string
+        description: Type of detected attack
+        enum:
+          - "none"
+          - "replay"
+          - "photo"
+          - "regions"
+          - "2d_mask"
+          - "3d_mask"
+        required: false
+        produced_by:
+          - LIVENESS_ESTIMATOR
+        consumed_by: []
+      attack_type_scores:
+        type: object
+        description: Scores per attack type (0-1)
+        required: false
+        fields:
+          none:
+            type: double
+            description: Score for no attack (0-1)
+          replay:
+            type: double
+            description: Score for replay attack (0-1)
+          photo:
+            type: double
+            description: Score for photo attack (0-1)
+          regions:
+            type: double
+            description: Score for regions attack (0-1)
+          "2d_mask":
+            type: double
+            description: Score for 2D mask attack (0-1)
+          "3d_mask":
+            type: double
+            description: Score for 3D mask attack (0-1)
+        produced_by:
+          - LIVENESS_ESTIMATOR
+        consumed_by: []
+
+  # ██ QualityControlResult ██████████████████████████████████████████████
+  QualityControlResult:
+    description: Quality control verdict from QUALITY_CONTROL (core modification)
+    confidence: explicit
+    fields:
+      value:
+        type: bool
+        description: "true — all checks passed, false — some checks failed"
+        required: true
+        produced_by:
+          - QUALITY_CONTROL
+        consumed_by: []
+      failed_checks:
+        type: array
+        description: List of failed checks (empty when value == true)
+        required: false
+        items:
+          type: object
+          fields:
+            check:
+              type: string
+              description: Check name (e.g. "sharpness_threshold")
+            result:
+              type: double
+              description: Check value at failure time
+        produced_by:
+          - QUALITY_CONTROL
+        consumed_by: []
+
+  # ██ QualityControlEstimationResult ████████████████████████████████████
+  QualityControlEstimationResult:
+    description: Neural quality score from QUALITY_CONTROL (estimation modification)
+    confidence: explicit
+    fields:
+      value:
+        type: bool
+        description: "true if confidence >= threshold, false otherwise"
+        required: true
+        produced_by:
+          - QUALITY_CONTROL
+        consumed_by: []
+      confidence:
+        type: double
+        description: Quality confidence score (0-1, higher is better)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_CONTROL
+        consumed_by: []
+
+  # ██ QualityAssessmentResult ███████████████████████████████████████████
+  QualityAssessmentResult:
+    description: Per-check quality assessment result from QUALITY_ASSESSMENT_ESTIMATOR per ISO/IEC 19794-5:2011 and ICAO standards
+    confidence: explicit
+    fields:
+      total_score:
+        type: double
+        description: Overall quality score (0-1)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_sharp:
+        type: bool
+        description: Image passes sharpness check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      sharpness_score:
+        type: double
+        description: Sharpness score (0-1)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_evenly_illuminated:
+        type: bool
+        description: Image passes illumination check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      illumination_score:
+        type: double
+        description: Illumination evenness score (0-1)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      no_flare:
+        type: bool
+        description: No flare detected on image
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_left_eye_opened:
+        type: bool
+        description: Left eye passes openness check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      left_eye_openness_score:
+        type: double
+        description: Left eye openness score (0-1)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_right_eye_opened:
+        type: bool
+        description: Right eye passes openness check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      right_eye_openness_score:
+        type: double
+        description: Right eye openness score (0-1)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_rotation_acceptable:
+        type: bool
+        description: Head rotation passes acceptance check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      max_rotation_deviation:
+        type: long
+        description: Maximum rotation deviation in degrees
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      not_masked:
+        type: bool
+        description: Face is not masked
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      not_masked_score:
+        type: double
+        description: No-mask confidence score (0-1)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_neutral_emotion:
+        type: bool
+        description: Face has neutral emotion
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      neutral_emotion_score:
+        type: double
+        description: Neutral emotion score (0-1)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_eyes_distance_acceptable:
+        type: bool
+        description: Eye distance passes acceptance check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      eyes_distance:
+        type: long
+        description: Measured eyes distance in pixels
+        minimum: 0
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_margins_acceptable:
+        type: bool
+        description: Face margins pass acceptance check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      margin_outer_deviation:
+        type: long
+        description: Outer margin deviation in pixels
+        minimum: 0
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      margin_inner_deviation:
+        type: long
+        description: Inner margin deviation in pixels
+        minimum: 0
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_not_noisy:
+        type: bool
+        description: Image passes noise check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      noise_score:
+        type: double
+        description: Noise score (0-1, higher = less noise)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      watermark_score:
+        type: long
+        description: Watermark detection score
+        minimum: 0
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      has_watermark:
+        type: bool
+        description: Watermark detected on image
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      dynamic_range_score:
+        type: double
+        description: Dynamic range score
+        minimum: 0
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_dynamic_range_acceptable:
+        type: bool
+        description: Dynamic range passes acceptance check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_background_uniform:
+        type: bool
+        description: Background passes uniformity check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      background_uniformity_score:
+        type: double
+        description: Background uniformity score (0-1)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      face_width_pixels:
+        type: long
+        description: Face width in pixels
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      face_height_pixels:
+        type: long
+        description: Face height in pixels
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      face_size_on_image:
+        type: double
+        description: Face size relative to image (0-1)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_face_size_acceptable:
+        type: bool
+        description: Face size passes acceptance check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_image_gray:
+        type: bool
+        description: Image is grayscale (not color)
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      min_image_dpi:
+        type: long
+        description: Minimum image DPI
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_high_resolution:
+        type: bool
+        description: Image passes high-resolution check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      image_width_to_height_ratio:
+        type: double
+        description: Image aspect ratio (width/height)
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      red_eyes_right_score:
+        type: double
+        description: Red-eye score for right eye
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      red_eyes_left_score:
+        type: double
+        description: Red-eye score for left eye
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_red_eyes:
+        type: bool
+        description: Red-eye detected on image
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      glasses_score:
+        type: double
+        description: Glasses detection score (0-1)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      not_has_glasses:
+        type: bool
+        description: Subject is not wearing glasses
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      mouth_openness_score:
+        type: double
+        description: Mouth openness score (0-1)
+        minimum: 0
+        maximum: 1
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+      is_mouth_openness:
+        type: bool
+        description: Mouth passes openness check
+        required: true
+        produced_by:
+          - QUALITY_ASSESSMENT_ESTIMATOR
+        consumed_by: []
+
+  # ██ ContextTemplate ███████████████████████████████████████████████████
+  ContextTemplate:
+    description: "Binary biometric face template. NATIVE SDK OBJECT — cannot be manually constructed as a dict/struct. Obtain only via: (1) FACE_TEMPLATE_EXTRACTOR → objects[].face_template.template, (2) FacerecService.loadContextTemplate(stream)."
+    preferred_creation:
+      - method: "extract from pipeline"
+        description: "Run FACE_TEMPLATE_EXTRACTOR on processed Context, read objects[].face_template.template"
+      - method: "FacerecService.loadContextTemplate"
+        input: "binary stream (istream / BinaryIO / InputStream / Stream)"
+        use_case: "deserialize previously saved template"
+    methods:
+      getMethodName:
+        returns: string
+        description: Template modification name (e.g., "1000")
+      size:
+        returns: int
+        description: Template size in bytes
+      save:
+        parameters:
+          - stream: binary output stream
+        description: Save to binary stream
+      dispose:
+        description: "Explicit cleanup. Optional in Java (has finalizer). REQUIRED in Flutter. Optional in C#. Not needed in C++/Python."
+
+  # ██ DynamicTemplateIndex ██████████████████████████████████████████████
+  DynamicTemplateIndex:
+    description: Dynamic template database for 1:N search
+    confidence: explicit
+    config:
+      modification:
+        type: string
+        default: "1000"
+        description: Template modification — must match FACE_TEMPLATE_EXTRACTOR
+      version:
+        type: long
+        default: 1
+        description: Modification version
+      max_license_count:
+        type: long
+        default: 100
+        description: ⚠️ Max templates. Default=100 — increase for production use (exception if exceeded)
+      capacity:
+        type: long
+        default: max_license_count
+        description: Reserved space for templates
+      force_unique_uuids:
+        type: bool
+        default: true
+        description: Enforce UUID uniqueness
+      async:
+        type: bool
+        default: false
+        description: Async add/remove (beta feature)
+      templates_path:
+        type: string
+        required: false
+        description: Path to previously saved index file for loading (via save())
+    methods:
+      add:
+        parameters:
+          - template: ContextTemplate or array
+          - uuid: string or array
+        description: Add single or multiple templates with UUIDs
+        throws: exception on duplicate UUID or capacity exceeded
+      remove:
+        parameters:
+          - uuid: string or array
+        description: Remove single or multiple templates by UUIDs
+        throws: exception on non-existent UUID
+      size:
+        returns: int
+        description: Number of stored templates
+      capacity:
+        returns: long
+        description: Maximum capacity
+      getUUID:
+        parameters:
+          - index: long
+        returns: string
+        description: Get UUID by position index
+      at:
+        parameters:
+          - uuid: string
+        returns: ContextTemplate
+        description: Get template by UUID
+      concat:
+        parameters:
+          - other: DynamicTemplateIndex
+        description: Merge another index (invalidates source)
+      save:
+        parameters:
+          - path: string
+          - allowOverwrite: bool
+        description: Save index to file
+        throws: exception on I/O errors
+      clear:
+        description: Clear all templates
+      get:
+        parameters:
+          - index: long
+        returns: ContextTemplate
+        description: "Get template by numeric index. Available in all language APIs. Java uses long parameter type (index), Python uses int."
+      getMethodName:
+        returns: string
+        description: "Returns the modification name this index was created with (e.g. '1000'). Use to verify match with FACE_TEMPLATE_EXTRACTOR modification."
+      dispose:
+        description: "Explicit cleanup. Optional in Java (has finalizer). REQUIRED in Flutter. Optional in C# (has finalizer). Not needed in C++/Python."

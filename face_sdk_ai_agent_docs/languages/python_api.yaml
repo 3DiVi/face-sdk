@@ -1,0 +1,357 @@
+language: "python"
+note: "Two implementations: legacy (ctypes, `pip install face_sdk_3divi`) and compiled PB API (faster, `pip install processing_block_python_api`). Both import as `face_sdk_3divi` and share the same API."
+classes:
+  FacerecService:
+    description: "Main entry point for FaceSDK. Used to create ProcessingBlocks, Contexts, templates, and the DynamicTemplateIndex."
+    methods:
+      create_service:
+        description: "Creates the singleton FacerecService. Call once at startup. Throws Error on invalid paths or license."
+        throws:
+          - exception: "Error"
+            condition: "Invalid DLL path, missing config, or license error"
+        signature: "static create_service(dll_path: str, facerec_conf_dir: str, license_dir: str = None) -> FacerecService"
+        parameters:
+          dll_path:
+            type: "str"
+          facerec_conf_dir:
+            type: "str"
+          license_dir:
+            type: "str"
+      create_processing_block:
+        description: "Creates a ProcessingBlock from a config dict or Context. Config must specify unit_type. Throws Error on unknown unit_type."
+        throws:
+          - exception: "Error"
+            condition: "Unknown unit_type, invalid modification, or license restriction"
+        signature: "create_processing_block(config: Union[dict, Context]) -> ProcessingBlock"
+        parameters:
+          config:
+            type: "Union[dict, Context]"
+      create_context:
+        description: "Creates an empty Context. Optionally initializes with a dict."
+        signature: "create_context(data: dict = None) -> Context"
+        parameters:
+          data:
+            type: "dict"
+      create_context_from_encoded_image:
+        description: "Creates a Context with an image field from encoded file bytes (JPEG/PNG/BMP)."
+        supported_formats: [JPEG, PNG, BMP]
+        signature: "create_context_from_encoded_image(data: bytes) -> Context"
+        parameters:
+          data:
+            type: "bytes"
+      create_context_from_frame:
+        description: "Creates a Context from raw pixel data with specified format and dimensions."
+        signature: "create_context_from_frame(data: bytes, width: int, height: int, format: ContextFormat = ContextFormat.FORMAT_BGR, base_angle: int = 0) -> Context"
+        parameters:
+          data:
+            type: "bytes"
+          width:
+            type: "int"
+          height:
+            type: "int"
+          format:
+            type: "ContextFormat"
+          base_angle:
+            type: "int"
+      create_context_from_json_file:
+        description: "Creates a Context from a JSON file path."
+        signature: "create_context_from_json_file(path: str) -> Context"
+        parameters:
+          path:
+            type: "str"
+      load_context_template:
+        description: "Loads a previously saved ContextTemplate from a binary stream."
+        signature: "static load_context_template(binary_stream: BinaryIO) -> ContextTemplate"
+        parameters:
+          binary_stream:
+            type: "BinaryIO"
+      create_dynamic_template_index:
+        description: "Creates a DynamicTemplateIndex for 1:N search. Config must specify modification and version."
+        throws:
+          - exception: "Error"
+            condition: "max_license_count exceeded or invalid config"
+        signature: "create_dynamic_template_index(config: Union[dict, Context]) -> DynamicTemplateIndex"
+        parameters:
+          config:
+            type: "Union[dict, Context]"
+      get_version:
+        description: "Returns the SDK version string (e.g., '3.31')."
+        signature: "get_version() -> str"
+  ContextFormat:
+    description: "Enumeration of supported image pixel formats."
+    methods:
+      FORMAT_BGR:
+        description: "Blue-Green-Red 3-channel format."
+        signature: "FORMAT_BGR = 0"
+      FORMAT_RGB:
+        description: "Red-Green-Blue 3-channel format."
+        signature: "FORMAT_RGB = 1"
+      FORMAT_BGRA8888:
+        description: "Blue-Green-Red-Alpha 4-channel format."
+        signature: "FORMAT_BGRA8888 = 2"
+      FORMAT_YUV420:
+        description: "YUV 4:2:0 planar format"
+        signature: "FORMAT_YUV420 = 3"
+      FORMAT_YUV_NV12:
+        description: "YUV NV12 semi-planar format"
+        signature: "FORMAT_YUV_NV12 = 4"
+      FORMAT_NV21:
+        description: "YUV NV21 semi-planar format"
+        signature: "FORMAT_NV21 = 5"
+  Context:
+    description: "Hierarchical key-value container that flows through the processing pipeline. Supports dict-style access. ⚠️ No public constructor — always create via service.create_context() or service.create_context_from_encoded_image()."
+    usage_pattern: "Supports dict-style read/write: context['key'] = value sets any nested structure in one call. Iteration: for obj in context['objects']: works via __getitem__ fallback (old-style iteration protocol). Unlike C++, no operator[] + set*() dance needed. ⚠️ But prefer createContextFromFrame/createContextFromEncodedImage over manual dict construction for image input."
+    methods:
+      getitem:
+        description: "Accesses a child Context by string key or integer index using bracket notation: context['key'] or context[0]."
+        signature: "__getitem__(key: Union[str, int]) -> Context"
+        parameters:
+          key:
+            type: "Union[str, int]"
+      setitem:
+        description: "Sets a value by key or index: context['key'] = value."
+        signature: "__setitem__(key: Union[str, int], value: Any)"
+        parameters:
+          key:
+            type: "Union[str, int]"
+          value:
+            type: "Any"
+      set_string:
+        description: "Sets the current Context node to a string value."
+        signature: "set_string(value: str)"
+        parameters:
+          value:
+            type: "str"
+      set_long:
+        description: "Sets the current Context node to an integer value."
+        signature: "set_long(value: int)"
+        parameters:
+          value:
+            type: "int"
+      set_double:
+        description: "Sets the current Context node to a float value."
+        signature: "set_double(value: float)"
+        parameters:
+          value:
+            type: "float"
+      set_bool:
+        description: "Sets the current Context node to a boolean value."
+        signature: "set_bool(value: bool)"
+        parameters:
+          value:
+            type: "bool"
+      set_bytes:
+        description: "Sets the current Context node to a bytes value."
+        signature: "set_bytes(value: bytes)"
+        parameters:
+          value:
+            type: "bytes"
+      get_string:
+        description: "Gets the string value from the current Context node."
+        signature: "get_string() -> str"
+      get_long:
+        description: "Gets the integer value from the current Context node."
+        signature: "get_long() -> int"
+      get_double:
+        description: "Gets the float value from the current Context node."
+        signature: "get_double() -> float"
+      get_bool:
+        description: "Gets the boolean value from the current Context node."
+        signature: "get_bool() -> bool"
+      get_bytes:
+        description: "Gets the bytes value from the current Context node."
+        signature: "get_bytes() -> bytes"
+      get_data_ptr:
+        description: "Gets the raw data pointer address as an integer."
+        signature: "get_data_ptr() -> int"
+      get_value:
+        description: "Gets the Python native value (str, int, float, bool, bytes, list, dict, None)."
+        signature: "get_value() -> Any"
+      is_none:
+        description: "Returns True if the Context node holds None."
+        signature: "is_none() -> bool"
+      is_bool:
+        description: "Returns True if the Context node holds a boolean."
+        signature: "is_bool() -> bool"
+      is_long:
+        description: "Returns True if the Context node holds an integer."
+        signature: "is_long() -> bool"
+      is_double:
+        description: "Returns True if the Context node holds a float."
+        signature: "is_double() -> bool"
+      is_string:
+        description: "Returns True if the Context node holds a string."
+        signature: "is_string() -> bool"
+      is_data_ptr:
+        description: "Returns True if the Context node holds a data pointer."
+        signature: "is_data_ptr() -> bool"
+      is_bytes:
+        description: "Returns True if the Context node holds bytes."
+        signature: "is_bytes() -> bool"
+      is_array:
+        description: "Returns True if the Context node is an array."
+        signature: "is_array() -> bool"
+      is_object:
+        description: "Returns True if the Context node is an object/map."
+        signature: "is_object() -> bool"
+      is_dynamic_template_index:
+        description: "Returns True if the Context node holds a DynamicTemplateIndex."
+        signature: "is_dynamic_template_index() -> bool"
+      is_context_template:
+        description: "Returns True if the Context node holds a ContextTemplate."
+        signature: "is_context_template() -> bool"
+      push_back:
+        description: "Appends a value to the Context array."
+        signature: "push_back(value: Any)"
+        parameters:
+          value:
+            type: "Any"
+      reserve:
+        description: "Pre-allocates capacity for an array Context to avoid reallocations."
+        signature: "reserve(size: int)"
+        parameters:
+          size:
+            type: "int"
+      keys:
+        description: "Returns the list of keys in the Context object."
+        signature: "keys() -> List[str]"
+      erase:
+        description: "Removes a key from the Context."
+        signature: "erase(key: str)"
+        parameters:
+          key:
+            type: "str"
+      contains:
+        description: "Checks if a key exists. Also supports the 'in' operator via __contains__."
+        signature: "contains(key: str) -> bool"
+        parameters:
+          key:
+            type: "str"
+      iter:
+        description: "Iterates over array elements. Supports 'for obj in context[key]' via old-style iteration protocol (sequential __getitem__ with int indices)."
+        signature: "__iter__() -> Iterator"
+      to_dict:
+        description: "Converts the entire Context to a Python dict recursively."
+        signature: "to_dict() -> dict"
+      save_to_json_file:
+        description: "Saves the Context to a JSON file."
+        signature: "save_to_json_file(path: str)"
+        parameters:
+          path:
+            type: "str"
+      serialize_to_json:
+        description: "Serializes the Context to a JSON string."
+        signature: "serialize_to_json() -> str"
+      clone:
+        description: "Creates an independent deep copy of the Context."
+        signature: "clone() -> Context"
+      clear:
+        description: "Removes all keys/elements from the Context. Resets to empty state (reusable)."
+        signature: "clear()"
+      compare:
+        description: "Compares this Context with another for structural equality."
+        signature: "compare(other: Context) -> bool"
+        parameters:
+          other:
+            type: "Context"
+      len:
+        description: "Returns the number of elements (array) or keys (object) via len(context)."
+        signature: "__len__() -> int"
+  ProcessingBlock:
+    description: "A processing unit that reads/writes Context. Call via block(io_data)."
+    usage_pattern: "block(io_data) — Python uses __call__ (function-call syntax). ⚠️ Java uses .process(), C# uses .Invoke(), C++ uses operator()."
+    methods:
+      call:
+        description: "Executes this block on the given Context. Reads required fields, writes produced fields. Throws Error on failure."
+        throws:
+          - exception: "Error"
+            condition: "Processing failure, invalid input, or constraint violation"
+        signature: "__call__(ioData: Union[Context, dict])"
+        parameters:
+          ioData:
+            type: "Union[Context, dict]"
+  ContextTemplate:
+    description: "Binary biometric face template produced by FACE_TEMPLATE_EXTRACTOR. Immutable after creation."
+    methods:
+      get_method_name:
+        description: "Returns the modification name used to create this template."
+        signature: "get_method_name() -> str"
+      size:
+        description: "Returns the template size in bytes."
+        signature: "size() -> int"
+      save:
+        description: "Saves the template to a binary stream."
+        signature: "save(stream: BinaryIO)"
+        parameters:
+          stream:
+            type: "BinaryIO"
+  DynamicTemplateIndex:
+    description: "Searchable template database for 1:N face matching."
+    methods:
+      add:
+        description: "Adds single or multiple templates with UUIDs. Throws Error on duplicate UUID or capacity exceeded."
+        throws:
+          - exception: "Error"
+            condition: "Duplicate UUID or max_license_count exceeded"
+        signature: "add(template: Union[ContextTemplate, List[ContextTemplate]], uuid: Union[str, List[str]])"
+        parameters:
+          template:
+            type: "Union[ContextTemplate, List[ContextTemplate]]"
+          uuid:
+            type: "Union[str, List[str]]"
+      remove:
+        description: "Removes single or multiple templates by UUID. Throws Error if UUID not found."
+        throws:
+          - exception: "Error"
+            condition: "Non-existent UUID"
+        signature: "remove(uuid: Union[str, List[str]])"
+        parameters:
+          uuid:
+            type: "Union[str, List[str]]"
+      size:
+        description: "Returns the number of stored templates."
+        signature: "size() -> int"
+      capacity:
+        description: "Returns the maximum capacity of the index."
+        signature: "capacity() -> int"
+      at:
+        description: "Retrieves a ContextTemplate by UUID."
+        signature: "at(uuid: str) -> ContextTemplate"
+        parameters:
+          uuid:
+            type: "str"
+      get:
+        description: "Retrieves a ContextTemplate by numeric index."
+        signature: "get(index: int) -> ContextTemplate"
+        parameters:
+          index:
+            type: "int"
+      get_uuid:
+        description: "Returns the UUID at the specified index position."
+        signature: "get_uuid(index: int) -> str"
+        parameters:
+          index:
+            type: "int"
+      get_method_name:
+        description: "Returns the modification name this index was created with."
+        signature: "get_method_name() -> str"
+      concat:
+        description: "Merges another DynamicTemplateIndex into this one. Invalidates the source."
+        signature: "concat(other: DynamicTemplateIndex)"
+        parameters:
+          other:
+            type: "DynamicTemplateIndex"
+      clear:
+        description: "Removes all templates from the index."
+        signature: "clear()"
+      save:
+        description: "Saves the index to a file. Throws Error on I/O errors."
+        throws:
+          - exception: "Error"
+            condition: "I/O errors (disk full, permission denied)"
+        signature: "save(path: str, allow_overwrite: bool)"
+        parameters:
+          path:
+            type: "str"
+          allow_overwrite:
+            type: "bool"

@@ -227,3 +227,22 @@ Future<Image> cutFaceFromImageBytes(Uint8List imgBytes, Rectangle rect) async {
   List<int> png = pngEncoder.encode(img2);
   return Image.memory((png as Uint8List));
 }
+
+/// Cuts out the face from raw image [imgBytes]
+Future<imglib.Image> getFaceCutFromContext(Context faceCut) async {
+  Uint8List _bytes = faceCut["blob"].getBytes();
+  final height = faceCut["shape"][0].get_value();
+  final width = faceCut["shape"][1].get_value();
+  final img = imglib.Image.fromBytes(width: width, height: height,
+      bytes: _bytes.buffer, order: imglib.ChannelOrder.rgb);
+  return img;
+}
+
+/// Cuts out the face from raw image [imgBytes]
+Future<Image> getFaceCutImageFromContext(Context faceCut) async {
+  final img = await getFaceCutFromContext(faceCut);
+
+  imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0);
+  List<int> png = pngEncoder.encode(img);
+  return Image.memory((png as Uint8List));
+}

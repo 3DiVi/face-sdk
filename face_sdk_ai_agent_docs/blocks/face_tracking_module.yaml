@@ -1,0 +1,38 @@
+unit_type: FACE_TRACKING_MODULE
+description: Tracks faces across video frames with persistent track_id
+confidence: explicit
+gpu_supported: true
+modifications:
+- name: fda
+  description: Tracking with FDA landmark fitting (default)
+  versions:
+  - version: 1
+requires:
+- image
+produces:
+- objects[].id
+- objects[].track_id
+- objects[].class
+- objects[].confidence
+- objects[].bbox
+prerequisites: []  # Source block — no prerequisites. Replaces FACE_DETECTOR in video pipelines.
+constraints:
+  multiple_faces_supported: true
+errors:
+  - code: 0x18ba1f8e
+    description: Unknown modification specified in block config
+  - code: 0x54faacfe
+    description: GPU device not available but use_cuda enabled
+  - code: 0x78121b36
+    description: Build does not support GPU
+  - code: 0x032ad038
+    description: onnxruntime library could not be loaded
+see_also:
+  examples:
+    - examples/python/face_tracking.py
+  api:
+    - languages/python_api.yaml
+    - languages/cpp_api.yaml
+    - languages/java_api.yaml
+    - languages/csharp_api.yaml
+    - languages/flutter_api.yaml

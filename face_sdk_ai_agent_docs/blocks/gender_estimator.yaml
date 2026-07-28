@@ -1,0 +1,56 @@
+unit_type: GENDER_ESTIMATOR
+description: Estimates apparent gender from a face
+confidence: explicit
+gpu_supported: true
+modifications:
+  - name: heavy
+    description: High accuracy gender estimation (default)
+    versions:
+    - version: 1
+      parameters: {}
+    - version: 2
+      parameters: {}
+    - version: 3
+      parameters: {}
+  - name: light
+    description: Faster, lower accuracy gender estimation
+    versions:
+    - version: 1
+      parameters: {}
+    - version: 2
+      parameters: {}
+requires:
+- image
+- objects[].bbox
+- objects[].keypoints
+produces:
+- objects[].gender
+prerequisites:
+- FACE_DETECTOR
+- FACE_TRACKING_MODULE
+- FACE_FITTER
+prerequisites_note: "OR: requires either FACE_DETECTOR or FACE_TRACKING_MODULE (not both)"
+constraints:
+  multiple_faces_supported: true
+errors:
+  - code: 0x18ba1f8e
+    description: Unknown modification specified in block config
+  - code: 0x54faacfe
+    description: GPU device not available but use_cuda enabled
+  - code: 0x78121b36
+    description: Build does not support GPU
+  - code: 0x032ad038
+    description: onnxruntime library could not be loaded
+see_also:
+  examples:
+    - examples/python/attribute_estimation.py
+    - examples/cpp/attribute_estimation.cpp
+    - examples/java/attribute_estimation.java
+    - examples/csharp/attribute_estimation.cs
+    - examples/flutter/attribute_estimation.dart
+  api:
+    - languages/python_api.yaml
+    - languages/cpp_api.yaml
+    - languages/java_api.yaml
+    - languages/csharp_api.yaml
+    - languages/flutter_api.yaml

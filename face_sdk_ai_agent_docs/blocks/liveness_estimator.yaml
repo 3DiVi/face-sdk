@@ -1,0 +1,217 @@
+unit_type: LIVENESS_ESTIMATOR
+description: Determines if a face is real or fake (anti-spoofing)
+confidence: explicit
+gpu_supported: true
+modifications:
+- name: 2d
+  description: Standard liveness estimation
+  versions:
+  - version: 1
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.94
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 2
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.94
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 3
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.94
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 4
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.94
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 5
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.94
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+- name: 2d_light
+  description: Lightweight liveness estimation for mobile
+  versions:
+  - version: 4
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.87
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+- name: 2d_ensemble
+  description: Liveness repelling 2D and 3D mask attacks
+  versions:
+  - version: 1
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.81
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 2
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.81
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 3
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.81
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 4
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.81
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 5
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.81
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 6
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.81
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 7
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.81
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+- name: 2d_ensemble_heavy
+  description: More accurate but heavier mask attack defense
+  versions:
+  - version: 1
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.89
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+- name: 2d_ensemble_light
+  description: Lighter version of ensemble liveness for mobile
+  versions:
+  - version: 1
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.65
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 2
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.65
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 3
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.65
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+  - version: 4
+    parameters:
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.76
+        description: Liveness confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+requires:
+- image
+- objects[].bbox
+- objects[].keypoints
+produces:
+- objects[].liveness
+prerequisites:
+- FACE_DETECTOR
+- FACE_TRACKING_MODULE
+- FACE_FITTER
+prerequisites_note: "OR: requires either FACE_DETECTOR or FACE_TRACKING_MODULE (not both)"
+constraints:
+  multiple_faces_supported: false
+  objects_count:
+    exact: 1
+errors:
+  - code: 0x18ba1f8e
+    description: Unknown modification specified in block config
+  - code: 0x54faacfe
+    description: GPU device not available but use_cuda enabled
+  - code: 0x78121b36
+    description: Build does not support GPU
+  - code: 0x032ad038
+    description: onnxruntime library could not be loaded
+  - code: MULTIPLE_FACES
+    description: More than one face in objects[] — requires exactly 1 face per frame
+see_also:
+  examples:
+    - examples/python/liveness.py
+  api:
+    - languages/python_api.yaml
+    - languages/cpp_api.yaml
+    - languages/java_api.yaml
+    - languages/csharp_api.yaml
+    - languages/flutter_api.yaml

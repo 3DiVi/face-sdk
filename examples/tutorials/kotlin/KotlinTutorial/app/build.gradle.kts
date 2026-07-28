@@ -69,7 +69,7 @@ android {
                 "share/processing_block/age_estimator/light/2.enc",
                 "share/processing_block/gender_estimator/light/2.enc",
                 "share/processing_block/face_fitter/fda/1.enc",
-                "share/processing_block/face_detector/blf_front/1.enc",
+                "share/processing_block/face_detector/ssyv_light/1.enc",
                 "license/**"
             )
         }

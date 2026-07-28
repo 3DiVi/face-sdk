@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image/image.dart' as image_lib;
 import 'dart:ui' as ui;
 
 import 'package:image_picker/image_picker.dart';
@@ -63,7 +62,15 @@ class _HomePageState extends State<HomePage> {
   late FacerecService service;
   late ProcessingBlock faceDetector;
   late ProcessingBlock fitter;
-  late ProcessingBlock qualityAssessment;
+  late ProcessingBlock qualityControl;
+  late ProcessingBlock ageEstimator;
+  late ProcessingBlock genderEstimator;
+  late ProcessingBlock emotionEstimator;
+  late ProcessingBlock maskEstimator;
+  late ProcessingBlock eyeOpennesEstimator;
+  late ProcessingBlock glassesEstimator;
+  late ProcessingBlock deepfakeEstimator;
+  late ProcessingBlock livenessEstimator;
 
   Image? pickedImage;
   Text? currentStateText;
@@ -105,7 +112,18 @@ class _HomePageState extends State<HomePage> {
     }
 
     fitter.process(data);
-    qualityAssessment.process(data);
+    qualityControl.process(data);
+    ageEstimator.process(data);
+    genderEstimator.process(data);
+    emotionEstimator.process(data);
+    maskEstimator.process(data);
+    eyeOpennesEstimator.process(data);
+    glassesEstimator.process(data);
+    deepfakeEstimator.process(data);
+
+    if (data["objects"].len() == 1) {
+      livenessEstimator.process(data);
+    }
 
     Context objects = data["objects"];
     Completer<ui.Image> completer = Completer();
@@ -116,14 +134,13 @@ class _HomePageState extends State<HomePage> {
     for (int i = 0; i < objects.len(); i++) {
       Context object = objects[i];
       Context bbox = object["bbox"];
-      Context quality = object["quality"];
 
       double x1 = bbox[0].get_value() * image_width;
       double y1 = bbox[1].get_value() * image_height;
       double x2 = bbox[2].get_value() * image_width;
       double y2 = bbox[3].get_value() * image_height;
 
-      results[BBox(x1: x1, y1: y1, x2: x2, y2: y2)] = TextInformation(quality, quality["total_score"].get_value());
+      results[BBox(x1: x1, y1: y1, x2: x2, y2: y2)] = TextInformation(object);
     }
 
     PictureRecorder recorder = PictureRecorder();
@@ -132,24 +149,111 @@ class _HomePageState extends State<HomePage> {
     final Paint paint = Paint()
       ..color = Colors.red
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 10.0;
+      ..strokeWidth = (image_width * 0.005).clamp(8.0, 20.0);
 
     canvas.drawImage(await completer.future, const Offset(0.0, 0.0), Paint());
 
+    final fontSize = (image_width * 0.018).clamp(12.0, 70.0);
+
+    final textStyle = TextStyle(
+      color: Colors.white,
+      fontSize: fontSize,
+    );
+
+    final bgPaint = Paint()
+      ..color = Colors.black.withValues(alpha: 0.7);
+
+    List<Rect> occupiedRects = [];
+
     results.forEach((bbox, textInformation) {
-      TextPainter painter = TextPainter()..textDirection = TextDirection.ltr;
-      StringBuffer buffer = StringBuffer();
+      final painter = TextPainter(
+        textDirection: TextDirection.ltr,
+      );
 
-      buffer.write("Quality: ${textInformation.getTotalQualityScoreWithPrecision()}\n");
-      buffer.write(textInformation.getQualityAssessmentResults());
+      final info = textInformation.getInfo();
 
-      canvas.drawRect(Rect.fromLTRB(bbox.x1, bbox.y1, bbox.x2, bbox.y2), paint);
+      painter.text = TextSpan(
+        text: info,
+        style: textStyle,
+      );
 
-      painter.text = TextSpan(text: buffer.toString(), style: const TextStyle(color: Colors.red, fontSize: 30));
+      painter.layout(
+        maxWidth: image_width * 0.25,
+      );
 
-      painter.layout();
+      final double textWidth = painter.width + 10;
+      final double textHeight = painter.height + 10;
 
-      painter.paint(canvas, Offset(bbox.x2 + 5, bbox.y1));
+      canvas.drawRect(
+        Rect.fromLTRB(
+          bbox.x1,
+          bbox.y1,
+          bbox.x2,
+          bbox.y2,
+        ),
+        paint,
+      );
+
+      double textX = bbox.x1;
+      double textY = bbox.y1 - textHeight - 8;
+      bool placeBelow = textY < 0;
+
+      late Rect rect;
+
+      if (!placeBelow) {
+        rect = Rect.fromLTWH(
+          textX,
+          textY,
+          textWidth,
+          textHeight,
+        );
+
+        bool overlaps = occupiedRects.any(
+              (r) => r.overlaps(rect),
+        );
+
+        if (overlaps) {
+          placeBelow = true;
+        }
+      }
+
+      if (placeBelow) {
+        textY = bbox.y2 + 8;
+
+        rect = Rect.fromLTWH(
+          textX,
+          textY,
+          textWidth,
+          textHeight,
+        );
+
+        while (
+        occupiedRects.any((r) => r.overlaps(rect))) {
+          textY += textHeight + 8;
+
+          rect = Rect.fromLTWH(
+            textX,
+            textY,
+            textWidth,
+            textHeight,
+          );
+        }
+      }
+
+      occupiedRects.add(rect);
+
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          rect,
+          const Radius.circular(8),
+        ),
+        bgPaint,
+      );
+
+      painter.paint(
+        canvas,
+        Offset(textX + 5, textY + 5),
+      );
     });
 
     ByteData? pngBytes = await (await recorder.endRecording().toImage(image_width, image_height))
@@ -222,7 +326,15 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     faceDetector.dispose();
     fitter.dispose();
-    qualityAssessment.dispose();
+    qualityControl.dispose();
+    ageEstimator.dispose();
+    genderEstimator.dispose();
+    emotionEstimator.dispose();
+    maskEstimator.dispose();
+    eyeOpennesEstimator.dispose();
+    glassesEstimator.dispose();
+    deepfakeEstimator.dispose();
+    livenessEstimator.dispose();
     service.dispose();
 
     super.dispose();
@@ -231,15 +343,59 @@ class _HomePageState extends State<HomePage> {
   Future<void> initializeFaceSDK() async {
     service = await FaceSdkPlugin.createFacerecService();
 
-    faceDetector = service.createProcessingBlock(
-        {"unit_type": "FACE_DETECTOR", "modification": "uld", "precision_level": 3});
-    fitter = service
-        .createProcessingBlock({"unit_type": "FACE_FITTER", "modification": "tddfa_faster"});
-    qualityAssessment = service.createProcessingBlock({
-      "unit_type": "QUALITY_ASSESSMENT_ESTIMATOR",
-      "modification": "assessment",
-      "config_name": "quality_assessment.xml",
-      "version": 1,
+    faceDetector = service.createProcessingBlock({
+      "unit_type": "FACE_DETECTOR",
+      "modification": "ssyv_light",
+      "version": 1
+    });
+    fitter = service.createProcessingBlock({
+      "unit_type": "FACE_FITTER",
+      "modification": "fda"
+    });
+    qualityControl = service.createProcessingBlock({
+      "unit_type": "QUALITY_CONTROL",
+      "modification": "core",
+      "mode": ["recognition"]
+    });
+    ageEstimator = service.createProcessingBlock({
+      "unit_type": "AGE_ESTIMATOR",
+      "modification": "light",
+      "version": 2
+    });
+    genderEstimator = service.createProcessingBlock({
+      "unit_type": "GENDER_ESTIMATOR",
+      "modification": "light",
+      "version": 2
+    });
+    emotionEstimator = service.createProcessingBlock({
+      "unit_type": "EMOTION_ESTIMATOR",
+      "modification": "heavy",
+      "version": 1
+    });
+    maskEstimator = service.createProcessingBlock({
+      "unit_type": "MASK_ESTIMATOR",
+      "modification": "light",
+      "version": 2
+    });
+    eyeOpennesEstimator = service.createProcessingBlock({
+      "unit_type": "EYE_OPENNESS_ESTIMATOR",
+      "modification": "light",
+      "version": 1
+    });
+    glassesEstimator = service.createProcessingBlock({
+      "unit_type": "GLASSES_ESTIMATOR",
+      "modification": "sunglasses",
+      "version": 1
+    });
+    deepfakeEstimator = service.createProcessingBlock({
+      "unit_type": "DEEPFAKE_ESTIMATOR",
+      "modification": "egn",
+      "version": 3
+    });
+    livenessEstimator = service.createProcessingBlock({
+      "unit_type": "LIVENESS_ESTIMATOR",
+      "modification": "2d_ensemble_light",
+      "version": 4
     });
 
     setState(() {

@@ -1,0 +1,141 @@
+x-detector-params: &detector_params
+  confidence_threshold:
+    type: double
+    required: false
+    description: Detection confidence threshold (0-1)
+    default: SDK-defined
+    minimum: 0
+    maximum: 1
+  iou_threshold:
+    type: double
+    required: false
+    description: IOU threshold for NMS merging (0-1)
+    default: SDK-defined
+    minimum: 0
+    maximum: 1
+  min_size:
+    type: double
+    required: false
+    description: "Minimum face size. DUAL SEMANTIC: if < 1 — fraction of image width (relative), if >= 1 — absolute size in pixels. Example: 0.3 = 30% of image width, 80 = 80px."
+    default: SDK-defined
+    minimum: 0
+  max_size:
+    type: double
+    required: false
+    description: Maximum face size filter (same semantics as min_size)
+    default: SDK-defined
+    minimum: 0
+unit_type: FACE_DETECTOR
+description: Detects faces on image and returns bounding boxes with confidence scores
+confidence: explicit
+gpu_supported: true
+modifications:
+- name: ssyv
+  description: Standard detection modification
+  versions:
+  - version: 1
+    parameters: *detector_params
+  - version: 2
+    parameters: *detector_params
+  - version: 3
+    parameters: *detector_params
+  - version: 4
+    parameters: *detector_params
+- name: ssyv_light
+  description: Lightweight detection modification (default)
+  versions:
+  - version: 1
+    parameters: *detector_params
+- name: uld
+  description: Ultra-light detector modification
+  versions:
+  - version: 1
+    parameters:
+      <<: *detector_params
+      coarse_confidence_threshold:
+        type: double
+        required: false
+        description: Coarse filter confidence threshold before NMS (0-1)
+        minimum: 0
+        maximum: 1
+      precision_level:
+        type: long
+        required: false
+        description: Precision level (higher = more accurate but slower)
+        minimum: 1
+        maximum: 3
+- name: blf_front
+  description: BLF front detector modification
+  versions:
+  - version: 1
+    parameters: *detector_params
+- name: blf_back
+  description: BLF back detector modification
+  versions:
+  - version: 1
+    parameters: *detector_params
+- name: ssyx
+  description: SSYX detector modification
+  versions:
+  - version: 1
+    parameters: *detector_params
+  - version: 2
+    parameters:
+      <<: *detector_params
+      confidence_threshold:
+        type: double
+        required: false
+        default: 0.60
+        description: Detection confidence threshold (0-1)
+        minimum: 0
+        maximum: 1
+      iou_threshold:
+        type: double
+        required: false
+        default: 0.7
+        description: IOU threshold for NMS merging (0-1)
+        minimum: 0
+        maximum: 1
+- name: cascade
+  description: Meta-modification chaining multiple detectors
+  versions:
+  - version: 1
+    parameters:
+      <<: *detector_params
+      face_detectors:
+        type: array
+        required: false
+        description: Array of detector configs to chain
+        default: SDK-defined
+requires:
+- image
+produces:
+- objects[].id
+- objects[].class
+- objects[].confidence
+- objects[].bbox
+prerequisites: []
+constraints:
+  multiple_faces_supported: true
+errors:
+  - code: 0x18ba1f8e
+    description: Unknown modification specified in block config
+  - code: 0x54faacfe
+    description: GPU device not available but use_cuda enabled
+  - code: 0x78121b36
+    description: Build does not support GPU
+  - code: 0x032ad038
+    description: onnxruntime library could not be loaded
+see_also:
+  examples:
+    - examples/python/face_detection.py
+    - examples/cpp/face_detection.cpp
+    - examples/java/face_detection.java
+    - examples/csharp/face_detection.cs
+    - examples/flutter/face_detection.dart
+  api:
+    - languages/python_api.yaml
+    - languages/cpp_api.yaml
+    - languages/java_api.yaml
+    - languages/csharp_api.yaml
+    - languages/flutter_api.yaml

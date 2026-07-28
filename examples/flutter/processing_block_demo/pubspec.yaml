@@ -44,11 +44,18 @@ flutter:
   assets:
     - assets/conf/facerec/
     - assets/license/
-    - assets/share/faceanalysis/
-    - assets/share/faceattributes/
-    - assets/share/processing_block/face_detector/uld/1/
-    - assets/share/processing_block/face_fitter/tddfa_faster/
+    - assets/share/processing_block/face_detector/ssyv_light/1.enc
+    - assets/share/processing_block/face_fitter/fda/1.enc
+    - assets/share/face_quality/
     - assets/share/quality_iso/
+    - assets/share/processing_block/age_estimator/light/2.enc
+    - assets/share/processing_block/gender_estimator/light/2.enc
+    - assets/share/processing_block/emotion_estimator/heavy/1.enc
+    - assets/share/processing_block/mask_estimator/light/2.enc
+    - assets/share/processing_block/eye_openness_estimator/light/1.enc
+    - assets/share/processing_block/glasses_estimator/sunglasses/1.enc
+    - assets/share/processing_block/deepfake_estimator/egn/3.enc
+    - assets/share/processing_block/liveness_estimator/2d_ensemble_light/4/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

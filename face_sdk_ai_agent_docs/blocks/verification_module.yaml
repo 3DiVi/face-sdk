@@ -1,0 +1,69 @@
+unit_type: VERIFICATION_MODULE
+description: Performs 1:1 face template comparison
+confidence: explicit
+gpu_supported: false
+modifications:
+- name: '30'
+  description: Must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+- name: '50'
+  description: Must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+- name: '100'
+  description: Must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+- name: '1000'
+  description: Must match FACE_TEMPLATE_EXTRACTOR modification (default)
+  versions:
+  - version: 1
+- name: 30m
+  description: Mobile-optimized, must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+- name: 50m
+  description: Mobile-optimized, must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+- name: 100m
+  description: Mobile-optimized, must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+- name: 1000m
+  description: Mobile-optimized, must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+requires:
+- template1
+- template2
+produces:
+- result
+prerequisites:
+- FACE_TEMPLATE_EXTRACTOR
+constraints:
+  multiple_faces_supported: false
+  template_count:
+    exact: 2
+    note: "Requires 2 templates: template1 and template2"
+errors:
+  - code: 0x18ba1f8e
+    description: Unknown modification specified in block config
+  - code: 0x032ad038
+    description: onnxruntime library could not be loaded
+  - code: MODIFICATION_MISMATCH
+    description: VERIFICATION_MODULE modification must match FACE_TEMPLATE_EXTRACTOR modification — mismatched modifications produce incorrect scores
+see_also:
+  examples:
+    - examples/python/face_verification.py
+    - examples/cpp/face_verification.cpp
+    - examples/java/face_verification.java
+    - examples/csharp/face_verification.cs
+    - examples/flutter/face_verification.dart
+  api:
+    - languages/python_api.yaml
+    - languages/cpp_api.yaml
+    - languages/java_api.yaml
+    - languages/csharp_api.yaml
+    - languages/flutter_api.yaml

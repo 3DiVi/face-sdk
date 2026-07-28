@@ -62,6 +62,11 @@ class Context
 			char* operator[](size_t index) const {
 				return (index<length_) ? *(ptr_+index) : nullptr;
 			}
+			~charsList() {
+				for(size_t indx = 0; indx < length_; ++indx)
+					free(ptr_[indx]);
+				free(ptr_);
+			}
 		};
 
 		const Context& base_;
@@ -70,13 +75,6 @@ class Context
 		Context* curr_;
 		const bool isObj_;
 		std::shared_ptr<charsList> keys_;
-
-		void charsList_deleter(charsList* ptr) {
-			for(size_t indx=0; indx < ptr->length_; ++indx)
-				base_.dll_handle->TDVContext_freePtr(ptr->ptr_[indx]);
-			base_.dll_handle->TDVContext_freePtr(ptr->ptr_);
-		};
-
 	public:
 		typedef std::ptrdiff_t                                                            difference_type;
 		typedef std::forward_iterator_tag                                                 iterator_category;
@@ -142,15 +140,8 @@ protected:
 		tdvCheckException(dll_handle, eh_);
 	}
 
-	Context(const DHPtr& dll_handle, HContext* handle, bool weak = true) : dll_handle(dll_handle), weak_(weak), eh_(nullptr) {
-		if(weak_)
-			handle_ = handle;
-		else
-		{
-			handle_ = dll_handle->TDVContext_clone(handle, &eh_);
-			tdvCheckException(dll_handle, eh_);
-		}
-	}
+	Context(const DHPtr& dll_handle, HContext* handle, bool weak = true) :
+		dll_handle(dll_handle), handle_(handle), weak_(weak), eh_(nullptr) { }
 
 	Context(const DHPtr& dll_handle, const uint8_t* data, uint64_t dataSize) :
 		dll_handle(dll_handle),
@@ -405,9 +396,13 @@ public:
 		auto keys = dll_handle->TDVContext_getKeys(handle_, length, &eh_);
 		tdvCheckException(dll_handle, eh_);
 
-		std::vector<std::string> result(length);
+		std::vector<std::string> result;
+		result.reserve(length);
 		for (size_t i = 0; i < length; ++i)
 			result.emplace_back(keys[i]);
+		for (size_t i = 0; i < length; ++i)
+			dll_handle->TDVContext_freePtr(keys[i]);
+		dll_handle->TDVContext_freePtr(keys);
 
 		return result;
 	}
@@ -925,7 +920,7 @@ Context::ContextArrayIterator<isConst>::ContextArrayIterator(const Context& ctx,
 		{
 			auto keys = base_.dll_handle->TDVContext_getKeys(base_.handle_, length_, &(base_.eh_));
 			tdvCheckException(base_.dll_handle, base_.eh_);
-			keys_ = std::shared_ptr<charsList>(new charsList(length_, keys), std::bind(&ContextArrayIterator::charsList_deleter, this, std::placeholders::_1));
+			keys_ = std::shared_ptr<charsList>(new charsList(length_, keys));
 			curr_ = new Context(base_[keys_->operator[](index)]);
 		}
 		else
@@ -942,7 +937,7 @@ Context::ContextArrayIterator<isConst>::ContextArrayIterator(const Context& ctx,
 	if(isObj_ && length_) {
 		auto keys = base_.dll_handle->TDVContext_getKeys(base_.handle_, length_, &(base_.eh_));
 		tdvCheckException(base_.dll_handle, base_.eh_);
-		keys_ = std::shared_ptr<charsList>(new charsList(length_, keys), std::bind(&ContextArrayIterator::charsList_deleter, this, std::placeholders::_1));
+		keys_ = std::shared_ptr<charsList>(new charsList(length_, keys));
 		size_t i=0;
 		do {
 			if(!key.compare(keys_->operator[](i))) {

@@ -1,0 +1,317 @@
+# Pipeline Graph — Machine-Readable Dependency Graph
+# prerequisites.source — OR: pick any one.
+# prerequisites.required — AND: all must run before this block.
+# Source blocks have no prerequisites.
+
+blocks:
+  # ── Source Blocks ──────────────────────────────────────
+  FACE_DETECTOR:
+    description: Detects faces, produces objects[] with bbox
+    type: source
+    prerequisite_of:
+      - FACE_FITTER
+
+  FACE_TRACKING_MODULE:
+    description: Tracks faces across video frames
+    type: source
+    prerequisite_of:
+      - FACE_FITTER
+
+  HUMAN_BODY_DETECTOR:
+    description: Detects human bodies, produces objects[] with bbox
+    type: source
+    prerequisite_of:
+      - HUMAN_POSE_ESTIMATOR
+
+  OBJECT_DETECTOR:
+    description: Detects generic objects, produces objects[] with bbox
+    type: source
+    prerequisite_of:
+      - HUMAN_POSE_ESTIMATOR
+
+  # ── Intermediate Blocks ───────────────────────────────
+  FACE_FITTER:
+    description: Fits facial landmarks (keypoints)
+    type: intermediate
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+    prerequisite_of:
+      - AGE_ESTIMATOR
+      - GENDER_ESTIMATOR
+      - EMOTION_ESTIMATOR
+      - MASK_ESTIMATOR
+      - GLASSES_ESTIMATOR
+      - EYE_OPENNESS_ESTIMATOR
+      - DEEPFAKE_ESTIMATOR
+      - LIVENESS_ESTIMATOR
+      - QUALITY_ASSESSMENT_ESTIMATOR
+      - QUALITY_CONTROL
+      - FACE_TEMPLATE_EXTRACTOR
+      - UTILITY_MODULE
+
+  HUMAN_POSE_ESTIMATOR:
+    description: Estimates human body pose keypoints
+    type: intermediate
+    prerequisites:
+      source:
+        - HUMAN_BODY_DETECTOR
+        - OBJECT_DETECTOR
+
+  # ── Terminal Attribute Blocks ─────────────────────────
+  AGE_ESTIMATOR:
+    description: Estimates age
+    type: terminal_attribute
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+
+  GENDER_ESTIMATOR:
+    description: Estimates gender
+    type: terminal_attribute
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+
+  EMOTION_ESTIMATOR:
+    description: Recognizes emotions
+    type: terminal_attribute
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+
+  MASK_ESTIMATOR:
+    description: Detects medical mask
+    type: terminal_attribute
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+
+  GLASSES_ESTIMATOR:
+    description: Detects glasses
+    type: terminal_attribute
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+
+  EYE_OPENNESS_ESTIMATOR:
+    description: Estimates eye openness
+    type: terminal_attribute
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+
+  DEEPFAKE_ESTIMATOR:
+    description: Detects deepfake manipulations
+    type: terminal_attribute
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+
+  LIVENESS_ESTIMATOR:
+    description: Anti-spoofing liveness detection
+    type: terminal_attribute
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+    constraints:
+      objects_count_exact: 1
+
+  QUALITY_ASSESSMENT_ESTIMATOR:
+    description: Assesses face image quality
+    type: terminal_attribute
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+
+  QUALITY_CONTROL:
+    description: Filters faces by quality threshold
+    type: terminal_attribute
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+
+  # ── Recognition Blocks ────────────────────────────────
+  FACE_TEMPLATE_EXTRACTOR:
+    description: Extracts biometric face template
+    type: intermediate
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+    prerequisite_of:
+      - VERIFICATION_MODULE
+      - MATCHER_MODULE
+
+  VERIFICATION_MODULE:
+    description: 1:1 face template comparison
+    type: terminal_recognition
+    prerequisites:
+      required:
+        - FACE_TEMPLATE_EXTRACTOR
+    inputs:
+      - template1
+      - template2
+
+  MATCHER_MODULE:
+    description: 1:N face search in DynamicTemplateIndex
+    type: terminal_recognition
+    prerequisites:
+      required:
+        - FACE_TEMPLATE_EXTRACTOR
+    inputs:
+      - template_index
+      - queries
+      - knn
+
+  # ── Utility ────────────────────────────────────────────
+  UTILITY_MODULE:
+    description: Face crop and normalization
+    type: terminal_utility
+    prerequisites:
+      source:
+        - FACE_DETECTOR
+        - FACE_TRACKING_MODULE
+      required:
+        - FACE_FITTER
+
+# ── Recommended Pipelines ──────────────────────────────
+pipelines:
+  face_detection:
+    - FACE_DETECTOR
+
+  face_tracking:
+    - FACE_TRACKING_MODULE
+
+  face_fitting:
+    - FACE_DETECTOR
+    - FACE_FITTER
+
+  face_attribute_analysis:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - AGE_ESTIMATOR
+    - GENDER_ESTIMATOR
+    - EMOTION_ESTIMATOR
+
+  age_estimation:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - AGE_ESTIMATOR
+
+  gender_estimation:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - GENDER_ESTIMATOR
+
+  emotion_estimation:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - EMOTION_ESTIMATOR
+
+  face_quality_filtering:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - QUALITY_CONTROL
+    - FACE_TEMPLATE_EXTRACTOR
+
+  liveness_detection:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - LIVENESS_ESTIMATOR
+
+  template_extraction:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - FACE_TEMPLATE_EXTRACTOR
+
+  face_verification:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - FACE_TEMPLATE_EXTRACTOR
+    - VERIFICATION_MODULE
+
+  face_identification:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - FACE_TEMPLATE_EXTRACTOR
+    - MATCHER_MODULE
+
+  face_normalization:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - UTILITY_MODULE
+
+  face_recognition_enrollment:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - QUALITY_CONTROL
+    - FACE_TEMPLATE_EXTRACTOR
+
+  face_crop_with_quality:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - QUALITY_CONTROL
+    - UTILITY_MODULE
+
+  human_pose_estimation:
+    - HUMAN_BODY_DETECTOR
+    - HUMAN_POSE_ESTIMATOR
+
+  mask_detection:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - MASK_ESTIMATOR
+
+  glasses_detection:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - GLASSES_ESTIMATOR
+
+  eye_openness_estimation:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - EYE_OPENNESS_ESTIMATOR
+
+  deepfake_detection:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - DEEPFAKE_ESTIMATOR
+
+  quality_assessment:
+    - FACE_DETECTOR
+    - FACE_FITTER
+    - QUALITY_ASSESSMENT_ESTIMATOR

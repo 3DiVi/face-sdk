@@ -1,0 +1,331 @@
+# FaceSDK Best Practices & Use Cases
+#
+# ⚠️ Calling convention differs per language:
+#   C++/Python:     block(ioData)         (functor / __call__)
+#   Java:           block.process(ioData)
+#   C#:             block.Invoke(ioData)
+#   Flutter (sync): block.process(ioData)
+#   Flutter (async): await block.process(ioData)
+# See languages/*.yaml → ProcessingBlock.usage_pattern for details.
+
+performance:
+  # Reference hardware:
+  #   CPU: Intel Xeon E5-2683 v4 (single-core)
+  #   GPU: NVIDIA GTX 10xx series
+  # Input: 1920x1080, single face
+  # Latency in milliseconds; latest SDK version per row.
+  # Actual numbers vary by SDK version, hardware, input resolution, and face count.
+  # GPU column = null when the modification does not support GPU.
+
+  face_detector:
+    latency_ms:
+      uld:        { cpu: 8,   gpu: 8,   note: "v1 precision_level=1 SDK 3.19" }
+      uld_p2:     { cpu: 40,  gpu: 24,  note: "v1 precision_level=2 SDK 3.19" }
+      uld_p3:     { cpu: 197, gpu: 83,  note: "v1 precision_level=3 SDK 3.19" }
+      ssyv_light: { cpu: 12,  gpu: 9,   note: "v1 SDK 3.24" }
+      blf_front:  { cpu: 9,   gpu: 11,  note: "v1 SDK 3.19" }
+      blf_back:   { cpu: 18,  gpu: 17,  note: "v1 SDK 3.19" }
+      ssyv:       { cpu: 96,  gpu: 29,  note: "v3 SDK 3.19" }
+      ssyv_v4:    { cpu: 1502, gpu: 103, note: "v4 SDK 3.20" }
+      cascade:    { cpu: null, gpu: null }
+      ssyx:       { cpu: null, gpu: null }
+
+  face_fitter:
+    latency_ms:
+      tddfa_faster: { cpu: 2,  gpu: 1,  note: "v1 SDK 3.19" }
+      fda:          { cpu: 3,  gpu: 3,  note: "v1 SDK 3.23" }
+      tddfa:        { cpu: 6,  gpu: 2,  note: "v1 SDK 3.19" }
+      mesh:         { cpu: 6,  gpu: 3,  note: "v1 SDK 3.19" }
+
+  face_template_extractor:
+    latency_ms:
+      30:   { cpu_desktop: 19,  cpu_mobile: 50,  search_10k: 0.12, search_1M: 3.87, search_10M: 56,  template_bytes: 280 }
+      50:   { cpu_desktop: 31,  cpu_mobile: 92,  search_10k: 0.14, search_1M: 4.58, search_10M: 63,  template_bytes: 288 }
+      100:  { cpu_desktop: 68,  cpu_mobile: 212, search_10k: 0.12, search_1M: 3.87, search_10M: 56,  template_bytes: 280 }
+      1000: { cpu_desktop: 611, cpu_mobile: 2200, search_10k: 0.14, search_1M: 6.31, search_10M: 74,  template_bytes: 296 }
+      30m:  { cpu_desktop: 14,  cpu_mobile: 30,  search_10k: 0.12, search_1M: 3.87, search_10M: 56,  template_bytes: 280 }
+      50m:  { cpu_desktop: 25,  cpu_mobile: 53,  search_10k: 0.14, search_1M: 4.58, search_10M: 63,  template_bytes: 288 }
+      100m: { cpu_desktop: 55,  cpu_mobile: 102, search_10k: 0.12, search_1M: 3.87, search_10M: 56,  template_bytes: 280 }
+      1000m: { cpu_desktop: 543, cpu_mobile: 1100, search_10k: 0.14, search_1M: 6.31, search_10M: 74,  template_bytes: 296 }
+    note: "No GPU support. cpu_desktop = Xeon E5-2683 v4 single-core. cpu_mobile = Google Pixel 3."
+
+  liveness_estimator:
+    latency_ms:
+      2d:                 { cpu: 100, gpu: 10,  apcer_bpcer_001: 0.07,   note: "v5 SDK 3.26" }
+      2d_light:           { cpu: 16,  gpu: 4,   apcer_bpcer_001: 0.18,   note: "v4 SDK 3.25" }
+      2d_ensemble:        { cpu: 205, gpu: 21,  apcer_bpcer_001: 0.0206, note: "v7 SDK 3.30" }
+      2d_ensemble_heavy:  { cpu: 487, gpu: 24,  apcer_bpcer_001: 0.27,   note: "v1 SDK 3.25" }
+      2d_ensemble_light:  { cpu: 34,  gpu: 9,   apcer_bpcer_001: 0.1160, note: "v3 SDK 3.29" }
+    note: "apcer_bpcer_001 = APCER=BPCR at 1% FMR operating point"
+
+  age_estimator:
+    latency_ms:
+      light:  { cpu: 1, gpu: 2, mae: 4.9,  note: "v2 SDK 3.19" }
+      heavy:  { cpu: 1, gpu: 2, mae: 3.5,  note: "v2 SDK 3.19" }
+
+  gender_estimator:
+    latency_ms:
+      light:  { cpu: 1, gpu: 2, accuracy_pct: 96,  note: "v2 SDK 3.19" }
+      heavy:  { cpu: 1, gpu: 2, accuracy_pct: 97.5, note: "v3 SDK 3.20" }
+
+  emotion_estimator:
+    latency_ms:
+      heavy:  { cpu: 28, gpu: 4, accuracy_pct: 80, note: "v1 SDK 3.19" }
+
+  mask_estimator:
+    latency_ms:
+      light:  { cpu: 1, gpu: 2, note: "v2 SDK 3.19" }
+
+  eye_openness_estimator:
+    latency_ms:
+      light:  { cpu: 3, gpu: 1, note: "v1 SDK 3.21" }
+
+  glasses_estimator:
+    latency_ms:
+      anyglasses:  { cpu: 3, gpu: 1, note: "v1 SDK 3.24" }
+      sunglasses:  { cpu: 3, gpu: 1, note: "v1 SDK 3.24" }
+
+  deepfake_estimator:
+    latency_ms:
+      egn_v1:  { cpu: 103, gpu: 11, apcer_bpcer: 0.1455, note: "SDK 3.27" }
+      egn_v2:  { cpu: 103, gpu: 11, apcer_bpcer: 0.0624, note: "SDK 3.29" }
+      egn_v3:  { cpu: 103, gpu: 11, apcer_bpcer: 0.0522, note: "SDK 3.30" }
+    note: "apcer_bpcer = APCER=BPCR at EER operating point"
+
+  human_body_detector:
+    latency_ms:
+      ssyv:    { cpu: 237, gpu: 32, note: "v1 SDK 3.19" }
+
+  object_detector:
+    latency_ms:
+      ssyx:    { cpu: 2036, gpu: 124, note: "v1 SDK 3.19" }
+
+  human_pose_estimator:
+    latency_ms:
+      heavy:   { cpu: 193, gpu: 6, note: "v1 SDK 3.16" }
+
+  quality_control:
+    latency_ms:
+      core:        { cpu: 39, gpu: null, note: "v1 SDK 3.28, CPU-only modification" }
+      estimation:  { cpu: 95, gpu: 5,  note: "v1 SDK 3.19" }
+
+  quality_assessment_estimator:
+    latency_ms:
+      assessment:  { cpu: 62, gpu: null, note: "v2 SDK 3.24, CPU-only" }
+
+modification_selection:
+  face_detector:
+    - condition: "real-time 100+ FPS on CPU"
+      choose: uld
+    - condition: "balanced (default)"
+      choose: ssyv_light
+    - condition: "maximum recall (miss less faces)"
+      choose: cascade
+    - condition: "highest accuracy, GPU available"
+      choose: ssyx
+  face_fitter:
+    - condition: "speed"
+      choose: tddfa_faster
+    - condition: "default"
+      choose: fda
+    - condition: "best quality / ISO compliance"
+      choose: tddfa
+    - condition: "3D mesh needed"
+      choose: mesh
+  face_template_extractor:
+    - condition: "maximum accuracy"
+      choose: "1000"
+    - condition: "balanced CPU"
+      choose: "100"
+    - condition: "mobile devices (Java/Kotlin/Flutter/iOS)"
+      choose: "50m"
+    - condition: "speed-optimized mobile (sacrifice accuracy for performance)"
+      choose: "100m"
+    - condition: "maximum speed (desktop)"
+      choose: "30"
+
+use_cases:
+  face_detection:
+    goal: "objects[] with bbox [x1,y1,x2,y2], confidence, class"
+    context: [image]
+    pipeline: [FACE_DETECTOR]
+    result_fields: [objects]
+    constraints:
+      - Min face size via detector min_size param
+      - Speed depends on input resolution
+      - Default detects upright frontal faces reliably
+    notes:
+      - Modifications: ssyv_light (default), uld (CPU), cascade (recall), ssyx (accuracy)
+      - See performance.face_detector for latency per modification
+      - Lower resolution for real-time; min_size ~80px portraits / 200px groups
+
+  face_tracking:
+    goal: "objects with persistent track_id across frames"
+    context: [image]
+    pipeline: [FACE_TRACKING_MODULE]
+    result_fields: [objects]
+    constraints:
+      - Sequential frames required; track confirmed after min_hits detections
+      - Track dropped after max_age absent frames
+      - Degrades under extreme lighting or camera motion
+    notes:
+      - Replaces FACE_DETECTOR in video pipelines
+      - Tune min_hits/max_age; run at 15+ FPS
+
+  face_fitting:
+    goal: "objects with keypoints (x,y) and pose (yaw,pitch,roll)"
+    context: [image]
+    pipeline: [FACE_DETECTOR, FACE_FITTER]
+    result_fields: [objects]
+    constraints:
+      - Landmark accuracy degrades at yaw>45°, pitch>30°
+      - Heavy occlusion produces inaccurate keypoints
+    notes:
+      - Modifications: fda (speed), tddfa (quality/ISO), mesh (3D)
+      - Combine with UTILITY_MODULE for landmark visualization
+
+  age_estimation:
+    goal: "objects with age (long, years, ±5 typical error)"
+    context: [image]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, AGE_ESTIMATOR]
+    result_fields: [objects]
+    constraints:
+      - Less accurate for <10 and >70 years
+      - Apparent age (not chronological); varies across demographics
+    notes:
+      - Temporal averaging on video for stability
+
+  gender_estimation:
+    goal: "objects with gender (MALE/FEMALE) and confidence"
+    context: [image]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, GENDER_ESTIMATOR]
+    result_fields: [objects]
+    constraints:
+      - Binary classifier; does not capture non-binary identities
+      - Affected by makeup, facial hair, lighting
+    notes:
+      - Communicate to users results are estimates
+      - Use confidence score to filter low-certainty predictions
+
+  emotion_estimation:
+    goal: "objects with emotions[] (label + confidence)"
+    context: [image]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, EMOTION_ESTIMATOR]
+    result_fields: [objects]
+    constraints:
+      - Most accurate for neutral and strongly expressive faces
+      - Cultural differences not fully captured
+    notes:
+      - Use top-scoring label or full confidence vector
+      - Temporal smoothing for video
+
+  template_extraction:
+    goal: "objects with face_template.template (ContextTemplate binary)"
+    context: [image]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, FACE_TEMPLATE_EXTRACTOR]
+    result_fields: [objects]
+    constraints:
+      - Frontal faces yield most discriminative embeddings
+      - Same detector + extractor version at enroll and query time
+    notes:
+      - Modifications: 1000 (accuracy), 100 (balanced CPU), 30 (max speed), 50m/100m (mobile)
+      - See performance.face_template_extractor for latency and search speed
+      - Normalize to unit length if required; store with metadata
+
+  liveness_detection:
+    goal: "objects with liveness.value (REAL/FAKE) and liveness.confidence"
+    context: [image]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, LIVENESS_ESTIMATOR]
+    result_fields: [objects]
+    constraints:
+      - Exactly 1 face required; multiple faces error
+      - High-quality spoofs (4K video) harder to detect
+    notes:
+      - Modifications: 2d_ensemble (mask defense), 2d_light (mobile)
+      - Set confidence_threshold per security needs; good lighting improves accuracy
+
+  face_verification:
+    goal: "result with distance, score, far, frr (score>=0.85 match)"
+    context: [image, template1]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, FACE_TEMPLATE_EXTRACTOR, VERIFICATION_MODULE]
+    result_fields: [objects, result]
+    constraints:
+      - Reference and probe must use same model version
+      - Accuracy degrades frontal vs non-frontal comparison
+      - Threshold tunable via ROC analysis
+    notes:
+      - Same modification across FACE_TEMPLATE_EXTRACTOR and VERIFICATION_MODULE
+      - Combine with LIVENESS_ESTIMATOR for spoof prevention
+
+  face_identification:
+    goal: "results with ranked candidates + similarity scores"
+    context: [image, template_index]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, FACE_TEMPLATE_EXTRACTOR, MATCHER_MODULE]
+    result_fields: [objects, results]
+    constraints:
+      - Gallery and probe must use same model version
+      - Speed scales with gallery size; enroll with high-quality frontal faces
+    notes:
+      - Requires pre-built DynamicTemplateIndex
+      - Use knn for number of top matches
+      - Enroll multiple templates per subject (different angles)
+
+  face_normalization:
+    goal: "objects[] with face_crop (aligned canonical crop)"
+    context: [image]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, UTILITY_MODULE]
+    result_fields: [objects, "objects[].cut_rect", "objects[].face_crop"]
+    constraints:
+      - Alignment quality depends on landmark accuracy
+      - Yaw>45° cannot be fully corrected
+    notes:
+      - UTILITY_MODULE with cut_type: FACE_CUT_BASE for basic aligned crop
+      - UTILITY_MODULE with cut_type: FACE_CUT_FULL_FRONTAL for ISO/IEC 19794-5 Full Frontal
+      - UTILITY_MODULE with cut_type: FACE_CUT_TOKEN_FRONTAL for ISO/IEC 19794-5 Token Frontal
+      - face_crop output is always in RGB
+      - Set consistent output size (e.g. 300x300)
+
+  face_attribute_analysis:
+    goal: "objects with age, gender, emotions"
+    context: [image]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, AGE_ESTIMATOR, GENDER_ESTIMATOR, EMOTION_ESTIMATOR]
+    result_fields: [objects]
+    notes:
+      - FACE_FITTER tddfa for better keypoints
+      - Optional: MASK_ESTIMATOR, GLASSES_ESTIMATOR, EYE_OPENNESS_ESTIMATOR, DEEPFAKE_ESTIMATOR
+
+  face_quality_filtering:
+    goal: "objects passing quality threshold"
+    context: [image]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, QUALITY_CONTROL, FACE_TEMPLATE_EXTRACTOR]
+    result_fields: [objects]
+    notes:
+      - QUALITY_CONTROL with mode preset for configurable filtering
+      - For ISO/IEC compliance use QUALITY_ASSESSMENT_ESTIMATOR v2 + tddfa
+
+  face_recognition_enrollment:
+    goal: "template added to DynamicTemplateIndex"
+    context: [image]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, QUALITY_CONTROL, FACE_TEMPLATE_EXTRACTOR]
+    result_fields: [objects]
+    notes:
+      - Modification 1000 for highest accuracy; 100m for speed-optimized mobile
+      - Add via DynamicTemplateIndex.add()
+
+  face_crop_with_quality:
+    goal: "normalized face crop (good quality only)"
+    context: [image]
+    pipeline: [FACE_DETECTOR, FACE_FITTER, QUALITY_CONTROL, UTILITY_MODULE]
+    result_fields: [objects, "objects[].face_crop"]
+    notes:
+      - Quality filtering before normalization
+      - Optional: QUALITY_ASSESSMENT_ESTIMATOR
+
+  human_pose_estimation:
+    goal: "objects with body keypoints"
+    context: [image]
+    pipeline: [HUMAN_BODY_DETECTOR, HUMAN_POSE_ESTIMATOR]
+    result_fields: [objects]
+    notes:
+      - HUMAN_BODY_DETECTOR detects only body class
+      - OBJECT_DETECTOR detects multiple classes including body

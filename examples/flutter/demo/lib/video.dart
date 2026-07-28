@@ -1,15 +1,12 @@
-import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:async';
 import 'dart:io' show Platform;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:face_sdk_3divi/face_sdk_3divi.dart';
 import 'package:face_sdk_3divi/utils.dart';
-import 'package:image/image.dart' as image_lib;
 
 typedef void setLivenssStatus(bool isPassed, Template templ, Image? img, double mirror);
 

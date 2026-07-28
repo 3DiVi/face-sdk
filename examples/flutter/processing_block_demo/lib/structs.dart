@@ -10,41 +10,46 @@ class BBox {
 }
 
 class TextInformation {
-  final double _totalQualityScore;
-  final List<String> _qualityAssessmentResults = [];
-  static const Map<String, String> qualityAssessmentFields = {
-    "is_rotation_acceptable": "Face frontal",
-    "not_masked": "No mask",
-    "is_neutral_emotion": "Neutral emotion"
-  };
+  final List<String> _objectInfo = [];
 
-  TextInformation(Context quality, this._totalQualityScore) {
-    bool value = quality["is_left_eye_opened"].get_value() && quality["is_right_eye_opened"].get_value();
+  TextInformation(Context obj) {
+    final age = obj['age'].get_value();
+    final gender = obj['gender'].get_value();
+    final emotion = obj['emotions'][0]['emotion'].get_value();
+    final hasMask = obj['has_medical_mask']['value'].get_value() ? "yes" : "no";
+    final hasGlasses = obj['glasses']['value'].get_value() ? "yes" : "no";
+    final eyeOpened = (obj["is_left_eye_open"]["value"].get_value() &&
+        obj["is_right_eye_open"]["value"].get_value()) ? "yes" : "no";
+    final isDeepfake = obj["deepfake"]["value"].get_value() ? "yes" : "no";
 
-    _qualityAssessmentResults.add("Eye opens: ${_convertBoolToString(value)}");
+    _objectInfo.add("age: ${age}");
+    _objectInfo.add("gender: ${gender}");
+    _objectInfo.add("emotion: ${emotion}");
+    _objectInfo.add("mask: ${hasMask}");
+    _objectInfo.add("sunglasses: ${hasGlasses}");
+    _objectInfo.add("eye_opened: ${eyeOpened}");
+    _objectInfo.add("deepfake: ${isDeepfake}");
 
-    qualityAssessmentFields.forEach((field, name) {
-      bool value = quality[field].get_value();
-
-      _qualityAssessmentResults.add("$name: ${_convertBoolToString(value)}");
-    });
+    if (obj.contains("liveness")) {
+      final liveness = obj["liveness"]["value"].get_value();
+      _objectInfo.add("liveness: ${liveness}");
+    }
+    final quality = obj["quality"]["value"].get_value();
+    final qualityInfo = quality ? "passed" : "failed";
+    _objectInfo.add("quality: ${qualityInfo}");
+    if (!quality){
+      final failedCheck = obj["quality"]["failed_checks"][0]["check"].get_value();
+      _objectInfo.add("\tfailed_check: ${failedCheck}");
+    }
   }
 
-  String getTotalQualityScoreWithPrecision({int precision = 3}) {
-    return _totalQualityScore.toStringAsPrecision(precision);
-  }
-
-  String getQualityAssessmentResults() {
+  String getInfo() {
     StringBuffer result = StringBuffer();
 
-    for (String element in _qualityAssessmentResults) {
+    for (String element in _objectInfo) {
       result.write("$element\n");
     }
 
     return result.toString();
-  }
-
-  String _convertBoolToString(bool value) {
-    return value ? "yes" : "no";
   }
 }

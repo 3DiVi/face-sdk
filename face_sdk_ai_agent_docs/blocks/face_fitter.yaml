@@ -1,0 +1,72 @@
+unit_type: FACE_FITTER
+description: Fits facial landmarks and estimates head pose
+confidence: explicit
+gpu_supported: true
+modifications:
+- name: fda
+  description: Fast landmark detection (21 points, default)
+  versions:
+  - version: 1
+- name: tddfa
+  description: High quality landmark detection (68 points)
+  versions:
+  - version: 1
+- name: tddfa_faster
+  description: Faster version of tddfa
+  versions:
+  - version: 1
+- name: mesh
+  description: 3D face mesh reconstruction (470 points)
+  versions:
+  - version: 1
+requires:
+- image
+- objects[].bbox
+produces:
+- objects[].keypoints
+- objects[].pose
+prerequisites:
+- FACE_DETECTOR
+- FACE_TRACKING_MODULE
+prerequisites_note: "OR: requires either FACE_DETECTOR or FACE_TRACKING_MODULE (not both)"
+constraints:
+  multiple_faces_supported: true
+errors:
+  - code: 0x18ba1f8e
+    description: Unknown modification specified in block config
+  - code: 0x54faacfe
+    description: GPU device not available but use_cuda enabled
+  - code: 0x78121b36
+    description: Build does not support GPU
+  - code: 0x032ad038
+    description: onnxruntime library could not be loaded
+see_also:
+  examples:
+    - examples/python/face_verification.py
+    - examples/python/attribute_estimation.py
+    - examples/python/face_identification.py
+    - examples/python/face_detection.py
+    - examples/python/face_tracking.py
+    - examples/python/liveness.py
+    - examples/cpp/face_verification.cpp
+    - examples/cpp/attribute_estimation.cpp
+    - examples/cpp/face_identification.cpp
+    - examples/cpp/face_detection.cpp
+    - examples/java/face_verification.java
+    - examples/java/attribute_estimation.java
+    - examples/java/face_identification.java
+    - examples/java/face_detection.java
+    - examples/csharp/face_verification.cs
+    - examples/csharp/attribute_estimation.cs
+    - examples/csharp/face_identification.cs
+    - examples/csharp/face_detection.cs
+    - examples/flutter/face_verification.dart
+    - examples/flutter/attribute_estimation.dart
+    - examples/flutter/face_identification.dart
+    - examples/flutter/face_detection.dart
+  api:
+    - languages/python_api.yaml
+    - languages/cpp_api.yaml
+    - languages/java_api.yaml
+    - languages/csharp_api.yaml
+    - languages/flutter_api.yaml

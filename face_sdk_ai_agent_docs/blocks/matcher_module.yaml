@@ -1,0 +1,91 @@
+x-matcher-params: &matcher_params
+  threads_count:
+    type: long
+    required: false
+    description: Parallelism across queries
+    default: 1
+    minimum: 1
+  internal_threads_count:
+    type: long
+    required: false
+    description: Parallelism per query across database
+    default: 1
+    minimum: 1
+unit_type: MATCHER_MODULE
+description: 1:N face search in DynamicTemplateIndex
+confidence: explicit
+gpu_supported: false
+modifications:
+- name: '30'
+  description: Must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+    parameters: *matcher_params
+- name: '50'
+  description: Must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+    parameters: *matcher_params
+- name: '100'
+  description: Must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+    parameters: *matcher_params
+- name: '1000'
+  description: Must match FACE_TEMPLATE_EXTRACTOR modification (default)
+  versions:
+  - version: 1
+    parameters: *matcher_params
+- name: 30m
+  description: Mobile-optimized, must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+    parameters: *matcher_params
+- name: 50m
+  description: Mobile-optimized, must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+    parameters: *matcher_params
+- name: 100m
+  description: Mobile-optimized, must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+    parameters: *matcher_params
+- name: 1000m
+  description: Mobile-optimized, must match FACE_TEMPLATE_EXTRACTOR modification
+  versions:
+  - version: 1
+    parameters: *matcher_params
+requires:
+- queries
+- template_index
+- knn
+produces:
+- results
+prerequisites:
+- FACE_TEMPLATE_EXTRACTOR
+constraints:
+  multiple_faces_supported: false
+  template_count:
+    exact: 1
+    note: "Requires 1 query template (passed via queries field)"
+errors:
+  - code: 0x18ba1f8e
+    description: Unknown modification specified in block config
+  - code: 0x032ad038
+    description: onnxruntime library could not be loaded
+  - code: MODIFICATION_MISMATCH
+    description: MATCHER_MODULE modification must match FACE_TEMPLATE_EXTRACTOR modification — mismatched modifications produce incorrect scores
+see_also:
+  examples:
+    - examples/python/face_identification.py
+    - examples/cpp/face_identification.cpp
+    - examples/java/face_identification.java
+    - examples/csharp/face_identification.cs
+    - examples/flutter/face_identification.dart
+  api:
+    - languages/python_api.yaml
+    - languages/cpp_api.yaml
+    - languages/java_api.yaml
+    - languages/csharp_api.yaml
+    - languages/flutter_api.yaml

@@ -1,0 +1,78 @@
+# Quick lookup: entity → file
+
+agent_rules: AGENT_RULES.md
+
+# Processing blocks
+FACE_DETECTOR: blocks/face_detector.yaml
+FACE_TRACKING_MODULE: blocks/face_tracking_module.yaml
+FACE_FITTER: blocks/face_fitter.yaml
+HUMAN_BODY_DETECTOR: blocks/human_body_detector.yaml
+HUMAN_POSE_ESTIMATOR: blocks/human_pose_estimator.yaml
+OBJECT_DETECTOR: blocks/object_detector.yaml
+AGE_ESTIMATOR: blocks/age_estimator.yaml
+GENDER_ESTIMATOR: blocks/gender_estimator.yaml
+EMOTION_ESTIMATOR: blocks/emotion_estimator.yaml
+MASK_ESTIMATOR: blocks/mask_estimator.yaml
+GLASSES_ESTIMATOR: blocks/glasses_estimator.yaml
+EYE_OPENNESS_ESTIMATOR: blocks/eye_openness_estimator.yaml
+DEEPFAKE_ESTIMATOR: blocks/deepfake_estimator.yaml
+LIVENESS_ESTIMATOR: blocks/liveness_estimator.yaml
+QUALITY_ASSESSMENT_ESTIMATOR: blocks/quality_assessment_estimator.yaml
+QUALITY_CONTROL: blocks/quality_control.yaml
+FACE_TEMPLATE_EXTRACTOR: blocks/face_template_extractor.yaml
+VERIFICATION_MODULE: blocks/verification_module.yaml
+MATCHER_MODULE: blocks/matcher_module.yaml
+UTILITY_MODULE: blocks/utility_module.yaml
+
+# Core entities
+Context: context_schema.yaml
+ContextTemplate: context_schema.yaml
+DynamicTemplateIndex: context_schema.yaml
+VerificationResult: context_schema.yaml
+MatchResult: context_schema.yaml
+TemplateContainer: context_schema.yaml
+Image: context_schema.yaml
+FaceObject: context_schema.yaml
+BodyObject: context_schema.yaml
+LivenessResult: context_schema.yaml
+QualityControlResult: context_schema.yaml
+QualityControlEstimationResult: context_schema.yaml
+QualityAssessmentResult: context_schema.yaml
+
+# Languages
+python: languages/python_api.yaml
+cpp: languages/cpp_api.yaml
+java: languages/java_api.yaml
+csharp: languages/csharp_api.yaml
+flutter: languages/flutter_api.yaml
+
+# Use cases
+face_detection: best_practices.yaml
+face_tracking: best_practices.yaml
+face_fitting: best_practices.yaml
+age_estimation: best_practices.yaml
+gender_estimation: best_practices.yaml
+emotion_estimation: best_practices.yaml
+liveness_detection: best_practices.yaml
+template_extraction: best_practices.yaml
+face_verification: best_practices.yaml
+face_identification: best_practices.yaml
+face_normalization: best_practices.yaml
+face_attribute_analysis: best_practices.yaml
+face_quality_filtering: best_practices.yaml
+face_recognition_enrollment: best_practices.yaml
+face_crop_with_quality: best_practices.yaml
+human_pose_estimation: best_practices.yaml
+
+# Guides
+context_lifecycle: CONTEXT_LIFECYCLE.md
+quickstart: QUICKSTART.md
+dti_lifecycle: DYNAMIC_TEMPLATE_INDEX_GUIDE.md
+architecture: ARCHITECTURE.md
+context_schema: context_schema.yaml
+constraints: AI_KNOWLEDGE_ROOT.md#5-key-architectural-rules
+troubleshooting: TROUBLESHOOTING.md
+gpu: GPU_ACCELERATION.md
+setup: SETUP.md
+pipeline_graph: pipeline_graph.yaml
+ai_knowledge_root: AI_KNOWLEDGE_ROOT.md

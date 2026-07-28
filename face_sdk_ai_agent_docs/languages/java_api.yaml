@@ -1,0 +1,377 @@
+language: "java"
+classes:
+  FacerecService:
+    description: "Main entry point for FaceSDK. Used to create ProcessingBlocks, Contexts, templates, and the DynamicTemplateIndex. Java requires explicit .dispose() for native resource cleanup."
+    methods:
+      createService:
+        description: "Creates the singleton FacerecService. Call once at startup. Throws SDKException on invalid paths or license."
+        throws:
+          - exception: "SDKException"
+            condition: "Invalid DLL path, missing config, or license error"
+        signature: "static FacerecService createService(String dll_path, String config_dir, String license_dir)"
+        parameters:
+          dll_path:
+            type: "String"
+          config_dir:
+            type: "String"
+          license_dir:
+            type: "String"
+      createContext:
+        description: "Creates an empty Context."
+        signature: "Context createContext()"
+      createContextFromEncodedImage:
+        description: "Creates a Context with an image field from encoded file bytes (JPEG/PNG/BMP)."
+        supported_formats: [JPEG, PNG, BMP]
+        signature: "Context createContextFromEncodedImage(byte[] data)"
+        parameters:
+          data:
+            type: "byte[]"
+      createContextFromFrame:
+        description: "Creates a Context from raw pixel data with specified format and dimensions."
+        signature: "Context createContextFromFrame(byte[] data, int width, int height, Context.Format format, int baseAngle)"
+        parameters:
+          data:
+            type: "byte[]"
+          width:
+            type: "int"
+          height:
+            type: "int"
+          format:
+            type: "Context.Format"
+          baseAngle:
+            type: "int"
+      createContextFromJsonFile:
+        description: "Creates a Context from a JSON file path."
+        signature: "Context createContextFromJsonFile(String path)"
+        parameters:
+          path:
+            type: "String"
+      createProcessingBlock:
+        description: "Creates a ProcessingBlock from a config Context. Throws SDKException on unknown config."
+        throws:
+          - exception: "SDKException"
+            condition: "Unknown unit_type, invalid modification, or license restriction"
+        signature: "ProcessingBlock createProcessingBlock(Context config)"
+        parameters:
+          config:
+            type: "Context"
+      createDynamicTemplateIndex:
+        description: "Creates a DynamicTemplateIndex for 1:N search. Config must specify modification and version."
+        throws:
+          - exception: "SDKException"
+            condition: "max_license_count exceeded or invalid config"
+        signature: "DynamicTemplateIndex createDynamicTemplateIndex(Context config)"
+        parameters:
+          config:
+            type: "Context"
+      loadContextTemplate:
+        description: "Loads a previously saved ContextTemplate from an InputStream."
+        signature: "static ContextTemplate loadContextTemplate(java.io.InputStream stream)"
+        parameters:
+          stream:
+            type: "java.io.InputStream"
+      getVersion:
+        description: "Returns the SDK version string."
+        signature: "String getVersion()"
+      dispose:
+        description: "Releases native resources for this FacerecService. Call in finally block."
+        signature: "void dispose()"
+  Context:
+    description: "Hierarchical key-value container flowing through the pipeline. Java uses .get('key').setXxx() patterns with method chaining."
+    methods:
+      get:
+        description: "Accesses a child Context by string key."
+        signature: "Context get(String key)"
+        parameters:
+          key:
+            type: "String"
+      get_int:
+        description: "Accesses an array element by integer index."
+        signature: "Context get(int index)"
+        parameters:
+          index:
+            type: "int"
+      setContext:
+        description: "Sets a nested Context value. Returns this for fluent chaining."
+        signature: "Context setContext(String key, Context value)  // returns this for chaining"
+        parameters:
+          key:
+            type: "String"
+          value:
+            type: "Context"
+      isNone:
+        description: "Returns true if the Context node holds null."
+        signature: "boolean isNone()"
+      isArray:
+        description: "Returns true if the Context node is an array."
+        signature: "boolean isArray()"
+      isObject:
+        description: "Returns true if the Context node is an object."
+        signature: "boolean isObject()"
+      isLong:
+        description: "Returns true if the Context node holds a long."
+        signature: "boolean isLong()"
+      isDouble:
+        description: "Returns true if the Context node holds a double."
+        signature: "boolean isDouble()"
+      isString:
+        description: "Returns true if the Context node holds a String."
+        signature: "boolean isString()"
+      isBool:
+        description: "Returns true if the Context node holds a boolean."
+        signature: "boolean isBool()"
+      isContextTemplate:
+        description: "Returns true if the Context node holds a ContextTemplate."
+        signature: "boolean isContextTemplate()"
+      isDynamicTemplateIndex:
+        description: "Returns true if the Context node holds a DynamicTemplateIndex."
+        signature: "boolean isDynamicTemplateIndex()"
+      getString:
+        description: "Gets the String value from the Context node."
+        signature: "String getString()"
+      getLong:
+        description: "Gets the long value from the Context node."
+        signature: "long getLong()"
+      getDouble:
+        description: "Gets the double value from the Context node."
+        signature: "double getDouble()"
+      getBool:
+        description: "Gets the boolean value from the Context node."
+        signature: "boolean getBool()"
+      getBytes:
+        description: "Gets the byte array value from the Context node."
+        signature: "byte[] getBytes()"
+      setString:
+        description: "Sets the Context node to a String value."
+        signature: "void setString(String value)"
+        parameters:
+          value:
+            type: "String"
+      setLong:
+        description: "Sets the Context node to a long value."
+        signature: "void setLong(long value)"
+        parameters:
+          value:
+            type: "long"
+      setDouble:
+        description: "Sets the Context node to a double value."
+        signature: "void setDouble(double value)"
+        parameters:
+          value:
+            type: "double"
+      setBool:
+        description: "Sets the Context node to a boolean value."
+        signature: "void setBool(boolean value)"
+        parameters:
+          value:
+            type: "boolean"
+      setBytes:
+        description: "Sets the Context node to a byte array."
+        signature: "void setBytes(byte[] value)"
+        parameters:
+          value:
+            type: "byte[]"
+      setDataPtr:
+        description: "Sets the Context node to a ByteBuffer pointer (for image data)."
+        signature: "void setDataPtr(java.nio.ByteBuffer buffer, int size)"
+        parameters:
+          buffer:
+            type: "java.nio.ByteBuffer"
+          size:
+            type: "int"
+      setContextTemplate:
+        description: "Sets the Context node to a ContextTemplate value."
+        signature: "void setContextTemplate(ContextTemplate value)"
+        parameters:
+          value:
+            type: "ContextTemplate"
+      setDynamicTemplateIndex:
+        description: "Sets the Context node to a DynamicTemplateIndex value."
+        signature: "void setDynamicTemplateIndex(DynamicTemplateIndex value)"
+        parameters:
+          value:
+            type: "DynamicTemplateIndex"
+      contains:
+        description: "Returns true if the specified key exists in the Context."
+        signature: "boolean contains(String key)"
+        parameters:
+          key:
+            type: "String"
+      size:
+        description: "Returns the number of elements (array) or keys (object)."
+        signature: "int size()"
+      keys:
+        description: "Returns all keys as a List."
+        signature: "java.util.List<String> keys()"
+      clear:
+        description: "Removes all keys/elements from the Context. Resets to empty state."
+        signature: "void clear()"
+      erase:
+        description: "Removes a specific key from the Context."
+        signature: "void erase(String key)"
+        parameters:
+          key:
+            type: "String"
+      clone:
+        description: "Creates an independent deep copy of the Context."
+        signature: "Context clone()"
+      serializeToJson:
+        description: "Serializes the Context to a JSON string."
+        signature: "String serializeToJson()"
+      saveToJsonFile:
+        description: "Saves the Context to a JSON file."
+        signature: "void saveToJsonFile(String path)"
+        parameters:
+          path:
+            type: "String"
+      dispose:
+        description: "Releases native resources. Call in finally block or use try-with-resources pattern."
+        signature: "void dispose()"
+  ContextFormat:
+    description: "Enumeration of supported image pixel formats for createContextFromFrame."
+    methods:
+      FORMAT_BGR:
+        description: "Blue-Green-Red 3-channel format."
+        signature: "FORMAT_BGR(0)"
+      FORMAT_RGB:
+        description: "Red-Green-Blue 3-channel format."
+        signature: "FORMAT_RGB(1)"
+      FORMAT_BGRA8888:
+        description: "Blue-Green-Red-Alpha 4-channel format."
+        signature: "FORMAT_BGRA8888(2)"
+      FORMAT_YUV420:
+        description: "YUV 4:2:0 planar format."
+        signature: "FORMAT_YUV420(3)"
+      FORMAT_YUV_NV12:
+        description: "YUV 4:2:0 NV12 format."
+        signature: "FORMAT_YUV_NV12(4)"
+      FORMAT_NV21:
+        description: "YUV 4:2:0 NV21 format (common on Android camera)."
+        signature: "FORMAT_NV21(5)"
+  ProcessingBlock:
+    description: "A processing unit that reads/writes Context. Created via FacerecService.createProcessingBlock(). Call dispose() to free native resources."
+    usage_pattern: "block.process(ioData) — Java uses .process() method. ⚠️ C++ uses operator(), C# uses .Invoke(), Python uses __call__(). Always call dispose() in finally block or use try-with-resources."
+    methods:
+      process:
+        description: "Executes this block on the given Context. Throws SDKException on failure."
+        throws:
+          - exception: "SDKException"
+            condition: "Processing failure, invalid input, or constraint violation"
+        signature: "void process(Context ioData)"
+        parameters:
+          ioData:
+            type: "Context"
+      dispose:
+        description: "Releases native resources for this ProcessingBlock. Call in finally block."
+        signature: "void dispose()"
+  ContextTemplate:
+    description: "Binary biometric face template produced by FACE_TEMPLATE_EXTRACTOR. Immutable after creation."
+    methods:
+      getMethodName:
+        description: "Returns the modification name used to create this template."
+        signature: "String getMethodName()"
+      size:
+        description: "Returns the template size in bytes."
+        signature: "long size()"
+      save:
+        description: "Saves the template to an OutputStream."
+        signature: "void save(java.io.OutputStream stream)"
+        parameters:
+          stream:
+            type: "java.io.OutputStream"
+      dispose:
+        description: "Releases native resources for this template."
+        signature: "void dispose()"
+  DynamicTemplateIndex:
+    description: "Searchable template database for 1:N face matching. Call dispose() to free native resources."
+    methods:
+      size:
+        description: "Returns the number of stored templates."
+        signature: "long size()"
+      capacity:
+        description: "Returns the maximum capacity."
+        signature: "long capacity()"
+      addContextTemplate:
+        description: "Adds a single template with UUID. Throws SDKException on duplicate UUID or capacity exceeded."
+        throws:
+          - exception: "SDKException"
+            condition: "Duplicate UUID or max_license_count exceeded"
+        signature: "void addContextTemplate(ContextTemplate templ, String uuid)"
+        parameters:
+          templ:
+            type: "ContextTemplate"
+          uuid:
+            type: "String"
+      addContextTemplates:
+        description: "Adds multiple templates in batch. More efficient than repeated single adds."
+        throws:
+          - exception: "SDKException"
+            condition: "Duplicate UUID or max_license_count exceeded"
+        signature: "void addContextTemplate(ContextTemplate[] templates, String[] uuids)"
+        parameters:
+          templates:
+            type: "ContextTemplate[]"
+          uuids:
+            type: "String[]"
+      remove:
+        description: "Removes a template by UUID. Throws SDKException if UUID not found."
+        throws:
+          - exception: "SDKException"
+            condition: "Non-existent UUID"
+        signature: "void remove(String uuid)"
+        parameters:
+          uuid:
+            type: "String"
+      remove:
+        description: "Removes multiple templates by UUIDs."
+        throws:
+          - exception: "SDKException"
+            condition: "Non-existent UUID"
+        signature: "void remove(Vector<String> uuids)"
+        parameters:
+          uuids:
+            type: "Vector<String>"
+      getUUID:
+        description: "Returns the UUID at the specified index position."
+        signature: "String getUUID(long index)"
+        parameters:
+          index:
+            type: "long"
+      get:
+        description: "Retrieves a ContextTemplate by numeric index."
+        signature: "ContextTemplate get(long index)"
+        parameters:
+          index:
+            type: "long"
+      at:
+        description: "Retrieves a ContextTemplate by UUID."
+        signature: "ContextTemplate at(String uuid)"
+        parameters:
+          uuid:
+            type: "String"
+      concat:
+        description: "Merges another DynamicTemplateIndex into this one. Invalidates source."
+        signature: "void concat(DynamicTemplateIndex other)"
+        parameters:
+          other:
+            type: "DynamicTemplateIndex"
+      clear:
+        description: "Removes all templates."
+        signature: "void clear()"
+      save:
+        description: "Saves the index to a file. Throws SDKException on I/O errors."
+        throws:
+          - exception: "SDKException"
+            condition: "I/O errors (disk full, permission denied)"
+        signature: "void save(String path, boolean allowOverwrite)"
+        parameters:
+          path:
+            type: "String"
+          allowOverwrite:
+            type: "boolean"
+      getMethodName:
+        description: "Returns the modification name this index was created with."
+        signature: "String getMethodName()"
+      dispose:
+        description: "Releases native resources. Always call in finally block or use try-with-resources."
+        signature: "void dispose()"

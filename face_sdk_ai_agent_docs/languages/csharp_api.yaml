@@ -1,0 +1,404 @@
+language: "csharp"
+note: "C# createService does NOT take a dll_path parameter — unlike all other languages (C++/Java/Python take 3 params, Flutter takes 0). Call: FacerecService.createService(config_dir, license_dir)."
+classes:
+  FacerecService:
+    description: "Main entry point for FaceSDK. Used to create ProcessingBlocks, Contexts, templates, and DynamicTemplateIndex."
+    methods:
+      createService:
+        description: "Creates the singleton FacerecService. Unlike other languages, does NOT take a dll_path. Throws ProcessingBlockError on invalid paths."
+        throws:
+          - exception: "ProcessingBlockError"
+            condition: "Missing config directory or license error"
+        signature: "static FacerecService createService(string facerec_conf_dir, string license_dir)"
+        parameters:
+          facerec_conf_dir:
+            type: "string"
+          license_dir:
+            type: "string"
+      createService_with_license:
+        description: "Creates FacerecService with a License object instead of license directory path."
+        signature: "static FacerecService createService(string facerec_conf_dir, FacerecService.License license)"
+        parameters:
+          facerec_conf_dir:
+            type: "string"
+          license:
+            type: "FacerecService.License"
+      CreateProcessingBlock:
+        description: "Creates a ProcessingBlock from a Dictionary config. Must specify unit_type. Throws ProcessingBlockError on unknown config."
+        throws:
+          - exception: "ProcessingBlockError"
+            condition: "Unknown unit_type, invalid modification, or license restriction"
+        signature: "ProcessingBlock CreateProcessingBlock(Dictionary<object, object> ctx)"
+        parameters:
+          ctx:
+            type: "Dictionary<object, object>"
+      CreateContext:
+        description: "Creates a Context, optionally initialized with an object."
+        signature: "Context CreateContext(object ctx)"
+        parameters:
+          ctx:
+            type: "object"
+      CreateContextFromEncodedImage:
+        description: "Creates a Context with image data from encoded bytes (JPEG/PNG/BMP)."
+        supported_formats: [JPEG, PNG, BMP]
+        signature: "Context CreateContextFromEncodedImage(byte[] data)"
+        parameters:
+          data:
+            type: "byte[]"
+      CreateContextFromEncodedImage_IntPtr:
+        description: "Creates a Context from encoded image via IntPtr (unmanaged memory)."
+        signature: "Context CreateContextFromEncodedImage(IntPtr data, ulong size)"
+        parameters:
+          data:
+            type: "IntPtr"
+          size:
+            type: "ulong"
+      CreateContextFromEncodedImage_Span:
+        description: "Creates a Context from encoded image via Span<byte>."
+        signature: "Context CreateContextFromEncodedImage(Span<byte> data, ulong size)"
+        parameters:
+          data:
+            type: "Span<byte>"
+          size:
+            type: "ulong"
+      CreateContextFromFrame:
+        description: "Creates a Context from raw pixel data."
+        signature: "Context CreateContextFromFrame(byte[] data, int width, int height, Context.Format format, int baseAngle)"
+        parameters:
+          data:
+            type: "byte[]"
+          width:
+            type: "int"
+          height:
+            type: "int"
+          format:
+            type: "Context.Format"
+          baseAngle:
+            type: "int"
+      CreateContextFromJsonFile:
+        description: "Creates a Context from a JSON file path."
+        signature: "Context CreateContextFromJsonFile(string path)"
+        parameters:
+          path:
+            type: "string"
+      LoadContextTemplate:
+        description: "Loads a saved ContextTemplate from a Stream."
+        signature: "ContextTemplate LoadContextTemplate(System.IO.Stream stream)"
+        parameters:
+          stream:
+            type: "System.IO.Stream"
+      ConvertTemplate:
+        description: "Converts a Context containing a template field into a ContextTemplate."
+        signature: "ContextTemplate ConvertTemplate(Context templateContext)"
+        parameters:
+          templateContext:
+            type: "Context"
+      CreateDynamicTemplateIndex:
+        description: "Creates a DynamicTemplateIndex from a Dictionary config. Config must specify modification and version."
+        throws:
+          - exception: "ProcessingBlockError"
+            condition: "max_license_count exceeded or invalid config"
+        signature: "DynamicTemplateIndex CreateDynamicTemplateIndex(Dictionary<object, object> ctx)"
+        parameters:
+          ctx:
+            type: "Dictionary<object, object>"
+      CreateDynamicTemplateIndex_fromContext:
+        description: "Creates a DynamicTemplateIndex from a Context config."
+        throws:
+          - exception: "ProcessingBlockError"
+            condition: "max_license_count exceeded or invalid config"
+        signature: "DynamicTemplateIndex CreateDynamicTemplateIndex(Context ctx)"
+        parameters:
+          ctx:
+            type: "Context"
+      GetVersion:
+        description: "Returns the SDK version string."
+        signature: "string GetVersion()"
+  Context:
+    description: "Hierarchical key-value container flowing through the processing pipeline."
+    methods:
+      get_item:
+        description: "Indexer access by string key: context['key']."
+        signature: "this[string key] { get; }"
+        parameters:
+          key:
+            type: "string"
+      get_item_int:
+        description: "Indexer access by integer index: context[0]."
+        signature: "this[int index] { get; }"
+        parameters:
+          index:
+            type: "int"
+      SetStr:
+        description: "Sets the Context node to a string value."
+        signature: "void SetStr(string value)"
+        parameters:
+          value:
+            type: "string"
+      SetLong:
+        description: "Sets the Context node to a long value."
+        signature: "void SetLong(long value)"
+        parameters:
+          value:
+            type: "long"
+      SetDouble:
+        description: "Sets the Context node to a double value."
+        signature: "void SetDouble(double value)"
+        parameters:
+          value:
+            type: "double"
+      SetBool:
+        description: "Sets the Context node to a boolean value."
+        signature: "void SetBool(bool value)"
+        parameters:
+          value:
+            type: "bool"
+      SetBytes:
+        description: "Sets the Context node to a byte array."
+        signature: "void SetBytes(byte[] value)"
+        parameters:
+          value:
+            type: "byte[]"
+      SetDataPtr:
+        description: "Sets the Context node to a raw data pointer (for image blobs)."
+        signature: "void SetDataPtr(byte* ptr, int size)"
+        parameters:
+          ptr:
+            type: "byte*"
+          size:
+            type: "int"
+      SetDynamicTemplateIndex:
+        description: "Sets the Context node to a DynamicTemplateIndex value."
+        signature: "void SetDynamicTemplateIndex(DynamicTemplateIndex templ_index)"
+        parameters:
+          templ_index:
+            type: "DynamicTemplateIndex"
+      GetString:
+        description: "Gets the string value from the Context node."
+        signature: "string GetString()"
+      GetLong:
+        description: "Gets the long value from the Context node."
+        signature: "long GetLong()"
+      GetDouble:
+        description: "Gets the double value from the Context node."
+        signature: "double GetDouble()"
+      GetBool:
+        description: "Gets the boolean value from the Context node."
+        signature: "bool GetBool()"
+      GetBytes:
+        description: "Gets the byte array from the Context node."
+        signature: "byte[] GetBytes()"
+      GetContextTemplate:
+        description: "Gets the ContextTemplate value from the Context node."
+        signature: "ContextTemplate GetContextTemplate()"
+      GetValue:
+        description: "Gets the raw object value from the Context node."
+        signature: "object GetValue()"
+      IsNone:
+        description: "Returns true if the Context node holds null."
+        signature: "bool IsNone()"
+      IsBool:
+        description: "Returns true if the Context node holds a bool."
+        signature: "bool IsBool()"
+      IsLong:
+        description: "Returns true if the Context node holds a long."
+        signature: "bool IsLong()"
+      IsDouble:
+        description: "Returns true if the Context node holds a double."
+        signature: "bool IsDouble()"
+      IsString:
+        description: "Returns true if the Context node holds a string."
+        signature: "bool IsString()"
+      IsArray:
+        description: "Returns true if the Context node is an array."
+        signature: "bool IsArray()"
+      IsObject:
+        description: "Returns true if the Context node is an object."
+        signature: "bool IsObject()"
+      IsContextTemplate:
+        description: "Returns true if the Context node holds a ContextTemplate."
+        signature: "bool IsContextTemplate()"
+      IsDynamicTemplateIndex:
+        description: "Returns true if the Context node holds a DynamicTemplateIndex."
+        signature: "bool IsDynamicTemplateIndex()"
+      Contains:
+        description: "Returns true if the specified key exists."
+        signature: "bool Contains(string key)"
+        parameters:
+          key:
+            type: "string"
+      Size:
+        description: "Returns the number of elements (array) or keys (object)."
+        signature: "int Size()"
+      Length:
+        description: "Returns the number of elements (array) or keys (object)."
+        signature: "int Length()"
+      GetKeys:
+        description: "Returns the list of keys in the Context."
+        signature: "List<string> GetKeys()"
+      Keys:
+        description: "Property alias for GetKeys(). Returns the list of keys."
+        signature: "List<string> Keys { get; }"
+      Clear:
+        description: "Removes all keys/elements. Resets to empty state."
+        signature: "void Clear()"
+      Erase:
+        description: "Removes a specific key from the Context."
+        signature: "void Erase(string key)"
+        parameters:
+          key:
+            type: "string"
+      Clone:
+        description: "Creates an independent deep copy of the Context."
+        signature: "Context Clone()"
+      SerializeToJson:
+        description: "Serializes the Context to a JSON string."
+        signature: "string SerializeToJson()"
+      SaveToJsonFile:
+        description: "Saves the Context to a JSON file."
+        signature: "void SaveToJsonFile(string path)"
+        parameters:
+          path:
+            type: "string"
+      Dispose:
+        description: "Releases native resources. Optional (has finalizer), but recommended for deterministic cleanup. Use `using` block."
+        signature: "void Dispose()"
+  ContextFormat:
+    description: "Enumeration of supported image pixel formats for CreateContextFromFrame."
+    methods:
+      FORMAT_BGR:
+        description: "Blue-Green-Red 3-channel format."
+        signature: "FORMAT_BGR = 0"
+      FORMAT_RGB:
+        description: "Red-Green-Blue 3-channel format."
+        signature: "FORMAT_RGB = 1"
+      FORMAT_BGRA8888:
+        description: "Blue-Green-Red-Alpha 4-channel format."
+        signature: "FORMAT_BGRA8888 = 2"
+      FORMAT_YUV420:
+        description: "YUV 4:2:0 planar format."
+        signature: "FORMAT_YUV420 = 3"
+      FORMAT_YUV_NV12:
+        description: "YUV 4:2:0 NV12 format."
+        signature: "FORMAT_YUV_NV12 = 4"
+      FORMAT_NV21:
+        description: "YUV 4:2:0 NV21 format."
+        signature: "FORMAT_NV21 = 5"
+  ProcessingBlock:
+    description: "A processing unit that reads/writes Context. Created via FacerecService.CreateProcessingBlock(). Implements IDisposable."
+    usage_pattern: "block.Invoke(ioData) — C# uses .Invoke() method. ⚠️ Java/Flutter use .process(), C++ uses operator(), Python uses __call__(). Method name is Invoke, NOT Process."
+    methods:
+      Invoke:
+        description: "Executes this block on the given Context. Throws ProcessingBlockError on failure."
+        throws:
+          - exception: "ProcessingBlockError"
+            condition: "Processing failure, invalid input, or constraint violation"
+        signature: "void Invoke(Context ioData)"
+        parameters:
+          ioData:
+            type: "Context"
+      Dispose:
+        description: "Releases native resources. Optional (has finalizer), but recommended for deterministic cleanup. Use `using` block."
+        signature: "void Dispose()"
+  ContextTemplate:
+    description: "Binary biometric face template produced by FACE_TEMPLATE_EXTRACTOR. Immutable after creation. Implements IDisposable."
+    methods:
+      GetMethodName:
+        description: "Returns the modification name used to create this template."
+        signature: "string GetMethodName()"
+      Size:
+        description: "Returns the template size in bytes."
+        signature: "long Size()"
+      Save:
+        description: "Saves the template to a Stream."
+        signature: "void Save(System.IO.Stream stream)"
+        parameters:
+          stream:
+            type: "System.IO.Stream"
+      Dispose:
+        description: "Releases native resources. Optional (has finalizer), but recommended for deterministic cleanup. Use `using` block."
+        signature: "void Dispose()"
+  DynamicTemplateIndex:
+    description: "Searchable template database for 1:N face matching. Implements IDisposable."
+    methods:
+      Size:
+        description: "Returns the number of stored templates."
+        signature: "long Size()"
+      Capacity:
+        description: "Returns the maximum capacity."
+        signature: "long Capacity()"
+      Add:
+        description: "Adds a single template with UUID. Throws ProcessingBlockError on duplicate UUID or capacity exceeded."
+        throws:
+          - exception: "ProcessingBlockError"
+            condition: "Duplicate UUID or max_license_count exceeded"
+        signature: "void Add(ContextTemplate templ, string uuid)"
+        parameters:
+          templ:
+            type: "ContextTemplate"
+          uuid:
+            type: "string"
+      Add_range:
+        description: "Adds multiple templates in batch."
+        throws:
+          - exception: "ProcessingBlockError"
+            condition: "Duplicate UUID or max_license_count exceeded"
+        signature: "void AddRange(ContextTemplate[] templates, string[] uuids)"
+        parameters:
+          templates:
+            type: "ContextTemplate[]"
+          uuids:
+            type: "string[]"
+      Remove:
+        description: "Removes a template by UUID. Throws ProcessingBlockError if UUID not found."
+        throws:
+          - exception: "ProcessingBlockError"
+            condition: "Non-existent UUID"
+        signature: "void Remove(string uuid)"
+        parameters:
+          uuid:
+            type: "string"
+      GetUUID:
+        description: "Returns the UUID at the specified index."
+        signature: "string GetUUID(long index)"
+        parameters:
+          index:
+            type: "long"
+      At:
+        description: "Retrieves a ContextTemplate by UUID."
+        signature: "ContextTemplate At(string uuid)"
+        parameters:
+          uuid:
+            type: "string"
+      Get:
+        description: "Retrieves a ContextTemplate by numeric index."
+        signature: "ContextTemplate Get(long index)"
+        parameters:
+          index:
+            type: "long"
+      Concat:
+        description: "Merges another DynamicTemplateIndex. Invalidates source."
+        signature: "void Concat(DynamicTemplateIndex other)"
+        parameters:
+          other:
+            type: "DynamicTemplateIndex"
+      Clear:
+        description: "Removes all templates."
+        signature: "void Clear()"
+      Save:
+        description: "Saves the index to a file. Throws ProcessingBlockError on I/O errors."
+        throws:
+          - exception: "ProcessingBlockError"
+            condition: "I/O errors (disk full, permission denied)"
+        signature: "void Save(string path, bool allowOverwrite)"
+        parameters:
+          path:
+            type: "string"
+          allowOverwrite:
+            type: "bool"
+      GetMethodName:
+        description: "Returns the modification name this index was created with."
+        signature: "string GetMethodName()"
+      Dispose:
+        description: "Releases native resources. Optional (has finalizer), but recommended for deterministic cleanup. Use `using` block."
+        signature: "void Dispose()"

@@ -33,7 +33,7 @@ import com.vdt.face_recognition.sdk.ProcessingBlock
 
 class MainActivity : AppCompatActivity() {
     private lateinit var service: FacerecService
-    private lateinit var faceDetector: ProcessingBlock
+    private lateinit var faceTracker: ProcessingBlock
     private lateinit var faceFitter: ProcessingBlock
     private lateinit var ageEstimator: ProcessingBlock
     private lateinit var genderEstimator: ProcessingBlock
@@ -70,11 +70,12 @@ class MainActivity : AppCompatActivity() {
             applicationInfo.dataDir + "/fsdk/license"
         )
 
-        val configDetector = service.createContext()
-        configDetector["unit_type"].string = "FACE_DETECTOR"
-        configDetector["modification"].string = "blf_front"
+        val configTracker = service.createContext()
+        configTracker["unit_type"].string = "FACE_TRACKING_MODULE"
+        configTracker["modification"].string = "fda"
+        configTracker["detection_params"]["modification"] = "ssyv_light"
 
-        faceDetector = service.createProcessingBlock(configDetector)
+        faceTracker = service.createProcessingBlock(configTracker)
 
         val configFitter = service.createContext()
         configFitter["unit_type"].string = "FACE_FITTER"
@@ -128,7 +129,7 @@ class MainActivity : AppCompatActivity() {
 
                 val ioData = service.createContextFromFrame(imageData, width, height,
                     com.vdt.face_recognition.sdk.Context.Format.FORMAT_RGB, 0)
-                faceDetector.process(ioData)
+                faceTracker.process(ioData)
                 faceFitter.process(ioData)
                 ageEstimator.process(ioData)
                 genderEstimator.process(ioData)

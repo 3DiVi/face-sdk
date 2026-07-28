@@ -26,8 +26,9 @@ class ContextFormat(Enum):
     FORMAT_BGR = 0
     FORMAT_RGB = 1
     FORMAT_BGRA8888 = 2
-    FORMAT_YUV_NV21 = 3
-    FORMAT_YUV_NV12 = 4
+    FORMAT_YUV420 = 3,
+    FORMAT_YUV_NV12 = 4,
+    FORMAT_NV21 = 5,
 
 
 ##
@@ -36,7 +37,7 @@ class ContextFormat(Enum):
 #  \~Russian
 #     \brief Интерфейсный объект для контейнера-Context.
 class Context(ComplexObject):
-
+    Format = ContextFormat
     def __init__(self, handle: DllHandle, the_impl=None):
         self.__weak_ = False
         self.data = None

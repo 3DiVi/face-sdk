@@ -13,7 +13,6 @@ import 'dart:developer' as developer;
 import 'dart:convert' show utf8;
 import 'package:camera/camera.dart';
 import 'package:ffi/ffi.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:image/image.dart' as imglib;
 
 import 'utils.dart';
